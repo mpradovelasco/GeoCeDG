@@ -3691,6 +3691,11 @@ public abstract class EuclidianView implements EuclidianViewInterfaceCommon,
 		return null;
 	}
 
+	/** @return the logical-pixel width of a canvas slider in a panel, or zero */
+	public double getControlLayoutSliderWidth(GeoNumeric slider) {
+		return 0;
+	}
+
 	/** @return whether live CU8 presentation permits the control to be shown */
 	public boolean isControlLayoutVisible(GeoElement geo) {
 		return true;

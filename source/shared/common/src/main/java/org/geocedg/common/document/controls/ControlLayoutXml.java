@@ -32,12 +32,13 @@ import org.geogebra.common.io.QDParser;
 import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.kernel.geos.GeoElement;
 
-/** Bounded v1 XML values for a full-document control layout. */
+/** Bounded XML values for a full-document control layout. */
 public final class ControlLayoutXml {
 	public static final String LAYOUT_ATTRIBUTE = "geocedgControlLayout";
 	public static final String SLOT_ATTRIBUTE = "geocedgControlSlot";
 	public static final String APPEARANCE_ATTRIBUTE = "geocedgControlAppearance";
 	public static final int MAX_BYTES = 65_536;
+	private static final int MAX_WIDTH_BYTES = ControlLayout.MAX_SLOTS * 25;
 	private static final int MAX_NAME_HEX_LENGTH = 8 * ControlLayout.MAX_NAME_CODE_POINTS;
 
 	private ControlLayoutXml() {
@@ -73,19 +74,23 @@ public final class ControlLayoutXml {
 		if (layout.isEmpty()) {
 			return null;
 		}
-		StringJoiner records = new StringJoiner(";", "1|", "");
-		Map<GeoElement, String> slots = new IdentityHashMap<>();
 		List<Panel> panels = layout.panels();
+		boolean versionTwo = panels.stream().flatMap(panel -> layout.slots(panel.id()).stream())
+				.anyMatch(slot -> ControlLayout.requiresVersionTwo(slot.control()));
+		StringJoiner records = new StringJoiner(";", versionTwo ? "2|" : "1|", "");
+		Map<GeoElement, String> slots = new IdentityHashMap<>();
 		List<Panel> canonical = panels.stream().sorted(Comparator.comparing(Panel::id)).toList();
 		for (Panel panel : canonical) {
 			StringJoiner ids = new StringJoiner(":");
 			for (Slot slot : layout.slots(panel.id()).stream()
 					.sorted(Comparator.comparing(Slot::id)).toList()) {
-				layout.requireEligible(slot.control());
+				layout.requireSlot(slot);
 				ids.add(slot.id());
-				slots.put(slot.control(), String.join(",", panel.id(), slot.id(),
+				String record = String.join(",", panel.id(), slot.id(),
 						ControlLayout.family(slot.control()), Double.toString(slot.dx()),
-						Double.toString(slot.dy())));
+						Double.toString(slot.dy()));
+				slots.put(slot.control(), slot.sliderWidth() == 0 ? record
+						: record + "," + slot.sliderWidth());
 			}
 			records.add(String.join(",", panel.id(), "1",
 					panel.anchor() == Anchor.FIXED ? "F" : "W",
@@ -200,6 +205,7 @@ public final class ControlLayoutXml {
 		private final Map<GeoElement, String> owners = new IdentityHashMap<>();
 		private int bytes;
 		private boolean header;
+		private boolean versionTwo;
 		private List<Panel> appearance;
 
 		public void readHeader(String value) {
@@ -207,9 +213,10 @@ public final class ControlLayoutXml {
 				throw failure(Code.DUPLICATE, "Duplicate control layout header");
 			}
 			header = true;
+			versionTwo = value.startsWith("2|");
 			account(value);
 			int remainingSlots = ControlLayout.MAX_SLOTS;
-			for (String record : records(value, "control layout")) {
+			for (String record : records(value, "control layout", versionTwo ? "2" : "1")) {
 				String[] fields = record.split(",", 10);
 				if (fields.length != 9 || !"1".equals(fields[1])) {
 					throw failure(Code.GRAMMAR, "Invalid control panel fields");
@@ -247,7 +254,7 @@ public final class ControlLayoutXml {
 			}
 			account(value);
 			Map<String, Panel> ordered = new LinkedHashMap<>();
-			for (String record : records(value, "control appearance")) {
+			for (String record : records(value, "control appearance", "1")) {
 				String[] fields = record.split(",", 5);
 				if (fields.length != 4 || !fields[1].matches("[0-9a-f]{6}")
 						|| !fields[2].matches("[1-9][0-9]")) {
@@ -289,8 +296,8 @@ public final class ControlLayoutXml {
 			(appearance == null ? panelsById.values() : appearance).forEach(state::addPanel);
 			for (var attachment : owners.entrySet()) {
 				GeoElement owner = attachment.getKey();
-				String[] fields = attachment.getValue().split(",", 6);
-				if (fields.length != 5) {
+				String[] fields = attachment.getValue().split(",", 7);
+				if (fields.length != 5 && !(versionTwo && fields.length == 6)) {
 					throw failure(Code.GRAMMAR, "Invalid control slot fields");
 				}
 				String panel = identifier(fields[0]);
@@ -299,11 +306,19 @@ public final class ControlLayoutXml {
 				if (expectedSlots == null || !expectedSlots.contains(slot)) {
 					throw failure(Code.ORPHAN, "Control slot is absent from the document header");
 				}
-				layout.requireEligible(owner);
+				if (!versionTwo && ControlLayout.requiresVersionTwo(owner)) {
+					throw failure(Code.OWNER, "Control requires layout version 2");
+				}
 				if (!ControlLayout.family(owner).equals(fields[2])) {
 					throw failure(Code.OWNER, "Control slot family differs from its native owner");
 				}
-				state.addSlot(new Slot(panel, slot, owner, number(fields[3]), number(fields[4])));
+				double width = fields.length == 6 ? number(fields[5]) : 0;
+				if (fields.length == 6 && width <= 0) {
+					throw failure(Code.GRAMMAR, "Nonpositive presentation slider width");
+				}
+				Slot parsed = new Slot(panel, slot, owner, number(fields[3]), number(fields[4]), width);
+				layout.requireSlot(parsed);
+				state.addSlot(parsed);
 			}
 			int expectedCount = expected.values().stream().mapToInt(Set::size).sum();
 			if (owners.size() != expectedCount) {
@@ -313,7 +328,8 @@ public final class ControlLayoutXml {
 		}
 
 		private void account(String value) {
-			if (value.length() > MAX_BYTES - bytes) {
+			int limit = versionTwo ? MAX_BYTES + MAX_WIDTH_BYTES : MAX_BYTES;
+			if (value.length() > limit - bytes) {
 				throw failure(Code.LIMIT, "Control layout XML exceeds the byte limit");
 			}
 			for (int index = 0; index < value.length(); index++) {
@@ -325,10 +341,10 @@ public final class ControlLayoutXml {
 		}
 	}
 
-	private static String[] records(String value, String kind) {
+	private static String[] records(String value, String kind, String supportedVersion) {
 		int divider = value.indexOf('|');
 		String version = divider < 0 ? value : value.substring(0, divider);
-		if (!"1".equals(version)) {
+		if (!supportedVersion.equals(version)) {
 			throw failure(version.matches("[0-9]+") ? Code.VERSION : Code.GRAMMAR,
 					"Unsupported " + kind + " version");
 		}

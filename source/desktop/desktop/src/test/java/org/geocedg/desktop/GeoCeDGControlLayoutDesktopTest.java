@@ -24,13 +24,20 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Window;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.zip.ZipInputStream;
 
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 
 import org.geocedg.common.document.controls.ControlLayout;
@@ -62,6 +69,132 @@ import org.junit.jupiter.api.extension.ExtendWith;
 /** Checks live Graphics 1 presentation against the native drawable and hit paths. */
 @ExtendWith(G9U1TestApp.Lifecycle.class)
 class GeoCeDGControlLayoutDesktopTest {
+	private void assertInteractiveAttachment() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = G9U1TestApp.create();
+			GeoCeDGEuclidianView view = view(app);
+			var workspace = view.controlLayoutWorkspace();
+			GeoNumeric slider = (GeoNumeric) absolute(app, "s=Slider(0,10,1)");
+			slider.setAbsoluteScreenLocActive(true);
+			slider.setSliderFixed(false);
+			slider.setAbsoluteScreenLoc(300, 180);
+			slider.setSliderWidth(240, true);
+			slider.updateRepaint();
+			GeoNumeric angle = (GeoNumeric) must(app, "t=Slider(0,6,0.1,1,100,true)");
+			angle.removeViews3D();
+			angle.setVisibleInViewForPlane(false);
+			angle.setSliderFixed(false);
+			angle.setAbsoluteScreenLocActive(false);
+			angle.setRealWorldLoc(5, -1);
+			angle.setSliderWidth(3, true);
+			angle.updateRepaint();
+			sample(view, new GPoint(1, 1));
+			var existingWindows = List.of(Window.getWindows());
+			try {
+				app.openControlLayout();
+				JDialog manager = null;
+				for (Window window : Window.getWindows()) {
+					if (!existingWindows.contains(window) && window instanceof JDialog dialog
+							&& app.layerText("ControlLayout.Title").equals(dialog.getTitle())) {
+						manager = dialog;
+						break;
+					}
+				}
+				assertNotNull(manager);
+				var content = manager.getContentPane();
+				var instructions = findComponent(content, JLabel.class,
+						label -> app.layerText("ControlLayout.Pick").equals(label.getText()));
+				var create = findComponent(content, JButton.class,
+						button -> app.layerText("ControlLayout.New").equals(button.getText()));
+				var attach = findComponent(content, JButton.class,
+						button -> app.layerText("ControlLayout.Attach").equals(button.getText()));
+				assertNotNull(instructions);
+				assertNotNull(create);
+				assertNotNull(attach);
+
+				create.doClick(0);
+				Panel original = layout(app).panels().get(0);
+				manager.validate();
+				assertTrue(instructions.getWidth() >= instructions.getPreferredSize().width);
+				assertTrue(instructions.getVisibleRect().contains(
+						0, 0, instructions.getWidth(), instructions.getHeight()));
+				assertNull(layout(app).slot(slider));
+
+				var location = ((DrawSlider) view.getDrawableFor(slider)).getSliderLocation();
+				GPoint sliderHit = new GPoint((int) location.x + 15, (int) location.y);
+				view.setHits(sliderHit, PointerEventType.MOUSE);
+				assertTrue(view.getHits().contains(slider));
+				click(view, sliderHit);
+				assertEquals("s", instructions.getText());
+				attach.doClick(0);
+				assertEquals(app.layerText("ControlLayout.ConfirmPlacement"), attach.getText());
+				assertSame(original, layout(app).panel(original.id()));
+				assertNull(layout(app).slot(slider));
+				assertTrue(workspace.cancelGesture());
+				assertNull(layout(app).slot(slider));
+				attach.doClick(0);
+				attach.doClick(0);
+				var sliderSlot = layout(app).slot(slider);
+				assertSame(slider, sliderSlot.control());
+				Panel enlarged = layout(app).panel(original.id());
+				assertTrue(enlarged.width() > original.width());
+				assertEquals(original.x(), enlarged.x());
+				assertEquals(app.layerText("ControlLayout.Pick"), instructions.getText());
+
+				var angleLocation = ((DrawSlider) view.getDrawableFor(angle)).getSliderLocation();
+				click(view, new GPoint(view.toScreenCoordX(angleLocation.x) + 15,
+						view.toScreenCoordY(angleLocation.y)));
+				assertEquals("t", instructions.getText());
+				awaitQuiescent(app);
+				attach.doClick(0);
+				var sliderAt = view.getControlLayoutPosition(slider);
+				click(view, new GPoint((int) sliderAt.x, (int) sliderAt.y));
+				assertNull(layout(app).slot(angle));
+				assertEquals(app.layerText("ControlLayout.PlacementOccupied"), instructions.getText());
+				var insets = view.getSafeAreaInsets();
+				click(view, new GPoint((int) enlarged.x() + insets.getLeft() + 8,
+						(int) enlarged.y() + insets.getTop() + enlarged.height() - 4));
+				var angleSlot = layout(app).slot(angle);
+				assertNotNull(angleSlot);
+				assertTrue(angleSlot.dy() > sliderSlot.dy());
+				assertTrue(layout(app).panel(original.id()).height() > enlarged.height());
+				assertEquals(3 * view.getXscale(), angleSlot.sliderWidth());
+				assertEquals(5, angle.getRealWorldLocX());
+				assertFalse(angle.isAbsoluteScreenLocActive());
+				assertSame(sliderSlot, layout(app).slot(slider));
+				awaitQuiescent(app);
+				undo(app).undo();
+				assertNull(layout(app).slot(app.getKernel().lookupLabel("t")));
+				assertEquals(enlarged, layout(app).panel(original.id()));
+				undo(app).redo();
+				var restored = (GeoNumeric) app.getKernel().lookupLabel("t");
+				assertEquals(angleSlot.id(), layout(app).slot(restored).id());
+				assertEquals(angleSlot.sliderWidth(), view.getControlLayoutSliderWidth(restored));
+
+				var at = view.getControlLayoutPosition(restored);
+				GPoint start = new GPoint((int) at.x + 10, (int) at.y);
+				GPoint end = new GPoint(start.x + 16, start.y + 14);
+				drag(view, start, end);
+				var moved = layout(app).slot(restored);
+				assertEquals(angleSlot.dx() + 16, moved.dx());
+				assertEquals(angleSlot.dy() + 14, moved.dy());
+				assertEquals(angleSlot.sliderWidth(), moved.sliderWidth());
+
+				var detach = findComponent(content, JButton.class,
+						button -> app.layerText("ControlLayout.Detach").equals(button.getText()));
+				assertNotNull(detach);
+				detach.doClick(0);
+				assertNull(layout(app).slot(restored));
+				assertEquals(5, restored.getRealWorldLocX());
+				assertEquals(-1, restored.getRealWorldLocY());
+				assertEquals(3, restored.getSliderWidth());
+				assertFalse(restored.isAbsoluteScreenLocActive());
+			} finally {
+				workspace.close();
+			}
+		});
+	}
+
 	@Test
 	void overlappingPanelsCompositeBackToFront() throws Exception {
 		onEdt(() -> {
@@ -99,6 +232,7 @@ class GeoCeDGControlLayoutDesktopTest {
 
 	@Test
 	void detachMovesTheControlBehindItsOldPanel() throws Exception {
+		assertInteractiveAttachment();
 		onEdt(() -> {
 			AppGeoCeDG app = G9U1TestApp.create();
 			GeoCeDGEuclidianView view = view(app);
@@ -480,6 +614,22 @@ class GeoCeDGControlLayoutDesktopTest {
 		return view;
 	}
 
+	private static <T extends Component> T findComponent(Container root, Class<T> type,
+			Predicate<T> matches) {
+		for (var child : root.getComponents()) {
+			if (type.isInstance(child) && matches.test(type.cast(child))) {
+				return type.cast(child);
+			}
+			if (child instanceof Container nested) {
+				T match = findComponent(nested, type, matches);
+				if (match != null) {
+					return match;
+				}
+			}
+		}
+		return null;
+	}
+
 	private static ControlLayout layout(AppGeoCeDG app) {
 		return app.getKernel().getConstruction().getControlLayout();
 	}
@@ -537,6 +687,16 @@ class GeoCeDGControlLayoutDesktopTest {
 				0, MouseEvent.BUTTON1_DOWN_MASK, point.x, point.y, 1, false, MouseEvent.BUTTON1));
 		controller.mouseReleased(new MouseEvent(view.getJPanel(), MouseEvent.MOUSE_RELEASED,
 				1, 0, point.x, point.y, 1, false, MouseEvent.BUTTON1));
+	}
+
+	private static void drag(GeoCeDGEuclidianView view, GPoint start, GPoint end) {
+		var controller = (GeoCeDGEuclidianController) view.getEuclidianController();
+		controller.mousePressed(new MouseEvent(view.getJPanel(), MouseEvent.MOUSE_PRESSED,
+				0, MouseEvent.BUTTON1_DOWN_MASK, start.x, start.y, 1, false, MouseEvent.BUTTON1));
+		controller.mouseDragged(new MouseEvent(view.getJPanel(), MouseEvent.MOUSE_DRAGGED,
+				1, MouseEvent.BUTTON1_DOWN_MASK, end.x, end.y, 0, false, MouseEvent.NOBUTTON));
+		controller.mouseReleased(new MouseEvent(view.getJPanel(), MouseEvent.MOUSE_RELEASED,
+				2, 0, end.x, end.y, 1, false, MouseEvent.BUTTON1));
 	}
 
 	private static double drawnFieldX(GeoCeDGEuclidianView view, GeoElement field) {

@@ -27,6 +27,7 @@ import org.geogebra.common.kernel.geos.AbsoluteScreenLocateable;
 import org.geogebra.common.kernel.geos.GeoBoolean;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoInputBox;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.junit.jupiter.api.Test;
 
 class ControlLayoutXmlTest extends BaseUnitTest {
@@ -38,30 +39,55 @@ class ControlLayoutXmlTest extends BaseUnitTest {
 		GeoElement checkbox = control("q=Checkbox()", 270, 180);
 		((GeoBoolean) checkbox).setCheckboxFixed(false);
 		GeoElement field = control("i=InputBox(s)", 370, 210);
+		GeoNumeric canvas = (GeoNumeric) add("m=Slider(0,s,1)");
+		canvas.setAbsoluteScreenLocActive(false);
+		canvas.setRealWorldLoc(3.25, -2);
+		canvas.setSliderWidth(4, true);
+		GeoNumeric angle = (GeoNumeric) control("t=Slider(0,6,0.1,1,100,true)", 40, 80);
+		angle.removeViews3D();
+		angle.setVisibleInViewForPlane(false);
+		angle.setSliderFixed(false);
 		var fixed = layout().addPanel(Anchor.FIXED, 5, 10, 300, 250, true);
 		var world = layout().addPanel(Anchor.WORLD, 0.25, -1.5, 200, 160, false);
 		var first = layout().addSlot(fixed.id(), slider, 2, 4);
 		layout().addSlot(fixed.id(), button, 6, 8);
 		layout().addSlot(world.id(), checkbox, 10, 12);
 		var last = layout().addSlot(world.id(), field, -8, 26);
+		var canvasSlot = layout().addSlot(world.id(), canvas, 20, 50, 125);
+		var angleSlot = layout().addSlot(fixed.id(), angle, 12, 44);
 		var fragment = new XMLStringBuilder();
 		slider.getXML(false, fragment);
 		assertFalse(fragment.toString().contains(ControlLayoutXml.SLOT_ATTRIBUTE));
 
 		String saved = construction().getCurrentUndoXML(true).toString();
-		assertTrue(saved.contains("geocedgControlLayout=\"1|"));
+		assertTrue(saved.contains("geocedgControlLayout=\"2|"));
+		assertRejected(saved.replace(",S,20.0,50.0,125.0", ",S,20.0,50.0"), Code.OWNER);
+		assertRejected(saved.replace(",S,20.0,50.0,125.0", ",S,20.0,50.0,0.0"), Code.GRAMMAR);
+		assertRejected(saved.replace(",A,12.0,44.0", ",S,12.0,44.0"), Code.OWNER);
+		assertRejected(saved.replace("geocedgControlLayout=\"2|",
+				"geocedgControlLayout=\"1|").replace(",S,20.0,50.0,125.0", ",S,20.0,50.0"),
+				Code.OWNER);
 		construction().processXML(saved, false, null);
 		assertEquals(fixed, layout().panel(fixed.id()));
 		assertEquals(world, layout().panel(world.id()));
 		assertEquals(first.id(), layout().slot(lookup("s")).id());
 		assertEquals(last.id(), layout().slot(lookup("i")).id());
+		GeoNumeric restored = (GeoNumeric) lookup("m");
+		assertEquals(canvasSlot.id(), layout().slot(restored).id());
+		assertEquals(125, layout().slot(restored).sliderWidth());
+		assertEquals(3.25, restored.getRealWorldLocX());
+		assertEquals(4, restored.getSliderWidth());
+		assertFalse(restored.isAbsoluteScreenLocActive());
+		assertSame(lookup("s"), restored.getIntervalMaxObject());
+		assertTrue(lookup("t").isGeoAngle());
+		assertEquals(angleSlot.id(), layout().slot(lookup("t")).id());
 		assertNotSame(slider, lookup("s"));
 		assertNull(layout().slot(slider));
 		assertSame(lookup("s"), ((GeoInputBox) lookup("i")).getLinkedGeo());
 		assertEquals(70, ((AbsoluteScreenLocateable) lookup("s")).getAbsoluteScreenLocX());
 		assertEquals(210, ((AbsoluteScreenLocateable) lookup("i")).getAbsoluteScreenLocY());
-		assertEquals(layout().slots(fixed.id()).size(), 2);
-		assertEquals(layout().slots(world.id()).size(), 2);
+		assertEquals(3, layout().slots(fixed.id()).size());
+		assertEquals(3, layout().slots(world.id()).size());
 	}
 
 	@Test
@@ -78,7 +104,7 @@ class ControlLayoutXmlTest extends BaseUnitTest {
 		assertSame(slider, lookup("s"));
 
 		assertRejected(saved.replace("geocedgControlLayout=\"1|",
-				"geocedgControlLayout=\"2|"), Code.VERSION);
+				"geocedgControlLayout=\"3|"), Code.VERSION);
 		assertRejected(saved.replace(",S,4.0,6.0", ",S,NaN,6.0"), Code.GRAMMAR);
 		assertRejected(saved.replace(",S,4.0,6.0", ",S,1e999,6.0"), Code.GRAMMAR);
 		assertRejected(saved.replace(",S,4.0,6.0", ",B,4.0,6.0"), Code.OWNER);
@@ -118,6 +144,12 @@ class ControlLayoutXmlTest extends BaseUnitTest {
 				() -> layout().addPanel(Anchor.FIXED, 0, 0, 300, 250, true)).code());
 		assertEquals(Code.GRAMMAR, assertThrows(ControlLayoutException.class,
 				() -> layout().addSlot(panel.id(), slider, Double.NaN, 0)).code());
+		var angle = (GeoNumeric) control("t=Slider(0,6,0.1,1,100,true)", 50, 120);
+		angle.removeViews3D();
+		angle.setSliderFixed(true);
+		assertFalse(layout().isEligible(angle));
+		angle.setSliderFixed(false);
+		assertTrue(layout().isEligible(angle));
 		slider.addView(org.geogebra.common.main.App.VIEW_EUCLIDIAN2);
 		assertFalse(layout().isEligible(slider));
 		assertEquals(Code.OWNER, assertThrows(ControlLayoutException.class,

@@ -115,8 +115,63 @@ class Cu8ControlLayoutClassicTest {
 			assertEquals(GeoElement.LABEL_NAME_VALUE, named(reopened, "n").getLabelMode());
 			assertRegistry(reopened, source);
 			assertControls(reopened, 4);
+			assertCanvasControlsRoundTrip();
 			return null;
 		});
+	}
+
+	private void assertCanvasControlsRoundTrip() throws Exception {
+		Path original = PreG9BR6PlusD1LegacyFingerprints.findRepositoryRoot()
+				.resolve("models/regression/pre-g9b-cu/original/InterCilConoOblique.cedg");
+		Path copy = Files.copy(original, temporary.resolve("inter-cil-cono-copy.cedg"));
+		AppGeoCeDG source = G9U1TestApp.create();
+		assertTrue(source.loadFile(copy.toFile(), false));
+		GeoNumeric angle = (GeoNumeric) named(source, "α_{cone}");
+		GeoNumeric radius = (GeoNumeric) named(source, "rbCylinder");
+		assertFalse(layout(source).isEligible(angle));
+		angle.setSliderFixed(false);
+		angle.removeViews3D();
+		angle.setVisibleInViewForPlane(false);
+		assertTrue(layout(source).isEligible(angle));
+		assertTrue(layout(source).isEligible(radius));
+		var angleState = sliderState(angle);
+		var radiusState = sliderState(radius);
+		var panel = layout(source).addPanel(Anchor.FIXED, 15, 25, 200, 120, true);
+		var angleSlot = layout(source).addSlot(panel.id(), angle, 10, 45, 118.5);
+		var radiusSlot = layout(source).addSlot(panel.id(), radius, 10, 90, 121);
+		Path archive = temporary.resolve("canvas-controls.cedg");
+		assertTrue(source.saveGeoGebraFile(archive.toFile()));
+		assertTrue(archiveXml(archive).contains(LAYOUT + "=\"2|"));
+
+		AppD classic = classic();
+		assertTrue(classic.loadFile(archive.toFile(), false));
+		GeoNumeric classicAngle = (GeoNumeric) named(classic, "α_{cone}");
+		assertTrue(classicAngle.isGeoAngle());
+		assertEquals(angleState, sliderState(classicAngle));
+		assertEquals(angleSlot.id(), layout(classic).slot(classicAngle).id());
+		assertFalse(classicAngle.isAbsoluteScreenLocActive());
+		var drawable = (DrawSlider) classic.getEuclidianView1().getDrawableFor(classicAngle);
+		assertEquals(classicAngle.getRealWorldLocX(), drawable.getSliderLocation().x);
+		Path saved = temporary.resolve("canvas-controls-classic.cedg");
+		assertTrue(classic.saveGeoGebraFile(saved.toFile()));
+		AppGeoCeDG reopened = G9U1TestApp.create();
+		assertTrue(reopened.loadFile(saved.toFile(), false));
+		GeoNumeric restoredAngle = (GeoNumeric) named(reopened, "α_{cone}");
+		GeoNumeric restoredRadius = (GeoNumeric) named(reopened, "rbCylinder");
+		assertEquals(source.getKernel().getAngleUnit(), reopened.getKernel().getAngleUnit());
+		assertTrue(restoredAngle.isGeoAngle());
+		assertEquals(angleState, sliderState(restoredAngle));
+		assertEquals(radiusState, sliderState(restoredRadius));
+		assertEquals(angleSlot.sliderWidth(), layout(reopened).slot(restoredAngle).sliderWidth());
+		assertEquals(radiusSlot.id(), layout(reopened).slot(restoredRadius).id());
+		assertSame(named(reopened, "rbCone"), restoredRadius.getIntervalMaxObject());
+		assertArrayEquals(Files.readAllBytes(original), Files.readAllBytes(copy));
+	}
+
+	private static List<Double> sliderState(GeoNumeric slider) {
+		return List.of(slider.getValue(), slider.getIntervalMin(), slider.getIntervalMax(),
+				slider.getAnimationStep(), slider.getRealWorldLocX(), slider.getRealWorldLocY(),
+				slider.getSliderWidth());
 	}
 
 	@Test

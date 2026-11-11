@@ -16,6 +16,7 @@ import java.util.Set;
 import org.geocedg.common.document.controls.ControlLayoutException.Code;
 import org.geocedg.common.kernel.spatial.identity.DefaultSpatialTokenSource;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.geos.AbsoluteScreenLocateable;
 import org.geogebra.common.kernel.geos.GeoBoolean;
 import org.geogebra.common.kernel.geos.GeoButton;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -64,17 +65,33 @@ public final class ControlLayout {
 			return new Panel(id, anchor, x, y, width, height, visible, name, rgb, opacity);
 		}
 
+		public Panel withSize(int width, int height) {
+			return new Panel(id, anchor, x, y, width, height, visible, name, rgb, opacity);
+		}
+
 		boolean hasDefaultStyle() {
 			return name.isEmpty() && rgb == DEFAULT_RGB && opacity == DEFAULT_OPACITY;
 		}
 	}
 
-	public record Slot(String panelId, String id, GeoElement control, double dx, double dy) {
+	public record Slot(String panelId, String id, GeoElement control, double dx, double dy,
+			double sliderWidth) {
+		public Slot(String panelId, String id, GeoElement control, double dx, double dy) {
+			this(panelId, id, control, dx, dy, 0);
+		}
+
 		public Slot {
 			Objects.requireNonNull(panelId);
 			Objects.requireNonNull(id);
 			Objects.requireNonNull(control);
 			requireFinite(dx, dy);
+			if (!Double.isFinite(sliderWidth) || sliderWidth < 0) {
+				throw failure(Code.GRAMMAR, "Invalid presentation slider width");
+			}
+		}
+
+		public Slot withOffset(double dx, double dy) {
+			return new Slot(panelId, id, control, dx, dy, sliderWidth);
 		}
 	}
 
@@ -144,9 +161,18 @@ public final class ControlLayout {
 
 	/** Adds an eligible native control to one panel without modifying its properties. */
 	public Slot addSlot(String panelId, GeoElement control, double dx, double dy) {
+		return addSlot(panelId, control, dx, dy, 0);
+	}
+
+	/** Adds a slot with a fixed logical-pixel width for a canvas-positioned slider. */
+	public Slot addSlot(String panelId, GeoElement control, double dx, double dy,
+			double sliderWidth) {
 		requirePanel(panelId);
-		requireEligible(control);
-		Slot slot = new Slot(panelId, nextId(), control, dx, dy);
+		if (control == null) {
+			throw failure(Code.OWNER, "Slot owner is not an eligible Graphics 1 control");
+		}
+		Slot slot = new Slot(panelId, nextId(), control, dx, dy, sliderWidth);
+		requireSlot(slot);
 		state.addSlot(slot);
 		return slot;
 	}
@@ -158,7 +184,7 @@ public final class ControlLayout {
 				|| !current.id().equals(slot.id())) {
 			throw failure(Code.OWNER, "Slot update needs its original owner and identity");
 		}
-		requireEligible(slot.control());
+		requireSlot(slot);
 		state.byControl.put(slot.control(), slot);
 		state.slotsByPanel.get(slot.panelId()).put(slot.id(), slot);
 	}
@@ -194,13 +220,14 @@ public final class ControlLayout {
 		if (views != null && (views.size() != 1 || views.get(0) != App.VIEW_EUCLIDIAN)) {
 			return false;
 		}
-		if (control instanceof GeoNumeric numeric && control.getGeoClassType() == GeoClass.NUMERIC) {
-			return numeric.isIndependent() && numeric.isAbsoluteScreenLocActive()
+		if (control instanceof GeoNumeric numeric && (control.getGeoClassType() == GeoClass.NUMERIC
+				|| control.getGeoClassType() == GeoClass.ANGLE)) {
+			return numeric.isIndependent()
 					&& numeric.getIntervalMinObject() != null
 					&& numeric.getIntervalMaxObject() != null && staticPoint(numeric.getStartPoint());
 		}
 		if (control instanceof GeoButton button) {
-			return button.isAbsoluteScreenLocActive() && staticPoint(button.getStartPoint());
+			return staticPoint(button.getStartPoint());
 		}
 		return control instanceof GeoBoolean checkbox && checkbox.isIndependent()
 				&& checkbox.getStartPoint() == null;
@@ -216,16 +243,28 @@ public final class ControlLayout {
 		if (control instanceof GeoBoolean) {
 			return "C";
 		}
-		return "S";
+		return control.getGeoClassType() == GeoClass.ANGLE ? "A" : "S";
 	}
 
 	private static boolean staticPoint(GeoPointND point) {
 		return point == null || point.isAbsoluteStartPoint();
 	}
 
-	void requireEligible(GeoElement control) {
+	static boolean requiresVersionTwo(GeoElement control) {
+		return control.getGeoClassType() == GeoClass.ANGLE
+				|| ((control instanceof GeoNumeric || control instanceof GeoButton)
+				&& !((AbsoluteScreenLocateable) control).isAbsoluteScreenLocActive());
+	}
+
+	void requireSlot(Slot slot) {
+		GeoElement control = slot.control();
 		if (!isEligible(control)) {
 			throw failure(Code.OWNER, "Slot owner is not an eligible Graphics 1 control");
+		}
+		boolean canvasSlider = control instanceof GeoNumeric slider
+				&& !slider.isAbsoluteScreenLocActive();
+		if (canvasSlider != (slot.sliderWidth() > 0)) {
+			throw failure(Code.OWNER, "Presentation width requires a canvas-positioned slider");
 		}
 	}
 

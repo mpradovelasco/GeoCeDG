@@ -221,6 +221,11 @@ public final class DrawBoolean extends Drawable {
 		return rect.intersects(labelRectangle);
 	}
 
+	/** Returns the checkbox and caption footprint for panel placement. */
+	public GRectangle getControlLayoutBounds() {
+		return labelRectangle;
+	}
+
 	/**
 	 * Returns false
 	 */

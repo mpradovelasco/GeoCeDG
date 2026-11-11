@@ -2324,12 +2324,19 @@ programa de CAD las muestra ocultas (sección 11.8).
 Disposición de controles**. Cree un panel. Con el gestor abierto, arrastre el
 encabezado para moverlo, el tirador inferior derecho para cambiar su
 tamaño o un miembro para recolocarlo dentro del panel. Con el panel
-elegido, pulse primero un control suelto en Gráficos 1 y luego **Añadir
-control**. Puede añadir deslizadores numéricos, botones, casillas
-independientes y campos de entrada con posición absoluta y disponibles en
-esa vista. Un control pertenece a un solo panel. Use **Separar control**
-para devolverlo a la vista como control suelto. Si queda fuera de la vista,
-elija entre colocarlo en ella y recuperar su posición de respaldo.
+elegido, pulse un control suelto en Gráficos 1 y luego **Añadir
+control**. Pulse dentro del panel para elegir dónde colocarlo o use
+**Confirmar colocación** para aceptar la previsualización. Escape cancela.
+Si hace falta espacio, el panel crece para alojar el control.
+
+Puede añadir deslizadores numéricos y angulares independientes, botones,
+casillas independientes y campos de entrada. Los controles deben estar
+desbloqueados, asignados solo a Gráficos 1 y libres de grupos y anclas a
+otros objetos. Los deslizadores, botones y campos situados en el lienzo
+pueden incorporarse directamente. **Separar control** devuelve esos
+controles a su posición original del lienzo. Para un control absoluto
+que quede fuera de la vista, elija una posición visible o recupere el
+respaldo. El segundo selector del gestor muestra los miembros ya añadidos.
 
 | Opción del gestor | Qué hace |
 | --- | --- |

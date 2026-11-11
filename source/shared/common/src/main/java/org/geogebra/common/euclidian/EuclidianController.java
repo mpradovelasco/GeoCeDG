@@ -5963,15 +5963,18 @@ public abstract class EuclidianController implements SpecialPointsListener {
 			boolean click) {
 		double min = movedSlider.getIntervalMin();
 		double max = movedSlider.getIntervalMax();
+		double panelWidth = view.getControlLayoutSliderWidth(movedSlider);
+		boolean screen = movedSlider.isAbsoluteScreenLocActive() || panelWidth > 0;
+		double width = panelWidth > 0 ? panelWidth : movedSlider.getSliderWidth();
 		double param;
 		if (movedSlider.isSliderHorizontal()) {
-			if (movedSlider.isAbsoluteScreenLocActive()) {
+			if (screen) {
 				param = mouseLoc.x - getStartPointX();
 			} else {
 				param = xRW - getStartPointX();
 			}
 		} else {
-			if (movedSlider.isAbsoluteScreenLocActive()) {
+			if (screen) {
 				param = getStartPointY() - mouseLoc.y;
 			} else {
 				param = yRW - getStartPointY();
@@ -5979,8 +5982,8 @@ public abstract class EuclidianController implements SpecialPointsListener {
 		}
 
 		// make sure we don't show eg 5.2 for slider <-5,5> in the hit threshold
-		param = Math.max(0, Math.min(movedSlider.getSliderWidth(), param));
-		param = param * (max - min) / movedSlider.getSliderWidth();
+		param = Math.max(0, Math.min(width, param));
+		param = param * (max - min) / width;
 
 		// round to animation step scale
 		param = Kernel.roundToScale(param, movedSlider.getAnimationStep());

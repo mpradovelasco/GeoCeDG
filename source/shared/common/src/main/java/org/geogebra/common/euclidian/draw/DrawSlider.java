@@ -97,13 +97,14 @@ public class DrawSlider extends Drawable {
 			double widthScreen;
 			boolean horizontal = number.isSliderHorizontal();
 			GPoint2D location = getSliderLocation();
+			double panelWidth = view.getControlLayoutSliderWidth(number);
 			// start point of horizontal line for slider
-			if (number.isAbsoluteScreenLocActive()) {
+			if (number.isAbsoluteScreenLocActive() || panelWidth > 0) {
 				coordsScreen[0] = location.x;
 				coordsScreen[1] = location.y;
 				coordsRW[0] = view.toRealWorldCoordX(coordsScreen[0]);
 				coordsRW[1] = view.toRealWorldCoordY(coordsScreen[1]);
-				widthScreen = number.getSliderWidth();
+				widthScreen = panelWidth > 0 ? panelWidth : number.getSliderWidth();
 				widthRW = horizontal ? widthScreen * view.getInvXscale()
 						: widthScreen * view.getInvYscale();
 			} else {
@@ -301,6 +302,7 @@ public class DrawSlider extends Drawable {
 	@Override
 	final public GRectangle getBounds() {
 		if (!geo.isDefined() || ((GeoNumeric) geo).isAbsoluteScreenLocActive()
+				|| view.getControlLayoutSliderWidth(number) > 0
 				|| !geo.isEuclidianVisible() || line == null) {
 			return null;
 		}
@@ -313,6 +315,19 @@ public class DrawSlider extends Drawable {
 			return null;
 		}
 		return line.getBounds();
+	}
+
+	/** Returns the track, knob clearance and measured label used for panel placement. */
+	public GRectangle getControlLayoutBounds() {
+		GRectangle bounds = line.getBounds();
+		int padding = Math.max(diameter, lineThickness);
+		bounds.setRect(bounds.getX() - padding, bounds.getY() - padding,
+				bounds.getWidth() + 2 * padding, bounds.getHeight() + 2 * padding);
+		if (labelVisible) {
+			drawLabel(view.getTempGraphics2D(view.getFontPoint()));
+			bounds = bounds.union(labelRectangle);
+		}
+		return bounds;
 	}
 
 	@Override

@@ -7,6 +7,10 @@ la elegibilidad, las operaciones y sus invariantes.
 [Cierre autoral](../../../docs/validation/pre_g9b_cu8_i_closeout_record.md) ·
 [CU8-D, §2 y §5](../../../docs/architecture/pre_g9b_cu8_d_control_containers_candidate.md).
 
+La [revisión focal de incorporación](control-layout-r3.md) amplía este
+contrato. Los archivos que solo usan el formato v1 mantienen su lectura
+y escritura históricas.
+
 La composición, el desacoplamiento, la apariencia, la extensión de
 archivo y el contexto del miembro accesible se rigen por
 [CU8-I-R1 y R2](control-layout-r1.md). El alcance admite paneles fijos

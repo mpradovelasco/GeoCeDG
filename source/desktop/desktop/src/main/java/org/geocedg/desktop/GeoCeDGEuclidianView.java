@@ -23,6 +23,7 @@ import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.Hits;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.main.App;
 import org.geogebra.common.main.settings.EuclidianSettings;
@@ -47,7 +48,7 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 							.invalidateNavigationCursorContext();
 				}
 				if (controlLayout != null) {
-					controlLayout.cancelGesture();
+					controlLayout.cancelDrag();
 				}
 			}
 		});
@@ -71,6 +72,12 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 	public GPoint2D getControlLayoutPosition(GeoElement geo) {
 		var workspace = controlLayoutWorkspace();
 		return workspace == null ? null : workspace.position(geo);
+	}
+
+	@Override
+	public double getControlLayoutSliderWidth(GeoNumeric slider) {
+		var workspace = controlLayoutWorkspace();
+		return workspace == null ? 0 : workspace.sliderWidth(slider);
 	}
 
 	@Override

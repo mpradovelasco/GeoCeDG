@@ -2217,11 +2217,18 @@ writes those layers as off, so that a CAD program shows them hidden
 Control layout**. Create a panel. With the manager open, drag the header to
 move the panel, the lower-right handle to resize it, or a member to move
 it inside the panel. With the panel selected in the manager, click a loose control in
-Graphics 1, then choose **Attach control**. Eligible controls include numeric sliders, buttons, independent
-check boxes and input boxes with absolute positions in that view. A
-control can belong to one panel. Use **Detach control** to return it to
-the view as a loose control. If it falls outside the view, choose to place
-it in view or keep its backup position.
+Graphics 1, then choose **Attach control**. Click inside the panel to
+choose a position or select **Confirm placement** to accept the preview.
+Escape cancels. The panel grows if the control needs more room.
+
+Eligible controls include independent numeric and angular sliders,
+buttons, independent check boxes and input boxes. They need unlocked
+positions and exclusive assignment to Graphics 1, with no groups or
+anchors to other objects. You can attach canvas-positioned sliders,
+buttons and input boxes directly. **Detach control** restores their
+original canvas positions. For an absolute control outside the view,
+choose a visible position or keep its backup. The second selector in
+the manager lists controls that already belong to the panel.
 
 | Manager option | What it does |
 | --- | --- |

@@ -742,6 +742,10 @@ public final class GeoCeDGEuclidianController
 
 	@Override
 	public void wrapMouseMoved(AbstractEvent event) {
+		var workspace = controlLayoutWorkspace();
+		if (workspace != null && workspace.movePlacement(event)) {
+			return;
+		}
 		super.wrapMouseMoved(event);
 		if (!isTextfieldHasFocus()) {
 			markNavigationCursorCurrent(event);
