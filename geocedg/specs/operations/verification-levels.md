@@ -37,6 +37,14 @@ status, deterministic result identity or receipt reuse. A compatible run is
 matched by its portable contract together with the exact Git objects, plan,
 checker, command and consumed-input identities; no historical path fingerprint
 is a prerequisite.
+
+Before freezing a candidate for a future `FINAL` campaign, review the
+verification catalogs and derived inventories and bring them up to date.
+Complete `INFRA_UNIT` and `STATIC` successfully before freezing the candidate.
+Where applicable, also complete `WORKSTATION` and `FINAL -PlanOnly`
+successfully during this preparation. This prospective rule takes effect after
+`PRE-G9B-CU10`.
+
 `FINAL` executes each required pure leaf at most once, preserves all evidence,
 emits one typed report and may issue a receipt only for an immutable candidate
 with complete trusted coverage and accepted semantic/safety/core contracts.

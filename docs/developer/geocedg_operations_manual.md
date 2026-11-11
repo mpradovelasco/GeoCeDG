@@ -324,6 +324,26 @@ approval status. See
 [`task-template.prompt.md`](../../.github/prompts/tasks/task-template.prompt.md)
 for the full rule.
 
+### Prepare a FINAL candidate
+
+Before freezing a candidate for a future `FINAL` campaign, review the
+verification catalogs and derived inventories and bring them up to date. Run
+`INFRA_UNIT` and `STATIC` successfully. Where applicable, also complete
+`WORKSTATION` and `FINAL -PlanOnly` successfully before freezing the candidate.
+Use the canonical verifier from the repository root.
+
+```powershell
+.\tools\agent\verify.ps1 -Profile INFRA_UNIT
+.\tools\agent\verify.ps1 -Profile STATIC
+
+# When applicable
+.\tools\agent\verify.ps1 -Profile WORKSTATION
+.\tools\agent\verify.ps1 -Profile FINAL -PlanOnly
+```
+
+The prospective preparation rule takes effect after `PRE-G9B-CU10`.
+See the [verification profiles contract](../../geocedg/specs/operations/verification-levels.md#current-contract).
+
 ## 4. Package and install for internal evaluation
 
 Development execution remains `runGeoCeDG`; it recompiles/runs from the

@@ -1,8 +1,10 @@
 # PRE-G9B-CU10 — Expediente integrado
 
-11 de noviembre de 2026. Candidato local con verificación completa y
-cierre global detenido por el resultado de `FINAL`.
-`selfApproved=false`. `AUTHOR SMOKE = PENDING`.
+11 de noviembre de 2026. Evidencia del candidato técnico original de CU10.
+La puerta técnica de `FINAL` sigue incumplida. El autor aprobó el cierre por
+excepción expresa y dispensó toda nueva campaña. `selfApproved=false`.
+`AUTHOR SMOKE = PENDING`.
+[Registro de cierre excepcional](pre_g9b_cu10_closeout_record.md).
 
 ## Identidad y alcance
 
@@ -23,10 +25,10 @@ identifica los barridos, las entradas y los límites de su evidencia. El
 revisión científica y editorial en el repositorio de producto.
 
 La identidad exacta de la ejecución es la del informe tipado de `FINAL`.
-El informe posterior a la campaña consignará commit y árbol, identidad del
-recibo, dictamen y evidencias operativas. Los resultados de un commit
-pertenecen a su árbol. Un eventual descendiente documental conserva esa
-atribución.
+El informe posterior a la campaña consigna commit y árbol, ausencia de
+recibo, dictamen y evidencias operativas. Los resultados pertenecen al árbol
+ejecutado. El descendiente documental `9f97e089e9c791aa938277282df72406e415b285`
+conserva esa atribución.
 
 ## Puertas técnicas
 
@@ -60,7 +62,7 @@ atribución.
 
 ## Resultado de la campaña integrada
 
-**Cierre global detenido.** El único `FINAL` terminó con código **3** y
+**Puerta técnica incumplida.** El único `FINAL` terminó con código **3** y
 resultado `REJECTED_VERIFICATION_CORE / COMPLETE`. El candidato integrado es
 `20ae57aa484fc0d60c65de76a23151d4d2a758c1`, árbol
 `0c0516bbb0f507125683a82433277b10f823346a`. El informe de esta disposición
@@ -107,12 +109,13 @@ exactamente una proyección JUnit obsoleta. Este resultado tiene cobertura
 `COMPLETE` y dos hojas `CONTRACT_VIOLATED`.
 [Contrato y rutas de reparación](../../geocedg/specs/operations/verification-levels.md#11-verification-input-identities-and-evidence-preserving-repair).
 
-La decisión pendiente es autorizar una corrección acotada del verificador.
-El alcance propuesto comprende las tres expectativas citadas, la huella
-canónica de entrada y la huella del catálogo estático que registra la
-autoridad ejecutable. La revisión focal debe cotejar `INFRA_UNIT` y
-`STATIC` antes de congelar otro commit y autorizar su propia campaña
-`FINAL`. La campaña registrada de CU10 queda preservada con su veredicto.
+La decisión autoral posterior autorizó las tres expectativas citadas y las
+actualizaciones de huellas de `workspace.profile-authority` y del catálogo
+estático en el registro. Una autorización adicional cubrió la huella del
+generador Windows en `packaging.source-authority`. Las correcciones quedan
+aplicadas en el commit de cierre y sin reverificación por dispensa expresa.
+El resultado histórico conserva su veredicto y sus dos fallos.
+[Registro de cierre excepcional](pre_g9b_cu10_closeout_record.md).
 
 ## Distribución Windows
 
@@ -155,10 +158,10 @@ se inspeccionó el MSI integrado en cada EXE.
 `file_association.description` dice `GeoCeDG document (internal evaluation)`.
 El perfil NC y los MSI independiente e integrado usan `GeoCeDG document`.
 La discrepancia se encuentra también en un manifiesto NC histórico. El
-verificador valida la asociación real y omite la comparación de ese campo
-informativo. La propuesta de reparación es escribir
-`$SelectedAssociationDescription` en el manifiesto y comprobar su valor
-contra el perfil seleccionado. Se registra después de la congelación.
+verificador validó la asociación real y omitió la comparación de ese campo
+informativo. El commit de cierre aplica `$SelectedAssociationDescription`
+al campo del generador. Los artefactos previos conservan su evidencia y el
+generador corregido queda sin ejecución posterior.
 [Prueba del campo](../../artifacts/pre-g9b-cu10/operational-evidence/nc-association-discrepancy.json) ·
 [Contrato NC](../licensing/geocedg_profile_nc.md).
 
@@ -203,7 +206,7 @@ inequívoco. Los tres blobs de `CLAUDE.md` coinciden con Git.
 [Inventario](../../artifacts/pre-g9b-cu10/cleanup/inventory.json) ·
 [Sesiones](../../artifacts/pre-g9b-cu10/cleanup/sessions.json).
 
-La última consulta de GitHub confirmó el baseline `b6a86bf0` en `main`,
+La consulta de GitHub de la campaña confirmó el baseline `b6a86bf0` en `main`,
 igual a `main` y `origin/main` locales. Las decisiones de promoción,
 etiqueta y release quedan reservadas al autor.
 [Lectura remota](../../artifacts/pre-g9b-cu10/final-origin-main.tsv).
@@ -250,31 +253,16 @@ de los modelos y guardar los resultados en una ubicación de prueba.
 
 ## Versión, etiqueta y decisiones
 
-Se propone mantener `1.1.0` con fecha `2026-10-15`, el valor vivo de
-`packaging/windows/package.yml`, para preservar la identidad del producto
-durante la revisión. Una versión nueva cambiaría entradas de compilación y
-empaquetado y necesitaría su propia identidad técnica.
+El autor conserva `1.1.0` con fecha `2026-10-15`, acepta la evidencia
+dentro de sus límites demostrados, recibe E1 para una futura fase editorial
+y cierra CU10 y el minitrack mediante la excepción expresa a `FINAL`.
+El smoke autoral sigue pendiente de comunicación. La promoción exacta a
+`main`, las etiquetas, el release y el trabajo editorial requieren
+autorizaciones propias.
+[Registro de cierre](pre_g9b_cu10_closeout_record.md) ·
+[AGENTS.md §8.1](../../AGENTS.md#81-geocedg-publication-policy).
 
-Se propone una etiqueta anotada nueva e inmutable
-`geocedg-pre-g9b-cu-pass` para la revisión exacta autorizada, con versión,
-commit, árbol y referencia al recibo en la anotación. Su destino y creación
-requieren autorización expresa. Si se autoriza promover a `main`, aplicar
-[AGENTS.md §8.1](../../AGENTS.md#81-geocedg-publication-policy), con lecturas
-de la referencia viva, comprobación de ascendencia, limpieza y
-fast-forward, más cotejo de las tres referencias tras la publicación.
-
-Quedan reservadas al autor diez decisiones independientes.
-
-1. Aceptación del resultado integrado sobre el SHA indicado.
-2. Aceptación de las limitaciones pendientes de disposición autoral.
-3. Aprobación del expediente científico-editorial E1.
-4. Confirmación del smoke autoral.
-5. Versión final.
-6. Cierre del minitrack.
-7. Publicación del candidato exacto en `main`.
-8. Creación de la etiqueta anotada.
-9. Eventual release de binarios con perfil, composición y evidencia legal aprobados.
-10. Eventual reactivación editorial de `geocedg_book`.
+Clasificación del expediente en el candidato técnico original.
 
 ```text
 VERIFICATION_CLASS = GLOBAL_IMPACT

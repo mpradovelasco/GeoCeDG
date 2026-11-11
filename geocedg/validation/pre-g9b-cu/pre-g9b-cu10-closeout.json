@@ -1,0 +1,206 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_cu10_closeout_record.md",
+  "authorApprovalDate": "2026-11-11",
+  "selfApproved": false,
+  "authority": {
+    "source": "human author in the current work session",
+    "instruction": "GeoCeDG — PRE-G9B-CU10 / Decisión autoral extraordinaria: corrección focal y cierre sin nueva campaña",
+    "scope": "PRE-G9B-CU10_ONLY",
+    "directPublicationAuthorized": false
+  },
+  "decision": {
+    "AUTHOR_DECISION": "APPROVE_AND_CLOSE",
+    "EXPLICIT_FINAL_VERIFICATION_EXCEPTION": "AUTHORIZED",
+    "FINAL_HISTORICAL_RESULT": "REJECTED_VERIFICATION_CORE / COMPLETE",
+    "FINAL_HISTORICAL_CHECKS": "39/41",
+    "FINAL_ACCEPTANCE_RECEIPT": "NONE",
+    "NEW_VERIFICATION_CAMPAIGN": "NOT EXECUTED — AUTHOR DECISION",
+    "PRODUCT_SEMANTICS_CHANGED": false,
+    "SCIENTIFIC_ALGORITHMS_CHANGED": false,
+    "SOURCE_CORRECTIONS_POST_FINAL": "NOT REVERIFIED"
+  },
+  "identities": {
+    "publishedBaseline": {
+      "remote": "https://github.com/mpradovelasco/GeoCeDG",
+      "ref": "refs/heads/main",
+      "commit": "b6a86bf00dfb691c82e6009dfed1a9a0c20a865a",
+      "tree": "8ebaeb3a545a7bdb435f72ea966fcd7f89594888"
+    },
+    "technicalCandidate": {
+      "commit": "20ae57aa484fc0d60c65de76a23151d4d2a758c1",
+      "tree": "0c0516bbb0f507125683a82433277b10f823346a"
+    },
+    "historicalDocumentaryDescendant": {
+      "commit": "9f97e089e9c791aa938277282df72406e415b285",
+      "tree": "eb5f8121ff5f0e673eed7ec9e95254e6e80ab9b4",
+      "parent": "20ae57aa484fc0d60c65de76a23151d4d2a758c1"
+    },
+    "documentaryCloseout": {
+      "branch": "codex/pre-g9b-cu10-integrated-closeout",
+      "parent": "9f97e089e9c791aa938277282df72406e415b285",
+      "commitIdentity": "commit containing this record",
+      "treeIdentity": "tree of the commit containing this record"
+    }
+  },
+  "phase": {
+    "id": "PRE-G9B-CU10",
+    "status": "PASS — AUTHOR APPROVED WITH EXPLICIT FINAL VERIFICATION EXCEPTION",
+    "authorApproved": true,
+    "technicalFinalGateSatisfied": false,
+    "closureRoute": "AUTHOR_GOVERNANCE_EXCEPTION",
+    "section113Reconciliation": "NOT APPLICABLE",
+    "automatedCloseoutReceiptRequirement": "UNSATISFIED"
+  },
+  "minitrack": {
+    "id": "PRE-G9B-CU",
+    "status": "CLOSED — AUTHOR APPROVED WITH EXPLICIT FINAL VERIFICATION EXCEPTION",
+    "priorPhaseLimitsRetained": "CU1–CU9",
+    "commitmentsAndDebt": "docs/validation/pre_g9b_cu10_commitments_and_debt.md"
+  },
+  "verificationTraceability": {
+    "integratedEvidence": "docs/validation/pre_g9b_cu10_integrated_candidate.md",
+    "historicalFinal": {
+      "profile": "FINAL",
+      "candidateCommit": "20ae57aa484fc0d60c65de76a23151d4d2a758c1",
+      "candidateTree": "0c0516bbb0f507125683a82433277b10f823346a",
+      "report": "artifacts/pre-g9b-cu10/final/verification-result.json",
+      "journal": "artifacts/pre-g9b-cu10/final/run-journal.json",
+      "runId": "verification-79db5599d9304094b2020b308b836507",
+      "resultHash": "0d6e21c86d31b3cae29967f03235e70f538ac22d3ec76a9e5193a5c4ba01a915",
+      "reportFileSha256": "3902e0f5538633f099e0a7c80a05626a39780f396fcaf2df017e8180f0f64ed8",
+      "planSha256": "3d8752b91eb96bffa3cfae1d6f54378ccfa34451642d0172f1cdb73f01743517",
+      "exitCode": 3,
+      "acceptance": "REJECTED_VERIFICATION_CORE",
+      "coverage": "COMPLETE",
+      "acceptanceSatisfied": 39,
+      "acceptanceTotal": 41,
+      "semanticSatisfied": 15,
+      "semanticTotal": 15,
+      "safetySatisfied": 4,
+      "safetyTotal": 4,
+      "verificationCoreSatisfied": 20,
+      "verificationCoreTotal": 22,
+      "producersSucceeded": 17,
+      "producerTotal": 17,
+      "violatedChecks": ["infra.final-coverage", "infra.static-semantic"],
+      "acceptanceReceipt": null
+    },
+    "historicalDocumentaryStatic": {
+      "profile": "STATIC",
+      "candidateCommit": "9f97e089e9c791aa938277282df72406e415b285",
+      "candidateTree": "eb5f8121ff5f0e673eed7ec9e95254e6e80ab9b4",
+      "report": "artifacts/pre-g9b-cu10/documentary-static/verification-result.json",
+      "runId": "verification-2bb3696230a54dbb8f84e1d0e2185776",
+      "resultHash": "e3cc86cc48459d5d483e016be59ff3327a8ef3cc06785e33572e58b7f558f480",
+      "acceptance": "ACCEPTED",
+      "coverage": "COMPLETE",
+      "acceptanceSatisfied": 3,
+      "acceptanceTotal": 3
+    },
+    "postFinalCorrections": {
+      "status": "NOT REVERIFIED",
+      "finalCoverageExpectations": {
+        "path": "tools/agent/tests/verification-final-coverage.Tests.ps1",
+        "junitSelections": { "previous": 85, "current": 92 },
+        "phaseRecords": { "previous": 82, "current": 87 },
+        "pre-g9b-r6-plus-f4-a.desktop": { "previous": 159, "current": 161 }
+      },
+      "staticCatalog": {
+        "path": "geocedg/specs/operations/verification-static-contracts.json",
+        "contract": "workspace.profile-authority",
+        "input": "tools/agent/workspace-profile-validation.ps1",
+        "previousCanonicalSha256": "5dfcf28c7caaebe56d55bc038c648ddd0c9cc6277912d86f7ee2456b6d6f944d",
+        "currentCanonicalSha256": "ff6773feee8c47e8c2c3a1945d2d73b38c1b19c1b65cc4cceb7e3f7062ce974e",
+        "registryWithUpdatedCatalogPin": "geocedg/specs/operations/verification-registry.json",
+        "previousCatalogSha256": "ff7c73d79ffdc277b0495bfb0652e3848202349d66a49e870813c5901b574cb9",
+        "currentCatalogSha256": "80a9e303b2193c2665458526d372f73ae64120e80b49ba9adaafd0851a9622e3",
+        "additionalAuthorAuthorizedInput": {
+          "contract": "packaging.source-authority",
+          "input": "tools/release/build-windows-package.ps1",
+          "previousCanonicalSha256": "b103d2615781ade8aebfd3ae39e5460c3d2dc2609a5da217ac9e0aefdcbb5cd4",
+          "currentCanonicalSha256": "028198be5e6806c3bfae65ae432dfed9ff7eb80b01db1f2567d9d9e880a0d4a6"
+        }
+      },
+      "packageManifest": {
+        "path": "tools/release/build-windows-package.ps1",
+        "field": "file_association.description",
+        "previousSource": "$profile.file_association.description",
+        "currentSource": "$SelectedAssociationDescription"
+      }
+    }
+  },
+  "packaging": {
+    "version": "1.1.0",
+    "versionDate": "2026-10-15",
+    "historicalArtifacts": {
+      "candidateCommit": "20ae57aa484fc0d60c65de76a23151d4d2a758c1",
+      "candidateTree": "0c0516bbb0f507125683a82433277b10f823346a",
+      "formats": ["app-image", "ZIP", "MSI", "EXE"],
+      "INTERNAL": {
+        "report": "artifacts/pre-g9b-cu10/verify-packaging-internal/verification-result.json",
+        "runId": "verification-a2a7bf928670497d8f18ca1eeed3e4ce",
+        "resultHash": "4309b784e1100e6e00efbbd1eb15f4c77471ff54bd69daa1ce54e9871cd66cec",
+        "result": "ACCEPTED / COMPLETE",
+        "checks": "3/3",
+        "associationDescription": "GeoCeDG document (internal evaluation)"
+      },
+      "NC": {
+        "report": "artifacts/pre-g9b-cu10/verify-packaging-nc/verification-result.json",
+        "runId": "verification-39cd511f7818473a85997b6ee0e9eaef",
+        "resultHash": "230f27fd24144c964b35e811c0ab15d77f574a447fc2a90ec4c79ddb08b3cbe2",
+        "result": "ACCEPTED / COMPLETE",
+        "checks": "3/3",
+        "manifestAssociationDescription": "GeoCeDG document (internal evaluation)",
+        "installerAssociationDescription": "GeoCeDG document"
+      },
+      "COMMERCIAL": {
+        "state": "FAIL_CLOSED_BEFORE_GENERATION",
+        "exitCode": 1,
+        "log": "artifacts/pre-g9b-cu10/commercial-denial-confirmed.log"
+      },
+      "successfulIsolatedInstallAndUninstallPairs": 4,
+      "associationExtension": ".cedg",
+      "ggbAssociationObserved": false
+    },
+    "artifactsRegenerated": false,
+    "correctedGeneratorExecuted": false
+  },
+  "evidenceLimits": {
+    "modelEvidence": "docs/validation/pre_g9b_cu10_model_validation.md",
+    "phaseJUnitExecutionsAccepted": 792,
+    "cu4InheritedProfileFailuresPreserved": 14,
+    "cu4IsolatedProfileCasesPassedOnSameTree": 14,
+    "cu4ExactProfileCauseResolved": false,
+    "agentSmokeProtocol": "artifacts/pre-g9b-cu10/operational-evidence/desktop-smoke/protocol.md",
+    "agentSmokeScreenshots": 21,
+    "agentReferenceMemoryCtrlClick": "PENDING",
+    "authorSmoke": "PENDING",
+    "worktreeCleanup": "PARTIAL"
+  },
+  "futureFinalPreparation": {
+    "beforeCandidateFreeze": true,
+    "requiredSuccessfulProfiles": ["INFRA_UNIT", "STATIC"],
+    "whenApplicable": ["WORKSTATION", "PlanOnly"],
+    "reviewCatalogAndDerivedInventoryFreshness": true,
+    "manual": "docs/developer/geocedg_operations_manual.md",
+    "procedure": "geocedg/specs/operations/verification-levels.md",
+    "taskTemplate": ".github/prompts/tasks/task-template.prompt.md"
+  },
+  "handoff": {
+    "id": "E1",
+    "dossier": "SCIENTIFIC_METHODS_EDITORIAL_HANDOFF",
+    "path": "docs/validation/SCIENTIFIC_METHODS_EDITORIAL_HANDOFF.md",
+    "status": "RECEIVED_FOR_NEXT_EDITORIAL_PHASE",
+    "cataloguedMethods": 62,
+    "bookEditsAuthorized": false
+  },
+  "publication": {
+    "status": "PENDING EXACT-COMMIT AUTHORIZATION",
+    "target": "refs/heads/main",
+    "policy": "AGENTS.md#81-geocedg-publication-policy",
+    "commitIdentity": "commit containing this record"
+  }
+}

@@ -1,10 +1,13 @@
 # PRE-G9B-CU10 · Matriz de compromisos y registro de deudas
 
-Conciliación CU10-A y CU10-E para revisión autoral. La base examinada es
+Conciliación CU10-A y CU10-E, con disposición de cierre autoral excepcional.
+La base examinada es
 `b6a86bf00dfb691c82e6009dfed1a9a0c20a865a`, árbol `8ebaeb3a545a7bdb435f72ea966fcd7f89594888`.
 Las decisiones se atribuyen a su alcance y fecha. Las campañas anteriores conservan sus
 identidades y veredictos. Los resultados de la campaña integrada se atribuyen en el informe
-principal de CU10. `selfApproved=false`.
+principal de CU10. Las limitaciones aceptadas de CU1–CU9 conservan su
+disposición. `selfApproved=false`.
+[Registro de cierre de CU10](pre_g9b_cu10_closeout_record.md).
 
 La conciliación se apoya en el [plan consolidado §§2–7](../architecture/pre_g9b_cu_corrective_usability_plan.md),
 [roadmap vigente](../roadmap/geocedg_roadmap.md), registros autorales enlazados y
@@ -122,6 +125,8 @@ Markdown y 17 PNG del JAR. El cotejo de CU10 anterior es estático y queda atrib
 fuentes. `CU10-GUIDE-INTEGRATION-CHECK` requiere la evidencia del árbol final y del
 paquete de CU10. El valor histórico `CANDIDATE` en `status` del inventario conserva
 su contexto. La adopción se acredita en el registro autoral de CU9.
+El expediente integrado de CU10 añade la auditoría fuente, los recursos
+empaquetados, las pruebas Desktop y el smoke sobre el candidato exacto.
 [Guía ES](../user/geocedg_user_guide_es.md) · [guía EN](../user/geocedg_user_guide_en.md) ·
 [matriz](../../geocedg/validation/pre-g9b-cu/guide-coverage-matrix.json) ·
 [figuras](../user/images/figures.json) · [cierre y resultados CU9](pre_g9b_cu9_closeout_record.md).
@@ -177,7 +182,7 @@ Esta asignación documental carece de efecto ejecutivo.
 | `OBS-CU4-ANGLE-PREFERENCES-REFRESH` | [CU4](pre_g9b_cu4_closeout_record.md#obs-cu4-angle-preferences-refresh), Desktop, fase por determinar | **D** abierta, no bloqueante y prioritaria cuando se autorice la siguiente actuación. El selector existente puede quedar desfasado tras abrir otro modo angular; el kernel carga el valor del archivo. |
 | F3, instantánea Undo con macros | [CU4-R1](pre_g9b_cu4_r1_candidate_report.md) y [CU4 cierre](pre_g9b_cu4_closeout_record.md#límites-y-publicación), inserción/persistencia | **L**. La instantánea de `InterCilConoOblique.cedg` puede carecer de las definiciones de macros. La reconstrucción aislada detecta el desacuerdo antes de mutar. |
 | `OBS-CU10-B01-LAYER-PROFILE` | [Campaña CU10-B](pre_g9b_cu10_model_validation.md) y [antecedente C1](../architecture/post_cu4_pre_i3_c1_layer_reconciliation.md), inserción Desktop y serialización interna | **P**. Con el perfil habitual hubo 14 rechazos antes de mutar, nueve con diagnóstico explícito de capa. Los 14 coinciden por identidad y mensaje con casos históricos de CU9. El contrato exige rechazar si la copia de prueba cambia la capa. La interacción exacta entre el catálogo instalado y los escalares sin etiqueta de capa en la copia interna requiere una caracterización propia antes de cambiar persistencia o admisión. |
-| `CU10-NC-ASSOCIATION-DESCRIPTION` | [Expediente CU10](pre_g9b_cu10_integrated_candidate.md#distribución-windows), empaquetado | **P**. El manifiesto NC conserva la descripción interna de la asociación `.cedg`. Los instaladores contienen la descripción NC aprobada. Corrección focal de metadato y comprobación del campo pendientes de disposición. |
+| `CU10-NC-ASSOCIATION-DESCRIPTION` | [Expediente CU10](pre_g9b_cu10_integrated_candidate.md#distribución-windows), empaquetado | **L**. El generador usa la descripción efectiva del perfil en el manifiesto. La corrección fuente queda sin ejecución posterior. El manifiesto NC histórico conserva la descripción interna y los instaladores históricos contienen la descripción NC aprobada. |
 | Infraestructura `FINAL` de CU10 | [Disposición técnica](pre_g9b_cu10_integrated_candidate.md#disposición-técnica-del-rechazo), verificación | **P**. Dos hojas de infraestructura rechazan la campaña por expectativas y una huella heredadas del baseline. La reparación del verificador y la aceptación de otro candidato requieren su propia autorización. |
 | P4, B2 y ARC-01 | [Contrato ordinario](../../geocedg/specs/ui/document-insertion.md) y [cierre experto](post_cu4_expert_insertion_closeout_record.md#adopción-y-límites), futuras familias y oráculos | **L**. B2 se circunscribe a su certificado angular. El arco circular directo admitido en la envoltura experta sigue una decisión independiente de ARC-01/P4 ordinario. Macros fuera de clase, contenido activo, 3D, conversión angular experta y remapeo durable participante son **F**. |
 | `OBS-CU0-CU6-M07-SELECTION-IDENTITY` | CU0 §6 → [CU6-D y cierre conjunto](pre_g9b_cu5_cu6_closeout_record.md#cu6--interacción-presentación-y-persistencia) | **V** para el contrato adoptado: selección vigente por instancia, documento y operandos; nueva selección cuando caduca. La etiqueta se introduce como texto. |
@@ -198,19 +203,18 @@ Esta asignación documental carece de efecto ejecutivo.
 
 | ID o compromiso | Procedencia y destino | Disposición en el expediente |
 |---|---|---|
-| `CU10-GUIDE-INTEGRATION-CHECK` | D-CU3G-2 y traspaso CU9 → CU10-G/C/H | **P** hasta atribuir integración y empaquetado de la guía vigente a la identidad exacta de CU10. §4 contiene la comprobación de fuentes y la evidencia histórica que la precede. |
-| Barridos de autor, FINAL, smoke y revisión | Plan §§4, 6 y 7 y mandato CU10 → informe principal | **P** hasta verificación del candidato de CU10. Los casos y diagnósticos históricos forman el punto de comparación. El smoke autoral permanece pendiente de comunicación expresa del autor. |
-| E1 · `SCIENTIFIC_METHODS_EDITORIAL_HANDOFF` | [Plan científico §§3–7](../architecture/pre_g9b_cu_scientific_methods_editorial_handoff_plan.md), CU10-D y futura actuación editorial autorizada | Entregable obligatorio para el cierre. Revisión y adopción reservadas al autor. La reactivación editorial y los cambios en el libro quedan **F** en CU10. |
+| `CU10-GUIDE-INTEGRATION-CHECK` | D-CU3G-2 y traspaso CU9 → CU10-G/C/H | **V** para la evidencia de integración y empaquetado de la guía en el candidato técnico `20ae57aa`. §4 conserva las identidades de la evidencia anterior. [Expediente integrado](pre_g9b_cu10_integrated_candidate.md#smoke-revisión-independiente-y-worktrees) |
+| Barridos de autor, smoke y revisión | Plan §§4, 6 y 7 y mandato CU10 → informe principal | **L**. El autor acepta la evidencia funcional y científica dentro de sus límites demostrados. El smoke autoral sigue **P**, pendiente de comunicación expresa. Se conserva la observación de perfil de capas de CU10-B. [Dossier de modelos](pre_g9b_cu10_model_validation.md) |
+| Infraestructura FINAL de CU10 | [Expediente integrado](pre_g9b_cu10_integrated_candidate.md#disposición-técnica-del-rechazo) y [excepción autoral](pre_g9b_cu10_closeout_record.md) | **L** en el cierre autoral. `FINAL` histórico rechazado con 39/41 y sin recibo. Las expectativas y las huellas de perfil, generador y catálogo se corrigieron en fuente sin reverificación. |
+| E1 · `SCIENTIFIC_METHODS_EDITORIAL_HANDOFF` | [Plan científico §§3–7](../architecture/pre_g9b_cu_scientific_methods_editorial_handoff_plan.md), CU10-D y futura actuación editorial autorizada | Recibido por el autor como material preparado para la siguiente fase editorial. La reactivación editorial y los cambios en el libro quedan **F** en CU10. [Expediente E1](SCIENTIFIC_METHODS_EDITORIAL_HANDOFF.md) |
 | INTERNAL, NC y COMMERCIAL | [Contrato Windows](../../geocedg/specs/packaging/windows-packaging.md), [D1](pre_g9b_d1_closeout_report.md), [matriz legal](../licensing/component-matrix.md), CU10-C | INTERNAL es evaluación interna y su circulación queda restringida. NC conserva la composición auditada D1 y las obligaciones de su aviso y acceso al código. Sus builds de CU10 se acreditan en el informe principal. COMMERCIAL **F**, fail-closed, pendiente de términos externos y nueva decisión. La trazabilidad histórica 39/39 JAR y 46/46 fuentes corresponde a D1. |
-| Runtime, instaladores, asociación y portabilidad Windows | Contrato Windows §§2–6, CU10-C | **P** hasta evidencia de app-image, ZIP, MSI y EXE, versión, runtime incluido y pruebas de instalación controlada. El instalador tiene la asociación `.cedg`; `.ggb` conserva su ruta de interoperabilidad. Los hashes identifican cada ejecución. |
-| Versión, publicación, etiqueta y release | [AGENTS.md §8.1](../../AGENTS.md#81-geocedg-publication-policy), contrato Windows y roadmap | **P** decisiones independientes de versión, aceptación integrada, cierre autoral, promoción exacta a `main`, etiqueta anotada nueva e inmutable y eventual distribución. La autorización técnica de CU10 cubre evaluación y generación de paquetes de prueba. |
+| Runtime, instaladores, asociación y portabilidad Windows | Contrato Windows §§2–6, CU10-C | **V** para los artefactos históricos INTERNAL y NC del candidato técnico, incluidos app-image, ZIP, MSI, EXE, runtime e instalación y desinstalación controladas. Asociación `.cedg` confirmada y exclusión de `.ggb`. El metadato histórico del manifiesto NC conserva la limitación indicada arriba. |
+| Versión, publicación, etiqueta y release | [AGENTS.md §8.1](../../AGENTS.md#81-geocedg-publication-policy), contrato Windows y roadmap | Versión `1.1.0` del `2026-10-15` conservada. Cierre autoral excepcional adoptado. La promoción exacta a `main`, la etiqueta y el release siguen **P** de autorizaciones separadas. |
 | G9B, G9C, G9U2 y G10 | [Roadmap](../roadmap/geocedg_roadmap.md#g9b---proyecciones-canónicas-de-primitivas) | **F**. G9B/G9C conservan diseño y sus puertas. G9U2 depende de la aprobación global G9. G10P es planificación aprobada; las fases productivas G10 dependen de la puerta global y de autorización propia. |
 | G11, G12 y G15 y deudas anteriores al minitrack | [Conciliación PRE-G9B-R7](pre_g9b_r7_debt_reconciliation.md) y [roadmap](../roadmap/geocedg_roadmap.md) | **F** sus ampliaciones. Siguen los estados y propietarios aprobados, incluida la deuda `TD-R3-CONSTRUCTION-PROTOCOL-MINIMAL-REORDER` abierta y diferida. G11/G12/G15 conservan alcance futuro revisado. |
 
-**Capa y validación.** Conciliación documental de alcance y evidencia. El delta de
-este expediente conserva guías, geometría, formatos y configuración de verificación.
-`GUIDE_IMPACT = NONE` por ser una auditoría de las guías existentes.
-`VERIFICATION_INFRASTRUCTURE_IMPACT = NONE`. `BOOTSTRAP IMPACT — NO CHANGE REQUIRED`
-porque el expediente conserva las herramientas y sus prerrequisitos. Las verificaciones
-focales propias son el cotejo de identidades, la comprobación de fuentes y los enlaces
-de este expediente. El perfil FINAL pertenece al candidato integrado de CU10.
+**Capa y validación.** Esta matriz documenta alcance y evidencia.
+El expediente integrado identifica las ejecuciones históricas, incluido
+`FINAL` sobre el candidato técnico. El registro de cierre identifica las
+correcciones de infraestructura y de empaquetado aplicadas posteriormente,
+con la dispensa autoral de reverificación.

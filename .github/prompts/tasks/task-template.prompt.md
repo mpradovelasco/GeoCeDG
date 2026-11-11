@@ -64,8 +64,9 @@ PHASE selections and record the required semantic and safety coverage. A
 smaller development selection never changes the final acceptance gate.
 
 If the commands are intended as final acceptance evidence, require this order:
-focused work, clean immutable candidate commit, complete `FINAL -PlanOnly`
-resolution, then exactly one authorized `verify.ps1 -Profile FINAL
+focused work, [required preparation before freezing](../../../geocedg/specs/operations/verification-levels.md#current-contract),
+clean immutable candidate commit, complete `FINAL -PlanOnly` resolution for
+that commit, then exactly one authorized `verify.ps1 -Profile FINAL
 -LogDirectory <new-external-root>` campaign. Require a complete trusted report
 and receipt bound to the exact commit/tree, plan, checker, portable environment,
 inputs and evidence. Diagnostics remain separate from acceptance. Do not rerun

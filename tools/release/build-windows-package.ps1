@@ -1222,7 +1222,7 @@ try {
             extension = [string]$profile.file_association.extension
             mime_type = [string]$profile.file_association.mime_type
             mime_basis = [string]$profile.file_association.mime_basis
-            description = [string]$profile.file_association.description
+            description = $SelectedAssociationDescription
             progid_strategy = [string]$profile.file_association.progid_strategy
             portable_outputs_association_free = $true
             compatibility_extension_claimed = $false
