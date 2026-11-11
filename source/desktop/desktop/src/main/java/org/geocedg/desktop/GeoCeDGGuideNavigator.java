@@ -8,6 +8,7 @@ package org.geocedg.desktop;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,11 +19,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.JViewport;
 import javax.swing.KeyStroke;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -38,7 +42,7 @@ import javax.swing.tree.TreeSelectionModel;
  *
  * <p>The tree is built only from the renderer-derived {@link GeoCeDGGuideOutline}.
  * Selecting an entry scrolls the document programmatically to that entry's named
- * anchor; no hyperlink is followed and no listener reacts to links. Scrolling the
+ * anchor. A local guide link uses that same positioning path. Scrolling the
  * document selects the entry whose anchor is the last one at or above the
  * reference line, {@link #REFERENCE_OFFSET} pixels below the top of the viewport;
  * above the first anchor the first entry is current.
@@ -65,6 +69,8 @@ final class GeoCeDGGuideNavigator {
 	private int[] offsets = new int[0];
 	private boolean synchronizing;
 	private int navigatedViewY = -1;
+	private record GuideLink(int start, int end) {
+	}
 
 	/** Tree node carrying one entry; its text is the localized label only. */
 	static final class OutlineNode extends DefaultMutableTreeNode {
@@ -120,6 +126,77 @@ final class GeoCeDGGuideNavigator {
 			}
 		});
 		documentScroll.getViewport().addChangeListener(event -> onViewportChange());
+		view.addHyperlinkListener(event -> {
+			if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+				openLink(event.getDescription());
+			}
+		});
+		view.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "openGuideLink");
+		view.getActionMap().put("openGuideLink", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				if (view.getDocument() instanceof HTMLDocument document) {
+					var attributes = document.getCharacterElement(view.getSelectionStart()).getAttributes();
+					if (attributes.getAttribute(HTML.Tag.A) instanceof AttributeSet link) {
+						openLink((String) link.getAttribute(HTML.Attribute.HREF));
+					}
+				}
+			}
+		});
+	}
+
+	void installLinkShortcuts(JRootPane root) {
+		bindLinkShortcut(root, KeyEvent.VK_LEFT, "previousGuideLink", false);
+		bindLinkShortcut(root, KeyEvent.VK_RIGHT, "nextGuideLink", true);
+	}
+
+	private void bindLinkShortcut(JRootPane root, int key, String action, boolean forward) {
+		root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+				KeyStroke.getKeyStroke(key, InputEvent.ALT_DOWN_MASK), action);
+		root.getActionMap().put(action, new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				selectLink(forward);
+			}
+		});
+	}
+
+	private void selectLink(boolean forward) {
+		if (!(view.getDocument() instanceof HTMLDocument document)) {
+			return;
+		}
+		int origin = view.isFocusOwner() ? view.getSelectionStart()
+				: view.viewToModel2D(documentScroll.getViewport().getViewPosition());
+		List<GuideLink> links = new ArrayList<>();
+		var iterator = document.getIterator(HTML.Tag.A);
+		for (; iterator.isValid(); iterator.next()) {
+			String destination = (String) iterator.getAttributes().getAttribute(HTML.Attribute.HREF);
+			if (linkOffset(destination) >= 0) {
+				links.add(new GuideLink(iterator.getStartOffset(), iterator.getEndOffset()));
+			}
+		}
+		if (links.isEmpty()) {
+			return;
+		}
+		GuideLink match = forward
+				? links.stream().filter(link -> link.start() > origin).findFirst().orElse(links.get(0))
+				: links.stream().filter(link -> link.start() < origin).reduce((first, last) -> last)
+						.orElse(links.get(links.size() - 1));
+		view.requestFocusInWindow();
+		view.select(match.start(), match.end());
+	}
+
+	private void openLink(String destination) {
+		int offset = linkOffset(destination);
+		if (offset >= 0) {
+			view.setCaretPosition(offset);
+			navigateTo(destination.substring(1));
+		}
+	}
+
+	private int linkOffset(String destination) {
+		return destination != null && destination.startsWith("#")
+				? anchorOffset(destination.substring(1)) : -1;
 	}
 
 	/**

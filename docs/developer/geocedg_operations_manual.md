@@ -384,10 +384,11 @@ The release script exposes exactly these targets:
 .\tools\release\build-windows-package.ps1 -Target All
 ```
 
-Every invocation recreates the dedicated
-`artifacts/packaging/windows/` output tree. Use `-Target All` when all formats
-must coexist. `-SkipInstallDist` may reuse the existing `installDist` layout
-only after the same source revision has already been built.
+The default invocation recreates the dedicated `artifacts/packaging/windows/`
+output tree. To preserve an existing image or test an independent candidate,
+pass `-OutputDirectory` with a fresh path below `artifacts`. Use `-Target All`
+when all formats must coexist. `-SkipInstallDist` may reuse the existing
+`installDist` layout only after the same source revision has already been built.
 
 Generated, regenerable outputs are:
 

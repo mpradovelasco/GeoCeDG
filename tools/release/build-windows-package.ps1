@@ -19,6 +19,10 @@ packaging pass after the same source revision was already built.
 .PARAMETER JdkHome
 Optional Java 25 home. By default the script discovers the Java 25 Desktop
 toolchain reported by the repository Gradle wrapper.
+
+.PARAMETER OutputDirectory
+An initially absent output directory under the repository's artifacts directory.
+When omitted, the conventional artifacts/packaging/windows output is refreshed.
 #>
 [CmdletBinding()]
 param(
@@ -27,15 +31,42 @@ param(
     [ValidateSet("INTERNAL", "NC", "COMMERCIAL")]
     [string]$DistributionProfile,
     [switch]$SkipInstallDist,
-    [string]$JdkHome
+    [string]$JdkHome,
+    [ValidateNotNullOrEmpty()]
+    [string]$OutputDirectory
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
 $RepositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
-$ArtifactRoot = Join-Path $RepositoryRoot "artifacts\packaging\windows"
+$artifactBoundary = [IO.Path]::GetFullPath((Join-Path $RepositoryRoot "artifacts"))
+$isolatedOutput = $PSBoundParameters.ContainsKey('OutputDirectory')
+$ArtifactRoot = if ($isolatedOutput) {
+    [IO.Path]::GetFullPath($OutputDirectory, $RepositoryRoot)
+} else {
+    Join-Path $artifactBoundary "packaging\windows"
+}
 $ExpectedArtifactRoot = [IO.Path]::GetFullPath($ArtifactRoot)
+if ($isolatedOutput) {
+    if (-not $ExpectedArtifactRoot.StartsWith(
+            $artifactBoundary + [IO.Path]::DirectorySeparatorChar,
+            [StringComparison]::OrdinalIgnoreCase)) {
+        throw "OutputDirectory must be below $artifactBoundary."
+    }
+    if (Test-Path -LiteralPath $ExpectedArtifactRoot) {
+        throw "OutputDirectory must be initially absent: $ExpectedArtifactRoot"
+    }
+    $ancestor = [IO.Path]::GetDirectoryName($ExpectedArtifactRoot)
+    while ($ancestor.Length -ge $artifactBoundary.Length) {
+        if ((Test-Path -LiteralPath $ancestor) -and
+                ((Get-Item -LiteralPath $ancestor -Force).Attributes -band
+                    [IO.FileAttributes]::ReparsePoint)) {
+            throw "OutputDirectory traverses a reparse point: $ancestor"
+        }
+        $ancestor = [IO.Path]::GetDirectoryName($ancestor)
+    }
+}
 $ProfilePath = Join-Path $RepositoryRoot "packaging\windows\package.yml"
 $AssetsManifestPath = Join-Path $RepositoryRoot `
     "geocedg\resources\assets-manifest.yml"
@@ -648,6 +679,9 @@ try {
             [StringComparison]::OrdinalIgnoreCase)) `
         -Message "Refusing to clear an unexpected artifact root: $ArtifactRoot"
     if (Test-Path -LiteralPath $ArtifactRoot) {
+        if ($isolatedOutput) {
+            throw "OutputDirectory appeared before staging: $ArtifactRoot"
+        }
         Remove-Item -LiteralPath $ArtifactRoot -Recurse -Force
     }
     $workRoot = Join-Path $ArtifactRoot "work"

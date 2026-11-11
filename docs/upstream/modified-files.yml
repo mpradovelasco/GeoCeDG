@@ -24,7 +24,7 @@
     {
       "path": "source/desktop/desktop/build.gradle.kts",
       "change": "modified",
-      "purpose": "Package the profile manifest, expose runGeoCeDG, register the isolated opt-in Locus V2 developer-laboratory task, and generate auditable build-time repository provenance for G9X1 sidecars. G9U1: Package the sole schema-v2 workspace catalog, historical v1 fallback/schema and owned guide through existing Desktop resources. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: package the owned Construction quick guide using the existing processResources seam. PRE-G9B-D1: remove the redundant jsobject runtime dependency after exact-byte, dependency-use and JDK 25 jdk.jsobject correspondence checks. PRE-G9B-R6-plus-G (metadata contract PM-3 to PM-5, version transition M1): guard exactly one application version_date with a valid calendar date and package-profile schema 2; embed provenance schema 3 with the version date, the canonical package-profile SHA-256 (strict UTF-8, CRLF and CR to LF) and the declared distribution-profile table, in ASCII; no clock is read.",
+      "purpose": "Package the profile manifest, expose runGeoCeDG, register the isolated opt-in Locus V2 developer-laboratory task, and generate auditable build-time repository provenance for G9X1 sidecars. G9U1: Package the sole schema-v2 workspace catalog, historical v1 fallback/schema and owned guide through existing Desktop resources. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: package the owned Construction quick guide using the existing processResources seam. PRE-G9B-D1: remove the redundant jsobject runtime dependency after exact-byte, dependency-use and JDK 25 jdk.jsobject correspondence checks. PRE-G9B-R6-plus-G (metadata contract PM-3 to PM-5, version transition M1): guard exactly one application version_date with a valid calendar date and package-profile schema 2; embed provenance schema 3 with the version date, the canonical package-profile SHA-256 (strict UTF-8, CRLF and CR to LF) and the declared distribution-profile table, in ASCII; no clock is read. PRE-G9B-CU9-R1: Copy canonical PNG user-guide figures into the dedicated Desktop classpath directory.",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -4368,13 +4368,13 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideRenderer.java",
       "change": "added",
-      "purpose": "POST-P1-DOC-HELP: Render the packaged bilingual user guide as escaped Swing HTML with repository-relative help semantics preserved. PRE-G9B-R5-A: derive the navigation outline in the same parse and wrap each navigable heading text in a named anchor, keeping heading tags, counts and reader text unchanged. Authority: geocedg/specs/operations/documentation-maintenance.md.",
+      "purpose": "POST-P1-DOC-HELP: Render the packaged bilingual user guide as escaped Swing HTML with repository-relative help semantics preserved. PRE-G9B-R5-A: derive the navigation outline in the same parse and wrap each navigable heading text in a named anchor, keeping heading tags, counts and reader text unchanged. Authority: geocedg/specs/operations/documentation-maintenance.md. PRE-G9B-CU9-R1: Render outline-resolved local links and verified classpath PNGs with safe fallback.",
       "authority": "docs/validation/post_p1_doc_help_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideWindow.java",
       "change": "added",
-      "purpose": "POST-P1-DOC-HELP: Host the packaged bilingual guide in the bounded resizable in-application help window. PRE-G9B-R5-A: show the derived navigation tree beside the guide in a split pane. Authority: geocedg/specs/operations/documentation-maintenance.md. PRE-G9B-CU9: Place a localized search field and result list in the read-only guide window.",
+      "purpose": "POST-P1-DOC-HELP: Host the packaged bilingual guide in the bounded resizable in-application help window. PRE-G9B-R5-A: show the derived navigation tree beside the guide in a split pane. Authority: geocedg/specs/operations/documentation-maintenance.md. PRE-G9B-CU9: Place a localized search field and result list in the read-only guide window. PRE-G9B-CU9-R1: Install the bounded figure view and route guide-local keyboard links.",
       "authority": "docs/validation/post_p1_doc_help_candidate_report.md"
     },
     {
@@ -4494,13 +4494,13 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostP1BilingualUserGuideTest.java",
       "change": "added",
-      "purpose": "POST-P1-DOC-HELP: Verify the packaged English and Spanish guide selection, content authority and Help-menu routing.",
+      "purpose": "POST-P1-DOC-HELP: Verify the packaged English and Spanish guide selection, content authority and Help-menu routing. PRE-G9B-CU9-R1: Verify both guide figure inventories, localized captions and alternative texts, hashes and packaged bytes.",
       "authority": "docs/validation/post_p1_doc_help_candidate_report.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostP1GuideRenderingTest.java",
       "change": "added",
-      "purpose": "POST-P1-DOC-HELP: Verify safe guide rendering and bounded resizable window behavior.",
+      "purpose": "POST-P1-DOC-HELP: Verify safe guide rendering and bounded resizable window behavior. PRE-G9B-CU9-R1: Exercise controlled Markdown links, local images and fallback diagnostics.",
       "authority": "docs/validation/post_p1_doc_help_candidate_report.md"
     },
     {
@@ -4938,19 +4938,19 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideNavigator.java",
       "change": "added",
-      "purpose": "PRE-G9B-R5-A: couple the guide navigation tree with the document by programmatic scrolling to named anchors and guarded scroll synchronization, without a hyperlink listener. PRE-G9B-CU9: Reveal a match using the existing anchor and scroll synchronization.",
+      "purpose": "PRE-G9B-R5-A: couple the guide navigation tree with the document by programmatic scrolling to named anchors and guarded scroll synchronization, without a hyperlink listener. PRE-G9B-CU9: Reveal a match using the existing anchor and scroll synchronization. PRE-G9B-CU9-R1: Route pointer and keyboard links through the existing outline and synchronized tree.",
       "authority": "geocedg/specs/operations/documentation-maintenance.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5AGuideOutlineTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R5-A: verify the bilingual anchor vectors, outline hierarchy, additive anchor emission and negative marker fixtures. PRE-G9B-R6-plus-B: the guide outline with section 4.5, Picture export and the export area. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the outline with guide section 4.6 Document units (102 entries, 85 of level 3). Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E2: the guide outline with section 9.5, Engineering dimensions (103 entries). PRE-G9B-R6-plus-E3: the guide outline with section 4.7 (104 entries, 87 level-3 headings). Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU9: Verify the expanded bilingual outline of 118 derived entries.",
+      "purpose": "PRE-G9B-R5-A: verify the bilingual anchor vectors, outline hierarchy, additive anchor emission and negative marker fixtures. PRE-G9B-R6-plus-B: the guide outline with section 4.5, Picture export and the export area. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the outline with guide section 4.6 Document units (102 entries, 85 of level 3). Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E2: the guide outline with section 9.5, Engineering dimensions (103 entries). PRE-G9B-R6-plus-E3: the guide outline with section 4.7 (104 entries, 87 level-3 headings). Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU9: Verify the expanded bilingual outline of 118 derived entries. PRE-G9B-CU9-R1: Check links against derived anchors and preserve the bilingual outline.",
       "authority": "geocedg/specs/operations/documentation-maintenance.md"
     },
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5AGuideNavigationTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R5-A: verify tree population, tree-driven navigation, scroll synchronization boundaries and the absence of feedback loops. PRE-G9B-CU9: Exercise end-of-document navigation using the current last entry.",
+      "purpose": "PRE-G9B-R5-A: verify tree population, tree-driven navigation, scroll synchronization boundaries and the absence of feedback loops. PRE-G9B-CU9: Exercise end-of-document navigation using the current last entry. PRE-G9B-CU9-R1: Exercise hyperlink navigation, keyboard activation and tree synchronization.",
       "authority": "geocedg/specs/operations/documentation-maintenance.md"
     },
     {
@@ -7745,7 +7745,8 @@
     {"path": "source/shared/common/src/main/java/org/geogebra/common/kernel/geos/GeoButton.java", "change": "modified", "purpose": "PRE-G9B-CU8-I: Guard incompatible native placement changes on slotted buttons and input boxes.", "authority": "geocedg/specs/ui/control-layout-v1.md"},
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideSearch.java", "change": "added", "purpose": "PRE-G9B-CU9: Present localized search results and activate matches by keyboard or mouse.", "authority": "geocedg/specs/operations/documentation-maintenance.md"},
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideSearchIndex.java", "change": "added", "purpose": "PRE-G9B-CU9: Index rendered guide text with section identity and original text offsets.", "authority": "geocedg/specs/operations/documentation-maintenance.md"},
-    {"path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu9GuideSearchTest.java", "change": "added", "purpose": "PRE-G9B-CU9: Verify search normalization, result navigation, keyboard controls and locale reload.", "authority": "geocedg/specs/operations/documentation-maintenance.md"},
-    {"path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu9GuideExamplesTest.java", "change": "added", "purpose": "PRE-G9B-CU9: Execute worked command examples from the packaged bilingual guides.", "authority": "geocedg/specs/operations/documentation-maintenance.md"}
+    {"path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu9GuideSearchTest.java", "change": "added", "purpose": "PRE-G9B-CU9: Verify search normalization, result navigation, keyboard controls and locale reload. PRE-G9B-CU9-R1: Check searchable rendered captions and link labels without indexed image paths.", "authority": "geocedg/specs/operations/documentation-maintenance.md"},
+    {"path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BCu9GuideExamplesTest.java", "change": "added", "purpose": "PRE-G9B-CU9: Execute worked command examples from the packaged bilingual guides.", "authority": "geocedg/specs/operations/documentation-maintenance.md"},
+    {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideImages.java", "change": "added", "purpose": "PRE-G9B-CU9-R1: Decode bounded classpath PNGs and display them with accessible alternative text, without loading URLs.", "authority": "geocedg/specs/operations/documentation-maintenance.md"}
   ]
 }

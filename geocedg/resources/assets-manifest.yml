@@ -26,6 +26,14 @@
     }
   },
   "versioning_policy": "Semantic asset identity and role are stable. Every changed source or derivative receives a new asset version, exact hash and provenance record. Copyright/trademark classification is role-based and does not depend on permanent pixels, filenames or hashes.",
+  "guide_illustrations": {
+    "manifest": "docs/user/images/figures.json",
+    "classpath_root": "org/geocedg/desktop/guide/images/",
+    "authored_diagram_class": "geocedg-documentation-or-ordinary-art",
+    "capture_terms": ["LICENSES/CC-BY-NC-SA-4.0.txt", "LICENSES/GeoGebra-License-2025-11.md"],
+    "provenance": "Computer Use captures of the verified CU9 GeoCeDG Desktop candidate and reproducible GeoCeDG-authored diagrams. The figure manifest distinguishes actual captures from illustrations and records the source and rights of each asset.",
+    "distribution": "Existing distribution profiles and third-party obligations apply. The captures retain inherited UI terms and are not classified as unrestricted artwork."
+  },
   "trademark_status": {
     "evidence_authority": "docs/licensing/trademark-registration/README.md",
     "word_mark": {

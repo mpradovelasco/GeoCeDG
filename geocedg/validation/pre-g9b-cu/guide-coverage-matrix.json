@@ -2569,7 +2569,7 @@
           "interface-and-workflow/3.2"
         ]
       },
-      "notes": "Opens the edition matching the product language; the guide describes tree, search, results and keyboard use.",
+      "notes": "Opens the edition matching the product language. The guide describes the tree, search, result selection and internal links with pointer and keyboard, and illustrates the reader workflow with a Desktop capture.",
       "label_es": "Guía de usuario de GeoCeDG"
     },
     {

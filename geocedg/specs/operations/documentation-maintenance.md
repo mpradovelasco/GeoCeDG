@@ -191,5 +191,23 @@ anchor and navigation tree is derived from that source at presentation time.
    original form. The search data is rebuilt with the edition and lives only
    in the viewer.
 
+7. **Internal links.** The guide accepts `[label](#identity)` for identities
+   present in the current edition's derived outline. Keyboard and pointer
+   activation use the existing guide navigator. An unknown or unsupported
+   destination displays its label and records a diagnostic. The viewer has no
+   route for external URLs or filesystem destinations. Authoring an internal
+   link adds a reference to an existing identity.
+
+8. **Figures.** A line `![localized alt](images/figure-id.png)` includes a
+   packaged PNG. Put its localized caption in a separate italic paragraph.
+   Figure identifiers match `[a-z0-9][a-z0-9-]{0,79}`. The versioned PNG files live
+   alongside the two guides. Desktop packages the Markdown and referenced PNG
+   bytes directly, then resolves the images from its dedicated classpath
+   directory. The viewer validates the PNG format, 2 MiB byte limit, 2048 px
+   edge limit and 3 million pixel limit. A missing or invalid figure displays
+   its alternate text with a diagnostic. Captions and link labels are searchable
+   text. The bilingual figure manifest records purpose, origin, dimensions,
+   exact hashes and rights, and is evidence of those assets.
+
 Navigation is presentation. It is never geometric, identity, dependency-graph or
 serialization authority, and kernel code never consults it.

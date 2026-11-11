@@ -5,10 +5,17 @@
 
 package org.geocedg.desktop;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.swing.ImageIcon;
 
 /**
  * Bounded Markdown-to-HTML renderer for the two packaged GeoCeDG user guides.
@@ -29,6 +36,7 @@ import java.util.regex.Pattern;
  * <li>unordered lists introduced by {@code - } or {@code * };</li>
  * <li>ordered lists introduced by {@code 1. };</li>
  * <li>pipe tables with a delimiter row, whose first row is the header;</li>
+ * <li>standalone figures with plain alternative text and a packaged PNG;</li>
  * <li>horizontal rules written as three or more hyphens on their own line;</li>
  * <li>HTML comments, which are removed and never shown, which is how the stable
  * {@code geocedg-guide-section} identifiers stay invisible to the reader.</li>
@@ -50,15 +58,15 @@ import java.util.regex.Pattern;
  * <li>{@code `inline code`};</li>
  * <li>{@code **strong**};</li>
  * <li>{@code *emphasis*};</li>
- * <li>{@code [text](target)}, rendered as a visually recognizable link that
- * this viewer never navigates.</li>
+ * <li>{@code [text](#anchor)} in prose, lists and tables, resolved against the
+ * current edition's derived outline.</li>
  * </ul>
  *
  * <h2>Deliberate non-goals</h2>
  *
  * <p>This is not a general Markdown implementation and must not become one. It
  * covers exactly the audited subset that the two guides use. Nested lists,
- * setext headings, block quotes, images, reference links, inline HTML,
+ * setext headings, block quotes, inline images, reference links, inline HTML,
  * footnotes and tables without a delimiter row are outside the contract:
  * unrecognized markup degrades to escaped literal text rather than to broken
  * layout. Unbalanced inline markers stay literal for the same reason.
@@ -82,11 +90,18 @@ final class GeoCeDGGuideRenderer {
 	private static final Pattern STRONG = Pattern.compile("\\*\\*(\\S(?:.*?\\S)?)\\*\\*");
 	private static final Pattern EMPHASIS =
 			Pattern.compile("(?<!\\*)\\*(?!\\*)(\\S(?:[^*]*\\S)?)\\*(?!\\*)");
-	private static final Pattern LINK =
-			Pattern.compile("\\[([^\\]]+)]\\(([^)\\s]+)\\)");
+	private static final String ANCHOR = "#[a-z0-9-]+(?:/\\d+(?:\\.\\d+)*)?";
+	private static final Pattern LINK_TARGET = Pattern.compile(ANCHOR);
+	private static final Pattern LINK = Pattern.compile("(!?)\\[([^\\[\\]]*)]\\(([^)]*)\\)");
+	private static final Pattern FIGURE = Pattern.compile("!\\[([^\\[\\]]*)]\\(([^)]*)\\)");
+	private static final Pattern INTERNAL_HTML_LINK =
+			Pattern.compile("<a href=\"(" + ANCHOR + ")\">(.*?)</a>");
+	private static final int MAX_FIGURES = 32;
+	private static final int MAX_ALT_LENGTH = 240;
+	private final Map<String, ImageIcon> images = new HashMap<>();
+	private final List<String> diagnostics = new ArrayList<>();
 
 	private GeoCeDGGuideRenderer() {
-		// Pure conversion; no instance state and no application authority.
 	}
 
 	/**
@@ -95,8 +110,11 @@ final class GeoCeDGGuideRenderer {
 	 *
 	 * @param html self-contained HTML for a read-only Swing editor pane
 	 * @param outline navigation entries in document order
+	 * @param images decoded figures for the HTML image views
+	 * @param diagnostics rejected figure and link references
 	 */
-	record Rendering(String html, List<GeoCeDGGuideOutline.Entry> outline) {
+	record Rendering(String html, List<GeoCeDGGuideOutline.Entry> outline,
+			Map<String, ImageIcon> images, List<String> diagnostics) {
 	}
 
 	/**
@@ -117,6 +135,10 @@ final class GeoCeDGGuideRenderer {
 	 * @return the document and its outline
 	 */
 	static Rendering render(String markdown) {
+		return new GeoCeDGGuideRenderer().renderDocument(markdown);
+	}
+
+	private Rendering renderDocument(String markdown) {
 		List<String> lines = List.of(markdown.replace("\r\n", "\n")
 				.replace("\r", "\n").split("\n", -1));
 		StringBuilder html = new StringBuilder(markdown.length() * 2);
@@ -174,6 +196,14 @@ final class GeoCeDGGuideRenderer {
 				list = flushList(html, list);
 				continue;
 			}
+			Matcher figure = FIGURE.matcher(line);
+			if (figure.matches()) {
+				paragraph = flushParagraph(html, paragraph);
+				item = flushItem(html, item);
+				list = flushList(html, list);
+				appendFigure(html, figure.group(1), figure.group(2));
+				continue;
+			}
 			Matcher heading = HEADING.matcher(line);
 			if (heading.matches()) {
 				paragraph = flushParagraph(html, paragraph);
@@ -181,7 +211,7 @@ final class GeoCeDGGuideRenderer {
 				list = flushList(html, list);
 				int level = heading.group(1).length();
 				String tag = "h" + level;
-				String text = inline(heading.group(2));
+				String text = inline(heading.group(2), false);
 				String anchor = outline.heading(level, marker, heading.group(2),
 						plainText(text));
 				html.append('<').append(tag).append('>');
@@ -236,7 +266,50 @@ final class GeoCeDGGuideRenderer {
 		flushList(html, list);
 		flushTable(html, table);
 		html.append("</body></html>");
-		return new Rendering(html.toString(), outline.entries());
+		List<GeoCeDGGuideOutline.Entry> entries = outline.entries();
+		return new Rendering(resolveLinks(html, entries), entries, Map.copyOf(images),
+				List.copyOf(diagnostics));
+	}
+
+	private String resolveLinks(CharSequence html, List<GeoCeDGGuideOutline.Entry> outline) {
+		Set<String> anchors = new HashSet<>();
+		outline.forEach(entry -> anchors.add("#" + entry.anchor()));
+		Matcher links = INTERNAL_HTML_LINK.matcher(html);
+		StringBuilder resolved = new StringBuilder(html.length());
+		while (links.find()) {
+			String replacement = links.group();
+			if (!anchors.contains(links.group(1))) {
+				issue("Link", links.group(1), "target is absent from the guide outline");
+				replacement = links.group(2);
+			}
+			links.appendReplacement(resolved, Matcher.quoteReplacement(replacement));
+		}
+		links.appendTail(resolved);
+		return resolved.toString();
+	}
+
+	private void appendFigure(StringBuilder html, String alt, String path) {
+		try {
+			if (alt.isBlank() || alt.length() > MAX_ALT_LENGTH) {
+				throw new IOException("alternative text must contain 1 to 240 characters");
+			}
+			if (!images.containsKey(path)) {
+				if (images.size() >= MAX_FIGURES) {
+					throw new IOException("the edition exceeds the figure limit");
+				}
+				images.put(path, GeoCeDGGuideImages.load(path));
+			}
+			html.append("<p><img src=\"").append(path).append("\" alt=\"")
+					.append(escape(alt).replace("\"", "&quot;")).append("\"></p>\n");
+		} catch (IOException exception) {
+			issue("Figure", path, exception.getMessage());
+			html.append("<p>").append(escape(alt)).append("</p>\n");
+		}
+	}
+
+	private void issue(String kind, String target, String reason) {
+		int end = Math.min(target.length(), 120);
+		diagnostics.add(kind + " " + target.substring(0, end) + " — " + reason);
 	}
 
 	/**
@@ -248,14 +321,14 @@ final class GeoCeDGGuideRenderer {
 				.replace("&amp;", "&");
 	}
 
-	private static List<String> flushItem(StringBuilder html, List<String> lines) {
+	private List<String> flushItem(StringBuilder html, List<String> lines) {
 		if (!lines.isEmpty()) {
 			html.append("<li>").append(inline(String.join(" ", lines))).append(ITEM_END);
 		}
 		return new ArrayList<>();
 	}
 
-	private static List<String> flushParagraph(StringBuilder html, List<String> lines) {
+	private List<String> flushParagraph(StringBuilder html, List<String> lines) {
 		if (!lines.isEmpty()) {
 			html.append("<p>").append(inline(String.join(" ", lines))).append("</p>\n");
 		}
@@ -278,7 +351,7 @@ final class GeoCeDGGuideRenderer {
 		return null;
 	}
 
-	private static List<String> flushTable(StringBuilder html, List<String> rows) {
+	private List<String> flushTable(StringBuilder html, List<String> rows) {
 		if (rows.isEmpty()) {
 			return new ArrayList<>();
 		}
@@ -335,7 +408,11 @@ final class GeoCeDGGuideRenderer {
 	 * @param text one logical source line or cell
 	 * @return escaped HTML fragment
 	 */
-	private static String inline(String text) {
+	private String inline(String text) {
+		return inline(text, true);
+	}
+
+	private String inline(String text, boolean linksAllowed) {
 		List<String> spans = new ArrayList<>();
 		Matcher code = CODE_SPAN.matcher(text);
 		StringBuilder masked = new StringBuilder();
@@ -350,7 +427,7 @@ final class GeoCeDGGuideRenderer {
 		String html = escape(masked.toString());
 		html = STRONG.matcher(html).replaceAll("<b>$1</b>");
 		html = EMPHASIS.matcher(html).replaceAll("<i>$1</i>");
-		html = LINK.matcher(html).replaceAll("<a href=\"$2\">$1</a>");
+		html = inlineLinks(html, linksAllowed);
 
 		StringBuilder restored = new StringBuilder(html.length());
 		for (int index = 0; index < html.length(); index++) {
@@ -365,6 +442,25 @@ final class GeoCeDGGuideRenderer {
 			index = end;
 		}
 		return restored.toString();
+	}
+
+	private String inlineLinks(String html, boolean linksAllowed) {
+		Matcher links = LINK.matcher(html);
+		StringBuilder result = new StringBuilder(html.length());
+		while (links.find()) {
+			String label = links.group(2);
+			String target = links.group(3);
+			boolean image = "!".equals(links.group(1));
+			if (!image && linksAllowed && !label.isBlank() && LINK_TARGET.matcher(target).matches()) {
+				label = "<a href=\"" + target + "\">" + label + "</a>";
+			} else {
+				issue(image ? "Figure" : "Link", target,
+						image ? "figures require a separate line" : "expected a guide section link in body text");
+			}
+			links.appendReplacement(result, Matcher.quoteReplacement(label));
+		}
+		links.appendTail(result);
+		return result.toString();
 	}
 
 	private static String escape(String text) {

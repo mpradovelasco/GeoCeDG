@@ -201,6 +201,7 @@ class PreG9BR5AGuideOutlineTest {
 
 	@Test
 	void everyEntryIsANamedAnchorInsideItsHeadingAndNeverALink() throws IOException {
+		List<List<String>> editionTargets = new ArrayList<>();
 		for (String language : LANGUAGES) {
 			GeoCeDGGuideRenderer.Rendering rendering = rendering(language);
 			List<String> named = new ArrayList<>();
@@ -212,8 +213,17 @@ class PreG9BR5AGuideOutlineTest {
 			assertTrue(rendering.html().contains(
 					"<h2><a name=\"spline-v2\">7. Spline V2</a></h2>"), language);
 			assertTrue(rendering.html().contains("<h3><a name=\"spline-v2/7.2\">"), language);
-			assertFalse(rendering.html().contains("href="), language);
+			Matcher links = Pattern.compile("href=\"#([^\"]+)\"").matcher(rendering.html());
+			List<String> targets = new ArrayList<>();
+			while (links.find()) {
+				assertTrue(named.contains(links.group(1)), links.group(1));
+				targets.add(links.group(1));
+			}
+			assertFalse(targets.isEmpty(), language);
+			assertEquals(targets.size(), occurrences(rendering.html(), "<a href="), language);
+			editionTargets.add(targets);
 		}
+		assertEquals(editionTargets.get(0), editionTargets.get(1), "bilingual link order");
 	}
 
 	@Test
@@ -236,9 +246,7 @@ class PreG9BR5AGuideOutlineTest {
 		for (String language : LANGUAGES) {
 			String html = GeoCeDGGuideRenderer.toHtml(
 					GeoCeDGActionRegistry.readUserGuide(language));
-			// The guides contain no link, so every closing anchor is a navigation one.
-			String withoutAnchors = html.replaceAll("<a name=\"[^\"]*\">", "")
-					.replace("</a>", "");
+			String withoutAnchors = html.replaceAll("<a name=\"[^\"]*\">(.*?)</a>", "$1");
 			assertEquals(swingText(withoutAnchors), swingText(html), language);
 		}
 	}
@@ -257,13 +265,9 @@ class PreG9BR5AGuideOutlineTest {
 		for (String language : LANGUAGES) {
 			String source = GeoCeDGActionRegistry.readUserGuide(language);
 			assertFalse(source.contains("<a "), language + " contains anchor markup");
-			assertFalse(source.contains("]("), language + " contains a Markdown link");
-			for (GeoCeDGGuideOutline.Entry entry : outline(language)) {
-				if (entry.level() == 3) {
-					assertFalse(source.contains(entry.anchor()),
-							language + " authors the derived anchor " + entry.anchor());
-				}
-			}
+			var rendering = GeoCeDGGuideRenderer.render(source);
+			assertTrue(rendering.diagnostics().isEmpty(), () -> language + " "
+					+ rendering.diagnostics());
 		}
 		// No separately packaged outline or index exists beside the guides.
 		for (String name : new String[] {"geocedg_user_guide_en.json",

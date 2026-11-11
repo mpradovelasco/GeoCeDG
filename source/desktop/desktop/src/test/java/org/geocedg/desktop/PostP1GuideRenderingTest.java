@@ -8,14 +8,19 @@ package org.geocedg.desktop;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
 
@@ -193,10 +198,43 @@ class PostP1GuideRenderingTest {
 	}
 
 	@Test
-	void unauditedMarkupDegradesToTextInsteadOfBrokenLayout() {
+	void unauditedMarkupDegradesToTextInsteadOfBrokenLayout() throws IOException {
 		String html = GeoCeDGGuideRenderer.toHtml("An unbalanced **marker stays literal.");
 		assertFalse(html.contains("<b>"), html);
 		assertTrue(html.contains("**marker"), html);
+		var rejected = GeoCeDGGuideRenderer.render(String.join("\n\n",
+				"[unknown](#unmarked)", "[remote](https://example.invalid/)",
+				"[file](file:///settings.properties)", "[encoded](#guide%2F1.2)",
+				"![Missing figure](images/missing-test.png)",
+				"![Traversal figure](images/../other.png)",
+				"![Encoded figure](images/%2e%2e.png)",
+				"![Backslash figure](images\\test.png)",
+				"![Remote figure](https://example.invalid/example.png)",
+				"![File figure](file:///tmp/test.png)",
+				"![Other format](images/file.svg)",
+				"<img src=\"https://example.invalid/example.png\">"));
+		assertEquals(11, rejected.diagnostics().size());
+		assertTrue(rejected.images().isEmpty());
+		assertFalse(rejected.html().contains("<img "));
+		assertFalse(rejected.html().contains("<a href="));
+		assertTrue(rejected.html().contains("<p>Missing figure</p>"));
+		assertTrue(rejected.html().contains("<p>unknown</p>"));
+		assertTrue(rejected.html().contains("&lt;img"));
+
+		assertThrows(IOException.class, () -> GeoCeDGGuideImages.decode(
+				new ByteArrayInputStream(new byte[GeoCeDGGuideImages.MAX_BYTES + 1])));
+		assertThrows(IOException.class, () -> GeoCeDGGuideImages.decode(
+				new ByteArrayInputStream(new byte[16])));
+		ByteArrayOutputStream overwide = new ByteArrayOutputStream();
+		ImageIO.write(new BufferedImage(GeoCeDGGuideImages.MAX_EDGE + 1, 10,
+				BufferedImage.TYPE_INT_RGB), "png", overwide);
+		assertThrows(IOException.class, () -> GeoCeDGGuideImages.decode(
+				new ByteArrayInputStream(overwide.toByteArray())));
+		ByteArrayOutputStream valid = new ByteArrayOutputStream();
+		ImageIO.write(new BufferedImage(800, 600, BufferedImage.TYPE_INT_RGB), "png", valid);
+		var icon = GeoCeDGGuideImages.decode(new ByteArrayInputStream(valid.toByteArray()));
+		assertEquals(620, icon.getIconWidth());
+		assertEquals(465, icon.getIconHeight());
 	}
 
 	// ------------------------------------------------------------------- viewer
@@ -237,10 +275,10 @@ class PostP1GuideRenderingTest {
 				"the window contract needs a display");
 		GeoCeDGGuideWindow window = new GeoCeDGGuideWindow(null,
 				new Font("SansSerif", Font.PLAIN, 12));
-		String html = GeoCeDGGuideRenderer.toHtml(
+		var rendering = GeoCeDGGuideRenderer.render(
 				GeoCeDGActionRegistry.readUserGuide("en"));
 		try {
-			window.show(html, "GeoCeDG user guide");
+			window.show(rendering, "GeoCeDG user guide", "en");
 			JDialog dialog = window.getDialog();
 			assertNotNull(dialog);
 			assertTrue(dialog.isResizable(), "the guide window must be resizable");
@@ -254,8 +292,8 @@ class PostP1GuideRenderingTest {
 			assertFalse(window.getView().isEditable());
 
 			// Reopening replaces the content in the same window, per language.
-			window.show(GeoCeDGGuideRenderer.toHtml(
-					GeoCeDGActionRegistry.readUserGuide("es")), "Guía");
+			window.show(GeoCeDGGuideRenderer.render(
+					GeoCeDGActionRegistry.readUserGuide("es")), "Guía", "es");
 			assertEquals(dialog, window.getDialog(),
 					"a language change must not open a second window");
 		} finally {
@@ -278,8 +316,8 @@ class PostP1GuideRenderingTest {
 			assertFalse(source.contains("openHelp"), source.length() + "");
 			assertFalse(source.contains("BrowserLauncher"), source.length() + "");
 		}
-		// The viewer must not activate a hyperlink either.
-		assertFalse(viewer.contains("addHyperlinkListener"));
+		// The viewer delegates local navigation; the text pane never loads another document.
+		assertFalse(viewer.contains("setPage("));
 	}
 
 	// ------------------------------------------------------------------ helpers

@@ -40,7 +40,7 @@ class PreG9BCu9GuideSearchTest {
 			<!-- geocedg-guide-section: internal-marker -->
 			## 1. Medición
 
-			Texto auxiliar.
+			Texto auxiliar. Consulta [Medir aquí](#internal-marker/1.1).
 
 			### 1.1 Recorridos
 
@@ -49,6 +49,10 @@ class PreG9BCu9GuideSearchTest {
 			| Función | Formato |
 			| --- | --- |
 			| Exportación | DXF |
+
+			![Figura alternativa](images/optional-absent-test.png)
+
+			*Pie ilustrativo.*
 			""";
 
 	private static final String ENGLISH = """
@@ -75,9 +79,14 @@ class PreG9BCu9GuideSearchTest {
 			assertMatch(fixture, index, "locuslength(c, p, q)", "internal-marker/1.1",
 					"LocusLength(C, P, Q)");
 			assertMatch(fixture, index, "exportacion", "internal-marker/1.1", "Exportación");
+			assertMatch(fixture, index, "medir aqui", "internal-marker", "Medir aquí");
+			assertMatch(fixture, index, "figura alternativa", "internal-marker/1.1",
+					"Figura alternativa");
+			assertMatch(fixture, index, "pie ilustrativo", "internal-marker/1.1", "Pie ilustrativo");
+			assertTrue(index.find("optional-absent-test.png").matches().isEmpty());
 			assertTrue(index.find("internal-marker").matches().isEmpty());
 			assertTrue(index.find("`LocusLength").matches().isEmpty());
-			assertTrue(index.find("Medición Texto auxiliar Recorridos").matches().isEmpty(),
+			assertTrue(index.find("Medir aquí. 1.1 Recorridos").matches().isEmpty(),
 					"a search does not cross section boundaries");
 			return null;
 		});

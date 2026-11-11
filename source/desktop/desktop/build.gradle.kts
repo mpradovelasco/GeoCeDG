@@ -332,6 +332,10 @@ tasks.processResources {
     from(rootProject.file("../../docs/user/geocedg_user_guide_es.md")) {
         into("org/geocedg/desktop")
     }
+    from(rootProject.file("../../docs/user/images")) {
+        include("*.png")
+        into("org/geocedg/desktop/guide/images")
+    }
 }
 
 tasks.register<JavaExec>("runGeoCeDG") {

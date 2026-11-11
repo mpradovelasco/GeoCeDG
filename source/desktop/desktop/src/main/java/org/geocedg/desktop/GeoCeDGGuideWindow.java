@@ -12,7 +12,6 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.Window;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDialog;
@@ -25,13 +24,15 @@ import javax.swing.SwingUtilities;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.StyleSheet;
 
+import org.geogebra.common.util.debug.Log;
+
 /**
  * Dedicated read-only window for the packaged GeoCeDG user guide.
  *
  * <p>The window is a non-modal, freely resizable dialog so that the guide can be
  * consulted while a construction is being built. It reuses the Swing HTML
  * infrastructure already present in the Desktop module rather than adding any
- * dependency, and it never navigates a link or opens an external browser.
+ * dependency. Local links position the reader within the current edition.
  *
  * <p>A navigation tree built from the renderer-derived outline sits to the left
  * of the document; {@link GeoCeDGGuideNavigator} couples the two.
@@ -95,7 +96,7 @@ final class GeoCeDGGuideWindow {
 	 */
 	static JEditorPane createView(Font font) {
 		JEditorPane pane = new JEditorPane();
-		HTMLEditorKit kit = new HTMLEditorKit();
+		HTMLEditorKit kit = new GeoCeDGGuideImages.EditorKit();
 		pane.setEditorKit(kit);
 		applyStyle(kit, font);
 		pane.setEditable(false);
@@ -137,18 +138,6 @@ final class GeoCeDGGuideWindow {
 	}
 
 	/**
-	 * Shows the guide, replacing any content shown earlier. Reopening after a
-	 * product-language change therefore presents the other edition in the same
-	 * window instead of a second one.
-	 *
-	 * @param html rendered guide document
-	 * @param title window title
-	 */
-	void show(String html, String title) {
-		show(new GeoCeDGGuideRenderer.Rendering(html, List.of()), title);
-	}
-
-	/**
 	 * Shows a rendered guide with the navigation tree of its derived outline,
 	 * replacing any guide shown earlier, so that the tree always follows the
 	 * edition in the document view.
@@ -171,6 +160,8 @@ final class GeoCeDGGuideWindow {
 			build();
 		}
 		dialog.setTitle(title);
+		((GeoCeDGGuideImages.EditorKit) view.getEditorKit()).setImages(rendering.images());
+		rendering.diagnostics().forEach(diagnostic -> Log.warn("User guide — " + diagnostic));
 		view.setText(rendering.html());
 		view.setCaretPosition(0);
 		navigator.load(rendering.outline());
@@ -215,6 +206,7 @@ final class GeoCeDGGuideWindow {
 		dialog.setResizable(true);
 		search = new GeoCeDGGuideSearch(view, navigator);
 		search.installShortcuts(dialog.getRootPane());
+		navigator.installLinkShortcuts(dialog.getRootPane());
 		search.getPanel().setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
 		JPanel content = new JPanel(new BorderLayout());
 		content.add(search.getPanel(), BorderLayout.NORTH);

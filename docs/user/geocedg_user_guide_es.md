@@ -3,41 +3,53 @@
 
 GeoCeDG 1.1.0 · Edición en español
 
-Si abres GeoCeDG por primera vez, empieza por **2.7 Tu primera construcción**.
-Para reconocer una herramienta o consultar una sintaxis, abre la sección 16
-en el árbol lateral o busca el nombre con **Ctrl+F**. Si un resultado no sale
-como esperabas, consulta **15. Resolver problemas y conocer los límites**.
+Empiece por [La primera construcción](#getting-started/2.7), consulte una
+herramienta en la [referencia](#command-and-workflow-reference) o pulse
+**Ctrl+F** para [buscar en la guía](#getting-started/2.8). Si obtiene un
+resultado inesperado, consulte [Problemas y límites conocidos](#known-limitations).
 
+Las dos ediciones emplean las mismas marcas:
+
+- **[N] Nuevo en GeoCeDG** — capacidad incorporada por GeoCeDG.
+- **[A] Ampliado en GeoCeDG** — ampliación de una capacidad heredada.
+- **[G] Heredado de GeoGebra** — capacidad que ya existe en la revisión de partida.
+- **[!] Experimental o con limitaciones relevantes** — consulte el alcance indicado antes de utilizarla.
 
 ---
 
 <!-- geocedg-guide-section: what-is-geocedg -->
 ## 1. Qué es GeoCeDG
 
-GeoCeDG es una aplicación de geometría dinámica para **Geometría Descriptiva
-Extendida por Computador (CeDG)**. Puedes construir con herramientas gráficas
-o escribir en la barra de entrada. Los objetos derivados se actualizan cuando
-cambias los objetos de los que dependen.
+GeoCeDG es una plataforma de geometría dinámica para **Geometría Descriptiva
+Extendida por Computador (CeDG)**. Complementa al CAD en el razonamiento sobre
+problemas espaciales mediante proyecciones y construcciones explícitas. Puede
+trabajar con herramientas gráficas o escribir en la Entrada algebraica. Al
+modificar un objeto de partida, se actualizan los objetos que dependen de él.
 
 ### 1.1 Construir con relaciones
 
-Crea un segmento entre dos puntos y mueve uno de ellos. El segmento y su
-longitud cambian juntos. Usa el **Protocolo de construcción** para recorrer los
+Cree un segmento entre dos puntos y mueva uno de ellos. El segmento y su
+longitud cambian juntos. Use el **Protocolo de construcción** para recorrer los
 pasos y Álgebra para consultar la definición de cada objeto. La misma idea
 permite trazar una curva a partir de un punto que depende de otro.
 
-### 1.2 En qué se diferencia del CAD
+### 1.2 Trabajar con proyecciones junto al CAD
 
-El flujo se basa en construir puntos, rectas y curvas con relaciones explícitas.
-Puedes preparar dibujos, acotar y exportar geometría 2D admitida para
-intercambiarla con otras aplicaciones. Consulta la sección 11 antes de
-entregar un DXF y la sección 15 para conocer el alcance de las vistas.
+Por ejemplo, puede estudiar un problema espacial construyendo sus proyecciones
+como dibujos planos relacionados y comprobar cómo responden al cambiar los
+datos de partida. Es una aplicación de la geometría descriptiva al razonamiento
+en 3D. El espacio de trabajo de esta guía ofrece herramientas 2D. Las relaciones
+entre las proyecciones se establecen en la propia construcción. La reconstrucción
+espacial automática y las asociaciones nativas de objetos 3D quedan fuera de su
+alcance actual. Puede acotar el dibujo e intercambiar con CAD la geometría 2D
+admitida mediante la [exportación DXF](#dxf-export). Los [límites conocidos](#known-limitations)
+detallan el alcance de las vistas y la compatibilidad.
 
 ### 1.3 Versión y estado
 
 **Ayuda → Acerca de GeoCeDG** muestra la versión **1.1.0**, la fecha de versión
-**2026-10-15** y la identificación de la compilación. Ahí puedes consultar
-la *condición de distribución* y los avisos de la copia que estás usando.
+**2026-10-15** y la identificación de la compilación. Allí puede consultar
+la *condición de distribución* y los avisos de la copia en uso.
 Una copia instalada puede mostrar **INTERNAL EVALUATION — NOT FOR REDISTRIBUTION**
 o **NON-COMMERCIAL DISTRIBUTION — PROFILE NC**. Una *compilación de desarrollo*
 tiene su propia indicación. Acerca de enlaza a las condiciones completas,
@@ -46,23 +58,24 @@ aplican.
 
 ### 1.4 Novedades y ampliaciones de GeoCeDG respecto a GeoGebra
 
-La comparación se refiere a la revisión de GeoGebra de la que parte
-GeoCeDG. En la tabla, «Experimental o limitado» señala una capacidad
-con alcance acotado. Las curvas V2, los paneles de controles y la exportación
-DXF ampliada están disponibles en el perfil GeoCeDG con ese alcance.
+La comparación se limita al código de **GeoGebra Classic 5.4.928.0** fijado
+en la revisión `9b93256b7df401ff056c37b502d82df4d72b1522`.
 
-| Si quieres… | Qué tienes en GeoCeDG | Dónde verlo |
-| --- | --- | --- |
-| Construir y editar puntos, rectas, cónicas y polígonos | **Heredado de GeoGebra**. Herramientas de construcción dinámica organizadas para el perfil GeoCeDG. | Secciones 5 y 16 |
-| Trazar una trayectoria y colocar puntos que la sigan | **Nuevo en GeoCeDG; experimental o limitado**. Locus V2, Spline V2 y puntos asociados a una posición de la curva. | Secciones 6 a 8 |
-| Obtener intersecciones y conservar resultados asociados | **Ampliado en GeoCeDG; experimental o limitado**. Inspección de resultados V2, creación de puntos a partir de cruces admitidos y contactos por correspondencia con el generador. | Sección 8 |
-| Medir una curva completa o un recorrido | **Ampliado en GeoCeDG; experimental o limitado**. Longitudes V2, sentido de recorrido y vuelta completa cuando corresponda. | Sección 9 |
-| Revisar pasos y repetir paralelas o perpendiculares | **Ampliado en GeoCeDG**. Protocolo heredado, con memoria de referencia en cada herramienta y ayuda visual de orientación para resultados admitidos. | Secciones 3 y 5 |
-| Guardar, abrir o integrar otro dibujo | **Nuevo en GeoCeDG**. Identidad de documento `.cedg`, inserción comprobada y revisión experta con informe previo. | Sección 4 |
-| Preparar una lámina, acotar o intercambiar un DXF | **Nuevo en GeoCeDG**. Unidades de documento, cotas y láminas. **Experimental o limitado** para los tipos y aproximaciones del DXF 2D ampliado. | Secciones 4, 9 y 11 |
-| Reutilizar una herramienta | **Ampliado en GeoCeDG**. Herramientas de usuario heredadas, con gestión en el documento, acceso desde la barra y biblioteca cuando está instalada. | Sección 13 |
-| Organizar deslizadores, botones, casillas y campos | **Nuevo en GeoCeDG; experimental o limitado**. Paneles fijos o vinculados al lienzo en Gráficos 1. | Sección 12.6 |
-| Abrir un dibujo antiguo o usar una vista Classic | **Ampliado en GeoCeDG**. Apertura de `.ggb` y sesión Classic de diagnóstico con los límites de compatibilidad indicados. | Secciones 4 y 14 |
+| Capacidad | Aportación | Herramientas o comandos | Aplicación práctica | Enlace a la guía |
+| --- | --- | --- | --- | --- |
+| Geometría dinámica básica | **[G]** Los puntos, rectas, cónicas y polígonos conservan sus dependencias de construcción. | Punto, Segmento, Circunferencia, Polígono | Cambie un punto de partida y observe cómo se actualiza la construcción. | [Geometría básica](#basic-geometry) |
+| Curvas semánticas | **[N] [!]** Locus V2 y Spline V2 incorporan un parámetro con el que se pueden situar puntos y medir recorridos. | `LocusV2`, `SplineV2` | Trace un punto móvil o construya una curva suave a partir de una lista de puntos. | [Locus V2](#locus-v2/6.5) · [Spline V2](#spline-v2/7.2) |
+| Puntos e intersecciones | **[A] [!]** `Point` e `Intersect` admiten formas V2. Puede inspeccionar el resultado de una intersección antes de crear puntos. | `Point`, `Intersect`, Inspeccionar resultado rico | Elija una posición en la curva o examine las soluciones de una intersección. | [Puntos sobre curvas](#semantic-points-intersections-materialization/8.1) · [Resultados de intersección](#semantic-points-intersections-materialization/8.2) |
+| Tangencias y creación de puntos | **[G]** Herramienta ordinaria Tangentes. **[A] [!]** Los cruces V2 admitidos se pueden convertir en puntos. Ciertos contactos admiten una construcción explícita a partir del generador. | Tangentes, Crear punto de intersección seleccionado, `Intersect(L,r,D)` | Incorpore a la construcción un cruce admitido o un contacto comprobado. Una tangencia que aparece en el inspector no basta para crear un punto. | [Soluciones que pueden convertirse en puntos](#semantic-points-intersections-materialization/8.3) · [Puntos estructurales](#semantic-points-intersections-materialization/8.6) |
+| Longitud y recorrido | **[A] [!]** `Length` mide curvas V2 admitidas. **[N] [!]** `LocusLength` aporta información sobre el resultado y permite elegir el recorrido cuando corresponde. | `Length`, `LocusLength` | Mida una curva completa, el arco entre dos puntos o una vuelta de una rama periódica admitida. | [Recorrido y longitud](#lengths-and-measurements/9.2) |
+| Validez dinámica | **[G]** Los objetos se actualizan al cambiar sus datos de partida. **[A] [!]** Las posiciones V2 y los puntos de intersección seleccionados indican si pierden validez después de un cambio. | Inspeccionar definición…, Inspeccionar resultado rico | Compruebe si un punto conservado sigue disponible al mover un generador. | [Comprobar tras una edición](#locus-v2/6.4) · [Conservar o recuperar un punto](#semantic-points-intersections-materialization/8.6) |
+| Pasos, memoria y orientación | **[A]** El protocolo heredado ajusta el alto de las filas. Paralela y Perpendicular pueden recordar una referencia cada una durante la sesión. Los resultados admitidos pueden mostrar una indicación de sentido. | Protocolo de construcción, Paralela, Perpendicular, Mostrar indicación de orientación | Revise un paso de la construcción o repita una familia de rectas alineadas. | [Protocolo de construcción](#interface-and-workflow/3.8) · [Rectas y memoria de referencia](#basic-geometry/5.2) |
+| Unidades, cotas y láminas | **[N]** Defina la unidad del dibujo, añada cotas y prepare un marco ISO A. | Unidades del documento…, `AlignedDimension`, `LinearDimension`, `IsoABorder` | Prepare una lámina a escala con cotas legibles. | [Unidades](#documents/4.6) · [Cotas](#lengths-and-measurements/9.5) · [Láminas ISO A](#documents/4.7) |
+| Presentación y capas | **[A]** Los estilos de objeto y las capas numéricas heredadas se amplían con controles de presentación y una capa de trabajo. | Preferencias, Capa de trabajo, visibilidad de capas | Agrupe objetos por capa y oculte elementos auxiliares al revisar el dibujo. | [Presentación](#presentation-and-visualization) · [Capa de trabajo](#presentation-and-visualization/12.5) |
+| Documento nativo e inserción | **[N]** Guarde en `.cedg`, inserte construcciones admitidas con comprobaciones o examine un ensayo experto antes de decidir. **[!]** Cada vía admite determinados orígenes. | Guardar como…, Insertar archivo…, Insertar con revisión experta… | Incorpore una construcción existente y revise los cambios antes de confirmar cuando esté disponible la revisión experta. | [Formatos](#documents/4.1) · [Inserción](#documents/4.2) |
+| Controles y paneles | **[G]** Deslizadores, botones, casillas y campos de entrada. **[N] [!]** Paneles fijos o vinculados al lienzo para controles aptos en Gráficos 1. | Deslizador, Botón, Casilla de control, Casilla de Entrada, Disposición de controles | Mantenga juntos los controles al desplazarse por el dibujo. | [Paneles de controles](#presentation-and-visualization/12.6) |
+| Intercambio DXF | **[N] [!]** Exportación de objetos 2D admitidos, con información sobre fidelidad y aproximaciones. | Exportar geometría 2D como DXF (experimental)… | Entregue un trazado a CAD tras comprobar qué objetos se pueden representar. | [Exportación DXF](#dxf-export) |
+| Herramientas de usuario y Classic | **[G]** Las herramientas personalizadas se pueden guardar en dibujos `.ggb`. **[A]** GeoCeDG añade un gestor, acceso fijo desde la barra y una biblioteca en la copia instalada. También abre una sesión Classic de diagnóstico separada. | Herramientas de usuario, Abrir sesión de diagnóstico Classic | Reutilice una herramienta o compruebe una construcción antigua dentro de los límites de compatibilidad. | [Herramientas de usuario](#user-tools-and-automation) · [Classic](#classic-compatibility-and-diagnostics) |
 
 
 ---
@@ -91,13 +104,17 @@ espacio del producto. Su disposición por defecto ofrece:
 
 - la vista **Gráficos**, con ejes visibles y sin cuadrícula;
 - la vista **Álgebra**;
+- el **Protocolo de construcción**;
 - la barra de **Entrada algebraica**, con ayuda de entrada.
 
-Las vistas **Hoja de cálculo**, **CAS**, **Protocolo de construcción** y
-**Propiedades** están disponibles e inicialmente cerradas. Un documento guardado
-o una preferencia guardada pueden imponer otra disposición; **Vista → Restaurar
-distribución de Construcción** devuelve la organización del producto sin tocar la
-geometría.
+Las vistas **Hoja de Cálculo**, **Cálculo Simbólico (CAS)** y **Propiedades del
+objeto** están disponibles e inicialmente cerradas. Un documento o una
+preferencia guardados pueden abrir otra disposición. **Vista → Restaurar
+distribución de Construcción → Construcción CeDG** recupera la del producto.
+
+![GeoCeDG Desktop muestra las barras de herramientas, Álgebra, Gráficos, el Protocolo de construcción y la Entrada algebraica.](images/interface-desktop.png)
+
+*Captura de GeoCeDG Desktop en inglés. Álgebra y el Protocolo de construcción están a la izquierda del dibujo. La Entrada algebraica se encuentra debajo.*
 
 ### 2.3 Idioma del producto
 
@@ -160,10 +177,10 @@ Los seis son preferencias de usuario. Nunca se escriben en una construcción ni
 aparecen en un archivo guardado.
 
 
-### 2.7 Tu primera construcción
+### 2.7 La primera construcción
 
-Prueba una construcción que cambia contigo. En un dibujo nuevo, escribe
-cada línea en **Entrada** y pulsa **Intro** después de cada una.
+En un dibujo nuevo, escriba cada línea en **Entrada** y pulse **Intro**
+después de cada una.
 
 ```text
 A=(0,0)
@@ -172,22 +189,30 @@ s=Segment(A,B)
 d=Length(s)
 ```
 
-En Álgebra, comprueba que `d` vale 5. Elige **Mover**, arrastra `B` y mira
+En Álgebra, compruebe que `d` vale 5. Elija **Mueve**, arrastre `B` y observe
 cómo cambian el segmento y la medida. Si la barra de entrada está oculta,
-actívala desde **Automatización → Entrada algebraica**. Los ejemplos usan los nombres ingleses de los
-comandos y el punto como separador decimal dentro de los comandos.
+actívela desde **Automatización → Entrada algebraica**. Los ejemplos usan
+los nombres ingleses de los comandos y el punto como separador decimal.
 
 ### 2.8 Buscar en la guía
 
-Abre **Ayuda → Guía de usuario de GeoCeDG**. Usa el árbol de la izquierda
-para abrir una sección. Pulsa **Ctrl+F** o haz clic en el campo de búsqueda.
-Escribe, por ejemplo, `orientacion` o `LocusLength`. Cada resultado muestra
-la sección y un fragmento. Activa un resultado con el ratón o baja a la
-lista y pulsa **Intro**. El documento se desplaza y el árbol marca la sección.
+Abra **Ayuda → Guía de usuario de GeoCeDG**. Use el árbol de la izquierda
+para abrir una sección. Pulse **Ctrl+F** o haga clic en el campo de búsqueda.
+Escriba, por ejemplo, `orientacion` o `LocusLength`. Cada resultado muestra
+la sección y un fragmento. Active un resultado con el ratón o baje a la
+lista y pulse **Intro**. El documento se desplaza y el árbol marca la sección.
 La búsqueda ignora mayúsculas y tildes y muestra hasta 200 coincidencias.
-Afina la consulta si hay más. Pulsa **Esc** o usa el botón de
+Afine la consulta si hay más. Pulse **Esc** o use el botón de
 limpieza para volver a la navegación habitual. Tras cambiar el idioma
-del producto, vuelve a abrir la guía para consultar la otra edición.
+del producto, vuelva a abrir la guía para consultar la otra edición.
+
+Para seguir un enlace de la guía, haga clic en él. Con el teclado, pulse
+**Alt+Flecha derecha** o **Alt+Flecha izquierda** para recorrer los enlaces y
+**Intro** para abrir el seleccionado.
+
+![Una búsqueda en la edición inglesa resalta una coincidencia en la sección 9.2 y selecciona la sección en el árbol de la guía.](images/guide-navigation.png)
+
+*Captura de la guía en inglés. El resultado seleccionado resalta la coincidencia en el texto y marca su sección en el árbol.*
 
 ---
 
@@ -208,16 +233,16 @@ del producto, vuelve a abrir la guía para consultar la otra edición.
 
 ### 3.2 Menús
 
-Usa la barra de menús para encontrar herramientas por tarea. Las herramientas de Construcción se enumeran más abajo. En la sección 16 se indican sus entradas y los atajos.
+Use la barra de menús para encontrar herramientas por tarea. Las herramientas de Construcción se enumeran más abajo. La [referencia](#command-and-workflow-reference) indica las entradas y los atajos.
 
-| Menú | Qué puedes hacer |
+| Menú | Acciones disponibles |
 |---|---|
 | **Archivo** | Entradas directas: Nuevo archivo, Abrir…, Abrir reciente…, Abrir sesión de diagnóstico Classic, Guardar, Guardar como…, Vista previa de impresión…, Vista gráfica como imagen…, Exportar geometría 2D como DXF (experimental)…, PSTricks…, PGF/TikZ…, Asymptote…, Definir área de exportación…, Usar Export_1 y Export_2, Mostrar área de exportación, Borrar área de exportación, Definir área de exportación ISO A…, Usar el marco ISO A seleccionado, Cerrar. **Insertar** abre un submenú con Insertar archivo…, Insertar con revisión experta…, Aplicar estilos…. La revisión experta está disponible de forma predeterminada (sección 4.2). |
-| **Editar** | Deshacer, Rehacer, Mueve, Gira en torno a un punto, Capa de trabajo, Seleccionar objetos, Limitar/liberar punto, Borrar. Consulta la sección 16.6 para seleccionar y editar. |
+| **Editar** | Deshacer, Rehacer, Mueve, Gira en torno a un punto, Capa de trabajo, Seleccionar objetos, Limitar/liberar punto, Borrar. Consulte [Menús, preferencias y atajos](#command-and-workflow-reference/16.6). |
 | **Vista** | **Views** activa o desactiva Álgebra, Graphics2 (segunda vista gráfica), Hoja de Cálculo, Cálculo Simbólico (CAS) y Propiedades del objeto. **Visibilidad y estilo** — Mostrar/ocultar objeto, Mostrar/ocultar etiqueta, Copiar estilo visual, Mostrar indicación de orientación, Disposición de controles. **Navegación** — Desplaza Vista Gráfica, Zoom por rectángulo, Aproximar, Alejar, Acercar por factor, Alejar por factor, Vista estándar, Mostrar todos los objetos. **Inspección de la construcción** — Protocolo de construcción, Mostrar barra de navegación de la construcción, Inspeccionar definición…. **Configurar zoom de navegación...** configura los atajos y el factor de zoom. **Restaurar distribución de Construcción** restaura el espacio de Construcción CeDG. La entrada Procedimientos diédricos está deshabilitada. |
-| **Construcción** | Elige una herramienta por grupo en la tabla siguiente. |
+| **Construcción** | Elija una herramienta por grupo en la tabla siguiente. |
 | **Opciones** | **Presentación de Álgebra** (Valor, Descripción, Definición), Ordenar por, Redondeo, Etiquetado, Tamaño de fuente de Texto. Entradas directas: Preferencias…, Ejes, Cuadrícula, Idioma del producto…, Mostrar marcadores de soluciones, Crear automáticamente puntos admisibles de nuevas consultas explícitas, Unidades del documento…, Guardar la configuración. |
-| **Automatización** | Entrada algebraica, Laboratorio heredado (sesión separada), Propiedades y guiones del objeto…. Abre **Herramientas de usuario** para gestionar las del documento o usar la Biblioteca GeoCeDG (sección 13). |
+| **Automatización** | Entrada algebraica, Laboratorio heredado (sesión separada), Propiedades y guiones del objeto…. Abra **Herramientas de usuario** para gestionar las del documento o usar la [Biblioteca GeoCeDG](#user-tools-and-automation/13.2). |
 | **Ayuda** | Ayuda de entrada, Ayuda de herramienta actual, Lista de comandos, Guía de usuario de GeoCeDG, Atajos de teclado, Acerca de GeoCeDG. |
 
 | Submenú de Construcción | Entradas |
@@ -238,7 +263,7 @@ Usa la barra de menús para encontrar herramientas por tarea. Las herramientas d
 
 ### 3.3 Barra de herramientas y desplegables
 
-Abre la flecha junto a una herramienta para ver las demás de su grupo. La tabla describe la barra predeterminada de izquierda a derecha.
+Abra la flecha junto a una herramienta para ver las demás de su grupo. La tabla describe la barra predeterminada de izquierda a derecha.
 
 | Grupo | Herramientas |
 |---|---|
@@ -259,7 +284,7 @@ Los desplegables de Curvas semánticas y Navegación muestran la última herrami
 
 ### 3.4 Seleccionar, crear y editar
 
-Seleccione con la herramienta **Mover**. Cree eligiendo una herramienta y
+Seleccione con la herramienta **Mueve**. Cree eligiendo una herramienta y
 marcando los datos requeridos, o escribiendo una definición en Entrada
 algebraica.
 
@@ -297,14 +322,14 @@ explica cuando corresponde.
 
 Edita una definición en Álgebra, por ejemplo con **F2**. GeoCeDG actualiza
 los objetos que dependen de ella. Si una construcción semántica depende
-del objeto y la edición cambia las entradas registradas, revisa las
+del objeto y la edición cambia las entradas registradas, revise las
 opciones del diálogo. **Conservar identidad** mantiene el objeto y
 actualiza sus dependientes si la edición lo permite. **Reemplazar** le
 da una identidad nueva y enumera los objetos afectados. **Cancelar**
 deja el dibujo como estaba. Un tipo incompatible o una definición
 circular se rechazan.
 
-**Ejemplo.** En un dibujo nuevo, introduce las líneas una a una.
+**Ejemplo.** En un dibujo nuevo, introduzca las líneas una a una.
 
 ```text
 c=Circle((0,0),2)
@@ -316,40 +341,44 @@ a=LocusV2(E,C)
 ```
 
 Redefine `E` como `E=Midpoint(D,C+(1,0))`. Compara el lugar antes y
-después o usa Deshacer para pasar de uno a otro. Ambas definiciones
+después o use Deshacer para pasar de uno a otro. Ambas definiciones
 dependen del mismo generador `C`. Un punto creado a partir de una
 intersección de curvas semánticas sigue disponible mientras su propia
-solución sea elegible. Si queda indefinido, consulta las secciones 8.6 y 8.7.
+solución sea elegible. Si queda indefinido, consulte [Materialización](#semantic-points-intersections-materialization/8.6) e [Intersecciones de dos curvas](#semantic-points-intersections-materialization/8.7).
 
 ### 3.7 Buscar un objeto y leer su ayuda en Álgebra
 
-Usa **Buscar por nombre** en la barra de Álgebra. Escribe parte del nombre
-o el nombre completo, incluido el subíndice si lo hay. Pulsa **Intro** o usa
+Use **Buscar por nombre** en la barra de Álgebra. Escriba parte del nombre
+o el nombre completo, incluido el subíndice si lo hay. Pulse **Intro** o use
 las flechas de coincidencia anterior y siguiente para seleccionar y llevar
-a la vista la fila. Borra el texto para terminar la búsqueda. Esta función
+a la vista la fila. Borre el texto para terminar la búsqueda. Esta función
 busca los nombres visibles de los objetos de la lista.
 
-Deja el puntero sobre una fila para consultar el **Valor** o la **Definición**
+Deje el puntero sobre una fila para consultar el **Valor** o la **Definición**
 que complementa el modo de visualización actual. Un objeto indefinido o
 sin definición disponible muestra el aviso correspondiente.
 
 ### 3.8 Leer el Protocolo de construcción
 
-Abre **Vista → Inspección de la construcción → Protocolo de construcción**.
-Usa la tabla para leer los pasos o muestra la barra de navegación de la
+Abra **Vista → Inspección de la construcción → Protocolo de construcción**.
+Use la tabla para leer los pasos o muestre la barra de navegación de la
 construcción en ese mismo submenú. El protocolo ajusta la altura cuando
-una descripción ocupa varias líneas. Puedes cambiar el tamaño de su letra
+una descripción ocupa varias líneas. Puede cambiar el tamaño de su letra
 en **Preferencias → Disposición y presentación**. Para cambiar el resultado,
-vuelve a la construcción y edita los objetos de partida.
+vuelva a la construcción y edite los objetos de partida.
 
 ### 3.9 Insertar un número existente en un diálogo
 
-Usa **Seleccionar objeto** en el campo de parámetro de un punto por dirección
+Use **Seleccionar objeto** en el campo de parámetro de un punto por dirección
 sobre Locus V2, de ángulo o factor al rotar o aplicar homotecia a un Locus V2 o Spline V2,
-o de grado de Spline V2. Elige la fila del número o ángulo en Álgebra. El nombre se inserta
-donde está el cursor o reemplaza el texto seleccionado. Completa la expresión
-y confirma. Por ejemplo, si ya tienes `d=3`, elige su fila en el diálogo
-de grado de Spline V2. GeoCeDG comprueba el grado cuando confirmas.
+o de grado de Spline V2. Elija la fila del número o ángulo en Álgebra. El nombre
+se inserta donde está el cursor o reemplaza el texto seleccionado. Complete la
+expresión y confirme. Por ejemplo, si ya tiene `d=3`, elija su fila en el diálogo
+de grado de Spline V2. GeoCeDG comprueba el grado al confirmar.
+
+![El campo del grado de Spline V2 muestra d, el número elegido en Álgebra.](images/numeric-reference.png)
+
+*Captura de GeoCeDG Desktop en inglés. El campo del grado contiene el nombre d capturado desde Álgebra.*
 
 **Esc** desarma la captura y una segunda pulsación cancela el diálogo.
 Si pulsar un deslizador en Gráficos 1 no ofrece una referencia, selecciónalo
@@ -367,11 +396,11 @@ en Álgebra. El botón solo aparece en los cuatro campos indicados.
 
 ### 4.1 Formato nativo y formato de compatibilidad
 
-`.cedg` es la extensión nativa de documento de GeoCeDG. Guarde su trabajo como
+**[N]** `.cedg` es la extensión nativa de documento de GeoCeDG. Guarde su trabajo como
 `.cedg`.
 
 `.ggb` se acepta como entrada de compatibilidad. Abrirlo conserva el
-archivo original. Usa **Guardar como…** para guardar tu trabajo en
+archivo original. Use **Guardar como…** para guardar el trabajo en
 un archivo nativo `.cedg`.
 
 La extensión es una identidad de producto y de entrada/salida. No cambia el
@@ -426,7 +455,7 @@ unidad física, la barra de estado lo indica (sección 4.6). La inserción es un
 solo paso de Deshacer, conserva la identidad del dibujo y no cambia lo que haya
 copiado; una lámina ISO A se inserta sin el vínculo con el área de exportación de
 su documento. Tras una inserción la selección se vacía y queda activa la
-herramienta Mover. Si la inserción falla una vez iniciada, GeoCeDG restaura el
+herramienta **Mueve**. Si la inserción falla una vez iniciada, GeoCeDG restaura el
 dibujo y su historial de Deshacer y lo indica. En el caso poco frecuente de que la
 restauración no pueda verificarse, el dibujo queda aislado: no puede editarse,
 guardarse ni exportarse, y solo puede guardar la última versión verificada en un
@@ -440,27 +469,31 @@ verificado y ningún paso posterior de la construcción usa el texto. La
 confirmación muestra el texto antes y después del cambio. El texto estático
 conserva su contenido y posición. El dibujo actual conserva su modo angular y
 su precisión. El pegado habitual asigna los objetos a la vista Gráfica activa.
-Su pertenencia a las demás vistas Gráficas puede cambiar. Puedes cancelar o
+Su pertenencia a las demás vistas Gráficas puede cambiar. Puede cancelar o
 cerrar la confirmación para conservar el dibujo tal como está.
 
-Si el aviso ofrece reintentar con formatos iguales, abre el dibujo de origen,
-iguala el formato angular al del dibujo actual, revisa la construcción y su
-presentación y guarda una copia. Puedes intentar insertar esa copia. Se
+Si el aviso ofrece reintentar con formatos iguales, abra el dibujo de origen,
+iguale el formato angular al del dibujo actual, revise la construcción y su
+presentación y guarde una copia. Puede intentar insertar esa copia. Se
 aplicarán las comprobaciones habituales. Los objetos excluidos, los guiones y
 la compatibilidad de herramientas sin determinar tienen diagnósticos propios.
 
-**Insertar con revisión experta…** está disponible en **Archivo → Insertar**.
+**[N] [!]** **Insertar con revisión experta…** está disponible en **Archivo → Insertar**.
 Admite construcciones pasivas 2D que superen las comprobaciones de integridad.
-Prueba la inserción sobre una copia del dibujo actual, incluidos los cambios
-sin guardar. Revisa los objetos, las diferencias y las incertidumbres antes
+El programa prueba la inserción sobre una copia del dibujo actual, incluidos
+los cambios sin guardar. Revise los objetos, las diferencias y las incertidumbres antes
 de confirmar. Cuando está disponible, la vista previa muestra el dibujo del
-ensayo. Puedes aceptar cambios de capa, vista, presentación o geometría válida
+ensayo. Puede aceptar cambios de capa, vista, presentación o geometría válida
 que el informe identifique. Una revisión bloqueada indica la
 condición que impide insertar. Cancelar deja el dibujo como estaba. Una
-inserción correcta ocupa un paso de Deshacer. Revisa el dibujo y elige
+inserción correcta ocupa un paso de Deshacer. Revise el dibujo y elija
 **Guardar como…** para conservar una copia separada. Ambas vías de
 inserción rechazan un origen con paneles de controles. La revisión experta
 también rechaza un dibujo receptor con paneles (sección 12.6).
+
+![Dos documentos alimentan un ensayo en una copia. Confirmar incorpora sus objetos al dibujo actual. Cancelar conserva el dibujo actual.](images/insertion-review-flow.png)
+
+*Esquema de inserción experta. 1. Elija un origen. 2. Revise el ensayo en una copia. 3. Confirme una inserción disponible o cancele.*
 
 **Aplicar estilos…** copia color, estilo de línea, grosor de línea, estilo de
 punto, tamaño de punto y opacidad de relleno desde los estilos predeterminados de
@@ -474,7 +507,7 @@ las unidades nunca cambian. Un solo Deshacer restaura los estilos anteriores; un
 documento que no puede leerse no cambia nada.
 
 En Preferencias, la sección Predeterminados permite elegir estilos de creación
-distintos para Locus V2 y SplineV2. Guardar configuración conserva tus estilos
+distintos para Locus V2 y SplineV2. Guardar la configuración conserva sus estilos
 entre sesiones. Los predeterminados de un dibujo guardado tienen prioridad al
 crear objetos en él. Los objetos que ya existen conservan su presentación.
 El modo de etiqueta elegido para un deslizador, como «Nombre + valor», se
@@ -634,7 +667,7 @@ generación o la tolerancia no puede cumplirse, no se genera código.
 
 ### 4.6 Unidades del documento
 
-Un documento puede registrar qué significa físicamente una unidad del modelo.
+**[N]** Un documento puede registrar qué significa físicamente una unidad del modelo.
 Las unidades son metadatos del documento: cambiarlas reinterpreta el modelo y
 nunca convierte coordenadas, valores, definiciones, identidades ni el orden de
 construcción, y ninguna orden de construcción las lee.
@@ -722,7 +755,7 @@ afirma una escala física, y DXF sigue sin unidades.
 IsoABorder( <Point>, <ISO A Index>, <Landscape>, <Scale Numerator>, <Scale Denominator>, <Model Units per Millimetre>, <Inner Frame> )
 ```
 
-Una **lámina ISO A** dibuja el papel de una lámina de la serie A de ISO 216
+**[N]** Una **lámina ISO A** dibuja el papel de una lámina de la serie A de ISO 216
 (A0 a A10) a una escala de dibujo, con un marco interior opcional y una
 etiqueta como `A3 — 1:50`. Es una construcción ordinaria que depende del punto
 de su esquina superior izquierda. En español el comando también se escribe
@@ -863,7 +896,7 @@ desactivada por defecto, es una preferencia de usuario que se conserva al
 reiniciar y nunca aparece en un archivo guardado, una exportación, una
 impresión ni el portapapeles.
 
-**Referencia recordada.** En Gráficos 1 de Windows, **Ctrl+clic** en **Paralela**
+**[A] Referencia recordada.** En Gráficos 1 de Windows, **Ctrl+clic** en **Paralela**
 o **Perpendicular**, en la barra o su desplegable, activa o desactiva la memoria
 de esa herramienta. Un clic normal en la barra aplica la elección de la sesión.
 La barra de estado muestra el modo con memoria y la disponibilidad de su
@@ -918,7 +951,7 @@ están en **Construcción → Parámetros y controladores**. Un parámetro es la
 normal para gobernar un lugar geométrico, una transformación o cualquier relación
 que quiera estudiar dinámicamente.
 
-**Ángulo de amplitud dada** en Gráficos 1 oculta el ángulo que crea y mantiene
+**Ángulo dada su amplitud** en Gráficos 1 oculta el ángulo que crea y mantiene
 visible el punto girado. El ángulo es un objeto ordinario: aparece en la Vista
 Algebraica, donde puede mostrarlo, y se guarda oculto o visible como cualquier
 otro objeto. El comando `Angle(B, A, 40°)`, los guiones y la herramienta en
@@ -964,16 +997,16 @@ por ejemplo `SplineV2(l1)` o `SplineV2(l1,4)`.
 
 ### 6.1 Trazar el movimiento de un punto
 
-Un Locus V2 traza las posiciones de un punto mientras cambia otro valor.
-Por ejemplo, puedes trazar el punto medio de un segmento móvil. El
-objeto que haces variar es el **generador**. El **dominio** indica a
+**[N] [!]** Un Locus V2 traza las posiciones de un punto mientras cambia otro valor.
+Por ejemplo, puede trazar el punto medio de un segmento móvil. El
+objeto que varía es el **generador**. El **dominio** indica a
 GeoCeDG hasta dónde puede variar.
 
 ### 6.2 Medir o intersecar el trazado
 
-Puedes medir un Locus V2, inspeccionar sus intersecciones o colocar puntos
+Puede medir un Locus V2, inspeccionar sus intersecciones o colocar puntos
 en posiciones concretas del recorrido. Ampliar la vista ayuda a ver la
-curva y conserva las medidas y las intersecciones. Para un lugar geométrico ordinario de GeoGebra, escribe `Locus(P,Q)`
+curva y conserva las medidas y las intersecciones. Para un lugar geométrico ordinario de GeoGebra, escriba `Locus(P,Q)`
 con `Q` sobre un recorrido y `P` un punto que dependa de él.
 
 ### 6.3 Identificar una posición en el trazado
@@ -987,15 +1020,14 @@ cada uno. Los límites del deslizador son independientes de este dominio.
 
 ### 6.4 Comprobar una posición después de editar
 
-Al editar un objeto de partida se actualizan la curva y sus resultados.
+**[A] [!]** Al editar un objeto de partida se actualizan la curva y sus resultados.
 Si una posición previa queda temporalmente fuera de alcance, el inspector
-de definición la muestra como conservada pero inactiva. Restaura los
-valores de partida si necesitas recuperarla. Consulta la sección 8
-para los puntos de intersección.
+de definición la muestra como conservada pero inactiva. Restaure los
+valores de partida para recuperarla. Consulte [Puntos sobre curvas](#semantic-points-intersections-materialization/8.1).
 
 ### 6.5 Crear un Locus V2
 
-En **Construcción → Curvas semánticas → Locus V2**, selecciona primero el
+En **Construcción → Curvas semánticas → Locus V2**, seleccione primero el
 punto dependiente y después su generador sobre el recorrido. Para indicar
 un dominio numérico usa la Entrada algebraica.
 
@@ -1053,10 +1085,11 @@ genérico: no se implican operaciones que esperen un objeto camino arbitrario.
 
 ### 7.1 Construir una curva suave a partir de puntos
 
-Usa **Spline V2** para unir una secuencia de puntos con una curva suave.
-Después puedes medirla o construir sobre ella con las operaciones de las
-secciones 8 y 9. Puedes crear una curva abierta o cerrada. Para una spline ordinaria de GeoGebra, escribe `Spline({A,B,C,D})` con
-cuatro puntos existentes en el orden en que quieras unirlos.
+**[N] [!]** Use **Spline V2** para unir una secuencia de puntos con una curva suave.
+Después puede [construir sobre ella](#semantic-points-intersections-materialization/8.1)
+o [medirla](#lengths-and-measurements/9.1). Puede crear una curva abierta o
+cerrada. Para una spline ordinaria de GeoGebra, escriba `Spline({A,B,C,D})` con
+cuatro puntos existentes en el orden en que quiera unirlos.
 
 ### 7.2 Crear una Spline V2
 
@@ -1113,9 +1146,9 @@ La clave de rama por defecto de una Spline V2 es `spline-v2/main`.
 
 ### 7.3 Elegir puntos para construir o medir
 
-Los puntos que das a `SplineV2` definen la curva. Puedes usarlos como
+Los puntos que se pasan a `SplineV2` definen la curva. Puede usarlos como
 extremos de una medida cuando identifican una posición única en la lista
-de puntos. Para crear un punto que siga la curva, usa la herramienta o
+de puntos. Para crear un punto que siga la curva, use la herramienta o
 el comando que se explica a continuación. Las mismas coordenadas pueden
 corresponder a varias posiciones del recorrido.
 
@@ -1127,7 +1160,7 @@ Hay dos vías:
   *trazo* de la curva. Hacer clic dentro de una curva cerrada no la selecciona.
   Si la preimagen semántica es única, se crea un punto. Si hay varias
   preimágenes, elija explícitamente o cancele; nada se elige por proximidad. Ese
-  punto puede arrastrarse con Mover y conserva su identidad mientras la
+  punto puede arrastrarse con **Mueve** y conserva su identidad mientras la
   continuación sea única.
 - **Parámetro explícito.** Use la forma con dirección, que es exacta y
   automatizable:
@@ -1182,10 +1215,14 @@ disponible en la sesión de diagnóstico Classic.
 
 ### 8.1 Puntos semánticos
 
-Un **punto semántico** identifica una posición en un Locus V2 o una Spline V2
+**[A] [!]** Un **punto semántico** identifica una posición en un Locus V2 o una Spline V2
 mediante la curva y el lugar que ocupa en el recorrido. En un cruce, dos
 posiciones del recorrido pueden tener las mismas coordenadas. El punto conserva
 la posición elegida y puede servir para medir un recorrido (§9.3).
+
+![Dos vistas muestran una spline horizontal en h=0 y h=2. P y Q suben con la curva y conservan sus posiciones en ella.](images/semantic-point-address.png)
+
+*Esquema de la spline de la sección 7.5. Al cambiar h, la curva y sus puntos asociados se desplazan juntos.*
 
 **Colocar con un clic.** Con **Punto** o **Punto en objeto**, pulse sobre una
 curva admitida. Si GeoCeDG puede colocar el punto directamente, lo crea. Si
@@ -1238,7 +1275,7 @@ su clave de rama y su parámetro. La sección 7.4 da la clave de Spline V2.
 nuevos sobre objetos admitidos. Desactive la casilla para crear un punto fijo
 que sigue dependiendo de su origen. El panel conserva las opciones de
 referencia y arrastre mientras trabaja en el documento actual. Para mover un punto desbloqueado,
-cambie a **Mover** e inicie otro gesto. Las construcciones Locus V2 y Spline V2
+cambie a **Mueve** e inicie otro gesto. Las construcciones Locus V2 y Spline V2
 admitidas conservan la misma rama y el mismo tramo durante el arrastre,
 incluso al pasar por la unión de un recorrido periódico cuando la continuidad
 está establecida. El puntero puede separarse del trazo. Ante un hueco, una
@@ -1283,7 +1320,7 @@ guardar. Conserve el original de GeoCeDG cuando abra una copia en otro lector.
 
 ### 8.2 Resultados ricos de intersección
 
-`Intersect(...)` aplicado a una curva semántica no devuelve una lista de puntos.
+**[A] [!]** `Intersect(...)` aplicado a una curva semántica no devuelve una lista de puntos.
 Devuelve un **resultado rico de intersección**: un objeto que porta cada raíz
 hallada por el solucionador junto con su evidencia —rama y componente de cada
 lado, parámetros semánticos, residuo, veredicto de admisibilidad y un **token
@@ -1307,13 +1344,13 @@ sus entradas.
 
 ### 8.3 Saber qué soluciones pueden convertirse en puntos
 
-En el inspector, **Certificada; elegible** indica que puedes crear un punto
-a partir de esa solución. **Solo resultado rico** indica que puedes
+En el inspector, **Certificada; elegible** indica que puede crear un punto
+a partir de esa solución. **Solo resultado rico** indica que puede
 consultarla. El inspector también identifica las soluciones que ya tienen
 punto y avisa si una edición ha dejado desactualizado el resultado mostrado.
 
-Consulta el indicador de completitud si tu tarea requiere todas las
-soluciones. Puedes utilizar un cruce elegible aunque el resultado no pueda
+Consulte el indicador de completitud si necesita todas las
+soluciones. Puede utilizar un cruce elegible aunque el resultado no pueda
 demostrar que encontró todos los cruces. Un contacto o una solución
 ambigua pueden aparecer en la lista sin ofrecer creación de un punto.
 
@@ -1333,6 +1370,10 @@ inspector lista las soluciones con su evidencia y permite:
 El inspector permanece disponible para continuar después de crear un punto. Las
 soluciones ya materializadas se identifican como tales.
 
+![Una spline recta y una circunferencia unitaria se cruzan dos veces. El segundo panel muestra el punto X creado en el cruce izquierdo.](images/intersection-inspector-flow.png)
+
+*Esquema del ejemplo de la sección 8.2. Inspeccione los dos cruces, seleccione la solución izquierda y cree un punto para usarlo en el dibujo.*
+
 **Mostrar marcadores de soluciones** muestra marcadores transitorios de las
 soluciones candidatas. Los marcadores son solo presentación: no son objetos, no
 se guardan y no confieren admisibilidad.
@@ -1347,7 +1388,7 @@ visibles o del número de fila.
 
 ### 8.6 Materialización
 
-Crear un punto a partir de una solución elegible permite usarlo como
+**[A] [!]** Crear un punto a partir de una solución elegible permite usarlo como
 entrada de otra construcción. El punto sigue esa solución al cambiar
 sus objetos de partida.
 
@@ -1394,7 +1435,7 @@ S=Point(L,K)
 T=Intersect(L,g,K)
 ```
 
-Arrastra `K` por la circunferencia. Comprueba en Álgebra que `S` y `T`
+Arrastre `K` por la circunferencia. Compruebe en Álgebra que `S` y `T`
 muestran las coordenadas de `(x(K),3)` en cada posición. El generador `N`
 permanece en su sitio.
 
@@ -1475,7 +1516,7 @@ del alcance de una guía de usuario.
 
 ### 9.1 Elegir el tipo de medida
 
-**Nuevo en GeoCeDG.** Use `LocusLength` para consultar el valor medido, qué
+**[N] [!]** Use `LocusLength` para consultar el valor medido, qué
 parte del recorrido se ha cubierto y las limitaciones del cálculo. Funciona
 con Locus V2 y Spline V2. Las longitudes se expresan en unidades de construcción
 y son no negativas en ambos sentidos. Si necesita un número para otro cálculo,
@@ -1592,6 +1633,10 @@ estos valores. El sentido lo define la construcción y no hay una opción de
 recorrido más corto. El comando no admite un argumento de rama ni de
 tolerancia. Use las definiciones de los puntos para elegir las posiciones.
 
+![Tres circunferencias unitarias muestran el arco de avance por la unión, el arco inverso y una vuelta completa desde A.](images/locuslength-cycle.png)
+
+*Esquema del ejemplo periódico. F cruza la unión en ±π, R recorre el otro arco y C da una vuelta hasta volver a A.*
+
 ### 9.3 Elegir extremos válidos y diagnosticar un resultado sin valor
 
 Para una longitud parcial, cada punto debe identificar una posición de la
@@ -1647,7 +1692,7 @@ AlignedDimension( <Point>, <Point>, <Offset> [, <Overshoot>, <Gap>] )
 LinearDimension( <Point>, <Point>, <Line or Vector>, <Offset> [, <Overshoot>, <Gap>] )
 ```
 
-Una **cota alineada** mide la distancia verdadera entre dos puntos; una **cota
+**[N]** Una **cota alineada** mide la distancia verdadera entre dos puntos; una **cota
 lineal** la mide según una dirección dada por una recta, un segmento, una
 semirrecta, un eje o un vector. Ambas dibujan una cota de ingeniería: una línea
 de cota con una flecha en cada extremo, una línea de referencia en cada punto y
@@ -1824,7 +1869,7 @@ selecciónela.
 
 ### 11.1 Qué es y qué no es la exportación DXF
 
-**Archivo → Exportar geometría 2D como DXF
+**[N] [!]** **Archivo → Exportar geometría 2D como DXF
 (experimental)…** escribe un dibujo DXF ASCII (AC1015) a partir de geometría 2D
 del modelo ya resuelta.
 
@@ -2083,7 +2128,7 @@ proveniencia.
 
 ### 12.5 Capas y capa de trabajo
 
-Cada objeto está en una capa de 0 a 99; los objetos de capas más altas se
+**[A]** Cada objeto está en una capa de 0 a 99; los objetos de capas más altas se
 dibujan sobre los de capas más bajas. GeoCeDG añade una **capa de trabajo** para
 la sesión actual y **capas ocultas** que se guardan con el documento.
 
@@ -2096,11 +2141,11 @@ la sesión actual y **capas ocultas** que se guardan con el documento.
   hay ninguna, en la capa más baja que no está oculta. Deshacer, rehacer y
   redefinir conservan las capas guardadas en el documento, y **Pegar** conserva
   las capas de los objetos copiados.
-- **Cómo elegirla.** **Capa de trabajo** está en el grupo Mover de la barra de
+- **Cómo elegirla.** **Capa de trabajo** está en el grupo **Mueve** de la barra de
   herramientas, después de Mover y Gira en torno a un punto. Es una
   herramienta de un solo uso: haga clic en un objeto para usar su capa, o en un
   espacio vacío para elegir una capa de 0 a 99. Tras una elección válida la
-  herramienta vuelve a Mover; cancelar no cambia nada. Hacer clic en
+  herramienta vuelve a **Mueve**. Cancelar deja la capa anterior. Hacer clic en
   **Capa: n** en la barra de estado abre el mismo selector.
 - **Ocultar una capa.** En la Vista algebraica, elija **Ordenar por capa**: los
   grupos de capa se listan en orden numérico (la capa 10 tras la 9, no tras la
@@ -2136,16 +2181,16 @@ programa de CAD las muestra ocultas (sección 11.8).
 
 ### 12.6 Organizar controles en un panel
 
-En **Gráficos 1**, activa **Mover** y abre **Vista → Visibilidad y estilo →
-Disposición de controles**. Crea un panel. Con el gestor abierto, arrastra el
+**[N] [!]** En **Gráficos 1**, active **Mueve** y abra **Vista → Visibilidad y estilo →
+Disposición de controles**. Cree un panel. Con el gestor abierto, arrastre el
 encabezado para moverlo, el tirador inferior derecho para cambiar su
 tamaño o un miembro para recolocarlo dentro del panel. Con el panel
-elegido, pulsa primero un control suelto en Gráficos 1 y luego **Añadir
-control**. Puedes añadir deslizadores numéricos, botones, casillas
+elegido, pulse primero un control suelto en Gráficos 1 y luego **Añadir
+control**. Puede añadir deslizadores numéricos, botones, casillas
 independientes y campos de entrada con posición absoluta y disponibles en
-esa vista. Un control pertenece a un solo panel. Usa **Separar control**
+esa vista. Un control pertenece a un solo panel. Use **Separar control**
 para devolverlo a la vista como control suelto. Si queda fuera de la vista,
-elige entre colocarlo en ella y recuperar su posición de respaldo.
+elija entre colocarlo en ella y recuperar su posición de respaldo.
 
 | Opción del gestor | Qué hace |
 | --- | --- |
@@ -2156,20 +2201,28 @@ elige entre colocarlo en ella y recuperar su posición de respaldo.
 | Llevar panel a la vista | Recupera un panel que quedó fuera del área visible. |
 | Eliminar panel | Quita el panel y devuelve sus controles a la vista. |
 
+![Antes y después de desplazar la vista, el panel fijo F permanece en el mismo sitio. El panel W se mueve con los ejes y conserva su tamaño.](images/control-panel-anchors.png)
+
+*Esquema de un desplazamiento en Gráficos 1. F está fijo a la ventana. W está vinculado al lienzo.*
+
 Los paneles nuevos quedan delante. Un panel superior bloquea los clics en
 los controles cubiertos, incluso si se ven a través del fondo. Un campo de
 entrada parcialmente cubierto tampoco se puede editar. Con clic derecho
-en un miembro accesible puedes abrir **Propiedades…** de ese control o
-**Abrir disposición de controles**. En el fondo o el encabezado puedes
-abrir el gestor del panel. Termina primero cualquier captura o edición
+en un miembro accesible puede abrir **Propiedades…** de ese control o
+**Abrir disposición de controles**. En el fondo o el encabezado puede
+abrir el gestor del panel. Termine primero cualquier captura o edición
 activa. Los cambios confirmados admiten Deshacer y Rehacer.
 
-**Prueba rápida.** Crea un deslizador con la herramienta **Deslizador**,
-colócalo fuera del panel, añádelo y mueve el panel. Comprueba que el control
-viaja con él y sigue cambiando el valor en Álgebra. Guarda en `.cedg`,
-reabre y comprueba que sigue agrupado. La sesión Classic de la misma
+**Prueba rápida.** Cree un deslizador con la herramienta **Deslizador**,
+colóquelo fuera del panel, añádalo y mueva el panel. Compruebe que el control
+se desplaza con él y sigue cambiando el valor en Álgebra. Guarde en `.cedg`,
+vuelva a abrir el dibujo y compruebe que sigue agrupado. La sesión Classic de la misma
 distribución conserva la disposición al guardar y muestra los controles en
 sus posiciones de respaldo.
+
+![El gestor de disposición muestra el deslizador d como miembro de un panel al volver a abrir el dibujo.](images/control-panel.png)
+
+*Captura de GeoCeDG Desktop en inglés. Al volver a abrir el dibujo, el gestor sigue mostrando el deslizador d en el panel.*
 
 Gráficos 1 admite hasta 32 paneles y 256 controles agrupados en total.
 Los paneles no se anidan ni se
@@ -2179,20 +2232,20 @@ dibujo receptor puede conservarlos solo por las vías comprobadas que lo
 admitan. La revisión experta pasiva rechaza un receptor con paneles.
 Al abrir y volver a guardar con una versión anterior se puede perder la
 disposición o la apariencia, volver a bloquear la posición de una casilla
-o mostrar solo el valor de un deslizador con definición. Conserva el
+o mostrar solo el valor de un deslizador con definición. Conserve el
 archivo original.
 
 ### 12.7 Ajustar rótulos y leer indicadores
 
-- Con **Mover**, arrastra el rótulo visible de un objeto para separarlo del
+- Con **Mueve**, arrastre el rótulo visible de un objeto para separarlo del
   dibujo. Al guardar se conserva el desplazamiento. Si la vista recorta
-  la posición cerca del borde, amplía la zona visible para recuperarla.
+  la posición cerca del borde, amplíe la zona visible para recuperarla.
 - En el menú compacto de grosor, **Esc** cierra el menú y descarta el texto
-  pendiente. Conserva la herramienta y los cambios que ya confirmaste.
-- Selecciona un punto definido de una intersección ordinaria de recta y
+  pendiente. Se conservan la herramienta y los cambios ya confirmados.
+- Seleccione un punto definido de una intersección ordinaria de recta y
   cónica para ver la insignia con su número actual. Ese número describe
-  el orden de las salidas que ves. Para intersecciones de curvas V2 usa
-  el inspector de la sección 8.
+  el orden de las salidas visibles. Para intersecciones de curvas V2 use
+  el [inspector](#semantic-points-intersections-materialization/8.4).
 
 ---
 
@@ -2304,7 +2357,7 @@ mediante gestos de ratón sintéticos.
 
 ### 14.1 Para qué sirve la sesión de diagnóstico Classic
 
-**Archivo → Abrir sesión de diagnóstico Classic** lanza una aplicación Classic
+**[A]** **Archivo → Abrir sesión de diagnóstico Classic** lanza una aplicación Classic
 heredada en un **proceso separado con preferencias aisladas**. Existe para que
 pueda comparar comportamientos con la línea base heredada, abrir un documento
 heredado con herramientas heredadas y usar facilidades heredadas que el perfil de
@@ -2421,17 +2474,17 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
   use **Propiedades** (12.3).
 
 
-### 15.1 Si algo no funciona como esperabas
+### 15.1 Si algo no funciona como esperaba
 
 | Síntoma | Qué comprobar |
 | --- | --- |
-| No ves una herramienta o una vista | Abre el menú de referencia de la sección 16. Comprueba el perfil, la vista activa y los tipos de objeto seleccionados. |
-| Un comando da error de sintaxis | Comprueba el nombre inglés, el orden de los argumentos y los separadores. Consulta la ayuda de entrada y la sección 16. |
-| La longitud aparece indefinida | Comprueba que los extremos pertenezcan al recorrido adecuado y estén disponibles. La sección 9 explica las fronteras y las vueltas completas. |
-| Un cruce aparece en el inspector pero no puedes crear un punto | Lee su estado en la sección 8. Un contacto o un resultado ambiguo puede requerir otra construcción. |
-| No puedes pulsar un control | Comprueba si otro panel lo cubre, si el panel está oculto o si tienes una herramienta o edición activa. |
-| Un archivo no se puede insertar | Revisa el diagnóstico, los formatos, las unidades y si el origen contiene paneles. Para abrirlo en lugar de insertarlo usa **Archivo → Abrir…**. |
-| No aparece un objeto en DXF | Revisa el alcance de la exportación y el informe antes de confirmar. Véase la sección 11. |
+| No aparece una herramienta o una vista | Consulte [Menús, preferencias y atajos](#command-and-workflow-reference/16.6). Compruebe el perfil, la vista activa y los tipos de objeto seleccionados. |
+| Un comando da error de sintaxis | Compruebe el nombre inglés, el orden de los argumentos y los separadores. Consulte la ayuda de entrada y la [referencia de sintaxis](#command-and-workflow-reference/16.2). |
+| La longitud aparece indefinida | Compruebe que los extremos pertenezcan al recorrido adecuado y estén disponibles. Véase [Recorrido y longitud](#lengths-and-measurements/9.2). |
+| Un cruce aparece en el inspector y no se puede crear un punto | Consulte [Soluciones que pueden convertirse en puntos](#semantic-points-intersections-materialization/8.3). Un contacto o un resultado ambiguo puede requerir otra construcción. |
+| No se puede pulsar un control | Compruebe si otro panel lo cubre, si el panel está oculto o si hay una herramienta o edición activa. Véase [Paneles de controles](#presentation-and-visualization/12.6). |
+| Un archivo no se puede insertar | Revise el diagnóstico, los formatos, las unidades y si el origen contiene paneles. Consulte [Inserción](#documents/4.2). Para abrirlo por separado, use **Archivo → Abrir…**. |
+| No aparece un objeto en DXF | Revise [el informe de exportación](#dxf-export/11.7) y el alcance antes de confirmar. |
 
 ### 15.2 Glosario breve
 
@@ -2442,7 +2495,7 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | Parámetro | Número que indica una posición en un recorrido. Puede haber varias posiciones con las mismas coordenadas. |
 | Rama y componente | La rama identifica un recorrido. Un componente es un tramo de ese recorrido donde la curva está disponible sin cruzar un hueco. |
 | Punto asociado | Punto que conserva su posición de recorrido aunque cambie la curva. |
-| Crear un punto desde un cruce | Convertir un cruce admitido del inspector en un punto que puedes utilizar en la construcción. También se denomina materializar. |
+| Crear un punto desde un cruce | Convertir un cruce admitido del inspector en un punto utilizable en la construcción. También se denomina materializar. |
 | Costura | Lugar donde se encuentran el inicio y el fin de una vuelta. |
 | Indefinido | Estado de un objeto o medida que carece de resultado válido para sus entradas actuales. |
 
@@ -2458,7 +2511,7 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | Crear un lugar geométrico semántico | Construcción → Curvas semánticas → Locus V2 | `LocusV2(G,u,dom)` | curva semántica | el dominio es explícito; no procede del rango de un deslizador |
 | Crear una spline semántica | Construcción → Curvas semánticas → Spline V2, Spline V2 con grado o Spline V2 cerrada | `SplineV2({A,B,C,D},3)` | curva semántica | seleccione los puntos en orden y después de nuevo el primero; los puntos constructores no son puntos semánticos |
 | Crear una lista en el orden de selección | Construcción → Herramientas de listas → Crear lista desde la selección | `{A,B,C}` | lista | orden exacto de clic; seleccione de nuevo el primer objeto para terminar |
-| Elegir la capa de trabajo | Barra de herramientas → grupo Mover → Capa de trabajo, o clic en **Capa: n** en la barra de estado | — | estado de sesión | de un solo uso; clic en un objeto para usar su capa o en un espacio vacío para elegir de 0 a 99; no se guarda |
+| Elegir la capa de trabajo | Barra de herramientas → grupo Mueve → Capa de trabajo, o clic en **Capa: n** en la barra de estado | — | estado de sesión | de un solo uso; clic en un objeto para usar su capa o en un espacio vacío para elegir de 0 a 99; no se guarda |
 | Definir las unidades del documento | Opciones → Unidades del documento…, o clic en una unidad de la barra de estado | — | metadatos del documento | un paso de deshacer; reinterpreta el modelo y nunca convierte coordenadas; se guarda con el documento |
 | Punto sobre curva semántica, interactivo | Herramienta Punto, clic en el trazo | — | punto semántico | preimagen única, o elección explícita; nunca por proximidad |
 | Punto sobre curva semántica, por parámetro | Construcción → Curvas semánticas → Punto sobre curva semántica | `Point(S,"spline-v2/main",0.25)` | punto semántico | clave de rama y parámetro canónico; el parámetro puede ser un número con nombre |
@@ -2592,83 +2645,83 @@ y no se traducen nunca.
 
 ### 16.5 Uso de las herramientas de construcción
 
-Abre el grupo de Construcción indicado en la primera columna, elige la herramienta y selecciona sus entradas en orden. Son herramientas heredadas de GeoGebra salvo cuando el capítulo de la función indica una ampliación.
+Abra el grupo de Construcción indicado en la primera columna, elija la herramienta y seleccione sus entradas en orden. **[G]** Herramientas heredadas de GeoGebra, con las ampliaciones indicadas en el capítulo correspondiente.
 
-| Grupo y herramienta | Qué seleccionar y qué obtienes |
+| Grupo y herramienta | Qué seleccionar y qué se obtiene |
 |---|---|
-| **Puntos → Punto / Punto en objeto** | Haz clic en un espacio vacío para crear un punto libre. Para restringirlo, haz clic en un recorrido como un segmento o en el interior de una región como un polígono relleno. Las curvas semánticas tienen reglas adicionales (sección 8). |
-| **Puntos → Medio o Centro** | Selecciona dos puntos o un segmento para obtener el punto medio. Selecciona una circunferencia o una cónica con centro para obtener su centro. |
-| **Rectas y vectores → Recta / Segmento / Semirrecta / Vector** | Selecciona dos puntos en orden. La semirrecta empieza en el primero y el vector apunta del primero al segundo. |
-| **Rectas y vectores → Segmento de longitud dada / Equipolente** | Para el segmento, selecciona el punto inicial e introduce la longitud. Para el vector, selecciona un punto inicial y un vector existente del que copiar la dirección, el sentido y el módulo. |
-| **Construcciones derivadas → Paralela / Perpendicular** | Selecciona el punto por el que pasará la nueva recta y la recta de referencia. La sesión puede recordar cada referencia por separado (sección 5.2). |
-| **Construcciones derivadas → Mediatriz / Bisectriz** | Para la mediatriz, selecciona un segmento o dos extremos. Para la bisectriz, selecciona un punto de cada lado con el vértice en segundo lugar, o selecciona dos rectas secantes para obtener sus dos bisectrices. |
-| **Polígonos → Polígono / Poligonal** | Selecciona los vértices en orden y vuelve a pulsar el primero para terminar. El polígono cierra el contorno y crea una región rellena. La poligonal deja la cadena abierta. |
-| **Polígonos → Polígono regular** | Selecciona dos vértices del primer lado e introduce el número de lados, como mínimo tres. |
-| **Polígonos → Polígono rígido / Polígono vectorial** | Vuelve a pulsar el primer vértice para terminar. El polígono rígido se mueve conservando su forma y también se puede crear a partir de un polígono existente. En el polígono vectorial los demás vértices se definen respecto al primero. Mueve el primer vértice para trasladarlo. |
-| **Círculos y cónicas → Circunferencia (centro, punto) / Circunferencia por tres puntos / Circunferencia: centro y radio** | Selecciona el centro y un punto de paso, tres puntos no alineados de la circunferencia, o el centro e introduce un radio positivo, respectivamente. |
-| **Círculos y cónicas → Compás / Semicircunferencia** | Selecciona un segmento o dos puntos para copiar su distancia como radio y luego el centro. Para la semicircunferencia selecciona los extremos del diámetro. |
-| **Círculos y cónicas → Arco de circunferencia / Sector circular** | Selecciona el centro, el punto inicial y el punto que indica la dirección del extremo. El segundo punto fija el radio. El sector rellena también la región limitada por el arco y los radios. |
-| **Círculos y cónicas → Arco tres puntos / Sector tres puntos** | Selecciona el inicio, un punto por el que debe pasar el arco y el final. Usa tres puntos no alineados. El punto intermedio determina qué arco se toma. |
-| **Círculos y cónicas → Cónica por cinco puntos / Elipse / Hipérbola / Parábola** | Para la cónica selecciona cinco puntos que la determinen. Para la elipse o hipérbola, selecciona los dos focos y un punto de la curva. Para la parábola, selecciona el foco y la recta directriz. |
-| **Parámetros y controladores → Deslizador / Ángulo dada su amplitud** | Haz clic en una posición y fija el tipo, el intervalo y el paso del deslizador. Para el ángulo, selecciona un punto de un lado y luego el vértice, e introduce la amplitud y el sentido. |
-| **Parámetros y controladores → Casilla de control / Botón / Casilla de Entrada** | Haz clic donde quieras colocar el control. Una casilla de control establece un valor lógico y puede mostrar u ocultar los objetos que elijas en su diálogo. Un botón tiene un rótulo y puede ejecutar un guion al hacer clic. La casilla de entrada edita su objeto vinculado al confirmar el valor escrito. Cambia el vínculo o el guion en Propiedades del objeto cuando esté disponible. |
-| **Parámetros y controladores → Animar objeto seleccionado / Texto** | Selecciona un objeto animable, como un deslizador, y activa la acción para iniciar o detener la animación. La acción también está en el menú GeoCeDG del objeto. Para crear texto, elige una posición o un punto de anclaje y escribe en el editor. |
-| **Relaciones e intersecciones → Tangentes / Relación / Polar o Conjugado** | Para las tangentes, selecciona el punto o la recta y un objeto compatible como una circunferencia o cónica. Las entradas válidas y el número de tangentes dependen del objeto. Relación compara dos objetos en un diálogo, por ejemplo si dos rectas son paralelas. Selecciona un punto y una cónica para la polar, o una recta y una cónica para el diámetro conjugado cuando esté definido. |
-| **Métricas y validación → Ángulo / Distancia o Longitud / Área / Pendiente** | Para el ángulo selecciona tres puntos con el vértice en segundo lugar, o dos rectas. Mide una distancia con dos puntos, o selecciona un segmento, polígono o circunferencia para medir su longitud o perímetro. Selecciona un polígono, circunferencia o cónica adecuada para el área, o una recta para la pendiente. Las secciones 9.1–9.4 tratan las longitudes de curvas. |
-| **Transformaciones de semejanza** | Selecciona primero el objeto. Para Simetría central o Simetría axial (reflexión), selecciona el centro o el eje. Para Traslación, selecciona el vector. Para Rotación u Homotecia, selecciona el centro e introduce el ángulo o el factor de escala. La sección 10 explica las curvas semánticas admitidas. |
-| **Anotaciones y medios → Imagen** | Elige la posición en Gráficos y selecciona un archivo de imagen local. La imagen queda como objeto del documento y se puede recolocar o anclar desde sus propiedades. |
+| **Puntos → Punto / Punto en objeto** | Haga clic en un espacio vacío para crear un punto libre. Para restringirlo, haga clic en un recorrido como un segmento o en el interior de una región como un polígono relleno. Las curvas semánticas tienen reglas adicionales (sección 8). |
+| **Puntos → Medio o Centro** | Seleccione dos puntos o un segmento para obtener el punto medio. Seleccione una circunferencia o una cónica con centro para obtener su centro. |
+| **Rectas y vectores → Recta / Segmento / Semirrecta / Vector** | Seleccione dos puntos en orden. La semirrecta empieza en el primero y el vector apunta del primero al segundo. |
+| **Rectas y vectores → Segmento de longitud dada / Equipolente** | Para el segmento, seleccione el punto inicial e introduzca la longitud. Para el vector, seleccione un punto inicial y un vector existente del que copiar la dirección, el sentido y el módulo. |
+| **Construcciones derivadas → Paralela / Perpendicular** | Seleccione el punto por el que pasará la nueva recta y la recta de referencia. La sesión puede recordar cada referencia por separado (sección 5.2). |
+| **Construcciones derivadas → Mediatriz / Bisectriz** | Para la mediatriz, seleccione un segmento o dos extremos. Para la bisectriz, seleccione un punto de cada lado con el vértice en segundo lugar, o seleccione dos rectas secantes para obtener sus dos bisectrices. |
+| **Polígonos → Polígono / Poligonal** | Seleccione los vértices en orden y vuelva a pulsar el primero para terminar. El polígono cierra el contorno y crea una región rellena. La poligonal deja la cadena abierta. |
+| **Polígonos → Polígono regular** | Seleccione dos vértices del primer lado e introduzca el número de lados, como mínimo tres. |
+| **Polígonos → Polígono rígido / Polígono vectorial** | Vuelva a pulsar el primer vértice para terminar. El polígono rígido se mueve conservando su forma y también se puede crear a partir de un polígono existente. En el polígono vectorial los demás vértices se definen respecto al primero. Mueva el primer vértice para trasladarlo. |
+| **Círculos y cónicas → Circunferencia (centro, punto) / Circunferencia por tres puntos / Circunferencia: centro y radio** | Seleccione el centro y un punto de paso, tres puntos no alineados de la circunferencia, o el centro e introduzca un radio positivo, respectivamente. |
+| **Círculos y cónicas → Compás / Semicircunferencia** | Seleccione un segmento o dos puntos para copiar su distancia como radio y luego el centro. Para la semicircunferencia seleccione los extremos del diámetro. |
+| **Círculos y cónicas → Arco de circunferencia / Sector circular** | Seleccione el centro, el punto inicial y el punto que indica la dirección del extremo. El segundo punto fija el radio. El sector rellena también la región limitada por el arco y los radios. |
+| **Círculos y cónicas → Arco tres puntos / Sector tres puntos** | Seleccione el inicio, un punto por el que debe pasar el arco y el final. Use tres puntos no alineados. El punto intermedio determina qué arco se toma. |
+| **Círculos y cónicas → Cónica por cinco puntos / Elipse / Hipérbola / Parábola** | Para la cónica seleccione cinco puntos que la determinen. Para la elipse o hipérbola, seleccione los dos focos y un punto de la curva. Para la parábola, seleccione el foco y la recta directriz. |
+| **Parámetros y controladores → Deslizador / Ángulo dada su amplitud** | Haga clic en una posición y fije el tipo, el intervalo y el paso del deslizador. Para el ángulo, seleccione un punto de un lado y luego el vértice, e introduzca la amplitud y el sentido. |
+| **Parámetros y controladores → Casilla de control / Botón / Casilla de Entrada** | Haga clic donde quiera colocar el control. Una casilla de control establece un valor lógico y puede mostrar u ocultar los objetos que elija en su diálogo. Un botón tiene un rótulo y puede ejecutar un guion al hacer clic. La casilla de entrada edita su objeto vinculado al confirmar el valor escrito. Cambie el vínculo o el guion en Propiedades del objeto cuando esté disponible. |
+| **Parámetros y controladores → Animar objeto seleccionado / Texto** | Seleccione un objeto animable, como un deslizador, y active la acción para iniciar o detener la animación. La acción también está en el menú GeoCeDG del objeto. Para crear texto, elija una posición o un punto de anclaje y escriba en el editor. |
+| **Relaciones e intersecciones → Tangentes / Relación / Polar o Conjugado** | Para las tangentes, seleccione el punto o la recta y un objeto compatible como una circunferencia o cónica. Las entradas válidas y el número de tangentes dependen del objeto. Relación compara dos objetos en un diálogo, por ejemplo si dos rectas son paralelas. Seleccione un punto y una cónica para la polar, o una recta y una cónica para el diámetro conjugado cuando esté definido. |
+| **Métricas y validación → Ángulo / Distancia o Longitud / Área / Pendiente** | Para el ángulo seleccione tres puntos con el vértice en segundo lugar, o dos rectas. Mida una distancia con dos puntos, o seleccione un segmento, polígono o circunferencia para medir su longitud o perímetro. Seleccione un polígono, circunferencia o cónica adecuada para el área, o una recta para la pendiente. Véase [Medidas de curvas](#lengths-and-measurements/9.1). |
+| **Transformaciones de semejanza** | Seleccione primero el objeto. Para Simetría central o Simetría axial (reflexión), seleccione el centro o el eje. Para Traslación, seleccione el vector. Para Rotación u Homotecia, seleccione el centro e introduzca el ángulo o el factor de escala. La sección 10 explica las curvas semánticas admitidas. |
+| **Anotaciones y medios → Imagen** | Elija la posición en Gráficos y seleccione un archivo de imagen local. La imagen queda como objeto del documento y se puede recolocar o anclar desde sus propiedades. |
 
-Para las herramientas semánticas, consulta las secciones 6–10. Activa **Opciones → Mostrar marcadores de soluciones** para ver los marcadores seleccionables del resultado rico de intersección activo. Haz clic en un marcador para elegir su solución. En **Construcción → Relaciones e intersecciones**, **Crear punto de intersección seleccionado** usa la solución admisible seleccionada, **Crear puntos de intersección seleccionados** requiere varias selecciones admisibles y **Crear todos los puntos de intersección admisibles** usa todo el conjunto admisible. La acción para un solo punto también aparece en el menú GeoCeDG del objeto. **Opciones → Crear automáticamente puntos admisibles de nuevas consultas explícitas** es una opción aparte para las consultas nuevas. Las secciones 8.4–8.7 explican qué resultados son admisibles.
+Para las herramientas semánticas, consulte las secciones 6 a 10. Active **Opciones → Mostrar marcadores de soluciones** para ver los marcadores seleccionables del resultado rico de intersección activo. Haga clic en un marcador para elegir su solución. En **Construcción → Relaciones e intersecciones**, **Crear punto de intersección seleccionado** usa la solución admisible seleccionada, **Crear puntos de intersección seleccionados** requiere varias selecciones admisibles y **Crear todos los puntos de intersección admisibles** usa todo el conjunto admisible. La acción para un solo punto también aparece en el menú GeoCeDG del objeto. **Opciones → Crear automáticamente puntos admisibles de nuevas consultas explícitas** es una opción aparte para las consultas nuevas. Las secciones 8.4–8.7 explican qué resultados son admisibles.
 
 ### 16.6 Menús, preferencias y atajos
 
 | Tarea | Dónde y cómo |
 |---|---|
-| Seleccionar o mover objetos | En **Editar → Seleccionar objetos**, haz clic o arrastra un rectángulo para seleccionar. **Editar → Mueve** también permite arrastrar los objetos móviles. Para girar un objeto móvil con el ratón, elige **Editar → Gira en torno a un punto**, selecciona el centro y arrastra. El primer desplegable contiene Mueve, Gira en torno a un punto y Capa de trabajo. |
-| Limitar o liberar un punto | **Editar → Limitar/liberar punto** también está en el desplegable de puntos e intersecciones. Selecciona un punto libre y un recorrido o región compatible. Selecciona un punto ya restringido para liberarlo cuando la operación esté permitida. Las dependencias existentes pueden impedir el cambio. |
-| Borrar un objeto o revertir una edición | **Editar → Borrar** permite eliminar un objeto al hacer clic sobre él. Con el foco en la construcción, pulsa `Supr` para borrar la selección. Un objeto dependiente puede borrarse también o quedar indefinido. Usa **Editar → Deshacer** (`Ctrl+Z`) o **Editar → Rehacer** (`Ctrl+Y`). |
+| Seleccionar o mover objetos | En **Editar → Seleccionar objetos**, haga clic o arrastre un rectángulo para seleccionar. **Editar → Mueve** también permite arrastrar los objetos móviles. Para girar un objeto móvil con el ratón, elija **Editar → Gira en torno a un punto**, seleccione el centro y arrastre. El primer desplegable contiene Mueve, Gira en torno a un punto y Capa de trabajo. |
+| Limitar o liberar un punto | **Editar → Limitar/liberar punto** también está en el desplegable de puntos e intersecciones. Seleccione un punto libre y un recorrido o región compatible. Seleccione un punto ya restringido para liberarlo cuando la operación esté permitida. Las dependencias existentes pueden impedir el cambio. |
+| Borrar un objeto o revertir una edición | **Editar → Borrar** permite eliminar un objeto al hacer clic sobre él. Con el foco en la construcción, pulse `Supr` para borrar la selección. Un objeto dependiente puede borrarse también o quedar indefinido. Use **Editar → Deshacer** (`Ctrl+Z`) o **Editar → Rehacer** (`Ctrl+Y`). |
 | Elegir qué muestra Álgebra | **Opciones → Presentación de Álgebra** alterna entre Valor, Descripción y Definición. **Opciones → Ordenar por** agrupa por dependencia, tipo de objeto, orden de construcción o capa. |
-| Ajustar cifras o etiquetas nuevas | **Opciones → Redondeo** elige las posiciones decimales o cifras significativas de la presentación. **Opciones → Etiquetado** controla las etiquetas automáticas de objetos nuevos (en automático, todos, ninguno o solo puntos). Puedes cambiar las etiquetas existentes en Propiedades del objeto. |
-| Ajustar texto, ejes o cuadrícula | **Opciones → Tamaño de fuente de Texto** cambia el tamaño del texto del documento y lo marca como modificado. **Opciones → Ejes** y **Opciones → Cuadrícula** alternan su visibilidad en la vista gráfica activa. **Opciones → Guardar la configuración** conserva las preferencias de la aplicación. Guarda el archivo por separado para conservar los cambios del documento. |
+| Ajustar cifras o etiquetas nuevas | **Opciones → Redondeo** elige las posiciones decimales o cifras significativas de la presentación. **Opciones → Etiquetado** controla las etiquetas automáticas de objetos nuevos (en automático, todos, ninguno o solo puntos). Puede cambiar las etiquetas existentes en Propiedades del objeto. |
+| Ajustar texto, ejes o cuadrícula | **Opciones → Tamaño de fuente de Texto** cambia el tamaño del texto del documento y lo marca como modificado. **Opciones → Ejes** y **Opciones → Cuadrícula** alternan su visibilidad en la vista gráfica activa. **Opciones → Guardar la configuración** conserva las preferencias de la aplicación. Guarde el archivo por separado para conservar los cambios del documento. |
 | Mostrar u ocultar un objeto o etiqueta | **Vista → Visibilidad y estilo → Mostrar/ocultar objeto** permite marcar los objetos y cambiar de herramienta para terminar. **Mostrar/ocultar etiqueta** actúa al pulsar un objeto. **Copiar estilo visual** toma primero el origen y luego cada destino. En el mismo submenú, **Mostrar indicación de orientación** alterna la presentación de la orientación donde se admite. |
-| Desplazar o ampliar la vista | **Vista → Navegación → Desplaza Vista Gráfica** permite arrastrar el fondo o un eje. **Aproximar** y **Alejar** actúan donde haces clic. **Zoom por rectángulo** encuadra el rectángulo que arrastras. **Vista estándar** restablece el encuadre habitual y **Mostrar todos los objetos** encuadra la construcción visible. El desplegable de la barra contiene Desplaza Vista Gráfica, Zoom por rectángulo, Aproximar, Alejar y Copiar estilo visual. |
-| Mostrar la barra de entrada o buscar un comando disponible | **Automatización → Entrada algebraica** muestra u oculta la barra. **Ayuda → Ayuda de entrada** y **Ayuda → Lista de comandos** la muestran y abren el panel de comandos. Explora las categorías o selecciona un comando para ver la sintaxis de tu instalación. El panel permite consultar todos los comandos heredados que ofrece la Entrada algebraica. En la vista CAS, usa el autocompletado de esa vista para las operaciones propias de CAS. |
+| Desplazar o ampliar la vista | **Vista → Navegación → Desplaza Vista Gráfica** permite arrastrar el fondo o un eje. **Aproximar** y **Alejar** actúan donde se hace clic. **Zoom por rectángulo** encuadra el rectángulo que se arrastra. **Vista estándar** restablece el encuadre habitual y **Mostrar todos los objetos** encuadra la construcción visible. El desplegable de la barra contiene Desplaza Vista Gráfica, Zoom por rectángulo, Aproximar, Alejar y Copiar estilo visual. |
+| Mostrar la barra de entrada o buscar un comando disponible | **Automatización → Entrada algebraica** muestra u oculta la barra. **Ayuda → Ayuda de entrada** y **Ayuda → Lista de comandos** la muestran y abren el panel de comandos. Explore las categorías o seleccione un comando para ver la sintaxis de la instalación. El panel permite consultar todos los comandos heredados que ofrece la Entrada algebraica. En la vista CAS, use el autocompletado de esa vista para las operaciones propias de CAS. |
 | Consultar la herramienta activa | **Ayuda → Ayuda de herramienta actual** muestra el nombre y las instrucciones de la herramienta activa. Los modos Spline V2 tienen ayuda propia. **Ayuda → Atajos de teclado** abre el resumen de atajos del producto. |
 
-Abre **Opciones → Preferencias…** y elige una categoría de la barra de preferencias. Haz clic derecho en una fila de Álgebra y elige **Propiedades del objeto…** para ir directamente al objeto. Las pestañas disponibles dependen del objeto y de las vistas abiertas.
+Abra **Opciones → Preferencias…** y elija una categoría de la barra de preferencias. Haga clic derecho en una fila de Álgebra y elija **Propiedades del objeto…** para ir directamente al objeto. Las pestañas disponibles dependen del objeto y de las vistas abiertas.
 
-| Categoría de preferencias | Qué puedes ajustar |
+| Categoría de preferencias | Ajustes disponibles |
 |---|---|
-| **Objetos** | **Básico** para nombre, rótulo, visibilidad o estado auxiliar. **Álgebra** para las opciones de definición o valor disponibles. **Color**, **Estilo**, **Posición**, **Avanzado** y **Guiones** aparecen cuando corresponde. Selecciona el objeto en la lista antes de cambiar sus propiedades. |
+| **Objetos** | **Básico** para nombre, rótulo, visibilidad o estado auxiliar. **Álgebra** para las opciones de definición o valor disponibles. **Color**, **Estilo**, **Posición**, **Avanzado** y **Guiones** aparecen cuando corresponde. Seleccione el objeto en la lista antes de cambiar sus propiedades. |
 | **Vista Gráfica / Vista Gráfica 2** | Límites, proporción entre los ejes, fondo y ayudas, etiqueta, unidad y divisiones de cada eje, y tipo, espaciado y estilo de la cuadrícula. Vista Gráfica 2 aparece cuando esa vista está abierta y tiene ajustes propios. Las etiquetas y unidades de los ejes son independientes de **Unidades del documento…**. |
 | **Álgebra** | Visibilidad de objetos auxiliares, descripciones y ordenación. |
-| **Disposición y presentación** | Además del tema y los tamaños de GeoCeDG, puedes elegir si se muestran la barra de entrada, la ayuda de comandos y la barra de herramientas, dónde se colocan las barras y si se permiten los títulos de vista, las barras de estilo y el panel lateral. |
-| **Patrones por omisión** | Elige un tipo de objeto y ajusta la apariencia predeterminada de los objetos nuevos. **Archivo → Insertar → Aplicar estilos…** puede copiar los estilos predeterminados de otro documento (sección 4.2). |
-| **Avanzado** | Unidades angulares, parámetros de recorrido y región, marca de ángulo recto, notación de coordenadas, ayudas emergentes y teclado virtual. GeoCeDG mantiene desactivada la continuidad. Usa Disposición y presentación o el menú Opciones para los tamaños de letra. |
-| **Hoja de Cálculo / Cálculo Simbólico (CAS)** | Abre primero la vista correspondiente. La hoja de cálculo permite ajustar encabezados, cuadrícula, barras de desplazamiento y comportamiento de entrada en las celdas. En CAS puedes ajustar el tiempo límite, la visualización de exponentes racionales y la barra de navegación. |
+| **Disposición y presentación** | Además del tema y los tamaños de GeoCeDG, puede elegir si se muestran la barra de entrada, la ayuda de comandos y la barra de herramientas, dónde se colocan las barras y si se permiten los títulos de vista, las barras de estilo y el panel lateral. |
+| **Patrones por omisión** | Elija un tipo de objeto y ajuste la apariencia predeterminada de los objetos nuevos. **Archivo → Insertar → Aplicar estilos…** puede copiar los estilos predeterminados de otro documento (sección 4.2). |
+| **Avanzado** | Unidades angulares, parámetros de recorrido y región, marca de ángulo recto, notación de coordenadas, ayudas emergentes y teclado virtual. GeoCeDG mantiene desactivada la continuidad. Use Disposición y presentación o el menú Opciones para los tamaños de letra. |
+| **Hoja de Cálculo / Cálculo Simbólico (CAS)** | Abra primero la vista correspondiente. La hoja de cálculo permite ajustar encabezados, cuadrícula, barras de desplazamiento y comportamiento de entrada en las celdas. En CAS puede ajustar el tiempo límite, la visualización de exponentes racionales y la barra de navegación. |
 
 El menú contextual heredado puede mostrar u ocultar el objeto o la etiqueta, activar el rastro, fijar el objeto o marcarlo como auxiliar, renombrar, editar, borrar o abrir sus propiedades. Las formas de ecuación, la animación y el registro en la hoja de cálculo aparecen solo para objetos que las admiten. En Álgebra, el submenú **GeoCeDG** añade animación, inspección de resultados ricos, creación de un punto de intersección, Vista estándar, Mostrar todos los objetos, Propiedades y guiones del objeto, ayuda de la herramienta actual e inspección de definición. En Gráficos, el clic derecho puede abrir un selector con otras entradas. La barra de estilo de Gráficos ofrece controles para la herramienta o selección actual, como color, opacidad, trazo, estilo de punto o etiqueta. La sección 12.7 explica el grosor numérico y la colocación de rótulos.
 
 | Acción adicional de teclado | Resultado |
 |---|---|
 | `Ctrl+A` | Selecciona todos los objetos cuando la construcción tiene el foco. En un campo de texto selecciona texto. |
-| `Ctrl+C` / `Ctrl+V` | Copia los objetos seleccionados y pégalos en la misma ventana de construcción o en otra. Trabaja en Gráficos o Álgebra, fuera de un campo de texto. La sección 4.6 explica las capas y las unidades. |
+| `Ctrl+C` / `Ctrl+V` | Copia los objetos seleccionados para pegarlos en la misma ventana de construcción o en otra. Use Gráficos o Álgebra, fuera de un campo de texto. La sección 4.6 explica las capas y las unidades. |
 | `Ctrl+N` | Abre una ventana nueva. **Archivo → Nuevo archivo** inicia una construcción en la ventana actual. |
 
 ### 16.7 Abrir, guardar y exportar archivos
 
 - **Archivo → Abrir reciente…** muestra los últimos documentos abiertos. Si la lista está vacía, la acción queda deshabilitada. **Archivo → Cerrar** cierra la ventana y pregunta por los cambios pendientes cuando corresponde.
-- **Archivo → Guardar como…** escribe un documento nativo `.cedg`. Los destinos con otra extensión se rechazan. Abre `.ggb` como entrada de compatibilidad y guarda el trabajo posterior de GeoCeDG en `.cedg`.
+- **Archivo → Guardar como…** escribe un documento nativo `.cedg`. Los destinos con otra extensión se rechazan. Abra `.ggb` como entrada de compatibilidad y guarde el trabajo posterior de GeoCeDG en `.cedg`.
 - **Archivo → Abrir…** carga los paquetes `.ggt` como herramientas del documento actual. Para `.html` o `.htm`, el lector de compatibilidad busca datos incrustados de una construcción de GeoGebra. Una página web genérica queda fuera de ese lector. **Archivo → Vista previa de impresión…** abre la disposición de impresión.
-- Desde una terminal con acceso al iniciador de Desktop, los argumentos `--export=out.png --dpi=72 drawing.cedg` exportan el área del dibujo guardado como PNG. Usa `.png`, `.pdf`, `.svg` o `.emf` en el nombre de salida. El valor predeterminado es 300 ppp. `--maxSize` solicita un tamaño máximo en píxeles para la dimensión mayor de una salida escalada. El documento necesita un área de exportación válida (sección 4.5). `--exportAnimation` se rechaza.
-- Para exportar desde la Entrada algebraica o un guion, pasa pares de clave y valor a `ExportImage`. Por ejemplo, `ExportImage("type","png","scale",1,"filename","C:/drawings/out.png")` escribe un PNG en una carpeta existente. Usa una ruta en la que puedas escribir. En Desktop, `"type"` también admite `"svg"` o `"pdf"`. Usa `"view",2` para Gráficos 2 cuando esté disponible. Se usa el área de imagen del documento y se rechazan los formatos animados.
+- Desde una terminal con acceso al iniciador de Desktop, los argumentos `--export=out.png --dpi=72 drawing.cedg` exportan el área del dibujo guardado como PNG. Use `.png`, `.pdf`, `.svg` o `.emf` en el nombre de salida. El valor predeterminado es 300 ppp. `--maxSize` solicita un tamaño máximo en píxeles para la dimensión mayor de una salida escalada. El documento necesita un área de exportación válida (sección 4.5). `--exportAnimation` se rechaza.
+- Para exportar desde la Entrada algebraica o un guion, pase pares de clave y valor a `ExportImage`. Por ejemplo, `ExportImage("type","png","scale",1,"filename","C:/drawings/out.png")` escribe un PNG en una carpeta existente. Use una ruta con permiso de escritura. En Desktop, `"type"` también admite `"svg"` o `"pdf"`. Use `"view",2` para Gráficos 2 cuando esté disponible. Se usa el área de imagen del documento y se rechazan los formatos animados.
 
 ### 16.8 Entradas de herramientas de la Biblioteca GeoCeDG
 
-Experimental o limitado. En una distribución instalada que incluya la
-biblioteca, abre **Automatización → Herramientas de usuario**, busca el
-grupo **Biblioteca GeoCeDG** y elige una herramienta para activarla.
-Selecciona sus entradas en el orden indicado. La ayuda de la herramienta
+**[A] [!]** En una distribución instalada que incluya la
+biblioteca, abra **Automatización → Herramientas de usuario**, busque el
+grupo **Biblioteca GeoCeDG** y elija una herramienta para activarla.
+Seleccione sus entradas en el orden indicado. La ayuda de la herramienta
 muestra los tipos de entrada. Un caso degenerado puede quedar indefinido.
 
 | Herramienta | Entradas en orden | Resultado |
@@ -2691,3 +2744,5 @@ muestra los tipos de entrada. Un caso degenerado puede quedar indefinido.
 *GeoCeDG 1.1.0 — Manuel Prado-Velasco, Universidad de Sevilla. Los créditos y
 licencias upstream obligatorios se conservan en `LICENSE`, `NOTICE.md` y
 `THIRD_PARTY.md`.*
+
+*Los esquemas de GeoCeDG se distribuyen bajo CC BY 4.0. Las capturas del producto incluyen elementos de interfaz heredados de GeoGebra. Sus condiciones constan en los avisos de licencia de la distribución.*

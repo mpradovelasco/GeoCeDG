@@ -21,6 +21,10 @@ English as the fallback. Use the section tree or **Ctrl+F** to find a topic
 in the open edition. Start with section 2.7 for a first construction or
 section 16 for tool, command and preference lookup.
 
+The Desktop guide follows internal links and displays the illustrated
+procedures from its packaged resources. The [figure inventory](images/figures.json)
+records their origins, reproduction procedures and rights.
+
 ## Other user documentation
 
 - [Mathematical reference](geocedg_mathematical_reference.md) — explanatory

@@ -16,6 +16,9 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,13 +27,17 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.JViewport;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -71,9 +78,12 @@ class PreG9BR5AGuideNavigationTest {
 		}
 
 		void load(String language) throws Exception {
-			GeoCeDGGuideRenderer.Rendering rendering = GeoCeDGGuideRenderer.render(
-					GeoCeDGActionRegistry.readUserGuide(language));
+			load(GeoCeDGGuideRenderer.render(GeoCeDGActionRegistry.readUserGuide(language)));
+		}
+
+		void load(GeoCeDGGuideRenderer.Rendering rendering) {
 			outline = rendering.outline();
+			((GeoCeDGGuideImages.EditorKit) view.getEditorKit()).setImages(rendering.images());
 			view.setText(rendering.html());
 			layOut();
 			navigator.load(outline);
@@ -368,21 +378,61 @@ class PreG9BR5AGuideNavigationTest {
 			assertEquals(before, fixture.view.getDocument().getText(0,
 					fixture.view.getDocument().getLength()));
 			assertFalse(fixture.view.isEditable());
-			assertEquals(0, fixture.view.getHyperlinkListeners().length,
-					"navigation must not listen to links");
+			assertEquals(1, fixture.view.getHyperlinkListeners().length,
+					"local links use only the guide navigator");
 		});
 	}
 
 	@Test
 	void noGuideSourceIntroducesAHyperlinkListener() throws Exception {
+		// Keep the historical test identity while exercising the narrower local-link policy.
 		for (String name : new String[] {"GeoCeDGGuideWindow", "GeoCeDGGuideNavigator",
 				"GeoCeDGGuideRenderer", "GeoCeDGGuideOutline"}) {
 			String source = Files.readString(
 					Path.of("src/main/java/org/geocedg/desktop/" + name + ".java"));
-			assertFalse(source.contains("HyperlinkListener"), name);
 			assertFalse(source.contains("scrollToReference"), name);
 			assertFalse(source.contains("Desktop.browse"), name);
+			assertFalse(source.contains("setPage("), name);
 		}
+		onEdt(() -> {
+			Fixture fixture = new Fixture();
+			fixture.load(GeoCeDGGuideRenderer.render("""
+					<!-- geocedg-guide-section: top -->
+					# Guide
+
+					[First link](#destination/1.1) and [Second link](#destination).
+
+					<!-- geocedg-guide-section: destination -->
+					## 1. Destination
+
+					### 1.1 Subsection
+					""" + "\n\nExample text.".repeat(50)));
+			JRootPane root = new JRootPane();
+			fixture.navigator.installLinkShortcuts(root);
+			activate(root, JComponent.WHEN_IN_FOCUSED_WINDOW, KeyEvent.VK_RIGHT,
+					InputEvent.ALT_DOWN_MASK);
+			assertEquals("First link", fixture.view.getSelectedText());
+			activate(fixture.view, JComponent.WHEN_FOCUSED, KeyEvent.VK_ENTER, 0);
+			assertEquals("destination/1.1", fixture.selected());
+			assertEquals(Math.round(fixture.anchorY("destination/1.1")), fixture.viewY());
+
+			fixture.view.fireHyperlinkUpdate(new HyperlinkEvent(fixture.view,
+					HyperlinkEvent.EventType.ACTIVATED, null, "#destination"));
+			assertEquals("destination", fixture.selected());
+			for (String blocked : new String[] {"#absent", "https://example.invalid/#destination",
+					"file:///guide#top", "#destination%2F1.1"}) {
+				fixture.view.fireHyperlinkUpdate(new HyperlinkEvent(fixture.view,
+						HyperlinkEvent.EventType.ACTIVATED, null, blocked));
+				assertEquals("destination", fixture.selected(), blocked);
+			}
+		});
+	}
+
+	private static void activate(JComponent component, int condition, int key, int modifiers) {
+		Object action = component.getInputMap(condition).get(KeyStroke.getKeyStroke(key, modifiers));
+		assertNotNull(action);
+		component.getActionMap().get(action).actionPerformed(
+				new ActionEvent(component, ActionEvent.ACTION_PERFORMED, ""));
 	}
 
 	@Test

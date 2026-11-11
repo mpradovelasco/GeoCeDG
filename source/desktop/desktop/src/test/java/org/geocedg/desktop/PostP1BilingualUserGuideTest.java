@@ -12,17 +12,25 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.HexFormat;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.imageio.ImageIO;
+
+import org.geogebra.common.move.ggtapi.models.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -43,6 +51,9 @@ class PostP1BilingualUserGuideTest {
 	private static final String ES = "geocedg_user_guide_es.md";
 	private static final Pattern SECTION =
 			Pattern.compile("<!-- geocedg-guide-section: ([a-z0-9-]+) -->");
+	private static final Pattern FIGURE = Pattern.compile(
+			"(?m)^!\\[([^\\]\\r\\n]+)]\\(images/([a-z0-9][a-z0-9-]*\\.png)\\)"
+					+ "\\R\\R\\*([^\\r\\n]+)\\*$");
 
 	/** Wording that must never reappear in a live user-facing document. */
 	private static final List<String> STALE = List.of(
@@ -161,7 +172,7 @@ class PostP1BilingualUserGuideTest {
 	// --------------------------------------------------------- packaged resources
 
 	@Test
-	void bothGuidesArePackagedAsByteCopiesOfTheirTrackedSources() throws IOException {
+	void bothGuidesArePackagedAsByteCopiesOfTheirTrackedSources() throws Exception {
 		for (String guide : List.of(EN, ES)) {
 			byte[] source = Files.readAllBytes(
 					repositoryRoot().resolve("docs/user/" + guide));
@@ -171,6 +182,63 @@ class PostP1BilingualUserGuideTest {
 						guide + " diverged from its single tracked source");
 			}
 		}
+		verifyPackagedFigures();
+	}
+
+	private void verifyPackagedFigures() throws Exception {
+		var spanish = figures(read("docs/user/" + ES));
+		var english = figures(read("docs/user/" + EN));
+		var orderedFiles = List.copyOf(english.keySet());
+		assertEquals(orderedFiles, List.copyOf(spanish.keySet()));
+		assertFalse(english.isEmpty());
+		var manifest = new JSONObject(read("docs/user/images/figures.json"))
+				.getJSONArray("figures");
+		assertEquals(english.size(), manifest.length());
+		Path sourceDirectory = repositoryRoot().resolve("docs/user/images");
+		try (var files = Files.list(sourceDirectory)) {
+			assertEquals(Set.copyOf(english.keySet()), Set.copyOf(files
+					.map(path -> path.getFileName().toString())
+					.filter(name -> name.endsWith(".png")).toList()));
+		}
+		for (int i = 0; i < manifest.length(); i++) {
+			JSONObject entry = manifest.getJSONObject(i);
+			String file = entry.getString("id") + ".png";
+			assertEquals(orderedFiles.get(i), file);
+			assertEquals(english.get(file), figureText(entry, "en"), file);
+			assertEquals(spanish.get(file), figureText(entry, "es"), file);
+			assertFalse(entry.getString("provenance").isBlank(), file);
+			assertFalse(entry.getString("rights").isBlank(), file);
+			byte[] source = Files.readAllBytes(sourceDirectory.resolve(file));
+			String digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+					.digest(source));
+			assertEquals(entry.getString("sha256"), digest, file);
+			try (var stream = getClass().getResourceAsStream("guide/images/" + file)) {
+				assertNotNull(stream, file);
+				assertArrayEquals(source, stream.readAllBytes(), file);
+			}
+			var picture = ImageIO.read(new ByteArrayInputStream(source));
+			assertNotNull(picture, file);
+			assertEquals(entry.getInt("width"), picture.getWidth(), file);
+			assertEquals(entry.getInt("height"), picture.getHeight(), file);
+		}
+	}
+
+	private static List<String> figureText(JSONObject figure, String language)
+			throws Exception {
+		return List.of(figure.getJSONObject("alt").getString(language),
+				figure.getJSONObject("caption").getString(language));
+	}
+
+	private static Map<String, List<String>> figures(String markdown) {
+		Map<String, List<String>> result = new LinkedHashMap<>();
+		Matcher matcher = FIGURE.matcher(markdown);
+		while (matcher.find()) {
+			assertNull(result.put(matcher.group(2), List.of(matcher.group(1), matcher.group(3))),
+					matcher.group(2));
+		}
+		assertEquals(markdown.lines().filter(line -> line.startsWith("![")).count(),
+				result.size(), "every figure must have alternate text and a caption");
+		return result;
 	}
 
 	@Test

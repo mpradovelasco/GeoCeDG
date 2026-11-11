@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "runtime_root": "org/geocedg/desktop/guide/images/",
+  "capture_conversion": "Pillow 12.3.0. Decode each cited JPEG, convert to RGB and save as PNG with compress_level=9. No scene edits, crop or scaling.",
+  "diagram_reproduction": "python tools/resources/generate-guide-diagrams.py --check",
+  "figures": [
+    {
+      "id": "interface-desktop",
+      "version": 1,
+      "section": "getting-started/2.2",
+      "path": "docs/user/images/interface-desktop.png",
+      "width": 786,
+      "height": 593,
+      "bytes": 198451,
+      "sha256": "389c0a20e30cfde99d362c0fd8c0aa301b513cef21516d57faa88f4a36a010ce",
+      "alt": {
+        "en": "GeoCeDG Desktop shows the toolbars, Algebra, Graphics, Construction Protocol and Algebra Input.",
+        "es": "GeoCeDG Desktop muestra las barras de herramientas, Álgebra, Gráficos, el Protocolo de construcción y la Entrada algebraica."
+      },
+      "caption": {
+        "en": "GeoCeDG Desktop in English. Algebra and the Construction Protocol are to the left of the drawing. Algebra Input is below it.",
+        "es": "Captura de GeoCeDG Desktop en inglés. Álgebra y el Protocolo de construcción están a la izquierda del dibujo. La Entrada algebraica se encuentra debajo."
+      },
+      "type": "product-capture",
+      "purpose": "Locate the tools, Algebra, Graphics, Construction Protocol and command input.",
+      "provenance": "Computer Use, GeoCeDG Desktop 1.1.0 on the verified CU9 baseline, English UI.",
+      "source_commit": "7035b01c501c9303cd75331c070d7d1061751e6b",
+      "source_path": "artifacts/agent/pre-g9b-cu9/viewer-smoke-7035b01c501c9303cd75331c070d7d1061751e6b/example-02-spline-created.jpg",
+      "source_sha256": "83bbd4d26f0d83a8d00eef255dfcbda96eb8b50253fce979e9abadcb6d2ae429",
+      "procedure": "Open Construction Protocol in the View menu and create the spline through four points. Use A=(-2.7,1.04), B=(-0.96,3.34), C=(1.54,1.92), D=(3.72,3.8), a slider d=3 and the Spline V2 with degree tool. Use the English Desktop profile.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product."
+    },
+    {
+      "id": "guide-navigation",
+      "version": 1,
+      "section": "getting-started/2.8",
+      "path": "docs/user/images/guide-navigation.png",
+      "width": 806,
+      "height": 713,
+      "bytes": 694838,
+      "sha256": "ac130dd9212a0068f9fb70de99bbd30f0c952a44ffd6f0f2ab798b6772ae6563",
+      "alt": {
+        "en": "A search in the English edition highlights a match in section 9.2 and selects the section in the guide tree.",
+        "es": "Una búsqueda en la edición inglesa resalta una coincidencia en la sección 9.2 y selecciona la sección en el árbol de la guía."
+      },
+      "caption": {
+        "en": "Guide window in English. The selected search result highlights the match in the text and selects its section in the tree.",
+        "es": "Captura de la guía en inglés. El resultado seleccionado resalta la coincidencia en el texto y marca su sección en el árbol."
+      },
+      "type": "product-capture",
+      "purpose": "Relate the search match to the highlighted text and selected tree section.",
+      "provenance": "Computer Use, GeoCeDG Desktop 1.1.0 on the verified CU9 baseline, English UI.",
+      "source_commit": "7035b01c501c9303cd75331c070d7d1061751e6b",
+      "source_path": "artifacts/agent/pre-g9b-cu9/viewer-smoke-clean-7035b01c501c9303cd75331c070d7d1061751e6b/en-02-salto-por-raton.jpg",
+      "source_sha256": "80902d8a1a2d1a4d5d36e60f4c0ab0abc74a44b2068fec7131976cff46e5b467",
+      "procedure": "In the English CU9 Desktop guide, use Ctrl+F, enter PERIODIC COMPONENT and click the first search result. The capture shows the verified CU9 baseline.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product."
+    },
+    {
+      "id": "numeric-reference",
+      "version": 1,
+      "section": "interface-and-workflow/3.9",
+      "path": "docs/user/images/numeric-reference.png",
+      "width": 786,
+      "height": 593,
+      "bytes": 226027,
+      "sha256": "f99b8f3ec1f51573f3e93bf9c62babc2b0a27fba8dfc26202e0986d6712382e0",
+      "alt": {
+        "en": "The Spline V2 degree dialog shows d, the number selected in Algebra.",
+        "es": "El campo del grado de Spline V2 muestra d, el número elegido en Álgebra."
+      },
+      "caption": {
+        "en": "GeoCeDG Desktop in English. The degree field contains the name d captured from Algebra.",
+        "es": "Captura de GeoCeDG Desktop en inglés. El campo del grado contiene el nombre d capturado desde Álgebra."
+      },
+      "type": "product-capture",
+      "purpose": "Show where the existing degree variable is inserted in a tool dialog.",
+      "provenance": "Computer Use, GeoCeDG Desktop 1.1.0 on the verified CU9 baseline, English UI.",
+      "source_commit": "7035b01c501c9303cd75331c070d7d1061751e6b",
+      "source_path": "artifacts/agent/pre-g9b-cu9/viewer-smoke-7035b01c501c9303cd75331c070d7d1061751e6b/example-01-degree-reference.jpg",
+      "source_sha256": "d608a5627296baa7d8800a9dd58fedb3f0211dc226bee50314ab3fbb4a41d5f4",
+      "procedure": "Start with the same four points and d=3 as interface-desktop. Choose Spline V2 with degree, select A/B/C/D/A, click Pick object and then select d in Algebra.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product."
+    },
+    {
+      "id": "insertion-review-flow",
+      "version": 1,
+      "section": "documents/4.2",
+      "path": "docs/user/images/insertion-review-flow.png",
+      "width": 1440,
+      "height": 414,
+      "bytes": 25362,
+      "sha256": "20ff3a1356299e9d2494f39839da807e4ffe95f3e9d0ac0fe89c57e1489d3698",
+      "alt": {
+        "en": "Two documents feed a separate trial drawing. Confirming transfers the additions into the current drawing. Cancelling keeps the current drawing as it was.",
+        "es": "Dos documentos alimentan un ensayo en una copia. Confirmar incorpora sus objetos al dibujo actual. Cancelar conserva el dibujo actual."
+      },
+      "caption": {
+        "en": "Expert insertion diagram. 1. Choose a source. 2. Review the trial on a copy. 3. Confirm an available insertion or cancel.",
+        "es": "Esquema de inserción experta. 1. Elija un origen. 2. Revise el ensayo en una copia. 3. Confirme una inserción disponible o cancele."
+      },
+      "type": "procedure",
+      "purpose": "Show the review step before committing an expert insertion.",
+      "provenance": "Original explanatory illustration by GeoCeDG contributors.",
+      "source_path": "tools/resources/generate-guide-diagrams.py",
+      "procedure": "Guide §4.2 and expert-document-insertion-candidate.md. Symbols represent the source, the receiver copy, review and confirmation or cancellation.",
+      "rights": "CC-BY-4.0, GeoCeDG contributors. DejaVu Sans glyphs are rasterized; no font file is shipped with the figure."
+    },
+    {
+      "id": "semantic-point-address",
+      "version": 1,
+      "section": "semantic-points-intersections-materialization/8.1",
+      "path": "docs/user/images/semantic-point-address.png",
+      "width": 1440,
+      "height": 432,
+      "bytes": 17970,
+      "sha256": "3be7c46eaa4a15ddda2c4491d1964758da043ba11efcedc2bbe7e146e7ec2548",
+      "alt": {
+        "en": "Two views show a horizontal spline at h=0 and h=2. Points P and Q move up with it and keep their places along the curve.",
+        "es": "Dos vistas muestran una spline horizontal en h=0 y h=2. P y Q suben con la curva y conservan sus posiciones en ella."
+      },
+      "caption": {
+        "en": "Diagram of the spline from section 7.5. Changing h moves the curve and its associated points together.",
+        "es": "Esquema de la spline de la sección 7.5. Al cambiar h, la curva y sus puntos asociados se desplazan juntos."
+      },
+      "type": "diagram",
+      "purpose": "Show the point address retained while a curve translates.",
+      "provenance": "Original explanatory illustration by GeoCeDG contributors.",
+      "source_path": "tools/resources/generate-guide-diagrams.py",
+      "procedure": "Guide §7.5. P and Q use parameters 0.25 and 0.75 on the straight spline; vary h to translate it without changing those parameters.",
+      "rights": "CC-BY-4.0, GeoCeDG contributors. DejaVu Sans glyphs are rasterized; no font file is shipped with the figure."
+    },
+    {
+      "id": "intersection-inspector-flow",
+      "version": 1,
+      "section": "semantic-points-intersections-materialization/8.4",
+      "path": "docs/user/images/intersection-inspector-flow.png",
+      "width": 1440,
+      "height": 432,
+      "bytes": 24286,
+      "sha256": "65dda4348ad1ab208d8181cc59a673f335685e37deea5880e38d85a0e8f5599b",
+      "alt": {
+        "en": "A line spline and a unit circle have two crossings. The second panel shows a constructed point X at the selected left crossing.",
+        "es": "Una spline recta y una circunferencia unitaria se cruzan dos veces. El segundo panel muestra el punto X creado en el cruce izquierdo."
+      },
+      "caption": {
+        "en": "Diagram of the example in section 8.2. Inspect both crossings, select the left solution and create a point to use it in the drawing.",
+        "es": "Esquema del ejemplo de la sección 8.2. Inspeccione los dos cruces, seleccione la solución izquierda y cree un punto para usarlo en el dibujo."
+      },
+      "type": "procedure",
+      "purpose": "Show how an eligible solution becomes a point.",
+      "provenance": "Original explanatory illustration by GeoCeDG contributors.",
+      "source_path": "tools/resources/generate-guide-diagrams.py",
+      "procedure": "Guide §§8.2 and 8.4. Use the straight spline and the unit circle from the example; inspect the two solutions and select the one at (-1,0).",
+      "rights": "CC-BY-4.0, GeoCeDG contributors. DejaVu Sans glyphs are rasterized; no font file is shipped with the figure."
+    },
+    {
+      "id": "locuslength-cycle",
+      "version": 1,
+      "section": "lengths-and-measurements/9.2",
+      "path": "docs/user/images/locuslength-cycle.png",
+      "width": 1440,
+      "height": 444,
+      "bytes": 48592,
+      "sha256": "95d9b8572054d66b890409721f01ac5e43f9ac187d960756a12b542a865f0451",
+      "alt": {
+        "en": "Three unit circles show the forward arc across the seam, the reverse arc and a full turn from A.",
+        "es": "Tres circunferencias unitarias muestran el arco de avance por la unión, el arco inverso y una vuelta completa desde A."
+      },
+      "caption": {
+        "en": "Diagram of the periodic example. F crosses the seam at ±π, R follows the other arc, and C makes one turn back to A.",
+        "es": "Esquema del ejemplo periódico. F cruza la unión en ±π, R recorre el otro arco y C da una vuelta hasta volver a A."
+      },
+      "type": "diagram",
+      "purpose": "Compare both travel directions and the full turn.",
+      "provenance": "Original explanatory illustration by GeoCeDG contributors.",
+      "source_path": "tools/resources/generate-guide-diagrams.py",
+      "procedure": "Guide §9.2. On a unit circle start at parameter 2.5, end at -2.5, and use the F, R and C queries. The lengths are 2π-5, 5 and 2π.",
+      "rights": "CC-BY-4.0, GeoCeDG contributors. DejaVu Sans glyphs are rasterized; no font file is shipped with the figure."
+    },
+    {
+      "id": "control-panel-anchors",
+      "version": 1,
+      "section": "presentation-and-visualization/12.6",
+      "path": "docs/user/images/control-panel-anchors.png",
+      "width": 1440,
+      "height": 432,
+      "bytes": 13818,
+      "sha256": "921061abfbf742a962cadd3ad195b7856ffd4832fccd34ac00309f5641d3a39d",
+      "alt": {
+        "en": "Before and after a pan, fixed panel F stays in the same place. Panel W moves with the axes and keeps its size.",
+        "es": "Antes y después de desplazar la vista, el panel fijo F permanece en el mismo sitio. El panel W se mueve con los ejes y conserva su tamaño."
+      },
+      "caption": {
+        "en": "Diagram of a pan in Graphics 1. F is fixed to the window. W is anchored to the canvas.",
+        "es": "Esquema de un desplazamiento en Gráficos 1. F está fijo a la ventana. W está vinculado al lienzo."
+      },
+      "type": "procedure",
+      "purpose": "Show which parts move when the drawing is panned.",
+      "provenance": "Original explanatory illustration by GeoCeDG contributors.",
+      "source_path": "tools/resources/generate-guide-diagrams.py",
+      "procedure": "Guide §12.6 and control-layout-v1.md. Pan Graphics 1 with a window-fixed panel and a canvas-anchored panel; only the canvas panel follows the drawing.",
+      "rights": "CC-BY-4.0, GeoCeDG contributors. DejaVu Sans glyphs are rasterized; no font file is shipped with the figure."
+    },
+    {
+      "id": "control-panel",
+      "version": 1,
+      "section": "presentation-and-visualization/12.6",
+      "path": "docs/user/images/control-panel.png",
+      "width": 786,
+      "height": 593,
+      "bytes": 348793,
+      "sha256": "1c9e9840800a063b61eb394e5747b296ea04395aa2894aee48080cb05b8fcec4",
+      "alt": {
+        "en": "The control layout manager shows the slider d as a member of a panel after the drawing is reopened.",
+        "es": "El gestor de disposición muestra el deslizador d como miembro de un panel al volver a abrir el dibujo."
+      },
+      "caption": {
+        "en": "GeoCeDG Desktop in English. After reopening the drawing, the control manager still lists the slider d in the panel.",
+        "es": "Captura de GeoCeDG Desktop en inglés. Al volver a abrir el dibujo, el gestor sigue mostrando el deslizador d en el panel."
+      },
+      "type": "product-capture",
+      "purpose": "Identify the panel selector, its associated control and the management actions.",
+      "provenance": "Computer Use, GeoCeDG Desktop 1.1.0 on the verified CU9 baseline, English UI.",
+      "source_commit": "7035b01c501c9303cd75331c070d7d1061751e6b",
+      "source_path": "artifacts/agent/pre-g9b-cu9/viewer-smoke-7035b01c501c9303cd75331c070d7d1061751e6b/example-07-membership-restored.jpg",
+      "source_sha256": "c2e9ca88ba4875be9f7eb4540db89f79eeacafba2345035189eb107ad26b47e0",
+      "procedure": "Open the archived .cedg source model in GeoCeDG, select Move in Graphics 1 and open View → Visibility and style → Control layout. Select the existing panel.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product.",
+      "model": "artifacts/agent/pre-g9b-cu9/viewer-smoke-7035b01c501c9303cd75331c070d7d1061751e6b/control-panel-smoke.cedg",
+      "model_sha256": "fcab9c923164add8bb9efb929a318eaf8581f92e2544b09588d4a01cfcbdbb84"
+    }
+  ]
+}
