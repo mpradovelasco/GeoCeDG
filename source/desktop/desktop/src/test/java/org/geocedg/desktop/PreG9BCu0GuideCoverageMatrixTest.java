@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.geogebra.common.move.ggtapi.models.json.JSONArray;
 import org.geogebra.common.move.ggtapi.models.json.JSONException;
@@ -148,6 +149,81 @@ class PreG9BCu0GuideCoverageMatrixTest {
 		}
 		assertEquals(0, totals.getInt("MISSING"));
 		assertEquals(0, totals.getInt("PARTIAL"));
+		verifyClassifications(matrix, entries);
+	}
+
+	private static void verifyClassifications(JSONObject matrix, JSONArray entries)
+			throws Exception {
+		JSONObject classification = matrix.getJSONObject("classification");
+		String upstream = Files.readString(PreG9BCu0Corpus.repositoryRoot().resolve(
+				"docs/upstream/BASELINE_COMMIT.txt"), StandardCharsets.UTF_8).strip();
+		assertEquals(upstream, classification.getString("upstream_commit"));
+		JSONObject groups = classification.getJSONObject("groups");
+		for (int i = 0; i < entries.length(); i++) {
+			JSONObject entry = entries.getJSONObject(i);
+			String id = entry.getString("id");
+			if (!"COVERED".equals(entry.getString("coverage"))) {
+				assertFalse(entry.has("classification_group"), id);
+				continue;
+			}
+			JSONObject group = groups.getJSONObject(entry.getString("classification_group"));
+			String anchor = group.getString("anchor");
+			JSONObject anchors = entry.getJSONObject("anchors");
+			for (String language : List.of("en", "es")) {
+				assertTrue(GeoCeDGProfile.strings(anchors.getJSONArray(language)).contains(anchor),
+						id + " classification is outside its covered sections");
+			}
+		}
+		for (String language : List.of("en", "es")) {
+			Map<String, String> sections = guideSections(guide(language));
+			for (var names = groups.keys(); names.hasNext();) {
+				String name = names.next();
+				JSONObject group = groups.getJSONObject(name);
+				List<String> marks = GeoCeDGProfile.strings(group.getJSONArray("marks"));
+				assertTrue(Set.of(List.of("N"), List.of("A"), List.of("G"),
+						List.of("N", "!"), List.of("A", "!"), List.of("G", "!"),
+						List.of("!")).contains(marks), name + ": " + marks);
+				assertEquals(List.of("!").equals(marks),
+						group.optBoolean("availability_only", false), name);
+				String wording = group.getJSONObject("text").getString(language);
+				String marked = marks.stream().map(mark -> "**[" + mark + "]**")
+						.collect(Collectors.joining(" ")) + " " + wording;
+				String section = sections.getOrDefault(group.getString("anchor"), "");
+				assertFalse(wording.isBlank(), name);
+				assertEquals(1, section.lines().filter(line -> line.contains(marked)).count(),
+						language + " classification " + name + " needs one marked phrase");
+			}
+		}
+	}
+
+	/** Keep evidence within the closest navigable section and outside fenced examples. */
+	static Map<String, String> guideSections(String markdown) {
+		Map<String, StringBuilder> sections = new HashMap<>();
+		String section = null;
+		String anchor = null;
+		boolean fenced = false;
+		for (String raw : markdown.lines().toList()) {
+			String line = raw.stripTrailing();
+			if (line.startsWith("```")) {
+				fenced = !fenced;
+				continue;
+			}
+			if (fenced) {
+				continue;
+			}
+			String marker = GeoCeDGGuideOutline.sectionMarker(line);
+			if (marker != null) {
+				section = marker;
+				anchor = marker;
+			} else if (line.startsWith("### ") && section != null) {
+				anchor = section + "/" + GeoCeDGGuideOutline.numbering(line.substring(4));
+			} else if (anchor != null && !line.startsWith("<!--")) {
+				sections.computeIfAbsent(anchor, key -> new StringBuilder())
+						.append(line).append('\n');
+			}
+		}
+		return sections.entrySet().stream().collect(Collectors.toMap(
+				Map.Entry::getKey, entry -> entry.getValue().toString()));
 	}
 
 	private static JSONObject matrix() throws IOException, JSONException {

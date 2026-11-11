@@ -229,6 +229,303 @@
       "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product.",
       "model": "artifacts/agent/pre-g9b-cu9/viewer-smoke-7035b01c501c9303cd75331c070d7d1061751e6b/control-panel-smoke.cedg",
       "model_sha256": "fcab9c923164add8bb9efb929a318eaf8581f92e2544b09588d4a01cfcbdbb84"
+    },
+    {
+      "id": "orientation-construction",
+      "version": 1,
+      "section": "basic-geometry/5.2",
+      "path": "docs/user/images/orientation-construction.png",
+      "width": 358,
+      "height": 279,
+      "bytes": 18364,
+      "sha256": "1111aeea26ab474303f9163ab47735a07e949f1b7e5cc0a1372e1d0dd1e3b21c",
+      "alt": {
+        "en": "Hollow arrows on the blue segment from A to B and on the green parallel through P both point up and right.",
+        "es": "Las flechas huecas del segmento azul de A a B y de la paralela verde por P apuntan hacia arriba y a la derecha."
+      },
+      "caption": {
+        "en": "GeoCeDG capture. The blue segment runs from A to B. The parallel through P inherits its direction.",
+        "es": "Captura de GeoCeDG. El segmento azul va de A a B. La paralela por P hereda su sentido."
+      },
+      "type": "product-capture",
+      "purpose": "Show the hollow direction cue on a segment and on its parallel construction.",
+      "provenance": "Computer Use capture of GeoCeDG Desktop 1.1.0 from the verified R1 INTERNAL Windows x64 app-image. The publication crop shows the construction in Graphics.",
+      "source_commit": "e2be710c43e33a22648d9729cb71b091791f538b",
+      "source_path": "artifacts/agent/pre-g9b-cu9-r2/captures/orientation-example-final.jpg",
+      "source_sha256": "72fb79aba6798ff4896226efcc7c04ff660d4cdd5eea72eadf1c30fd585881c2",
+      "source_width": 787,
+      "source_height": 594,
+      "crop": [
+        308,
+        143,
+        666,
+        422
+      ],
+      "source_model": "artifacts/agent/pre-g9b-cu9-r2/models-ready/orientation-example.cedg",
+      "source_model_sha256": "f1e4c218a89b556abd08d1598f7305eaae1477029472bbee826b68b8a9e1f9bb",
+      "procedure": "Enter A=(-2,-1), B=(2,1), s=Segment(A,B), P=(1,2.5), r=Line(P,s). Restore the CeDG Construction layout if needed, hide the axes and turn on Show orientation cue in Graphics 1. Make s blue, r green, and show the labels A, B and P.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product."
+    },
+    {
+      "id": "locus-periodic-positions",
+      "version": 1,
+      "section": "locus-v2/6.3",
+      "path": "docs/user/images/locus-periodic-positions.png",
+      "width": 272,
+      "height": 259,
+      "bytes": 23974,
+      "sha256": "7b00ca691d46e639166dd1cfeb50123a813274812deadaf58fe266c4773b730b",
+      "alt": {
+        "en": "A and B lie on the left side of the circular locus L, on opposite sides of the seam.",
+        "es": "A y B están en el lado izquierdo del locus circular L, a ambos lados de la unión."
+      },
+      "caption": {
+        "en": "GeoCeDG capture of the periodic example. The branch parameter places A above the seam and B below it.",
+        "es": "Captura de GeoCeDG del ejemplo periódico. El parámetro de rama sitúa A por encima de la unión y B por debajo."
+      },
+      "type": "product-capture",
+      "purpose": "Locate the same two semantic positions used to measure different routes on a periodic locus.",
+      "provenance": "Computer Use capture of GeoCeDG Desktop 1.1.0 from the verified R1 INTERNAL Windows x64 app-image. The publication crop shows the construction in Graphics.",
+      "source_commit": "e2be710c43e33a22648d9729cb71b091791f538b",
+      "source_path": "artifacts/agent/pre-g9b-cu9-r2/captures/locus-results.jpg",
+      "source_sha256": "4dc1ec9c774f69aa438920b66b6607d336ae699bb84c939e8f30cd1aa8ee580f",
+      "source_width": 787,
+      "source_height": 594,
+      "crop": [
+        352,
+        195,
+        624,
+        454
+      ],
+      "source_model": "artifacts/agent/pre-g9b-cu9-r2/models-ready/locus-positions.cedg",
+      "source_model_sha256": "917adabf5dfdb1aa88c0671abb85960a825e8a92b02c9c5405fe8406dc18f2f5",
+      "procedure": "Enter the commands of the periodic example in section 9.2. Restore the CeDG Construction layout if needed. Hide periodicCircle, periodicDriver, Q, the text objects holding command arguments, and the axes. Keep L, A and B visible and show their labels.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product."
+    },
+    {
+      "id": "spline-constructor-and-point",
+      "version": 1,
+      "section": "spline-v2/7.5",
+      "path": "docs/user/images/spline-constructor-and-point.png",
+      "width": 460,
+      "height": 278,
+      "bytes": 31231,
+      "sha256": "7bae9e3da91fa6230a7a40e1f88da0f20895f8b2f54886d7d5aa386f22127531",
+      "alt": {
+        "en": "The blue spline passes through A, B, C and D. The grey point P is on the curve between B and C.",
+        "es": "La spline azul pasa por A, B, C y D. El punto gris P queda sobre la curva entre B y C."
+      },
+      "caption": {
+        "en": "GeoCeDG capture. Moving a constructor reshapes the curve. P remains associated with parameter 0.42.",
+        "es": "Captura de GeoCeDG. Al mover un punto constructor cambia la forma de la curva. P sigue asociado al parámetro 0.42."
+      },
+      "type": "product-capture",
+      "purpose": "Distinguish the four spline constructor points from a point associated by its parameter.",
+      "provenance": "Computer Use capture of GeoCeDG Desktop 1.1.0 from the verified R1 INTERNAL Windows x64 app-image. The publication crop shows the construction in Graphics.",
+      "source_commit": "e2be710c43e33a22648d9729cb71b091791f538b",
+      "source_path": "artifacts/agent/pre-g9b-cu9-r2/captures/spline-example-clean.jpg",
+      "source_sha256": "25f3bec4f266a043ff006030e24688f5518bb5df6f1695d76874586c0725cc96",
+      "source_width": 787,
+      "source_height": 594,
+      "crop": [
+        248,
+        174,
+        708,
+        452
+      ],
+      "source_model": "artifacts/agent/pre-g9b-cu9-r2/models-ready/spline-shape.cedg",
+      "source_model_sha256": "9dd9ad404a2490eda7357156373eeb084caf90dbd1dbdba19ed70eff92e4e1c5",
+      "procedure": "Enter A=(-3,-1), B=(-2,2), C=(1,2), D=(3,0), S=SplineV2({A,B,C,D},3) and P=Point(S,\"spline-v2/main\",0.42). Restore the CeDG Construction layout if needed and hide the text object holding the branch key. Show the labels of the points and the curve.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product."
+    },
+    {
+      "id": "intersection-inspector-selection-en",
+      "version": 1,
+      "section": "semantic-points-intersections-materialization/8.4",
+      "path": "docs/user/images/intersection-inspector-selection-en.png",
+      "width": 620,
+      "height": 459,
+      "bytes": 199773,
+      "sha256": "ec0cdd28dac6d467d2c891ae1307828c243af756293324f41b7d047377edeb4a",
+      "alt": {
+        "en": "The inspector lists two transverse intersections and highlights the first. The selected solution is locally eligible and the Create one button is visible.",
+        "es": "El inspector enumera dos intersecciones transversales y resalta la primera. La solución seleccionada es admisible localmente y se ve el botón Crear uno."
+      },
+      "caption": {
+        "en": "GeoCeDG capture. The first crossing is eligible for Create one. Check global completeness separately if you need all crossings.",
+        "es": "Captura de GeoCeDG. El primer cruce admite Crear uno. Consulte también la completitud global si necesita todos los cruces."
+      },
+      "type": "product-capture",
+      "purpose": "Show the two crossings, local eligibility and creation controls before committing the point.",
+      "provenance": "Computer Use capture of GeoCeDG Desktop 1.1.0 from the verified R1 INTERNAL Windows x64 app-image. Interface language: en.",
+      "source_commit": "e2be710c43e33a22648d9729cb71b091791f538b",
+      "source_path": "artifacts/agent/pre-g9b-cu9-r2/captures/intersection-inspector-en-clean.jpg",
+      "source_sha256": "8ac7ea4285a35b514e1f938b568e5d24d3c50a35fd2db90bb90d6207d989692d",
+      "source_width": 769,
+      "source_height": 506,
+      "crop": [
+        0,
+        0,
+        620,
+        459
+      ],
+      "source_model": "artifacts/agent/pre-g9b-cu9-r2/models-ready/inspect-crossings.cedg",
+      "source_model_sha256": "b5250e84506f8168f5234d1708fb6d3e53089c85c42080a2c4bbd06245a14384",
+      "procedure": "Enter the Spline V2 construction of section 7.5 and c=Circle((0,0),1), R=Intersect(S,c). In Algebra, right-click R and open GeoCeDG → Inspect rich result. Select the first finite solution in the list. In the verification run Create one changed its state to Already materialized.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product.",
+      "edition": "en",
+      "paired_id": "intersection-inspector-selection"
+    },
+    {
+      "id": "intersection-inspector-selection-es",
+      "version": 1,
+      "section": "semantic-points-intersections-materialization/8.4",
+      "path": "docs/user/images/intersection-inspector-selection-es.png",
+      "width": 620,
+      "height": 459,
+      "bytes": 218348,
+      "sha256": "6400d5af4def8b99666e8ded9d8f38ad6b60398f6b17b8c27c003f5d979d957e",
+      "alt": {
+        "en": "The inspector lists two transverse intersections and highlights the first. The selected solution is locally eligible and the Create one button is visible.",
+        "es": "El inspector enumera dos intersecciones transversales y resalta la primera. La solución seleccionada es admisible localmente y se ve el botón Crear uno."
+      },
+      "caption": {
+        "en": "GeoCeDG capture. The first crossing is eligible for Create one. Check global completeness separately if you need all crossings.",
+        "es": "Captura de GeoCeDG. El primer cruce admite Crear uno. Consulte también la completitud global si necesita todos los cruces."
+      },
+      "type": "product-capture",
+      "purpose": "Show the two crossings, local eligibility and creation controls before committing the point.",
+      "provenance": "Computer Use capture of GeoCeDG Desktop 1.1.0 from the verified R1 INTERNAL Windows x64 app-image. Interface language: es.",
+      "source_commit": "e2be710c43e33a22648d9729cb71b091791f538b",
+      "source_path": "artifacts/agent/pre-g9b-cu9-r2/captures/intersection-inspector-es-clean.jpg",
+      "source_sha256": "ba6afa7c1742ffb248776d4069ab837933838ea36a1260fb042e297aa1a915e5",
+      "source_width": 769,
+      "source_height": 506,
+      "crop": [
+        0,
+        0,
+        620,
+        459
+      ],
+      "source_model": "artifacts/agent/pre-g9b-cu9-r2/models-ready/inspect-crossings.cedg",
+      "source_model_sha256": "b5250e84506f8168f5234d1708fb6d3e53089c85c42080a2c4bbd06245a14384",
+      "procedure": "Enter the Spline V2 construction of section 7.5 and c=Circle((0,0),1), R=Intersect(S,c). In Algebra, right-click R and open GeoCeDG → Inspect rich result. Select the first finite solution in the list. In the verification run Create one changed its state to Already materialized.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product.",
+      "edition": "es",
+      "paired_id": "intersection-inspector-selection"
+    },
+    {
+      "id": "locus-metric-inspector-en",
+      "version": 1,
+      "section": "lengths-and-measurements/9.2",
+      "path": "docs/user/images/locus-metric-inspector-en.png",
+      "width": 423,
+      "height": 298,
+      "bytes": 122354,
+      "sha256": "53b15eed2393461f5bcfc03c72d36876f0769df0f9baa1c756765901f5abc540",
+      "alt": {
+        "en": "The metric inspector for F shows a value of about 1.283185, complete coverage and that the target position was reached.",
+        "es": "El inspector métrico de F muestra un valor cercano a 1,283185, cobertura completa y la posición objetivo alcanzada."
+      },
+      "caption": {
+        "en": "GeoCeDG capture. Inspect F in Algebra to check the length, coverage and traversal outcome together.",
+        "es": "Captura de GeoCeDG. Inspeccione F en Álgebra para comprobar juntos la longitud, la cobertura y el resultado del recorrido."
+      },
+      "type": "product-capture",
+      "purpose": "Read the numerical result and its coverage for the forward arc of the periodic example.",
+      "provenance": "Computer Use capture of GeoCeDG Desktop 1.1.0 from the verified R1 INTERNAL Windows x64 app-image. Interface language: en.",
+      "source_commit": "e2be710c43e33a22648d9729cb71b091791f538b",
+      "source_path": "artifacts/agent/pre-g9b-cu9-r2/captures/metric-inspector-en.jpg",
+      "source_sha256": "75a10b7b1b3a014790a2b5fdf55fd04401f196459c7a6d856b3093b582d4818b",
+      "source_width": 807,
+      "source_height": 386,
+      "crop": [
+        0,
+        0,
+        423,
+        298
+      ],
+      "source_model": "artifacts/agent/pre-g9b-cu9-r2/models-ready/locus-positions.cedg",
+      "source_model_sha256": "917adabf5dfdb1aa88c0671abb85960a825e8a92b02c9c5405fe8406dc18f2f5",
+      "procedure": "Enter the commands of the periodic example in section 9.2. Right-click F in Algebra and choose GeoCeDG → Inspect rich result in the desired product language.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product.",
+      "edition": "en",
+      "paired_id": "locus-metric-inspector"
+    },
+    {
+      "id": "locus-metric-inspector-es",
+      "version": 1,
+      "section": "lengths-and-measurements/9.2",
+      "path": "docs/user/images/locus-metric-inspector-es.png",
+      "width": 423,
+      "height": 298,
+      "bytes": 135006,
+      "sha256": "2934ddf9f1956ab284272dc7f7b43178bd69bc7697a3f1ba00dde09e41188392",
+      "alt": {
+        "en": "The metric inspector for F shows a value of about 1.283185, complete coverage and that the target position was reached.",
+        "es": "El inspector métrico de F muestra un valor cercano a 1,283185, cobertura completa y la posición objetivo alcanzada."
+      },
+      "caption": {
+        "en": "GeoCeDG capture. Inspect F in Algebra to check the length, coverage and traversal outcome together.",
+        "es": "Captura de GeoCeDG. Inspeccione F en Álgebra para comprobar juntos la longitud, la cobertura y el resultado del recorrido."
+      },
+      "type": "product-capture",
+      "purpose": "Read the numerical result and its coverage for the forward arc of the periodic example.",
+      "provenance": "Computer Use capture of GeoCeDG Desktop 1.1.0 from the verified R1 INTERNAL Windows x64 app-image. Interface language: es.",
+      "source_commit": "e2be710c43e33a22648d9729cb71b091791f538b",
+      "source_path": "artifacts/agent/pre-g9b-cu9-r2/captures/metric-inspector-es.jpg",
+      "source_sha256": "eef5358e1ff00448de2a52cb3773ded4d2950660bea195ab7bc5e23aa5e5356e",
+      "source_width": 807,
+      "source_height": 386,
+      "crop": [
+        0,
+        0,
+        423,
+        298
+      ],
+      "source_model": "artifacts/agent/pre-g9b-cu9-r2/models-ready/locus-positions.cedg",
+      "source_model_sha256": "917adabf5dfdb1aa88c0671abb85960a825e8a92b02c9c5405fe8406dc18f2f5",
+      "procedure": "Enter the commands of the periodic example in section 9.2. Right-click F in Algebra and choose GeoCeDG → Inspect rich result in the desired product language.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product.",
+      "edition": "es",
+      "paired_id": "locus-metric-inspector"
+    },
+    {
+      "id": "aligned-and-linear-dimensions",
+      "version": 1,
+      "section": "lengths-and-measurements/9.5",
+      "path": "docs/user/images/aligned-and-linear-dimensions.png",
+      "width": 426,
+      "height": 383,
+      "bytes": 28771,
+      "sha256": "f1f7eb3c9fee23a12159024b9e6a30974b9cb0ac2c85dc6452299eed04d25484",
+      "alt": {
+        "en": "A slanted dimension above segment AB reads 4.27. A horizontal dimension below it reads 4.",
+        "es": "La cota inclinada sobre el segmento AB indica 4,27. La cota horizontal inferior indica 4."
+      },
+      "caption": {
+        "en": "GeoCeDG capture. On the same segment, the aligned dimension is about 4.27 model units. The horizontal dimension is 4.",
+        "es": "Captura de GeoCeDG. Sobre el mismo segmento, la cota alineada mide unas 4,27 unidades de modelo y la horizontal mide 4."
+      },
+      "type": "product-capture",
+      "purpose": "Compare true distance and projection along a direction on the same segment.",
+      "provenance": "Computer Use capture of GeoCeDG Desktop 1.1.0 from the verified R1 INTERNAL Windows x64 app-image. The publication crop shows the construction in Graphics.",
+      "source_commit": "e2be710c43e33a22648d9729cb71b091791f538b",
+      "source_path": "artifacts/agent/pre-g9b-cu9-r2/captures/dimension-example-clean.jpg",
+      "source_sha256": "fdbf3caaad82dbc035734c8f91f5a812f96ff217c671d0328964306f0a14290f",
+      "source_width": 787,
+      "source_height": 594,
+      "crop": [
+        263,
+        163,
+        689,
+        546
+      ],
+      "source_model": "artifacts/agent/pre-g9b-cu9-r2/models-ready/two-dimensions.cedg",
+      "source_model_sha256": "f59a0100cf9b51f1f9d083708e15275700b8cdc00afc999121d372bcc2640dd1",
+      "procedure": "Enter A=(-2,-0.8), B=(2,0.7), s=Segment(A,B), d=AlignedDimension(A,B,1.05,0.16,0.1), e=LinearDimension(A,B,xAxis,-1.35,0.16,0.1). Restore the CeDG Construction layout if needed, hide the axes, and show point labels.",
+      "rights": "Captured by GeoCeDG contributors. Contains inherited GeoGebra UI material; see LICENSES/GeoGebra-License-2025-11.md and LICENSES/CC-BY-NC-SA-4.0.txt. The figure does not add authorization to redistribute the product."
     }
-  ]
+  ],
+  "compact_capture_conversion": "Pillow 12.3.0. Crop the original Computer Use JPEG with the recorded half-open pixel bounds [left, top, right, bottom], convert to RGB and write a lossless PNG with compress_level=9. Keep the source pixels in the crop at their original scale."
 }

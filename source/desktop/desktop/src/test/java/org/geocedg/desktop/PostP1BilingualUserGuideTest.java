@@ -186,29 +186,29 @@ class PostP1BilingualUserGuideTest {
 	}
 
 	private void verifyPackagedFigures() throws Exception {
-		var spanish = figures(read("docs/user/" + ES));
-		var english = figures(read("docs/user/" + EN));
-		var orderedFiles = List.copyOf(english.keySet());
-		assertEquals(orderedFiles, List.copyOf(spanish.keySet()));
-		assertFalse(english.isEmpty());
 		var manifest = new JSONObject(read("docs/user/images/figures.json"))
 				.getJSONArray("figures");
-		assertEquals(english.size(), manifest.length());
 		Path sourceDirectory = repositoryRoot().resolve("docs/user/images");
-		try (var files = Files.list(sourceDirectory)) {
-			assertEquals(Set.copyOf(english.keySet()), Set.copyOf(files
-					.map(path -> path.getFileName().toString())
-					.filter(name -> name.endsWith(".png")).toList()));
-		}
+		Map<String, JSONObject> assets = new LinkedHashMap<>();
 		for (int i = 0; i < manifest.length(); i++) {
 			JSONObject entry = manifest.getJSONObject(i);
 			String file = entry.getString("id") + ".png";
-			assertEquals(orderedFiles.get(i), file);
-			assertEquals(english.get(file), figureText(entry, "en"), file);
-			assertEquals(spanish.get(file), figureText(entry, "es"), file);
+			assertNull(assets.put(file, entry), "duplicate figure " + file);
+		}
+		try (var files = Files.list(sourceDirectory)) {
+			assertEquals(assets.keySet(), Set.copyOf(files
+					.map(path -> path.getFileName().toString())
+					.filter(name -> name.endsWith(".png")).toList()));
+		}
+		assertEquals(verifyFigureEdition(assets, "en", EN), verifyFigureEdition(assets, "es", ES));
+		for (var asset : assets.entrySet()) {
+			String file = asset.getKey();
+			JSONObject entry = asset.getValue();
 			assertFalse(entry.getString("provenance").isBlank(), file);
 			assertFalse(entry.getString("rights").isBlank(), file);
+			assertFalse(entry.getString("procedure").isBlank(), file);
 			byte[] source = Files.readAllBytes(sourceDirectory.resolve(file));
+			assertEquals(entry.getInt("bytes"), source.length, file);
 			String digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
 					.digest(source));
 			assertEquals(entry.getString("sha256"), digest, file);
@@ -221,6 +221,38 @@ class PostP1BilingualUserGuideTest {
 			assertEquals(entry.getInt("width"), picture.getWidth(), file);
 			assertEquals(entry.getInt("height"), picture.getHeight(), file);
 		}
+	}
+
+	private static List<String> verifyFigureEdition(Map<String, JSONObject> assets,
+			String language, String filename) throws Exception {
+		String markdown = read("docs/user/" + filename);
+		var figures = figures(markdown);
+		assertFalse(figures.isEmpty());
+		var expected = new LinkedHashMap<String, String>();
+		for (var asset : assets.entrySet()) {
+			JSONObject entry = asset.getValue();
+			String edition = entry.optString("edition", "");
+			assertTrue(Set.of("", "en", "es").contains(edition), asset.getKey());
+			assertEquals(!edition.isEmpty(), entry.has("paired_id"), asset.getKey());
+			if (edition.isEmpty() || edition.equals(language)) {
+				expected.put(asset.getKey(), entry.optString("paired_id", entry.getString("id")));
+			}
+		}
+		assertEquals(expected.keySet(), figures.keySet(), language);
+		Map<String, String> sections = PreG9BCu0GuideCoverageMatrixTest.guideSections(markdown);
+		for (var figure : figures.entrySet()) {
+			String file = figure.getKey();
+			JSONObject entry = assets.get(file);
+			assertEquals(figureText(entry, language), figure.getValue(), file);
+			String section = sections.getOrDefault(entry.getString("section"), "");
+			assertTrue(section.contains("](images/" + file + ")"), file + " section mismatch");
+		}
+		var rendered = GeoCeDGGuideRenderer.render(markdown);
+		assertEquals(List.of(), rendered.diagnostics(), language);
+		assertEquals(figures.size(), rendered.images().size(), language);
+		List<String> outline = figures.keySet().stream().map(expected::get).toList();
+		assertEquals(outline.size(), Set.copyOf(outline).size(), language + " duplicate figure");
+		return outline;
 	}
 
 	private static List<String> figureText(JSONObject figure, String language)

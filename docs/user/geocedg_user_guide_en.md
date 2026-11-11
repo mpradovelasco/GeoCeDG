@@ -15,6 +15,8 @@ Feature marks used in both editions:
 - **[G] Inherited from GeoGebra** — a capability already in the pinned baseline.
 - **[!] Experimental or subject to significant limits** — check the linked scope before relying on it.
 
+An **[!]** on its own flags an unavailable operation or an availability boundary.
+
 ---
 
 <!-- geocedg-guide-section: what-is-geocedg -->
@@ -62,18 +64,18 @@ revision `9b93256b7df401ff056c37b502d82df4d72b1522`.
 | Capability | Contribution | Tools or commands | Practical application | Guide link |
 | --- | --- | --- | --- | --- |
 | Basic dynamic geometry | **[G]** Points, lines, conics and polygons keep their construction dependencies. | Point, Segment, Circle, Polygon | Change a starting point and watch the construction update. | [Basic geometry](#basic-geometry) |
-| Semantic curves | **[N] [!]** Locus V2 and Spline V2 give a curve a parameter you can use to locate a point and measure a path. | `LocusV2`, `SplineV2` | Trace a moving point or fit a smooth curve from a point list. | [Locus V2](#locus-v2/6.5) · [Spline V2](#spline-v2/7.2) |
-| Points and intersections | **[A] [!]** `Point` and `Intersect` gain V2 forms. Intersections can return a result you inspect before creating points. | `Point`, `Intersect`, Inspect rich result | Choose a position on the curve or review the intersection solutions. | [Points on curves](#semantic-points-intersections-materialization/8.1) · [Intersection results](#semantic-points-intersections-materialization/8.2) |
-| Tangencies and creating points | **[G]** Ordinary Tangents. **[A] [!]** V2 crossings can become points when admitted. Certain contacts have an explicit construction through the driver. | Tangents, Create selected intersection point, `Intersect(L,r,D)` | Keep a supported crossing or a proved contact as part of the construction. A tangency reported in an inspector does not by itself authorize point creation. | [Which solutions can become points](#semantic-points-intersections-materialization/8.3) · [Structural points](#semantic-points-intersections-materialization/8.6) |
-| Length and traversal | **[A] [!]** `Length` can measure supported V2 curves. **[N] [!]** `LocusLength` adds evidence and lets you choose a traversal where supported. | `Length`, `LocusLength` | Measure a whole curve, an arc between two points, or a full circuit of a supported periodic branch. | [Traversal and length](#lengths-and-measurements/9.2) |
-| Dynamic validity | **[G]** Objects update with their inputs. **[A] [!]** V2 positions and selected intersection points report when they lose validity after an edit. | Inspect definition…, Inspect rich result | Check whether a retained point is still usable after moving a driver. | [Check after editing](#locus-v2/6.4) · [Keep or recover a point](#semantic-points-intersections-materialization/8.6) |
-| Construction steps, memory and orientation | **[A]** The inherited protocol adapts row height. Parallel and Perpendicular can each remember a reference during the session. Supported results can show a direction cue. | Construction protocol, Parallel Line, Perpendicular Line, Show orientation cue | Review a construction step or repeat a family of aligned lines. | [Construction protocol](#interface-and-workflow/3.8) · [Lines and reference memory](#basic-geometry/5.2) |
+| Semantic curves | **[N]** **[!]** Locus V2 and Spline V2 give a curve a parameter you can use to locate a point and measure a path. | `LocusV2`, `SplineV2` | Trace a moving point or fit a smooth curve from a point list. | [Locus V2](#locus-v2/6.5) · [Spline V2](#spline-v2/7.2) |
+| Points and intersections | **[A]** **[!]** `Point` and `Intersect` gain V2 forms. Intersections can return a result you inspect before creating points. | `Point`, `Intersect`, Inspect rich result | Choose a position on the curve or review the intersection solutions. | [Points on curves](#semantic-points-intersections-materialization/8.1) · [Intersection results](#semantic-points-intersections-materialization/8.2) |
+| Tangencies and creating points | **[G]** Ordinary Tangents. **[A]** **[!]** V2 crossings can become points when admitted. Certain contacts have an explicit construction through the driver. | Tangents, Create selected intersection point, `Intersect(L,r,D)` | Keep a supported crossing or a proved contact as part of the construction. A tangency reported in an inspector does not by itself authorize point creation. | [Which solutions can become points](#semantic-points-intersections-materialization/8.3) · [Structural points](#semantic-points-intersections-materialization/8.6) |
+| Length and traversal | **[A]** **[!]** `Length` can measure supported V2 curves. **[N]** **[!]** `LocusLength` adds evidence and lets you choose a traversal where supported. | `Length`, `LocusLength` | Measure a whole curve, an arc between two points, or a full circuit of a supported periodic branch. | [Traversal and length](#lengths-and-measurements/9.2) |
+| Dynamic validity | **[G]** Objects update with their inputs. **[A]** **[!]** V2 positions and selected intersection points report when they lose validity after an edit. | Inspect definition…, Inspect rich result | Check whether a retained point is still usable after moving a driver. | [Check after editing](#locus-v2/6.4) · [Keep or recover a point](#semantic-points-intersections-materialization/8.6) |
+| Construction steps, memory and orientation | **[A]** The inherited protocol adapts row height. Parallel and Perpendicular can each remember a reference during the session. **[N]** **[!]** Supported results can show a direction cue. | Construction protocol, Parallel Line, Perpendicular Line, Show orientation cue | Review a construction step or repeat a family of aligned lines. | [Construction protocol](#interface-and-workflow/3.8) · [Lines and reference memory](#basic-geometry/5.2) |
 | Document units, dimensions and sheets | **[N]** Set a unit for the drawing, add engineering dimensions and define an ISO A border. | Document units…, `AlignedDimension`, `LinearDimension`, `IsoABorder` | Prepare a scaled sheet with readable dimensions. | [Units](#documents/4.6) · [Dimensions](#lengths-and-measurements/9.5) · [ISO A sheets](#documents/4.7) |
 | Presentation and layers | **[A]** The inherited object styles and numeric layers gain presentation controls and a working layer. | Preferences, Working Layer, layer visibility | Group construction objects by layer and hide auxiliary work while checking the drawing. | [Presentation](#presentation-and-visualization) · [Working layer](#presentation-and-visualization/12.5) |
-| Native documents and insertion | **[N]** Save as `.cedg`, insert supported constructions with checks, or review an expert trial before deciding. **[!]** Admissible sources depend on the route. | Save as…, Insert File…, Insert with expert review… | Bring an existing construction into a drawing and review the changes before confirming when expert review is available. | [Document formats](#documents/4.1) · [Insertion](#documents/4.2) |
-| Controls and panels | **[G]** Sliders, buttons, check boxes and input boxes. **[N] [!]** Fixed or canvas-anchored panels for eligible controls in Graphics 1. | Slider, Button, Check Box, Input Box, Control layout | Keep controls together when you move around the drawing. | [Control panels](#presentation-and-visualization/12.6) |
-| DXF exchange | **[N] [!]** Export supported 2D objects, with fidelity and approximation information. | Export 2D geometry as DXF (experimental)… | Hand off linework to CAD after checking what the export can represent. | [DXF export](#dxf-export) |
-| User tools and Classic | **[G]** Custom tools can be stored in `.ggb` drawings. **[A]** GeoCeDG adds a tool manager, toolbar pins and an installed library. It also launches a separate Classic diagnostic session. | User tools, Open Classic diagnostic session | Reuse a tool or check an older construction within the compatibility limits. | [User tools](#user-tools-and-automation) · [Classic](#classic-compatibility-and-diagnostics) |
+| Native documents and insertion | **[N]** Use the native `.cedg` document. **[A]** **[!]** Insert File checks the construction before adding it. **[N]** **[!]** Expert review runs a trial on a copy. | Save as…, Insert File…, Insert with expert review… | Bring an existing construction into a drawing and review the changes before confirming when expert review is available. | [Document formats](#documents/4.1) · [Insertion](#documents/4.2) |
+| Controls and panels | **[G]** Sliders, buttons, check boxes and input boxes. **[N]** **[!]** Fixed or canvas-anchored panels for eligible controls in Graphics 1. | Slider, Button, Check Box, Input Box, Control layout | Keep controls together when you move around the drawing. | [Control panels](#presentation-and-visualization/12.6) |
+| DXF exchange | **[N]** **[!]** Export supported 2D objects, with fidelity and approximation information. | Export 2D geometry as DXF (experimental)… | Hand off linework to CAD after checking what the export can represent. | [DXF export](#dxf-export) |
+| User tools and Classic | **[G]** Custom tools can be stored in `.ggb` drawings. **[A]** Tool management adds persistent choices and toolbar pins. **[N]** **[!]** The installed library and the separate Classic diagnostic session have their own availability. | User tools, Open Classic diagnostic session | Reuse a tool or check an older construction within the compatibility limits. | [User tools](#user-tools-and-automation) · [Classic](#classic-compatibility-and-diagnostics) |
 
 
 ---
@@ -124,6 +126,8 @@ edition of this guide **Help → GeoCeDG user guide** opens.
 
 ### 2.4 Preferences
 
+**[A]** Layout & Presentation brings the inherited layout settings together with GeoCeDG presentation controls.
+
 **Options → Preferences…** opens the global configuration. Opening it does not
 select an object.
 
@@ -133,6 +137,8 @@ presentation theme and the presentation sizes described below, the
 group (section 9.5) and the **Orientation cue** option (section 5.2).
 
 ### 2.5 Presentation themes
+
+**[A]** Theme choices extend the inherited appearance settings with a GeoCeDG canvas theme.
 
 A presentation theme selects the colours of known interface surfaces. There are
 exactly three, chosen under **Preferences → Layout & Presentation → Theme**:
@@ -150,6 +156,8 @@ stored in a document. The choice is a user preference: it survives restart and
 is not affected by opening a document.
 
 ### 2.6 Presentation sizes
+
+**[A]** Presentation sizes extend the inherited text sizing with separate canvas labels, desktop fonts and icon controls.
 
 **Preferences → Layout & Presentation → Presentation sizes** offers six
 independent controls:
@@ -190,6 +198,8 @@ within commands.
 
 ### 2.8 Search the guide
 
+**[N]** The guide includes a section tree, internal links and local search.
+
 Open **Help → GeoCeDG user guide**. Use the tree on the left to open a
 section. Press **Ctrl+F** or click the search field. Try `orientation` or
 `LocusLength`. Each result shows its section and a short excerpt.
@@ -226,33 +236,33 @@ Click a link to follow it. With the keyboard, press **Alt+Right** or
 
 ### 3.2 Menus
 
-Use the menu bar to find tools by task. The individual Construction tools are listed below. See the [reference](#command-and-workflow-reference) for inputs and shortcuts.
+Use the menu bar to find tools by task. The individual Construction tools are listed below. A mark beside a menu describes the menu. Marks in its description apply to the named actions. See the [reference](#command-and-workflow-reference) for inputs and shortcuts.
 
 | Menu | What you can do |
 |---|---|
-| **File** | Direct entries include New file, Open…, Open recent…, Open Classic diagnostic session, Save, Save as…, Print preview…, Graphics View as Picture…, Export 2D geometry as DXF (experimental)…, PSTricks…, PGF/TikZ…, Asymptote…, Define export area…, Use Export_1 and Export_2, Show export area, Clear export area, Define ISO A export area…, Use selected ISO A border, Close. **Insert** opens a submenu with Insert File…, Insert with expert review…, Apply Styles…. Expert review is available by default (section 4.2). |
-| **Edit** | Undo, Redo, Move, Move around Point, Working Layer, Select Objects, Attach / Detach Point, Delete. See [Menus, preferences and shortcuts](#command-and-workflow-reference/16.6). |
-| **View** | **Views** toggles Algebra, Graphics2, Spreadsheet, CAS and Object Properties. **Visibility and style** — Show / Hide Object, Show / Hide Label, Copy Visual Style, Show orientation cue, Control layout. **Navigation** — Move Graphics View, Zoom to rectangle, Zoom In, Zoom Out, Zoom Factor In, Zoom Factor Out, Standard view, Show all objects. **Construction inspection** — Construction protocol, Show construction navigation bar, Inspect definition…. **Configure navigation zoom...** sets shortcuts and zoom factor. **Restore Construction layout** restores the CeDG Construction workspace. Dihedral procedures is unavailable. |
-| **Construction** | Choose a tool by group in the next table. |
-| **Options** | **Algebra display** (Value, Description, Definition), Sort by, Rounding, Labeling, Text font size. Direct entries: Preferences…, Axes, Grid, Product language…, Show solution markers, Auto-create eligible points for new explicit queries, Document units…, Save Settings. |
-| **Automation** | Algebra Input, Legacy laboratory (separate session), Object properties and scripting…. Open **User tools** to manage tools in the document or use the [GeoCeDG library](#user-tools-and-automation/13.2). |
-| **Help** | Input help, Current tool help, Command list, GeoCeDG user guide, Keyboard shortcuts, About GeoCeDG. |
+| **[A]** **File** | **[G]** New file and Close. **[G]** Open recent…. **[A]** Open…, Save and Save as… with the native document policy. **[A]** Print preview…, Graphics View as Picture…, PSTricks…, PGF/TikZ… and Asymptote… use the GeoCeDG export area. **[N]** **[!]** Export 2D geometry as DXF (experimental)…. **[N]** Define export area…, Show export area, Clear export area, Define ISO A export area… and Use selected ISO A border. **[A]** Use Export_1 and Export_2 activates the two-point crop explicitly. **[A]** **[!]** **Insert** brings together certified insertion, expert review and style transfer (section 4.2). **[N]** **[!]** Open Classic diagnostic session. |
+| **[G]** **Edit** | **[G]** Undo, Redo, Move, Move around Point, Select Objects, Attach / Detach Point and Delete. **[N]** Working Layer selects the layer for new objects in the current session. See [Menus, preferences and shortcuts](#command-and-workflow-reference/16.6). |
+| **[A]** **View** | **[G]** **Views** toggles Algebra, Graphics 2, Spreadsheet, CAS and Object Properties. **[A]** **Visibility and style** includes orientation and control layout. **[G]** Show / Hide Object, Show / Hide Label and Copy Visual Style. **[N]** **[!]** Show orientation cue applies to eligible results. **[A]** **Navigation** includes Zoom to rectangle, Zoom Factor In, Zoom Factor Out and Configure navigation zoom…. **[G]** Move Graphics View, Zoom In, Zoom Out, Standard view and Show all objects. **[A]** **Construction inspection** includes the Construction protocol with adaptive row height. **[G]** Show construction navigation bar. **[N]** Inspect definition… opens the definition without changing Algebra display mode. **[A]** **Restore Construction layout** restores the CeDG Construction workspace. |
+| **[A]** **Construction** | The groups below include the semantic curves and engineering dimensions. |
+| **[A]** **Options** | **[G]** **Algebra display** (Value, Description, Definition). **[G]** Rounding, Labeling, Text font size, Axes, Grid and Save Settings. **[G]** Sort by groups objects by dependency, type, construction order or layer. **[A]** Preferences… includes Layout & Presentation. **[A]** Product language… switches between English and Spanish. **[N]** **[!]** Show solution markers and Auto-create eligible points for new explicit queries. **[N]** Document units…. |
+| **[A]** **Automation** | **[G]** Algebra Input and Object properties and scripting…. **[N]** **[!]** Legacy laboratory (separate session). **[A]** **User tools** includes Manage user tools… and **Document tools**. **[N]** **[!]** The [GeoCeDG library](#user-tools-and-automation/13.2) offers curated tools. |
+| **[A]** **Help** | **[G]** Input help, Command list, Keyboard shortcuts and About GeoCeDG. **[A]** Current tool help includes GeoCeDG tools. **[N]** GeoCeDG user guide opens the integrated edition. |
 
 | Construction submenu | Entries |
 |---|---|
-| Points | Point, Point on Object, Midpoint or Center |
-| Lines and vectors | Line, Segment, Ray, Vector, Segment with Given Length, Vector from Point |
-| Polygons | Polygon, Polyline, Regular Polygon, Rigid Polygon, Vector Polygon |
-| List tools | Create List from Selection |
-| Derived constructions | Parallel Line, Perpendicular Line, Perpendicular Bisector, Angle Bisector |
-| Parameters and drivers | Slider, Angle with Given Size, Check Box, Button, Input Box, Animate selected object, Text |
-| Relations and intersections | Intersect, Tangents, Relation, Polar or Diameter Line, Inspect rich result, Create selected intersection point, Create selected intersection points, Create all eligible intersection points |
-| Circles and conics | Circle with Center through Point, Circle through 3 Points, Circle: Center & Radius, Circular Arc, Conic through 5 Points, Ellipse, Parabola, Compass, Semicircle, Circumcircular Arc, Circular Sector, Circumcircular Sector, Hyperbola |
-| Semantic curves | Locus V2, Point on Locus V2 from reference, Point on semantic curve (explicit address), Spline V2, Spline V2 with degree, Closed Spline V2, Inspect semantic curve definition… |
-| Metrics and validation | Angle, Distance or Length, Aligned Dimension, Linear Dimension, Total semantic locus length (experimental), Partial semantic locus length (experimental), Area, Slope |
-| Similarity transformations | Reflect about Point, Reflect about Line, Translate by Vector, Rotate around Point, Dilate from Point |
-| Annotations and media | Image, ISO A Border |
-| Manual projection procedures | CeDG dihedral procedures (not authorized) |
+| **[A]** Points | **[A]** **[!]** Point and Point on Object include semantic curve placement. **[G]** Midpoint or Center. |
+| **[G]** Lines and vectors | Line, Segment, Ray, Vector, Segment with Given Length and Vector from Point. |
+| **[G]** Polygons | Polygon, Polyline, Regular Polygon, Rigid Polygon and Vector Polygon. |
+| **[A]** List tools | Create List from Selection uses click order. |
+| **[A]** Derived constructions | **[A]** Parallel Line and Perpendicular Line can remember their references. **[G]** Perpendicular Bisector and Angle Bisector. |
+| **[G]** Parameters and drivers | **[G]** Slider, Angle with Given Size, Check Box, Button, Input Box, Animate selected object and Text. |
+| **[A]** Relations and intersections | **[A]** **[!]** Intersect supports semantic curves. **[G]** Tangents, Relation and Polar or Diameter Line. **[N]** **[!]** Inspect rich result, Create selected intersection point, Create selected intersection points and Create all eligible intersection points. |
+| **[G]** Circles and conics | Circle with Center through Point, Circle through 3 Points, Circle: Center & Radius, Circular Arc, Conic through 5 Points, Ellipse, Parabola, Compass, Semicircle, Circumcircular Arc, Circular Sector, Circumcircular Sector and Hyperbola. |
+| **[N]** **[!]** Semantic curves | **[N]** **[!]** Locus V2. **[N]** **[!]** Point on Locus V2 from reference and Point on semantic curve (explicit address). **[N]** **[!]** Spline V2, Spline V2 with degree and Closed Spline V2. **[N]** **[!]** Inspect semantic curve definition…. |
+| **[A]** Metrics and validation | **[G]** Angle, Distance or Length, Area and Slope. **[N]** Aligned Dimension and Linear Dimension. **[N]** **[!]** Total semantic locus length and Partial semantic locus length (experimental). |
+| **[A]** Similarity transformations | **[A]** **[!]** Reflect about Point, Reflect about Line, Translate by Vector, Rotate around Point and Dilate from Point have specific support for semantic curves. |
+| **[A]** Annotations and media | **[G]** Image. **[N]** ISO A Border. |
+| **[!]** Manual projection procedures | CeDG dihedral procedures is disabled. |
 
 ### 3.3 Toolbar and flyouts
 
@@ -260,29 +270,29 @@ Open the arrow beside a tool to see the other tools in its group. This table des
 
 | Group | Tools |
 |---|---|
-| Move | Move, Move around Point, Working Layer |
-| List tools | Create List from Selection |
-| Points and intersection | Point, Point on Object, Midpoint or Center, Attach / Detach Point, Intersect |
-| Lines and vectors | Line, Segment, Ray, Vector, Segment with Given Length, Vector from Point |
-| Polygons | Polygon, Polyline, Regular Polygon, Rigid Polygon, Vector Polygon |
-| Derived constructions | Parallel Line, Perpendicular Line, Perpendicular Bisector, Angle Bisector, Angle with Given Size, Tangents |
-| Circles and conics | Circle with Center through Point, Circle through 3 Points, Circle: Center & Radius, Circular Arc, Conic through 5 Points, Ellipse, Parabola |
-| Semantic curves | Locus V2, Spline V2, Spline V2 with degree, Closed Spline V2, Point on semantic curve (explicit address), Point on Locus V2 from reference |
-| Angles and lengths | Angle, Distance or Length, Aligned Dimension, Linear Dimension, Total semantic locus length (experimental), Partial semantic locus length (experimental) |
-| Transformations | Reflect about Point, Reflect about Line, Translate by Vector, Rotate around Point, Dilate from Point |
-| Parameters and drivers | Slider, Check Box, Button, Input Box, Text |
-| Navigation | Move Graphics View, Zoom to rectangle, Zoom In, Zoom Out, Copy Visual Style |
+| **[A]** Move | **[G]** Move and Move around Point · **[N]** Working Layer |
+| **[A]** List tools | Create List from Selection |
+| **[A]** Points and intersection | **[A]** **[!]** Point, Point on Object and Intersect · **[G]** Midpoint or Center and Attach / Detach Point |
+| **[G]** Lines and vectors | Line, Segment, Ray, Vector, Segment with Given Length, Vector from Point |
+| **[G]** Polygons | Polygon, Polyline, Regular Polygon, Rigid Polygon, Vector Polygon |
+| **[A]** Derived constructions | **[A]** Parallel Line and Perpendicular Line · **[G]** Perpendicular Bisector, Angle Bisector, Angle with Given Size and Tangents |
+| **[G]** Circles and conics | Circle with Center through Point, Circle through 3 Points, Circle: Center & Radius, Circular Arc, Conic through 5 Points, Ellipse, Parabola |
+| **[N]** **[!]** Semantic curves | Locus V2, Spline V2, Spline V2 with degree, Closed Spline V2, Point on semantic curve (explicit address), Point on Locus V2 from reference |
+| **[A]** Angles and lengths | **[G]** Angle and Distance or Length · **[N]** Aligned Dimension and Linear Dimension · **[N]** **[!]** Total and partial semantic locus length |
+| **[A]** Transformations | Reflect about Point, Reflect about Line, Translate by Vector, Rotate around Point, Dilate from Point |
+| **[G]** Parameters and drivers | Slider, Check Box, Button, Input Box, Text |
+| **[A]** Navigation | **[A]** Zoom to rectangle · **[G]** Move Graphics View, Zoom In, Zoom Out and Copy Visual Style |
 
-The Semantic curves and Navigation flyouts show the last tool you chose in that group. An unavailable tool shows a reason when you hover over it.
+A mark beside a group describes its scope. Marks in the Tools column identify individual tools or runs of tools. The Semantic curves and Navigation flyouts show the last tool you chose in that group. An unavailable tool shows a reason when you hover over it.
 
 ### 3.4 Selecting, creating and editing
 
 Select with the **Move** tool. Create by choosing a tool and clicking the
 required inputs, or by typing a definition in Algebra Input.
 
-Algebra Input shows a preview while you type. **Enter** commits one transaction;
-**Escape** cancels; losing focus creates nothing. Nothing is created until you
-press Enter.
+**[G]** Algebra Input previews ordinary expressions as you type. **[A]** GeoCeDG
+also previews V2 constructions. Press **Enter** to commit one transaction.
+**Escape** cancels, and changing focus leaves the construction as it was.
 
 To edit an ordinary numeric object you may double-click it, press **F2**, edit
 its Algebra row directly, or type a compatible assignment such as `k=0.25` in
@@ -293,9 +303,9 @@ one undo step.
 
 ### 3.5 Inspecting a definition
 
-**Inspect definition…** (context menu, or **View → Construction inspection**)
+**[N]** **Inspect definition…** (context menu, or **View → Construction inspection**)
 shows how an object is defined, read-only. For semantic curves and their derived
-objects, **Inspect semantic curve definition…** additionally shows the semantic
+objects, **[N]** **[!]** **Inspect semantic curve definition…** additionally shows the semantic
 structure: branch, component, semantic address, address status (current and
 admissible, or retained/dormant), source, provider, parameter and, for periodic
 sources, the periodic lift and seam side.
@@ -308,6 +318,8 @@ that arbitrary direct redefinition of that object is not an approved operation.
 Edit its defining inputs instead. Properties explains this when it applies.
 
 ### 3.6 Redefine an object
+
+**[A]** Object redefinition adds checks for canonical command names and dependencies.
 
 Edit a definition in Algebra, for example by pressing **F2**. GeoCeDG
 updates its dependents. If a semantic construction depends on the
@@ -337,6 +349,10 @@ and [Intersections of two curves](#semantic-points-intersections-materialization
 
 ### 3.7 Find an object and read its help in Algebra
 
+**[A]** Row help extends the inherited Algebra context menu.
+
+**[N]** Find in Algebra locates rows by object name.
+
 Use **Find by name** in the Algebra bar. Type part or all of an object's
 name, including a subscript where applicable. Press **Enter** or use
 the previous and next match arrows to select the row and scroll it into
@@ -349,6 +365,8 @@ or its definition is unavailable.
 
 ### 3.8 Read the Construction Protocol
 
+**[A]** Construction Protocol rows adapt to their contents.
+
 Open **View → Construction inspection → Construction protocol**. Read the
 steps in the table or show the construction navigation bar from the same
 submenu. The protocol adjusts row height when a description wraps. To change
@@ -356,6 +374,8 @@ the font size, use **Preferences → Layout & Presentation**. To change a
 result, return to the construction and edit its inputs.
 
 ### 3.9 Insert an existing number into a dialog
+
+**[A]** Supported dialogs can take an existing number directly from Algebra.
 
 Use **Pick object** in the parameter field for a point by address on a
 Locus V2, in the angle or factor field when rotating or dilating a Locus V2 or Spline V2, or
@@ -385,7 +405,9 @@ The button is available in these four fields.
 
 ### 4.1 Native and compatibility formats
 
-**[N]** `.cedg` is the native GeoCeDG document extension. Save your work as `.cedg`.
+**[A]** **[!]** Opening `.ggb` uses the inherited reader within the GeoCeDG compatibility policy.
+
+**[N]** Native GeoCeDG documents use `.cedg`. Save your work in this format.
 
 `.ggb` is accepted as compatibility input. GeoCeDG opens it without altering it
 destructively. Opening a `.ggb` leaves that file in place. Use **Save as…** to save your
@@ -398,6 +420,14 @@ currently keep the inherited `classic` application code and archive layout;
 GeoCeDG does not introduce a new archive format.
 
 ### 4.2 Document commands
+
+**[!]** OFF files are outside the GeoCeDG document input policy.
+
+**[A]** Apply Styles imports the supported defaults from another document.
+
+**[N]** **[!]** Expert review can assess additional cases on a separate copy.
+
+**[A]** **[!]** Insert File checks supported objects and commits the insertion as one operation.
 
 | Action | Where |
 |---|---|
@@ -464,7 +494,7 @@ presentation, and save a copy. You can then try inserting that copy. The usual
 insertion checks still apply. Excluded objects, scripts and unresolved tool
 compatibility have separate diagnostics.
 
-**[N] [!]** **Insert with expert review…** is available in **File → Insert**. It accepts
+**[N]** **[!]** **Insert with expert review…** is available in **File → Insert**. It accepts
 passive 2D constructions that pass the integrity checks. It tries the
 insertion on a copy of the current drawing, including unsaved work. Review
 the objects, differences and uncertainties before confirming. Where available,
@@ -528,6 +558,12 @@ supports layers 0 through 9. It clamps higher layers to 9 on open. Keep a
 copy in GeoCeDG if your document uses higher layers.
 
 ### 4.5 Picture export and the export area
+
+**[N]** The explicit export area can be defined, displayed, cleared or linked to an ISO A border.
+
+**[A]** Drawing scale extends the inherited print scale to GeoCeDG units and export areas.
+
+**[A]** PNG, PDF, SVG, EMF, EMF+ and clipboard image output retain the inherited formats and use the GeoCeDG export area.
 
 **File** offers **Graphics View as Picture…** (PNG, PDF,
 SVG, EMF and EMF+), **Export 2D geometry as DXF (experimental)…** (section 11),
@@ -639,6 +675,10 @@ be met, no code is generated.
 
 ### 4.6 Document units
 
+**[A]** The status bar includes working layer, units, scale and operation notices.
+
+**[N]** New document units sets the initial construction and presentation units.
+
 **[N]** A document can record what one model unit means physically. The units are
 document metadata: changing them reinterprets the model and never converts
 coordinates, values, definitions, identities or the construction order, and no
@@ -713,6 +753,8 @@ header (`mm`, `cm`, `m`) or, for a custom unit, in its mandatory sidecar
 export claims a physical scale, and DXF stays unitless.
 
 ### 4.7 ISO A sheets
+
+**[N]** The ISO A border tool and `IsoABorder` create a physical sheet outline.
 
 ```text
 IsoABorder( <Point>, <ISO A Index>, <Landscape>, <Scale Numerator>, <Scale Denominator>, <Model Units per Millimetre>, <Inner Frame> )
@@ -811,6 +853,8 @@ it is not a complete manual of every inherited tool.
 
 ### 5.1 Points
 
+**[G]** Ordinary free, path and region points use the inherited construction tools.
+
 Create a free point with the **Point** tool or by typing a coordinate pair:
 
 ```text
@@ -824,6 +868,12 @@ A point placed on a *semantic* curve is a different, richer construction; it is
 described in section 8.
 
 ### 5.2 Lines, segments, rays and vectors
+
+**[A]** Parallel and Perpendicular can each remember their reference in the current session.
+
+**[N]** **[!]** The orientation cue displays the construction direction of eligible results in Graphics 1.
+
+**[G]** Ordinary lines, segments, rays and vectors retain their construction rules.
 
 ```text
 g=Line(A,B)
@@ -845,6 +895,10 @@ depends only on how an equation was typed or on a configuration (for example
 `y = 2x + 1`, a tangent to a conic or the bisector of three points) show no
 cue. The option is off by default, is a user preference kept after a restart,
 and never appears in a saved file, an export, a print or the clipboard.
+
+![Hollow arrows on the blue segment from A to B and on the green parallel through P both point up and right.](images/orientation-construction.png)
+
+*GeoCeDG capture. The blue segment runs from A to B. The parallel through P inherits its direction.*
 
 **[A] Remembered reference.** In Graphics 1 on Windows, **Ctrl+click** **Parallel
 Line** or **Perpendicular Line** on the toolbar or its flyout to toggle that
@@ -868,6 +922,8 @@ saves the constructed lines. The memory belongs to the Graphics 1 session.
 
 ### 5.3 Circles and conics
 
+**[G]** Ordinary circles, arcs, sectors and conics retain their construction tools.
+
 ```text
 c=Circle((0,0),1)
 k=Circle(A,B,C)
@@ -880,11 +936,15 @@ hyperbola.
 
 ### 5.4 Polygons
 
+**[G]** Polygon and polyline tools retain their inherited construction behaviour.
+
 **Construction → Polygons** provides the ordinary polygon, polyline, regular
 polygon, rigid polygon and vector polygon tools. They behave as in the shared
 kernel.
 
 ### 5.5 Parameters and drivers
+
+**[G]** Sliders, check boxes, buttons and input boxes are inherited controls.
 
 A parameter is an explicit, editable value that other constructions depend on.
 Create one by typing an assignment or with the **Slider** tool:
@@ -906,13 +966,17 @@ still show the angle.
 
 ### 5.6 Text
 
+**[G]** Ordinary text objects use the inherited editor and anchoring.
+
 The **Text** tool creates a construction Text object. Text belongs to the
 document; its logical font size is a document property (**Text font size**), and
-in GeoCeDG a Text anchored to real coordinates scales visually with the zoom of
+**[A]** in GeoCeDG a Text anchored to real coordinates scales visually with the zoom of
 each Graphics view while its content, anchor and logical size stay unchanged.
 A screen-positioned Text keeps the inherited fixed size.
 
 ### 5.7 Inherited transformations
+
+**[G]** The transformation tools retain the inherited behaviour on ordinary geometry.
 
 **Construction → Similarity transformations** provides reflection about a point
 or a line, translation by a vector, rotation by an angle and dilation from a
@@ -920,6 +984,8 @@ point. Applied to ordinary objects they behave as in the shared kernel; applied
 to semantic curves they have the additional semantics described in section 10.
 
 ### 5.8 Lists from a selection
+
+**[A]** Create List from Selection adds an explicit click order and finish gesture to list creation.
 
 **Create List from Selection** (**Construction → List tools**, and its own
 toolbar group just right of Move) builds an ordinary list from objects in the
@@ -941,11 +1007,13 @@ redefined or deleted. A list of points can be given to Spline V2, for example
 
 ### 6.1 Trace the movement of a point
 
-**[N] [!]** A Locus V2 traces the positions of one point as another value changes.
+**[N]** **[!]** A Locus V2 traces the positions of one point as another value changes.
 For example, you can trace the midpoint of a moving segment. The object
 you vary is the **driver**. The **domain** tells GeoCeDG how far to vary it.
 
 ### 6.2 Measure or intersect the trace
+
+**[G]** The legacy `Locus` command remains available.
 
 You can measure a Locus V2, inspect its intersections or place points at
 specific positions along it. Zooming in helps you see the curve while
@@ -961,14 +1029,22 @@ journey, GeoCeDG leaves a gap. Each uninterrupted part is a **component**.
 Declare the endpoints of a numeric domain and whether each one is included.
 The slider limits are independent of this domain.
 
+In the [periodic measurement example](#lengths-and-measurements/9.2), A and B are on opposite sides of the point where the period joins.
+
+![A and B lie on the left side of the circular locus L, on opposite sides of the seam.](images/locus-periodic-positions.png)
+
+*GeoCeDG capture of the periodic example. The branch parameter places A above the seam and B below it.*
+
 ### 6.4 Check a position after editing
 
-**[A] [!]** When you edit an input, the curve and dependent results update. If a
+**[A]** **[!]** When you edit an input, the curve and dependent results update. If a
 previous position is temporarily unavailable, the definition inspector
 shows it as retained but inactive. Restore the inputs to recover that position.
 See [Points on curves](#semantic-points-intersections-materialization/8.1).
 
 ### 6.5 Creating a Locus V2
+
+**[N]** **[!]** Use `LocusV2` to trace the construction over a specified driver domain.
 
 Through the interface, **Construction → Semantic curves → Locus V2** offers the
 construction in two clicks. Select the dependent point first, then its
@@ -1007,6 +1083,8 @@ from `dom`, not from any slider range and not from what is drawn.
 
 ### 6.7 Availability
 
+**[N]** **[!]** Locus V2 availability depends on the active GeoCeDG profile and overrides.
+
 Locus V2 creation is normal GeoCeDG behaviour and needs no launch argument. The
 historical argument `--enableLocusV2=false` is retained as a diagnostic and
 compatibility override that starts GeoCeDG *without* the V2 creation surface;
@@ -1027,13 +1105,17 @@ documented generators, explicit domains and targets. It is **not** a generic
 
 ### 7.1 Build a smooth curve from points
 
-**[N] [!]** Use **Spline V2** to join an ordered set of points with a smooth curve,
+**[G]** The legacy `Spline` command remains available.
+
+**[N]** **[!]** Use **Spline V2** to join an ordered set of points with a smooth curve,
 then [build on it](#semantic-points-intersections-materialization/8.1) or
 [measure it](#lengths-and-measurements/9.1). You can make an open curve or
 a loop. For an ordinary GeoGebra spline, enter `Spline({A,B,C,D})` with
 four existing points in the order you want to join them.
 
 ### 7.2 Creating a Spline V2
+
+**[N]** **[!]** Use `SplineV2` for semantic spline construction.
 
 **Construction → Semantic curves** offers three tools. All of them work on
 points that already exist:
@@ -1095,6 +1177,8 @@ Coordinates alone can match several positions on a curve.
 
 ### 7.4 Points on a Spline V2
 
+**[A]** **[!]** The `Point` command accepts a semantic curve, branch key and parameter.
+
 There are two routes:
 
 - **Interactive.** Choose the ordinary **Point** tool and click on the curve
@@ -1135,6 +1219,12 @@ Editing `h` translates the spline without changing either length. That is the
 dynamic dependency working as intended: the metric follows the semantic
 definition, not the drawing.
 
+For a curved example, enter `A=(-3,-1)`, `B=(-2,2)`, `C=(1,2)`, `D=(3,0)`, `S=SplineV2({A,B,C,D},3)` and `P=Point(S,"spline-v2/main",0.42)` in a new drawing. Move one of the four constructor points and check the new shape and the position of P.
+
+![The blue spline passes through A, B, C and D. The grey point P is on the curve between B and C.](images/spline-constructor-and-point.png)
+
+*GeoCeDG capture. Moving a constructor reshapes the curve. P remains associated with parameter 0.42.*
+
 ### 7.6 Persistence
 
 A Spline V2, its semantic points and their parameters are saved in the native
@@ -1154,7 +1244,13 @@ Classic diagnostic session.
 
 ### 8.1 Semantic points
 
-**[A] [!]** A **semantic point** identifies a position on a Locus V2 or Spline V2 by its
+**[N]** **[!]** The dedicated Create point from reference action opens the reference workflow.
+
+**[A]** **[!]** Point placement can use a reference with a proved correspondence.
+
+**[A]** **[!]** The principal parameter form extends `Point` on eligible semantic curves.
+
+**[A]** **[!]** A **semantic point** identifies a position on a Locus V2 or Spline V2 by its
 curve and position along the construction. At a crossing, two positions
 along the curve can have the same coordinates. The point keeps the position
 you chose and can be used to measure a route (§9.3).
@@ -1252,7 +1348,9 @@ Keep the original GeoCeDG file when opening a copy elsewhere.
 
 ### 8.2 Rich intersection results
 
-**[A] [!]** `Intersect(...)` applied to a semantic curve does not return a list of points.
+**[A]** **[!]** The semantic curve and object form extends `Intersect`.
+
+**[A]** **[!]** `Intersect(...)` applied to a semantic curve does not return a list of points.
 It returns a **rich intersection result**: an object that carries every root
 that the solver found, together with its evidence — the branch and component on
 each side, the semantic parameters, a residual, an admissibility verdict and a
@@ -1290,6 +1388,8 @@ in the list without offering point creation.
 
 ### 8.4 The inspector
 
+**[N]** **[!]** The rich intersection inspector can create points from eligible solutions.
+
 Select the rich result in Algebra and choose **Inspect rich result**
 (**Construction → Relations and intersections**, or the context menu). The
 inspector lists the solutions with their evidence and lets you:
@@ -1304,6 +1404,10 @@ inspector lists the solutions with their evidence and lets you:
 The inspector stays available so you can continue after creating a point.
 Solutions already materialized are identified as such.
 
+![The inspector lists two transverse intersections and highlights the first. The selected solution is locally eligible and the Create one button is visible.](images/intersection-inspector-selection-en.png)
+
+*GeoCeDG capture. The first crossing is eligible for Create one. Check global completeness separately if you need all crossings.*
+
 ![A line spline and a unit circle have two crossings. The second panel shows a constructed point X at the selected left crossing.](images/intersection-inspector-flow.png)
 
 *Diagram of the example in section 8.2. Inspect both crossings, select the left solution and create a point to use it in the drawing.*
@@ -1314,6 +1418,8 @@ saved, and they confer no admissibility.
 
 ### 8.5 Reuse a solution in a command
 
+**[A]** **[!]** The solution token form extends `Intersect` for reuse of an eligible root.
+
 The inspector normally handles solution selection for you. In automation,
 `Intersect(R,"<token>")` takes the exact solution identifier. Copy the
 identifier from the result when needed. Each identifier refers to a
@@ -1321,7 +1427,11 @@ solution, independently of its displayed coordinates or row number.
 
 ### 8.6 Materialization
 
-**[A] [!]** Creating a point from an eligible solution lets you use it as an input to
+**[A]** **[!]** The driver correspondence forms extend `Point` and `Intersect`.
+
+**[N]** **[!]** The inspector can create a dependent point for a supported solution.
+
+Creating a point from an eligible solution lets you use it as an input to
 another construction. The point follows that solution as its inputs change.
 
 Three rules govern the lifecycle:
@@ -1393,6 +1503,8 @@ stored. Readers older than this version reject the two forms.
 
 ### 8.7 Intersections of two semantic curves
 
+**[A]** **[!]** The two-curve form extends `Intersect` to eligible semantic curve pairs.
+
 A pair of semantic curves consumes the same rich-result machinery. Several
 distinct roots may each be individually admissible. A root whose multiplicity or
 identity is unresolved — a tangency, for instance — stays rich-only.
@@ -1438,7 +1550,9 @@ guide.
 
 ### 9.1 Choose a length result
 
-**[N] [!]** Use `LocusLength` when you want to see the measured value,
+**[A]** **[!]** The scalar `Length` also accepts supported semantic curves, their endpoints or a metric result.
+
+**[N]** **[!]** Use `LocusLength` when you want to see the measured value,
 the part of the route covered and any limitations of the calculation. It works
 with Locus V2 and Spline V2. Lengths use construction units and are non-negative
 in either direction. If you need an ordinary number for another calculation,
@@ -1457,6 +1571,8 @@ coverage**, **Traversal outcome** and any diagnostics. The numeric guarantee
 and error fields tell you how to interpret an estimate.
 
 ### 9.2 Measure the whole curve or choose a route
+
+**[N]** **[!]** `LocusLength` reports metric evidence and supports explicit traversal policies.
 
 ```text
 LocusLength(L)
@@ -1548,6 +1664,10 @@ values. Direction follows the construction and there is no shortest-route
 option. The command has no separate branch or tolerance argument. Use the
 point definitions to identify the intended positions.
 
+![The metric inspector for F shows a value of about 1.283185, complete coverage and that the target position was reached.](images/locus-metric-inspector-en.png)
+
+*GeoCeDG capture. Inspect F in Algebra to check the length, coverage and traversal outcome together.*
+
 ![Three unit circles show the forward arc across the seam, the reverse arc and a full turn from A.](images/locuslength-cycle.png)
 
 *Diagram of the periodic example. F crosses the seam at ±π, R follows the other arc, and C makes one turn back to A.*
@@ -1603,6 +1723,10 @@ workflow.
 
 ### 9.5 Engineering dimensions
 
+**[N]** Make offset draggable makes the supported dimension placement editable in Graphics.
+
+**[N]** Engineering dimensions include the `AlignedDimension` and `LinearDimension` commands and their presentation preferences.
+
 ```text
 AlignedDimension( <Point>, <Point>, <Offset> [, <Overshoot>, <Gap>] )
 LinearDimension( <Point>, <Point>, <Line or Vector>, <Offset> [, <Overshoot>, <Gap>] )
@@ -1644,6 +1768,12 @@ dimension is created. With a physical unit they are paper lengths captured once,
 not screen distances: at a zoom that enlarges the drawing, as is usual for
 millimetre documents, they look large on screen but print at 2 mm and 1 mm.
 One undo step per dimension.
+
+To compare the two tools, use A at `(-2,-0.8)` and B at `(2,0.7)`. Place the aligned dimension above the segment and choose the horizontal axis for the linear dimension below it.
+
+![A slanted dimension above segment AB reads 4.27. A horizontal dimension below it reads 4.](images/aligned-and-linear-dimensions.png)
+
+*GeoCeDG capture. On the same segment, the aligned dimension is about 4.27 model units. The horizontal dimension is 4.*
 
 **Line thickness and preferences.** The dimension line and the two extension
 lines start with line thickness 2; each keeps its own style, which you can change
@@ -1704,6 +1834,8 @@ matrix, point or vector.
 ## 10. Transformations
 
 ### 10.1 Supported forms
+
+**[A]** **[!]** The semantic curve forms extend `Translate`, `Rotate`, `Reflect`/`Mirror` and `Dilate`.
 
 The ordinary two-dimensional similarity transformations accept a semantic curve
 as their first argument:
@@ -1776,7 +1908,9 @@ line explicitly — for example `a: y = 0` — and select that line.
 
 ### 11.1 What DXF export is, and is not
 
-**[N] [!]** **File → Export 2D geometry as DXF (experimental)…**
+**[N]** **[!]** The experimental 2D DXF exporter includes the supported extended curve scope described here.
+
+**[N]** **[!]** **File → Export 2D geometry as DXF (experimental)…**
 writes an ASCII DXF (AC1015) drawing from already-resolved 2D model geometry.
 
 It is an interoperability adapter. It is not a screenshot, it does not clip to
@@ -1989,6 +2123,8 @@ and `Escape` cancels it (section 9.5).
 
 ### 12.4 Zoom and navigation
 
+**[A]** Configure navigation zoom sets a factor and shortcuts for the inherited navigation controls.
+
 **View → Navigation** provides pan, the inherited zoom in and out, the standard
 view, show all objects, and the GeoCeDG actions described below. The same
 actions are on the toolbar in the Navigation flyout.
@@ -2023,6 +2159,8 @@ No zoom or navigation operation changes metrics, coordinates, identity or
 provenance.
 
 ### 12.5 Layers and the working layer
+
+**[A]** The inherited numeric layers gain an eye control for hiding a layer in Algebra.
 
 **[A]** Every object lies on a layer from 0 to 99; objects on higher layers are drawn
 above objects on lower ones. GeoCeDG adds a **working layer** for the current
@@ -2073,7 +2211,9 @@ writes those layers as off, so that a CAD program shows them hidden
 
 ### 12.6 Arrange controls in a panel
 
-**[N] [!]** In **Graphics 1**, choose **Move** and open **View → Visibility and style →
+**[N]** **[!]** Control layout adds panels, context actions and native persistence for eligible controls in Graphics 1.
+
+**[N]** **[!]** In **Graphics 1**, choose **Move** and open **View → Visibility and style →
 Control layout**. Create a panel. With the manager open, drag the header to
 move the panel, the lower-right handle to resize it, or a member to move
 it inside the panel. With the panel selected in the manager, click a loose control in
@@ -2124,6 +2264,12 @@ or show only the value of a slider with a definition. Keep the original file.
 
 ### 12.7 Adjust labels and read indicators
 
+**[G]** Dragging a label retains its offset when the document is saved.
+
+**[A]** Line style adds a numeric thickness field with Escape to cancel the edit.
+
+**[A]** The ordinary intersection badge adds an indicator to inherited intersection points.
+
 - With **Move**, drag an object's visible label away from the drawing.
   Saving preserves the offset. If the view clips the position at an edge,
   make more room in the view to recover it.
@@ -2139,6 +2285,10 @@ or show only the value of a slider with a definition. Keep the original file.
 ## 13. User tools and automation
 
 ### 13.1 Persistent user tools
+
+**[A]** The user tool manager extends the inherited tool workflow with persistent profile choices.
+
+**[G]** User macros retain the inherited input and output construction model.
 
 **Automation → User tools → Manage user tools…** manages a library of `.ggt`
 tool packages that belong to the **GeoCeDG profile**, not to the open document.
@@ -2158,6 +2308,8 @@ The installation survives closing the document, opening another and restarting.
 Removing the installation does not delete results that were already built.
 
 ### 13.2 Tool, document and library
+
+**[N]** **[!]** The installed GeoCeDG library provides a curated tool catalog.
 
 These are three different scopes, and keeping them distinct avoids most
 confusion:
@@ -2226,6 +2378,8 @@ and asks you to retry if another window is updating it.
 
 ### 13.4 Scripting
 
+**[G]** Object scripts and events use the inherited scripting mechanism.
+
 **Automation → Object properties and scripting…** opens the Scripting tab of the
 existing Properties dialog. GeoGebraScript works through commands, not through
 synthetic mouse gestures.
@@ -2237,7 +2391,9 @@ synthetic mouse gestures.
 
 ### 14.1 What the Classic diagnostic session is for
 
-**[A]** **File → Open Classic diagnostic session** launches an inherited Classic
+**[N]** **[!]** Open Classic diagnostic session starts a separate session for compatibility checks.
+
+**File → Open Classic diagnostic session** launches an inherited Classic
 application in a **separate process with isolated preferences**. It exists so
 that you can compare behaviour against the inherited baseline, open an inherited
 document with inherited tools, and use inherited facilities that the GeoCeDG
@@ -2257,6 +2413,8 @@ of the semantic surface applies to the GeoCeDG product profile only and cannot
 leak into Classic, whatever launch arguments are used.
 
 ### 14.3 Diagnostic legacy resources
+
+**[N]** **[!]** The separate legacy laboratory opens diagnostic resources when enabled.
 
 **Automation → Legacy laboratory (separate session)** opens a file you choose
 explicitly in a separate diagnostic Classic process. That dialog does **not**
@@ -2381,40 +2539,42 @@ These are the limitations that affect what you can do in the application today.
 
 | Task | GUI route | Command | Result type | Important notes |
 |---|---|---|---|---|
-| Create a semantic locus | Construction → Semantic curves → Locus V2 | `LocusV2(G,u,dom)` | semantic curve | the domain is explicit; it does not come from a slider range |
-| Create a semantic spline | Construction → Semantic curves → Spline V2, Spline V2 with degree or Closed Spline V2 | `SplineV2({A,B,C,D},3)` | semantic curve | select the points in order, then the first point again; constructor points are not semantic points |
-| Create a list in selection order | Construction → List tools → Create List from Selection | `{A,B,C}` | list | exact click order; select the first object again to finish |
-| Choose the working layer | Toolbar → Move group → Working Layer, or click **Layer: n** in the status bar | — | session state | one-shot; click an object to use its layer or empty space to choose 0 to 99; not saved |
-| Set the document units | Options → Document units…, or click a unit in the status bar | — | document metadata | one undo step; reinterprets the model and never converts coordinates; saved with the document |
-| Point on a semantic curve, interactively | Point tool, click the curve stroke | — | semantic point | unique preimage, or choose explicitly; never by proximity |
-| Point on a semantic curve, by parameter | Construction → Semantic curves → Point on semantic curve | `Point(S,"spline-v2/main",0.25)` | semantic point | branch key and canonical parameter; the parameter may be a named number |
-| Point on a Locus V2, by parameter | same | `Point(L,"generator.main",1)` | semantic point | default generator branch key |
-| Total length | Construction → Metrics and validation | `Length(S)` | number | scalar adapter over the rich metric result |
-| Partial length | Construction → Metrics and validation | `Length(S,P,Q)` | number | both endpoints need admissible semantic provenance |
-| Rich metric evidence | Construction → Metrics and validation | `LocusLength(S)` / `LocusLength(S,P,Q)` | rich result | status, coverage, error estimate, diagnostics |
-| Aligned dimension | Construction → Metrics and validation → Aligned dimension | `AlignedDimension(A,B,1)` | number, lines and text | the value is in model units; the text follows the document units |
-| Linear dimension | Construction → Metrics and validation → Linear dimension | `LinearDimension(A,B,g,1)` | number, lines and text | measured along a line or vector; the offset side is fixed by `A → B` or the direction |
-| Create an ISO A sheet | Construction → Annotations and media → ISO A Border | `IsoABorder(P,3,true,1,50,1,true)` | two polylines and a text | needs a physical construction unit; scale and unit factor captured once; menu only (section 4.7) |
-| Intersect semantic curve and object | Construction → Relations and intersections → Intersect | `Intersect(S,c)` | rich intersection result | not a list of points |
-| Intersect two semantic curves | same | `Intersect(S,T)` | rich intersection result | several roots may each be admissible |
-| Materialize solutions | Inspect rich result → Create one / Create selected / Create all eligible | `Intersect(R,"<token>")` | point | recompute never creates points; do not transcribe tokens |
-| Translate | Construction → Similarity transformations | `Translate(S,v)` | new semantic curve | lengths preserved |
-| Rotate | same | `Rotate(S,angle,center)` | new semantic curve | lengths preserved |
-| Reflect | same | `Reflect(S,line)` / `Mirror(S,line)` | new semantic curve | construct the mirror line explicitly; axes are not selectable |
-| Dilate | same | `Dilate(S,k,O)` | new semantic curve | length scales by `abs(k)`; `k=0` collapses but keeps its domain |
-| Export DXF | File → Export 2D geometry as DXF (experimental)… | — | DXF file (+ manifest) | preflight first; strict complete request by default |
-| Export a picture | File → Graphics View as Picture… | `ExportImage` | PNG, PDF, SVG, EMF/EMF+ file | exact export area (section 4.5) |
-| Choose the export area | File → Define export area… | — | — | session only; the outline is never exported |
-| Use a sheet as the export area | File → Use selected ISO A border | — | session state | the paper boundary, live, never the frame; released by undo, redo and deletion |
-| ISO A export area | File → Define ISO A export area… | — | session state | computed once at the session drawing scale and unit |
-| Open a document | File → Open… | — | — | `.cedg` native, `.ggb` compatibility input |
-| Insert a document | File → Insert → Insert File… | — | — | supported objects only, all or nothing; one Undo step |
-| Apply the styles of a document | File → Insert → Apply Styles… | — | — | six object styles only; one Undo step |
-| Save a document | File → Save / Save as… | — | — | save native work as `.cedg` |
-| Inspect a definition | context menu → Inspect definition… | — | — | read-only; does not change Algebra display mode |
-| Inspect semantic structure | Construction → Semantic curves → Inspect semantic curve definition… | — | — | branch, component, address, status, parameter |
+| **[N]** **[!]** Create a semantic locus | Construction → Semantic curves → Locus V2 | `LocusV2(G,u,dom)` | semantic curve | the domain is explicit; it does not come from a slider range |
+| **[N]** **[!]** Create a semantic spline | Construction → Semantic curves → Spline V2, Spline V2 with degree or Closed Spline V2 | `SplineV2({A,B,C,D},3)` | semantic curve | select the points in order, then the first point again; constructor points are not semantic points |
+| **[A]** Create a list in selection order | Construction → List tools → Create List from Selection | `{A,B,C}` | list | exact click order; select the first object again to finish |
+| **[N]** Choose the working layer | Toolbar → Move group → Working Layer, or click **Layer: n** in the status bar | — | session state | one-shot; click an object to use its layer or empty space to choose 0 to 99; not saved |
+| **[N]** Set the document units | Options → Document units…, or click a unit in the status bar | — | document metadata | one undo step; reinterprets the model and never converts coordinates; saved with the document |
+| **[A]** **[!]** Point on a semantic curve, interactively | Point tool, click the curve stroke | — | semantic point | unique preimage, or choose explicitly; never by proximity |
+| **[A]** **[!]** Point on a semantic curve, by parameter | **[N]** **[!]** Construction → Semantic curves → Point on semantic curve (explicit address) | `Point(S,"spline-v2/main",0.25)` | semantic point | branch key and canonical parameter; the parameter may be a named number |
+| **[A]** **[!]** Point on a Locus V2, by parameter | same dedicated tool | `Point(L,"generator.main",1)` | semantic point | default generator branch key |
+| **[A]** **[!]** Total length | Construction → Metrics and validation | `Length(S)` | number | scalar adapter over the rich metric result |
+| **[A]** **[!]** Partial length | Construction → Metrics and validation | `Length(S,P,Q)` | number | both endpoints need admissible semantic provenance |
+| **[N]** **[!]** Rich metric evidence | Construction → Metrics and validation | `LocusLength(S)` / `LocusLength(S,P,Q)` | rich result | status, coverage, error estimate, diagnostics |
+| **[N]** Aligned dimension | Construction → Metrics and validation → Aligned dimension | `AlignedDimension(A,B,1)` | number, lines and text | the value is in model units; the text follows the document units |
+| **[N]** Linear dimension | Construction → Metrics and validation → Linear dimension | `LinearDimension(A,B,g,1)` | number, lines and text | measured along a line or vector; the offset side is fixed by `A → B` or the direction |
+| **[N]** Create an ISO A sheet | Construction → Annotations and media → ISO A Border | `IsoABorder(P,3,true,1,50,1,true)` | two polylines and a text | needs a physical construction unit; scale and unit factor captured once; menu only (section 4.7) |
+| **[A]** **[!]** Intersect semantic curve and object | Construction → Relations and intersections → Intersect | `Intersect(S,c)` | rich intersection result | not a list of points |
+| **[A]** **[!]** Intersect two semantic curves | same | `Intersect(S,T)` | rich intersection result | several roots may each be admissible |
+| Materialize solutions | **[N]** **[!]** Inspect rich result → Create one / Create selected / Create all eligible | `Intersect(R,"<token>")` | point | **[A]** **[!]** The token form extends Intersect. Recalculation never creates points. |
+| **[A]** **[!]** Translate | Construction → Similarity transformations | `Translate(S,v)` | new semantic curve | lengths preserved |
+| **[A]** **[!]** Rotate | same | `Rotate(S,angle,center)` | new semantic curve | lengths preserved |
+| **[A]** **[!]** Reflect | same | `Reflect(S,line)` / `Mirror(S,line)` | new semantic curve | construct the mirror line explicitly; axes are not selectable |
+| **[A]** **[!]** Dilate | same | `Dilate(S,k,O)` | new semantic curve | length scales by `abs(k)`; `k=0` collapses but keeps its domain |
+| **[N]** **[!]** Export DXF | File → Export 2D geometry as DXF (experimental)… | — | DXF file (+ manifest) | preflight first; strict complete request by default |
+| **[A]** Export a picture | File → Graphics View as Picture… | `ExportImage` | PNG, PDF, SVG, EMF/EMF+ file | exact export area (section 4.5) |
+| **[N]** Choose the export area | File → Define export area… | — | — | session only; the outline is never exported |
+| **[N]** Use a sheet as the export area | File → Use selected ISO A border | — | session state | the paper boundary, live, never the frame; released by undo, redo and deletion |
+| **[N]** ISO A export area | File → Define ISO A export area… | — | session state | computed once at the session drawing scale and unit |
+| **[A]** Open a document | File → Open… | — | — | `.cedg` native, `.ggb` compatibility input |
+| **[A]** **[!]** Insert a document | File → Insert → Insert File… | — | — | supported objects only, all or nothing; one Undo step |
+| **[A]** Apply the styles of a document | File → Insert → Apply Styles… | — | — | six object styles only; one Undo step |
+| **[A]** Save a document | File → Save / Save as… | — | — | save native work as `.cedg` |
+| **[N]** Inspect a definition | context menu → Inspect definition… | — | — | read-only; does not change Algebra display mode |
+| **[N]** **[!]** Inspect semantic structure | Construction → Semantic curves → Inspect semantic curve definition… | — | — | branch, component, address, status, parameter |
 
 ### 16.2 Command syntax summary
+
+**[N]** **[!]** Locus and spline V2 construction and rich length. **[N]** Engineering dimensions and the ISO A border. **[A]** **[!]** The semantic forms of Point, Length and Intersect. See the [reference table](#command-and-workflow-reference/16.1) for the forms and their scope.
 
 ```text
 LocusV2( <Dependent Point>, <Constrained Point> )
@@ -2456,6 +2616,10 @@ A Spline V2 is a semantic curve of the Locus V2 family, so the forms written
 above for `<Locus V2>` accept it.
 
 ### 16.3 Command names and language
+
+**[G]** The inherited commands available in Algebra Input and CAS are listed by their respective help and completion controls.
+
+**[A]** GeoCeDG uses the English command spelling consistently in the editor and help surfaces.
 
 GeoCeDG shows command names in English in both product languages: definitions
 in the Algebra view and the Construction Protocol, the text you edit when you
@@ -2501,48 +2665,62 @@ file extensions and code literals are identifiers and are never translated.
 
 | Key | Action |
 |---|---|
-| `Enter` | commit the Algebra Input transaction |
-| `Escape` | cancel input, exit a tool, cancel a rectangle gesture |
-| `Ctrl`+`Z` / `Ctrl`+`Y` | undo / redo |
-| `Ctrl`+`+` / `Ctrl`+`-` | zoom in / out, with the Graphics view focused |
-| `F2` | edit the selected object |
-| `F1` | tool help |
-| `Tab` | move through controls |
-| `Ctrl`+`Shift`+`U` | Graphics View as Picture… |
-| `Ctrl`+`Shift`+`C` | copy the Graphics view as an image of the export area |
-| `Ctrl`+`Shift`+`D` | Export 2D geometry as DXF (experimental)… |
+| **[G]** `Enter` | commit the Algebra Input transaction |
+| **[G]** `Escape` | cancel input, exit a tool, cancel a rectangle gesture |
+| **[G]** `Ctrl`+`Z` / `Ctrl`+`Y` | undo / redo |
+| **[A]** `Ctrl`+`+` / `Ctrl`+`-` | zoom in / out, with the Graphics view focused |
+| **[A]** `F2` | edit the selected object |
+| **[G]** `F1` | tool help |
+| **[G]** `Tab` | move through controls |
+| **[A]** `Ctrl`+`Shift`+`U` | Graphics View as Picture… |
+| **[A]** `Ctrl`+`Shift`+`C` | copy the Graphics view as an image of the export area |
+| **[N]** **[!]** `Ctrl`+`Shift`+`D` | Export 2D geometry as DXF (experimental)… |
 
 ### 16.5 Using construction tools
 
-Open the Construction group shown in the first column, choose the tool, then select the inputs in order. **[G]** Inherited from GeoGebra, with extensions indicated in the corresponding chapter.
+Open the Construction group shown in the first column, choose the tool, then select the inputs in order. The marks distinguish the ordinary construction and the extended tool where applicable.
 
 | Group and tool | What to select and what you get |
 |---|---|
-| **Points → Point / Point on Object** | Click empty space for a free point. To constrain a point, click a path such as a segment or the inside of a region such as a filled polygon. Semantic curves have additional placement rules (section 8). |
-| **Points → Midpoint or Center** | Select two points or one segment for the midpoint. Select a circle or a conic with a centre for its centre. |
-| **Lines and vectors → Line / Segment / Ray / Vector** | Select two points in order. A ray starts at the first point. A vector points from the first to the second. |
-| **Lines and vectors → Segment with Given Length / Vector from Point** | Select a start point and enter the length for a segment. For a vector, select a start point and an existing vector to copy its direction and magnitude. |
-| **Derived constructions → Parallel Line / Perpendicular Line** | Select the point the new line must pass through and the reference line. The session can remember each reference independently (section 5.2). |
-| **Derived constructions → Perpendicular Bisector / Angle Bisector** | For the perpendicular bisector, select a segment or two endpoints. For an angle bisector, select a point on each side with the vertex second, or select two intersecting lines to get their two bisectors. |
-| **Polygons → Polygon / Polyline** | Select the vertices in order, then click the first again to finish. Polygon closes the boundary and creates a filled region. Polyline leaves the chain open. |
-| **Polygons → Regular Polygon** | Select two vertices of the first side and enter the number of sides, at least three. |
-| **Polygons → Rigid Polygon / Vector Polygon** | Finish by clicking the first vertex again. A rigid polygon can be moved while keeping its shape, and can also be made from an existing polygon. In a vector polygon the other vertices are positioned relative to the first. Move the first vertex to translate it. |
-| **Circles and conics → Circle with Center through Point / Circle through 3 Points / Circle: Center & Radius** | Select centre then a point on the circle, three noncollinear points on the circle, or centre then a positive radius, respectively. |
-| **Circles and conics → Compass / Semicircle** | Select a segment or two points to copy their distance as a radius, then a centre. For a semicircle, select the two ends of the diameter. |
-| **Circles and conics → Circular Arc / Circular Sector** | Select the centre, start point and end direction in that order. The second point sets the radius. The sector also fills the area bounded by the arc and radii. |
-| **Circles and conics → Circumcircular Arc / Circumcircular Sector** | Select start, a point along the intended arc, then end. Use three noncollinear points. The middle point determines which arc to take. |
-| **Circles and conics → Conic through 5 Points / Ellipse / Hyperbola / Parabola** | For a conic, select five points that determine it. For an ellipse or hyperbola, select two foci and a point on the intended curve. For a parabola, select the focus and the directrix line. |
-| **Parameters and drivers → Slider / Angle with Given Size** | Click a position and set the slider type, range and step. For a fixed angle, select a point on one side, then the vertex, and enter the angle and direction. |
-| **Parameters and drivers → Check Box / Button / Input Box** | Click where the control should go. A check box sets a Boolean value and can show or hide the objects chosen in its dialog. A button has a caption and can run an On Click script. An input box edits its linked object when you confirm the typed value. Change the binding or script in Object Properties when offered. |
-| **Parameters and drivers → Animate selected object / Text** | Select an animatable object such as a slider, then use the animation action to start or stop it. The action is also in the GeoCeDG object menu. For text, choose a position or anchor and enter the text in the editor. |
-| **Relations and intersections → Tangents / Relation / Polar or Diameter Line** | For tangents, select the defining point or line and a compatible target such as a circle or conic. The valid inputs and number of tangents depend on the target. Relation compares two objects in a dialog, for example whether two lines are parallel. For a polar line select a point and a conic, or select a line and conic for a conjugate diameter when defined. |
-| **Metrics and validation → Angle / Distance or Length / Area / Slope** | For an angle, select three points with the vertex second, or two lines. Measure distance with two points, or select a segment, polygon or circle to measure its length or perimeter. Select a polygon, circle or suitable conic for area, or a line for slope. See [Curve measurements](#lengths-and-measurements/9.1). |
-| **Similarity transformations** | Select the object first. For Reflect about Point or Reflect about Line, select the centre or axis. For Translate by Vector, select the vector. For Rotate around Point or Dilate from Point, select the centre and enter the angle or scale factor. Section 10 describes support for semantic curves. |
-| **Annotations and media → Image** | Choose the position in Graphics and select a local image file. The image is an object in the document and can be repositioned or anchored through its properties. |
+| **[A]** **[!]** **Points → Point / Point on Object** | Click empty space for a free point. To constrain a point, click a path such as a segment or the inside of a region such as a filled polygon. Semantic curves have additional placement rules (section 8). |
+| **[G]** **Points → Midpoint or Center** | Select two points or one segment for the midpoint. Select a circle or a conic with a centre for its centre. |
+| **[G]** **Lines and vectors → Line / Segment / Ray / Vector** | Select two points in order. A ray starts at the first point. A vector points from the first to the second. |
+| **[G]** **Lines and vectors → Segment with Given Length / Vector from Point** | Select a start point and enter the length for a segment. For a vector, select a start point and an existing vector to copy its direction and magnitude. |
+| **[A]** **Derived constructions → Parallel Line / Perpendicular Line** | Select the point the new line must pass through and the reference line. The session can remember each reference independently (section 5.2). |
+| **[G]** **Derived constructions → Perpendicular Bisector / Angle Bisector** | For the perpendicular bisector, select a segment or two endpoints. For an angle bisector, select a point on each side with the vertex second, or select two intersecting lines to get their two bisectors. |
+| **[G]** **Polygons → Polygon / Polyline** | Select the vertices in order, then click the first again to finish. Polygon closes the boundary and creates a filled region. Polyline leaves the chain open. |
+| **[G]** **Polygons → Regular Polygon** | Select two vertices of the first side and enter the number of sides, at least three. |
+| **[G]** **Polygons → Rigid Polygon / Vector Polygon** | Finish by clicking the first vertex again. A rigid polygon can be moved while keeping its shape, and can also be made from an existing polygon. In a vector polygon the other vertices are positioned relative to the first. Move the first vertex to translate it. |
+| **[G]** **Circles and conics → Circle with Center through Point / Circle through 3 Points / Circle: Center & Radius** | Select centre then a point on the circle, three noncollinear points on the circle, or centre then a positive radius, respectively. |
+| **[G]** **Circles and conics → Compass / Semicircle** | Select a segment or two points to copy their distance as a radius, then a centre. For a semicircle, select the two ends of the diameter. |
+| **[G]** **Circles and conics → Circular Arc / Circular Sector** | Select the centre, start point and end direction in that order. The second point sets the radius. The sector also fills the area bounded by the arc and radii. |
+| **[G]** **Circles and conics → Circumcircular Arc / Circumcircular Sector** | Select start, a point along the intended arc, then end. Use three noncollinear points. The middle point determines which arc to take. |
+| **[G]** **Circles and conics → Conic through 5 Points / Ellipse / Hyperbola / Parabola** | For a conic, select five points that determine it. For an ellipse or hyperbola, select two foci and a point on the intended curve. For a parabola, select the focus and the directrix line. |
+| **[G]** **Parameters and drivers → Slider / Angle with Given Size** | Click a position and set the slider type, range and step. For a fixed angle, select a point on one side, then the vertex, and enter the angle and direction. |
+| **[G]** **Parameters and drivers → Check Box / Button / Input Box** | Click where the control should go. A check box sets a Boolean value and can show or hide the objects chosen in its dialog. A button has a caption and can run an On Click script. An input box edits its linked object when you confirm the typed value. Change the binding or script in Object Properties when offered. |
+| **[G]** **Parameters and drivers → Animate selected object / Text** | Select an animatable object such as a slider, then use the animation action to start or stop it. The action is also in the GeoCeDG object menu. For text, choose a position or anchor and enter the text in the editor. |
+| **[G]** **Relations and intersections → Tangents / Relation / Polar or Diameter Line** | For tangents, select the defining point or line and a compatible target such as a circle or conic. The valid inputs and number of tangents depend on the target. Relation compares two objects in a dialog, for example whether two lines are parallel. For a polar line select a point and a conic, or select a line and conic for a conjugate diameter when defined. |
+| **[G]** **Metrics and validation → Angle / Distance or Length / Area / Slope** | For an angle, select three points with the vertex second, or two lines. Measure distance with two points, or select a segment, polygon or circle to measure its length or perimeter. Select a polygon, circle or suitable conic for area, or a line for slope. See [Curve measurements](#lengths-and-measurements/9.1). |
+| **[A]** **[!]** **Similarity transformations** | Select the object first. For Reflect about Point or Reflect about Line, select the centre or axis. For Translate by Vector, select the vector. For Rotate around Point or Dilate from Point, select the centre and enter the angle or scale factor. Section 10 describes support for semantic curves. |
+| **[G]** **Annotations and media → Image** | Choose the position in Graphics and select a local image file. The image is an object in the document and can be repositioned or anchored through its properties. |
 
 For semantic tools, see sections 6–10. Use **Options → Show solution markers** to display selectable markers for the active rich intersection result. Select a marker to choose its solution. Under **Construction → Relations and intersections**, **Create selected intersection point** uses the selected eligible solution, **Create selected intersection points** requires several eligible selections, and **Create all eligible intersection points** uses the whole eligible set. The single-point action is also in the GeoCeDG object menu. **Options → Auto-create eligible points for new explicit queries** is a separate choice for new queries. Sections 8.4–8.7 explain which results are eligible.
 
 ### 16.6 Menus, preferences and shortcuts
+
+**[G]** Copy, Paste and New window retain the inherited keyboard workflow.
+
+**[A]** The Graphics style bar extends the inherited controls with numerical line thickness.
+
+**[N]** The GeoCeDG context submenu collects product-specific routes for the selected object.
+
+**[G]** The inherited object context menu provides visibility, style and editing actions.
+
+**[A]** **[!]** GeoCeDG keeps the inherited Continuity setting off.
+
+**[G]** Objects, Graphics, Graphics 2, Algebra, Defaults, Advanced, Spreadsheet and CAS retain the inherited settings described below.
+
+**[G]** Layout controls for input, toolbars, view titles, style bars and the sidebar retain their inherited behaviour.
 
 | Task | Where and how |
 |---|---|
@@ -2579,6 +2757,12 @@ The inherited object context menu can show or hide the object or label, turn on 
 
 ### 16.7 Opening, saving and exporting files
 
+**[A]** **[!]** The `ExportImage` command and inherited picture export APIs use the GeoCeDG export area.
+
+**[A]** **[!]** Command-line picture export uses the GeoCeDG export area and limits the accepted formats.
+
+**[G]** **[!]** Open retains the inherited readers for `.ggt` and for GeoGebra constructions embedded in `.html` or `.htm`.
+
 - **File → Open recent…** lists recently opened documents. With an empty list the action is unavailable. **File → Close** closes the window and asks about unsaved changes when necessary.
 - **File → Save as…** writes a native `.cedg` document. A non-native target is rejected. Open `.ggb` as compatibility input and save subsequent GeoCeDG work as `.cedg`.
 - **File → Open…** loads a `.ggt` package as tools for the current document. For `.html` or `.htm`, the compatibility reader looks for embedded GeoGebra worksheet data. A general web page is outside this reader's scope. **File → Print preview…** opens the printable layout.
@@ -2587,7 +2771,9 @@ The inherited object context menu can show or hide the object or label, turn on 
 
 ### 16.8 GeoCeDG Library tool inputs
 
-**[A] [!]** In an installed distribution with the library, open
+**[N]** **[!]** The twelve tool entries in this table are supplied by the GeoCeDG library.
+
+In an installed distribution with the library, open
 **Automation → User tools**, find the **GeoCeDG library** group and select
 a tool to activate it. Select its inputs in the order shown. The installed
 tool's help shows the input types. Degenerate inputs can leave the result

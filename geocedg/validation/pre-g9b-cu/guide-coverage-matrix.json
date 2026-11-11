@@ -46,7 +46,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Mueve"
+      "label_es": "Mueve",
+      "classification_group": "edit-basic"
     },
     {
       "id": "action:construction.move-rotate",
@@ -67,7 +68,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Gira en torno a un punto"
+      "label_es": "Gira en torno a un punto",
+      "classification_group": "edit-basic"
     },
     {
       "id": "action:construction.working-layer",
@@ -78,15 +80,18 @@
       "anchors": {
         "en": [
           "presentation-and-visualization/12.5",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "presentation-and-visualization/12.5",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Working Layer, the required inputs or choices, and the observable effect.",
-      "label_es": "Capa de trabajo"
+      "label_es": "Capa de trabajo",
+      "classification_group": "edit-layer"
     },
     {
       "id": "action:construction.select",
@@ -105,7 +110,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Seleccionar objetos"
+      "label_es": "Seleccionar objetos",
+      "classification_group": "edit-basic"
     },
     {
       "id": "action:construction.attach-detach",
@@ -124,7 +130,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Limitar/liberar punto"
+      "label_es": "Limitar/liberar punto",
+      "classification_group": "edit-basic"
     },
     {
       "id": "action:edit.delete",
@@ -143,7 +150,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Borrar"
+      "label_es": "Borrar",
+      "classification_group": "edit-basic"
     },
     {
       "id": "action:edit.undo",
@@ -166,7 +174,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Deshacer"
+      "label_es": "Deshacer",
+      "classification_group": "edit-basic"
     },
     {
       "id": "action:edit.redo",
@@ -189,7 +198,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Rehacer"
+      "label_es": "Rehacer",
+      "classification_group": "edit-basic"
     },
     {
       "id": "action:construction.point",
@@ -214,7 +224,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Punto"
+      "label_es": "Punto",
+      "classification_group": "point-modes"
     },
     {
       "id": "action:construction.point-on-object",
@@ -235,7 +246,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Punto en objeto"
+      "label_es": "Punto en objeto",
+      "classification_group": "point-modes"
     },
     {
       "id": "action:construction.line",
@@ -256,7 +268,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Recta"
+      "label_es": "Recta",
+      "classification_group": "construction-lines"
     },
     {
       "id": "action:construction.segment",
@@ -277,7 +290,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Segmento"
+      "label_es": "Segmento",
+      "classification_group": "construction-lines"
     },
     {
       "id": "action:construction.fixed-segment",
@@ -298,7 +312,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Segmento de longitud dada"
+      "label_es": "Segmento de longitud dada",
+      "classification_group": "construction-lines"
     },
     {
       "id": "action:construction.ray",
@@ -319,7 +334,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Semirrecta"
+      "label_es": "Semirrecta",
+      "classification_group": "construction-lines"
     },
     {
       "id": "action:construction.vector",
@@ -340,7 +356,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Vector"
+      "label_es": "Vector",
+      "classification_group": "construction-lines"
     },
     {
       "id": "action:construction.vector-from-point",
@@ -361,7 +378,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Equipolente"
+      "label_es": "Equipolente",
+      "classification_group": "construction-lines"
     },
     {
       "id": "action:construction.parallel-line",
@@ -380,7 +398,8 @@
         ]
       },
       "notes": "The cited sections give the route or syntax for Parallel Line, the required inputs or choices, and the observable effect.",
-      "label_es": "Paralela"
+      "label_es": "Paralela",
+      "classification_group": "parallel-perpendicular"
     },
     {
       "id": "action:construction.perpendicular-line",
@@ -399,7 +418,8 @@
         ]
       },
       "notes": "The cited sections give the route or syntax for Perpendicular Line, the required inputs or choices, and the observable effect.",
-      "label_es": "Perpendicular"
+      "label_es": "Perpendicular",
+      "classification_group": "parallel-perpendicular"
     },
     {
       "id": "action:construction.perpendicular-bisector",
@@ -420,7 +440,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Mediatriz"
+      "label_es": "Mediatriz",
+      "classification_group": "bisectors"
     },
     {
       "id": "action:construction.angle-bisector",
@@ -441,7 +462,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Bisectriz"
+      "label_es": "Bisectriz",
+      "classification_group": "bisectors"
     },
     {
       "id": "action:construction.midpoint",
@@ -462,7 +484,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Medio o Centro"
+      "label_es": "Medio o Centro",
+      "classification_group": "midpoint"
     },
     {
       "id": "action:construction.polyline",
@@ -483,7 +506,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Poligonal"
+      "label_es": "Poligonal",
+      "classification_group": "construction-polygons"
     },
     {
       "id": "action:construction.list-from-selection",
@@ -506,7 +530,8 @@
         ]
       },
       "notes": "The cited sections give the route or syntax for Create List from Selection, the required inputs or choices, and the observable effect.",
-      "label_es": "Crear lista desde la selección"
+      "label_es": "Crear lista desde la selección",
+      "classification_group": "ordered-list"
     },
     {
       "id": "action:construction.polygon",
@@ -527,7 +552,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Polígono"
+      "label_es": "Polígono",
+      "classification_group": "construction-polygons"
     },
     {
       "id": "action:construction.regular-polygon",
@@ -548,7 +574,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Polígono regular"
+      "label_es": "Polígono regular",
+      "classification_group": "construction-polygons"
     },
     {
       "id": "action:construction.rigid-polygon",
@@ -569,7 +596,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Polígono rígido"
+      "label_es": "Polígono rígido",
+      "classification_group": "construction-polygons"
     },
     {
       "id": "action:construction.vector-polygon",
@@ -590,7 +618,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Polígono vectorial"
+      "label_es": "Polígono vectorial",
+      "classification_group": "construction-polygons"
     },
     {
       "id": "action:parameter.slider",
@@ -611,7 +640,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Deslizador"
+      "label_es": "Deslizador",
+      "classification_group": "parameter-tools"
     },
     {
       "id": "action:parameter.fixed-angle",
@@ -632,7 +662,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Ángulo dada su amplitud"
+      "label_es": "Ángulo dada su amplitud",
+      "classification_group": "parameter-tools"
     },
     {
       "id": "action:parameter.checkbox",
@@ -653,7 +684,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Casilla de control"
+      "label_es": "Casilla de control",
+      "classification_group": "parameter-tools"
     },
     {
       "id": "action:parameter.button",
@@ -674,7 +706,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Botón"
+      "label_es": "Botón",
+      "classification_group": "parameter-tools"
     },
     {
       "id": "action:parameter.input-box",
@@ -695,7 +728,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Casilla de Entrada"
+      "label_es": "Casilla de Entrada",
+      "classification_group": "parameter-tools"
     },
     {
       "id": "action:parameter.animation-toggle",
@@ -714,7 +748,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Animar objeto seleccionado"
+      "label_es": "Animar objeto seleccionado",
+      "classification_group": "parameter-tools"
     },
     {
       "id": "action:relation.intersect",
@@ -735,7 +770,8 @@
         ]
       },
       "notes": "Documents ordinary and rich intersections, the ordinary badge and when inspection or point creation is available.",
-      "label_es": "Intersección"
+      "label_es": "Intersección",
+      "classification_group": "intersect-tool"
     },
     {
       "id": "action:relation.tangent",
@@ -754,7 +790,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Tangentes"
+      "label_es": "Tangentes",
+      "classification_group": "ordinary-relations"
     },
     {
       "id": "action:relation.compare",
@@ -773,7 +810,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Relación"
+      "label_es": "Relación",
+      "classification_group": "ordinary-relations"
     },
     {
       "id": "action:relation.polar-diameter",
@@ -792,7 +830,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Polar o Conjugado"
+      "label_es": "Polar o Conjugado",
+      "classification_group": "ordinary-relations"
     },
     {
       "id": "action:result.inspect-rich",
@@ -804,16 +843,19 @@
         "en": [
           "semantic-points-intersections-materialization/8.4",
           "lengths-and-measurements/9.1",
-          "command-and-workflow-reference/16.6"
+          "command-and-workflow-reference/16.6",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "semantic-points-intersections-materialization/8.4",
           "lengths-and-measurements/9.1",
-          "command-and-workflow-reference/16.6"
+          "command-and-workflow-reference/16.6",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "Describes the product inspection action for intersection and metric results, the rows and available follow-up actions.",
-      "label_es": "Inspeccionar resultado rico"
+      "label_es": "Inspeccionar resultado rico",
+      "classification_group": "rich-intersection-tools"
     },
     {
       "id": "action:result.show-candidate-markers",
@@ -825,16 +867,19 @@
         "en": [
           "command-and-workflow-reference/16.5",
           "semantic-points-intersections-materialization/8.4",
-          "semantic-points-intersections-materialization/8.6"
+          "semantic-points-intersections-materialization/8.6",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "command-and-workflow-reference/16.5",
           "semantic-points-intersections-materialization/8.4",
-          "semantic-points-intersections-materialization/8.6"
+          "semantic-points-intersections-materialization/8.6",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The guide distinguishes inspector, options and explicit creation, and explains eligible selections and recomputation.",
-      "label_es": "Mostrar marcadores de soluciones"
+      "label_es": "Mostrar marcadores de soluciones",
+      "classification_group": "options-rich"
     },
     {
       "id": "action:result.materialize-selected",
@@ -857,7 +902,8 @@
         ]
       },
       "notes": "The guide distinguishes inspector, options and explicit creation, and explains eligible selections and recomputation.",
-      "label_es": "Crear punto de intersección seleccionado"
+      "label_es": "Crear punto de intersección seleccionado",
+      "classification_group": "rich-intersection-tools"
     },
     {
       "id": "action:result.materialize-multiple",
@@ -880,7 +926,8 @@
         ]
       },
       "notes": "The guide distinguishes inspector, options and explicit creation, and explains eligible selections and recomputation.",
-      "label_es": "Crear puntos de intersección seleccionados"
+      "label_es": "Crear puntos de intersección seleccionados",
+      "classification_group": "rich-intersection-tools"
     },
     {
       "id": "action:result.materialize-all-eligible",
@@ -903,7 +950,8 @@
         ]
       },
       "notes": "The guide distinguishes inspector, options and explicit creation, and explains eligible selections and recomputation.",
-      "label_es": "Crear todos los puntos de intersección admisibles"
+      "label_es": "Crear todos los puntos de intersección admisibles",
+      "classification_group": "rich-intersection-tools"
     },
     {
       "id": "action:result.auto-materialize-initial",
@@ -915,16 +963,19 @@
         "en": [
           "command-and-workflow-reference/16.5",
           "semantic-points-intersections-materialization/8.4",
-          "semantic-points-intersections-materialization/8.6"
+          "semantic-points-intersections-materialization/8.6",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "command-and-workflow-reference/16.5",
           "semantic-points-intersections-materialization/8.4",
-          "semantic-points-intersections-materialization/8.6"
+          "semantic-points-intersections-materialization/8.6",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The guide distinguishes inspector, options and explicit creation, and explains eligible selections and recomputation.",
-      "label_es": "Crear automáticamente puntos admisibles de nuevas consultas explícitas"
+      "label_es": "Crear automáticamente puntos admisibles de nuevas consultas explícitas",
+      "classification_group": "options-rich"
     },
     {
       "id": "action:curve.circle-two-points",
@@ -945,7 +996,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Circunferencia (centro, punto)"
+      "label_es": "Circunferencia (centro, punto)",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.circle-three-points",
@@ -966,7 +1018,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Circunferencia por tres puntos"
+      "label_es": "Circunferencia por tres puntos",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.circle-center-radius",
@@ -987,7 +1040,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Circunferencia: centro y radio"
+      "label_es": "Circunferencia: centro y radio",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.compass",
@@ -1008,7 +1062,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Compás"
+      "label_es": "Compás",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.semicircle",
@@ -1029,7 +1084,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Semicircunferencia"
+      "label_es": "Semicircunferencia",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.arc-center",
@@ -1050,7 +1106,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Arco de circunferencia"
+      "label_es": "Arco de circunferencia",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.arc-circumcircle",
@@ -1069,7 +1126,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Arco tres puntos"
+      "label_es": "Arco tres puntos",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.sector-center",
@@ -1090,7 +1148,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Sector circular"
+      "label_es": "Sector circular",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.sector-circumcircle",
@@ -1109,7 +1168,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Sector tres puntos"
+      "label_es": "Sector tres puntos",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.conic-five-points",
@@ -1130,7 +1190,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Cónica por cinco puntos"
+      "label_es": "Cónica por cinco puntos",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.ellipse",
@@ -1151,7 +1212,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Elipse"
+      "label_es": "Elipse",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.hyperbola",
@@ -1172,7 +1234,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Hipérbola"
+      "label_es": "Hipérbola",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:curve.parabola",
@@ -1193,7 +1256,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Parábola"
+      "label_es": "Parábola",
+      "classification_group": "construction-conics"
     },
     {
       "id": "action:semantic.locus-v2.create",
@@ -1204,15 +1268,18 @@
       "anchors": {
         "en": [
           "locus-v2/6.5",
-          "locus-v2/6.6"
+          "locus-v2/6.6",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "locus-v2/6.5",
-          "locus-v2/6.6"
+          "locus-v2/6.6",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The point-driven tool takes a dependent point followed by its constrained driver. Typed forms cover scalar drivers and explicit domains.",
-      "label_es": "Locus V2"
+      "label_es": "Locus V2",
+      "classification_group": "locus-tool"
     },
     {
       "id": "action:semantic.locus-v2.point-explicit",
@@ -1223,15 +1290,18 @@
       "anchors": {
         "en": [
           "semantic-points-intersections-materialization/8.1",
-          "spline-v2/7.4"
+          "spline-v2/7.4",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "semantic-points-intersections-materialization/8.1",
-          "spline-v2/7.4"
+          "spline-v2/7.4",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The tool asks for the semantic curve, branch key and canonical parameter. The guide also documents the equivalent command forms.",
-      "label_es": "Punto sobre curva semántica (dirección explícita)"
+      "label_es": "Punto sobre curva semántica (dirección explícita)",
+      "classification_group": "point-curve-tools"
     },
     {
       "id": "action:semantic.spline-v2.create",
@@ -1252,7 +1322,8 @@
         ]
       },
       "notes": "Explains the selected point list, ordinary, degree and closed forms, and the result.",
-      "label_es": "Spline V2"
+      "label_es": "Spline V2",
+      "classification_group": "spline-tools"
     },
     {
       "id": "action:semantic.spline-v2.create-degree",
@@ -1263,15 +1334,18 @@
       "anchors": {
         "en": [
           "spline-v2/7.2",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "spline-v2/7.2",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Spline V2 with degree, the required inputs or choices, and the observable effect.",
-      "label_es": "Spline V2 con grado"
+      "label_es": "Spline V2 con grado",
+      "classification_group": "spline-tools"
     },
     {
       "id": "action:semantic.spline-v2.create-closed",
@@ -1282,15 +1356,18 @@
       "anchors": {
         "en": [
           "spline-v2/7.2",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "spline-v2/7.2",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Closed Spline V2, the required inputs or choices, and the observable effect.",
-      "label_es": "Spline V2 cerrada"
+      "label_es": "Spline V2 cerrada",
+      "classification_group": "spline-tools"
     },
     {
       "id": "action:measure.angle",
@@ -1309,7 +1386,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Ángulo"
+      "label_es": "Ángulo",
+      "classification_group": "ordinary-metrics"
     },
     {
       "id": "action:measure.distance-length",
@@ -1328,7 +1406,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Distancia o Longitud"
+      "label_es": "Distancia o Longitud",
+      "classification_group": "ordinary-metrics"
     },
     {
       "id": "action:measure.aligned-dimension",
@@ -1339,15 +1418,18 @@
       "anchors": {
         "en": [
           "lengths-and-measurements/9.5",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "lengths-and-measurements/9.5",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Aligned Dimension, the required inputs or choices, and the observable effect.",
-      "label_es": "Cota alineada"
+      "label_es": "Cota alineada",
+      "classification_group": "dimension-tools"
     },
     {
       "id": "action:measure.linear-dimension",
@@ -1358,15 +1440,18 @@
       "anchors": {
         "en": [
           "lengths-and-measurements/9.5",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "lengths-and-measurements/9.5",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Linear Dimension, the required inputs or choices, and the observable effect.",
-      "label_es": "Cota lineal"
+      "label_es": "Cota lineal",
+      "classification_group": "dimension-tools"
     },
     {
       "id": "action:measure.area",
@@ -1385,7 +1470,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Área"
+      "label_es": "Área",
+      "classification_group": "ordinary-metrics"
     },
     {
       "id": "action:measure.slope",
@@ -1404,7 +1490,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Pendiente"
+      "label_es": "Pendiente",
+      "classification_group": "ordinary-metrics"
     },
     {
       "id": "action:measure.locus-v2-total-length",
@@ -1416,16 +1503,19 @@
         "en": [
           "lengths-and-measurements/9.1",
           "lengths-and-measurements/9.2",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "lengths-and-measurements/9.1",
           "lengths-and-measurements/9.2",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "Select one Locus V2 to create a rich total metric. The guide distinguishes the result from the Length scalar.",
-      "label_es": "Longitud semántica total del lugar geométrico (experimental)"
+      "label_es": "Longitud semántica total del lugar geométrico (experimental)",
+      "classification_group": "locus-length-tools"
     },
     {
       "id": "action:measure.locus-v2-partial-length",
@@ -1438,17 +1528,20 @@
           "lengths-and-measurements/9.1",
           "lengths-and-measurements/9.2",
           "lengths-and-measurements/9.3",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "lengths-and-measurements/9.1",
           "lengths-and-measurements/9.2",
           "lengths-and-measurements/9.3",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "Select the locus and both admissible endpoints. The tool uses default traversal; the command accepts explicit policies.",
-      "label_es": "Longitud semántica parcial del lugar geométrico (experimental)"
+      "label_es": "Longitud semántica parcial del lugar geométrico (experimental)",
+      "classification_group": "locus-length-tools"
     },
     {
       "id": "action:transform.reflect-point",
@@ -1471,7 +1564,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Simetría central"
+      "label_es": "Simetría central",
+      "classification_group": "similarity-tools"
     },
     {
       "id": "action:transform.reflect-line",
@@ -1496,7 +1590,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Simetría axial (reflexión)"
+      "label_es": "Simetría axial (reflexión)",
+      "classification_group": "similarity-tools"
     },
     {
       "id": "action:transform.translate-vector",
@@ -1521,7 +1616,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Traslación"
+      "label_es": "Traslación",
+      "classification_group": "similarity-tools"
     },
     {
       "id": "action:transform.rotate-angle",
@@ -1546,7 +1642,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Rotación"
+      "label_es": "Rotación",
+      "classification_group": "similarity-tools"
     },
     {
       "id": "action:transform.dilate-point",
@@ -1571,7 +1668,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Homotecia"
+      "label_es": "Homotecia",
+      "classification_group": "similarity-tools"
     },
     {
       "id": "action:workspace.cedg-dihedral-procedures",
@@ -1590,7 +1688,8 @@
         ]
       },
       "notes": "The cited sections give the route or syntax for CeDG dihedral procedures (not authorized), the required inputs or choices, and the observable effect.",
-      "label_es": "Procedimientos diédricos CeDG (no autorizados)"
+      "label_es": "Procedimientos diédricos CeDG (no autorizados)",
+      "classification_group": "construction-projection"
     },
     {
       "id": "action:presentation.show-hide-object",
@@ -1611,7 +1710,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Mostrar/ocultar objeto"
+      "label_es": "Mostrar/ocultar objeto",
+      "classification_group": "view-style-inherited"
     },
     {
       "id": "action:presentation.show-hide-label",
@@ -1632,7 +1732,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Mostrar/ocultar etiqueta"
+      "label_es": "Mostrar/ocultar etiqueta",
+      "classification_group": "view-style-inherited"
     },
     {
       "id": "action:presentation.copy-style",
@@ -1653,7 +1754,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Copiar estilo visual"
+      "label_es": "Copiar estilo visual",
+      "classification_group": "view-style-inherited"
     },
     {
       "id": "action:presentation.text",
@@ -1674,7 +1776,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Texto"
+      "label_es": "Texto",
+      "classification_group": "parameter-tools"
     },
     {
       "id": "action:presentation.image",
@@ -1693,7 +1796,8 @@
         ]
       },
       "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
-      "label_es": "Imagen"
+      "label_es": "Imagen",
+      "classification_group": "image-tool"
     },
     {
       "id": "action:presentation.iso-a-border",
@@ -1714,7 +1818,8 @@
         ]
       },
       "notes": "The cited sections give the route or syntax for ISO A Border, the required inputs or choices, and the observable effect.",
-      "label_es": "Marco ISO A"
+      "label_es": "Marco ISO A",
+      "classification_group": "border-tool"
     },
     {
       "id": "action:presentation.axes-toggle",
@@ -1733,7 +1838,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Ejes"
+      "label_es": "Ejes",
+      "classification_group": "options-inherited"
     },
     {
       "id": "action:presentation.grid-toggle",
@@ -1752,7 +1858,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Cuadrícula"
+      "label_es": "Cuadrícula",
+      "classification_group": "options-inherited"
     },
     {
       "id": "action:presentation.orientation-cue",
@@ -1775,7 +1882,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Mostrar indicación de orientación"
+      "label_es": "Mostrar indicación de orientación",
+      "classification_group": "view-orientation"
     },
     {
       "id": "action:navigation.pan-view",
@@ -1796,7 +1904,8 @@
         ]
       },
       "notes": "The guide gives the navigation gesture or configured shortcut and distinguishes menu and toolbar membership.",
-      "label_es": "Desplaza Vista Gráfica"
+      "label_es": "Desplaza Vista Gráfica",
+      "classification_group": "view-navigation-inherited"
     },
     {
       "id": "action:navigation.zoom-in",
@@ -1819,7 +1928,8 @@
         ]
       },
       "notes": "The guide gives the navigation gesture or configured shortcut and distinguishes menu and toolbar membership.",
-      "label_es": "Aproximar"
+      "label_es": "Aproximar",
+      "classification_group": "view-navigation-inherited"
     },
     {
       "id": "action:navigation.zoom-out",
@@ -1842,7 +1952,8 @@
         ]
       },
       "notes": "The guide gives the navigation gesture or configured shortcut and distinguishes menu and toolbar membership.",
-      "label_es": "Alejar"
+      "label_es": "Alejar",
+      "classification_group": "view-navigation-inherited"
     },
     {
       "id": "action:navigation.zoom-window",
@@ -1863,7 +1974,8 @@
         ]
       },
       "notes": "The guide gives the navigation gesture or configured shortcut and distinguishes menu and toolbar membership.",
-      "label_es": "Zoom por rectángulo"
+      "label_es": "Zoom por rectángulo",
+      "classification_group": "view-navigation"
     },
     {
       "id": "action:navigation.zoom-factor-in",
@@ -1884,7 +1996,8 @@
         ]
       },
       "notes": "The guide gives the navigation gesture or configured shortcut and distinguishes menu and toolbar membership.",
-      "label_es": "Acercar por factor"
+      "label_es": "Acercar por factor",
+      "classification_group": "view-navigation"
     },
     {
       "id": "action:navigation.zoom-factor-out",
@@ -1905,7 +2018,8 @@
         ]
       },
       "notes": "The guide gives the navigation gesture or configured shortcut and distinguishes menu and toolbar membership.",
-      "label_es": "Alejar por factor"
+      "label_es": "Alejar por factor",
+      "classification_group": "view-navigation"
     },
     {
       "id": "action:navigation.standard-view",
@@ -1926,7 +2040,8 @@
         ]
       },
       "notes": "The guide gives the navigation gesture or configured shortcut and distinguishes menu and toolbar membership.",
-      "label_es": "Vista estándar"
+      "label_es": "Vista estándar",
+      "classification_group": "view-navigation-inherited"
     },
     {
       "id": "action:navigation.show-all-objects",
@@ -1947,7 +2062,8 @@
         ]
       },
       "notes": "The guide gives the navigation gesture or configured shortcut and distinguishes menu and toolbar membership.",
-      "label_es": "Mostrar todos los objetos"
+      "label_es": "Mostrar todos los objetos",
+      "classification_group": "view-navigation-inherited"
     },
     {
       "id": "action:document.new",
@@ -1961,18 +2077,21 @@
           "documents/4.5",
           "documents/4.6",
           "presentation-and-visualization/12.5",
-          "user-tools-and-automation/13.2"
+          "user-tools-and-automation/13.2",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "documents/4.2",
           "documents/4.5",
           "documents/4.6",
           "presentation-and-visualization/12.5",
-          "user-tools-and-automation/13.2"
+          "user-tools-and-automation/13.2",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for New file, the required inputs or choices, and the observable effect.",
-      "label_es": "Nuevo archivo"
+      "label_es": "Nuevo archivo",
+      "classification_group": "file-basic"
     },
     {
       "id": "action:document.open",
@@ -1997,7 +2116,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Abrir…"
+      "label_es": "Abrir…",
+      "classification_group": "file-native"
     },
     {
       "id": "action:document.open-recent",
@@ -2018,7 +2138,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Abrir reciente…"
+      "label_es": "Abrir reciente…",
+      "classification_group": "file-recent"
     },
     {
       "id": "action:document.insert-file",
@@ -2039,7 +2160,8 @@
         ]
       },
       "notes": "The cited sections give the route or syntax for Insert File…, the required inputs or choices, and the observable effect.",
-      "label_es": "Insertar archivo…"
+      "label_es": "Insertar archivo…",
+      "classification_group": "certified-insertion"
     },
     {
       "id": "action:document.insert-expert",
@@ -2058,7 +2180,8 @@
         ]
       },
       "notes": "The expert route explains the isolated trial, review, consent, rejection, Undo and saving a separate copy.",
-      "label_es": "Insertar con revisión experta…"
+      "label_es": "Insertar con revisión experta…",
+      "classification_group": "expert-insertion"
     },
     {
       "id": "action:document.apply-styles",
@@ -2077,7 +2200,8 @@
         ]
       },
       "notes": "The cited sections give the route or syntax for Apply Styles…, the required inputs or choices, and the observable effect.",
-      "label_es": "Aplicar estilos…"
+      "label_es": "Aplicar estilos…",
+      "classification_group": "apply-styles"
     },
     {
       "id": "action:document.save",
@@ -2088,15 +2212,18 @@
       "anchors": {
         "en": [
           "documents/4.2",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "documents/4.2",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Save, the required inputs or choices, and the observable effect.",
-      "label_es": "Guardar"
+      "label_es": "Guardar",
+      "classification_group": "file-native"
     },
     {
       "id": "action:document.save-as",
@@ -2121,7 +2248,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Guardar como…"
+      "label_es": "Guardar como…",
+      "classification_group": "file-native"
     },
     {
       "id": "action:document.print-preview",
@@ -2144,7 +2272,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Vista previa de impresión…"
+      "label_es": "Vista previa de impresión…",
+      "classification_group": "file-picture-print"
     },
     {
       "id": "action:document.close",
@@ -2167,7 +2296,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Cerrar"
+      "label_es": "Cerrar",
+      "classification_group": "file-basic"
     },
     {
       "id": "action:automation.algebra-input-toggle",
@@ -2192,7 +2322,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Entrada algebraica"
+      "label_es": "Entrada algebraica",
+      "classification_group": "automation-input"
     },
     {
       "id": "action:automation.manage-user-tools",
@@ -2203,15 +2334,18 @@
       "anchors": {
         "en": [
           "user-tools-and-automation/13.1",
-          "user-tools-and-automation/13.2"
+          "user-tools-and-automation/13.2",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "user-tools-and-automation/13.1",
-          "user-tools-and-automation/13.2"
+          "user-tools-and-automation/13.2",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Manage user tools…, the required inputs or choices, and the observable effect.",
-      "label_es": "Gestionar herramientas de usuario…"
+      "label_es": "Gestionar herramientas de usuario…",
+      "classification_group": "automation-tools"
     },
     {
       "id": "action:automation.object-scripting",
@@ -2232,7 +2366,8 @@
         ]
       },
       "notes": "Select one object and use the Automation or GeoCeDG context action. The guide covers script entry and limits.",
-      "label_es": "Propiedades y guiones del objeto…"
+      "label_es": "Propiedades y guiones del objeto…",
+      "classification_group": "automation-input"
     },
     {
       "id": "action:automation.legacy-laboratory",
@@ -2242,14 +2377,17 @@
       "coverage": "COVERED",
       "anchors": {
         "en": [
-          "classic-compatibility-and-diagnostics/14.3"
+          "classic-compatibility-and-diagnostics/14.3",
+          "interface-and-workflow/3.2"
         ],
         "es": [
-          "classic-compatibility-and-diagnostics/14.3"
+          "classic-compatibility-and-diagnostics/14.3",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Legacy laboratory (separate session), the required inputs or choices, and the observable effect.",
-      "label_es": "Laboratorio heredado (sesión separada)"
+      "label_es": "Laboratorio heredado (sesión separada)",
+      "classification_group": "automation-lab"
     },
     {
       "id": "action:export.dxf-2d",
@@ -2276,7 +2414,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Exportar geometría 2D como DXF (experimental)…"
+      "label_es": "Exportar geometría 2D como DXF (experimental)…",
+      "classification_group": "file-dxf"
     },
     {
       "id": "action:export.picture",
@@ -2299,7 +2438,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Vista gráfica como imagen…"
+      "label_es": "Vista gráfica como imagen…",
+      "classification_group": "file-picture-print"
     },
     {
       "id": "action:export.pstricks",
@@ -2318,7 +2458,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "PSTricks…"
+      "label_es": "PSTricks…",
+      "classification_group": "file-picture-print"
     },
     {
       "id": "action:export.pgf",
@@ -2337,7 +2478,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "PGF/TikZ…"
+      "label_es": "PGF/TikZ…",
+      "classification_group": "file-picture-print"
     },
     {
       "id": "action:export.asymptote",
@@ -2356,7 +2498,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Asymptote…"
+      "label_es": "Asymptote…",
+      "classification_group": "file-picture-print"
     },
     {
       "id": "action:export.area.define-rectangle",
@@ -2379,7 +2522,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Definir área de exportación…"
+      "label_es": "Definir área de exportación…",
+      "classification_group": "file-area"
     },
     {
       "id": "action:export.area.use-export-points",
@@ -2398,7 +2542,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Usar Export_1 y Export_2"
+      "label_es": "Usar Export_1 y Export_2",
+      "classification_group": "file-export-points"
     },
     {
       "id": "action:export.area.show",
@@ -2417,7 +2562,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Mostrar área de exportación"
+      "label_es": "Mostrar área de exportación",
+      "classification_group": "file-area"
     },
     {
       "id": "action:export.area.clear",
@@ -2436,7 +2582,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Borrar área de exportación"
+      "label_es": "Borrar área de exportación",
+      "classification_group": "file-area"
     },
     {
       "id": "action:export.area.iso-a",
@@ -2459,7 +2606,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Definir área de exportación ISO A…"
+      "label_es": "Definir área de exportación ISO A…",
+      "classification_group": "file-area"
     },
     {
       "id": "action:export.area.use-iso-a-border",
@@ -2482,7 +2630,8 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Usar el marco ISO A seleccionado"
+      "label_es": "Usar el marco ISO A seleccionado",
+      "classification_group": "file-area"
     },
     {
       "id": "action:help.input-panel",
@@ -2507,7 +2656,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Ayuda de entrada"
+      "label_es": "Ayuda de entrada",
+      "classification_group": "help-lookup"
     },
     {
       "id": "action:help.command-list",
@@ -2526,7 +2676,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Lista de comandos"
+      "label_es": "Lista de comandos",
+      "classification_group": "help-lookup"
     },
     {
       "id": "action:help.contextual-action",
@@ -2549,7 +2700,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Ayuda de herramienta actual"
+      "label_es": "Ayuda de herramienta actual",
+      "classification_group": "current-tool-help"
     },
     {
       "id": "action:help.user-guide",
@@ -2570,7 +2722,8 @@
         ]
       },
       "notes": "Opens the edition matching the product language. The guide describes the tree, search, result selection and internal links with pointer and keyboard, and illustrates the reader workflow with a Desktop capture.",
-      "label_es": "Guía de usuario de GeoCeDG"
+      "label_es": "Guía de usuario de GeoCeDG",
+      "classification_group": "help-integrated"
     },
     {
       "id": "action:help.keyboard-shortcuts",
@@ -2591,7 +2744,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Atajos de teclado"
+      "label_es": "Atajos de teclado",
+      "classification_group": "help-lookup"
     },
     {
       "id": "action:help.about-geocedg",
@@ -2612,7 +2766,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Acerca de GeoCeDG"
+      "label_es": "Acerca de GeoCeDG",
+      "classification_group": "help-lookup"
     },
     {
       "id": "action:diagnostic.open-classic",
@@ -2631,7 +2786,8 @@
         ]
       },
       "notes": "The cited sections give the route or syntax for Open Classic diagnostic session, the required inputs or choices, and the observable effect.",
-      "label_es": "Abrir sesión de diagnóstico Classic"
+      "label_es": "Abrir sesión de diagnóstico Classic",
+      "classification_group": "classic-session"
     },
     {
       "id": "action:settings.product-language",
@@ -2641,14 +2797,17 @@
       "coverage": "COVERED",
       "anchors": {
         "en": [
-          "getting-started/2.3"
+          "getting-started/2.3",
+          "interface-and-workflow/3.2"
         ],
         "es": [
-          "getting-started/2.3"
+          "getting-started/2.3",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Product language…, the required inputs or choices, and the observable effect.",
-      "label_es": "Idioma del producto…"
+      "label_es": "Idioma del producto…",
+      "classification_group": "options-language"
     },
     {
       "id": "action:document.units",
@@ -2660,16 +2819,19 @@
         "en": [
           "documents/4.6",
           "documents/4.7",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "documents/4.6",
           "documents/4.7",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Document units…, the required inputs or choices, and the observable effect.",
-      "label_es": "Unidades del documento…"
+      "label_es": "Unidades del documento…",
+      "classification_group": "options-units"
     },
     {
       "id": "action:view.construction-protocol",
@@ -2680,15 +2842,18 @@
       "anchors": {
         "en": [
           "interface-and-workflow/3.1",
-          "getting-started/2.2"
+          "getting-started/2.2",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "interface-and-workflow/3.1",
-          "getting-started/2.2"
+          "getting-started/2.2",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Construction protocol, the required inputs or choices, and the observable effect.",
-      "label_es": "Protocolo de construcción"
+      "label_es": "Protocolo de construcción",
+      "classification_group": "view-inspection"
     },
     {
       "id": "action:view.construction-navigation",
@@ -2698,14 +2863,17 @@
       "coverage": "COVERED",
       "anchors": {
         "en": [
-          "interface-and-workflow/3.1"
+          "interface-and-workflow/3.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
-          "interface-and-workflow/3.1"
+          "interface-and-workflow/3.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Show construction navigation bar, the required inputs or choices, and the observable effect.",
-      "label_es": "Mostrar barra de navegación de la construcción"
+      "label_es": "Mostrar barra de navegación de la construcción",
+      "classification_group": "view-step-bar"
     },
     {
       "id": "action:view.properties",
@@ -2726,7 +2894,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Preferencias…"
+      "label_es": "Preferencias…",
+      "classification_group": "options-preferences"
     },
     {
       "id": "action:inspect.definition",
@@ -2737,15 +2906,18 @@
       "anchors": {
         "en": [
           "interface-and-workflow/3.5",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "interface-and-workflow/3.5",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Inspect definition…, the required inputs or choices, and the observable effect.",
-      "label_es": "Inspeccionar definición…"
+      "label_es": "Inspeccionar definición…",
+      "classification_group": "view-inspect-definition"
     },
     {
       "id": "action:semantic.curve.inspect-definition",
@@ -2756,15 +2928,18 @@
       "anchors": {
         "en": [
           "interface-and-workflow/3.5",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "interface-and-workflow/3.5",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Inspect semantic curve definition…, the required inputs or choices, and the observable effect.",
-      "label_es": "Inspeccionar definición de curva semántica…"
+      "label_es": "Inspeccionar definición de curva semántica…",
+      "classification_group": "semantic-inspector"
     },
     {
       "id": "action:algebra.description.value",
@@ -2785,7 +2960,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Valor"
+      "label_es": "Valor",
+      "classification_group": "options-algebra-display"
     },
     {
       "id": "action:algebra.description.description",
@@ -2806,7 +2982,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Descripción"
+      "label_es": "Descripción",
+      "classification_group": "options-algebra-display"
     },
     {
       "id": "action:algebra.description.definition",
@@ -2827,7 +3004,8 @@
         ]
       },
       "notes": "The reference specifies the route, focus or selection where applicable, and the result of the action.",
-      "label_es": "Definición"
+      "label_es": "Definición",
+      "classification_group": "options-algebra-display"
     },
     {
       "id": "command:LocusV2",
@@ -2849,7 +3027,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for LocusV2, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for LocusV2, the required inputs or choices, and the observable effect.",
+      "classification_group": "locus-v2-command"
     },
     {
       "id": "command:SplineV2",
@@ -2869,7 +3048,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for SplineV2, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for SplineV2, the required inputs or choices, and the observable effect.",
+      "classification_group": "spline-v2-command"
     },
     {
       "id": "command:LocusLength",
@@ -2895,7 +3075,8 @@
           "command-and-workflow-reference/16.3"
         ]
       },
-      "notes": "The cited sections give the route or syntax for LocusLength, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for LocusLength, the required inputs or choices, and the observable effect.",
+      "classification_group": "locuslength-command"
     },
     {
       "id": "command:LocusLength/traversal-policy",
@@ -2915,7 +3096,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "All optional arguments, literal values, defaults, periodic rules and same-position policies have reproducible examples."
+      "notes": "All optional arguments, literal values, defaults, periodic rules and same-position policies have reproducible examples.",
+      "classification_group": "locuslength-command"
     },
     {
       "id": "command:Length/semantic-curve",
@@ -2935,7 +3117,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "The scalar adapter has default traversal and explicit endpoint admissibility; the command has no traversal-option form."
+      "notes": "The scalar adapter has default traversal and explicit endpoint admissibility; the command has no traversal-option form.",
+      "classification_group": "semantic-length-scalar"
     },
     {
       "id": "command:Point/semantic-address",
@@ -2959,7 +3142,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Point( <Locus V2>, <Branch Key>, <Canonical Parameter> ), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Point( <Locus V2>, <Branch Key>, <Canonical Parameter> ), the required inputs or choices, and the observable effect.",
+      "classification_group": "spline-v2-point"
     },
     {
       "id": "command:Point/principal-parameter",
@@ -2977,7 +3161,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "Point(L,u) uses the canonical parameter on the unique principal branch. The guide explains when to use the branch-explicit form."
+      "notes": "Point(L,u) uses the canonical parameter on the unique principal branch. The guide explains when to use the branch-explicit form.",
+      "classification_group": "principal-point"
     },
     {
       "id": "command:Point/driver-correspondence",
@@ -2995,7 +3180,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "DOC-CU3-CU9-STRUCTURAL-POINTS. Syntax, constructive authority, admitted driver support and a worked example. See locus-v2-public-surface.md §21, locus-v2-point-interaction.md §18 and ADR 0039/0040."
+      "notes": "DOC-CU3-CU9-STRUCTURAL-POINTS. Syntax, constructive authority, admitted driver support and a worked example. See locus-v2-public-surface.md §21, locus-v2-point-interaction.md §18 and ADR 0039/0040.",
+      "classification_group": "structural-commands"
     },
     {
       "id": "command:Intersect/driver-correspondence",
@@ -3013,7 +3199,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "DOC-CU3-CU9-STRUCTURAL-POINTS. Syntax and example use explicit driver correspondence and require established incidence. See locus-v2-public-surface.md §21, locus-v2-intersections.md and ADR 0039/0040."
+      "notes": "DOC-CU3-CU9-STRUCTURAL-POINTS. Syntax and example use explicit driver correspondence and require established incidence. See locus-v2-public-surface.md §21, locus-v2-intersections.md and ADR 0039/0040.",
+      "classification_group": "structural-commands"
     },
     {
       "id": "command:Intersect/semantic-curve-and-object",
@@ -3035,7 +3222,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Intersect( <Locus V2>, <Supported Object> ), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Intersect( <Locus V2>, <Supported Object> ), the required inputs or choices, and the observable effect.",
+      "classification_group": "semantic-intersect"
     },
     {
       "id": "command:Intersect/semantic-curve-pair",
@@ -3057,7 +3245,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Intersect( <Locus V2>, <Locus V2> ), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Intersect( <Locus V2>, <Locus V2> ), the required inputs or choices, and the observable effect.",
+      "classification_group": "curve-pair-intersect"
     },
     {
       "id": "command:Intersect/solution-token",
@@ -3079,7 +3268,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Intersect( <Rich Intersection Result>, <Solution Token> ), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Intersect( <Rich Intersection Result>, <Solution Token> ), the required inputs or choices, and the observable effect.",
+      "classification_group": "solution-token"
     },
     {
       "id": "command:Translate/semantic-curve",
@@ -3101,7 +3291,8 @@
           "command-and-workflow-reference/16.1"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Translate( <Semantic Curve>, <Vector> ), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Translate( <Semantic Curve>, <Vector> ), the required inputs or choices, and the observable effect.",
+      "classification_group": "semantic-transform"
     },
     {
       "id": "command:Rotate/semantic-curve",
@@ -3121,7 +3312,8 @@
           "command-and-workflow-reference/16.1"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Rotate( <Semantic Curve>, <Angle> [, <Center>] ), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Rotate( <Semantic Curve>, <Angle> [, <Center>] ), the required inputs or choices, and the observable effect.",
+      "classification_group": "semantic-transform"
     },
     {
       "id": "command:Reflect-Mirror/semantic-curve",
@@ -3141,7 +3333,8 @@
           "command-and-workflow-reference/16.1"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Reflect / Mirror( <Semantic Curve>, <Point or Line> ), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Reflect / Mirror( <Semantic Curve>, <Point or Line> ), the required inputs or choices, and the observable effect.",
+      "classification_group": "semantic-transform"
     },
     {
       "id": "command:Dilate/semantic-curve",
@@ -3161,7 +3354,8 @@
           "command-and-workflow-reference/16.1"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Dilate( <Semantic Curve>, <Factor> [, <Center>] ), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Dilate( <Semantic Curve>, <Factor> [, <Center>] ), the required inputs or choices, and the observable effect.",
+      "classification_group": "semantic-transform"
     },
     {
       "id": "command:AlignedDimension",
@@ -3181,7 +3375,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for AlignedDimension, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for AlignedDimension, the required inputs or choices, and the observable effect.",
+      "classification_group": "dimension-commands"
     },
     {
       "id": "command:LinearDimension",
@@ -3201,7 +3396,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for LinearDimension, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for LinearDimension, the required inputs or choices, and the observable effect.",
+      "classification_group": "dimension-commands"
     },
     {
       "id": "command:IsoABorder",
@@ -3221,7 +3417,8 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for IsoABorder, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for IsoABorder, the required inputs or choices, and the observable effect.",
+      "classification_group": "iso-border"
     },
     {
       "id": "command:ExportImage",
@@ -3241,7 +3438,8 @@
           "command-and-workflow-reference/16.1"
         ]
       },
-      "notes": "The file reference identifies the relevant file types, syntax or output, and its constraints."
+      "notes": "The file reference identifies the relevant file types, syntax or output, and its constraints.",
+      "classification_group": "script-export"
     },
     {
       "id": "command:Locus/legacy",
@@ -3259,7 +3457,8 @@
           "command-and-workflow-reference/16.6"
         ]
       },
-      "notes": "Distinguishes the inherited command from Locus V2. The in-product command list gives the syntax for the current installation."
+      "notes": "Distinguishes the inherited command from Locus V2. The in-product command list gives the syntax for the current installation.",
+      "classification_group": "classic-locus"
     },
     {
       "id": "command:Spline/classic",
@@ -3277,7 +3476,8 @@
           "command-and-workflow-reference/16.6"
         ]
       },
-      "notes": "Distinguishes the inherited command from Spline V2. The in-product command list gives the syntax for the current installation."
+      "notes": "Distinguishes the inherited command from Spline V2. The in-product command list gives the syntax for the current installation.",
+      "classification_group": "classic-spline"
     },
     {
       "id": "tool:ggt-library/SquarebyDiagonal",
@@ -3295,7 +3495,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:ggt-library/CirclebyD",
@@ -3313,7 +3514,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:ggt-library/circArcbyAngle",
@@ -3331,7 +3533,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:ggt-library/ellipseLength12",
@@ -3349,7 +3552,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:ggt-library/IFPositiveSelectPoint",
@@ -3367,7 +3571,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:ggt-library/EllipseAxis",
@@ -3385,7 +3590,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:ggt-library/conj2mainAxesEllipse",
@@ -3403,7 +3609,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:ggt-library/pointJump",
@@ -3421,7 +3628,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:ggt-library/relCoor",
@@ -3439,7 +3647,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:ggt-library/translationCoor",
@@ -3457,7 +3666,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:ggt-library/DuctSymbol",
@@ -3475,7 +3685,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:ggt-library/SymmSymbol",
@@ -3493,7 +3704,8 @@
           "user-tools-and-automation/13.2"
         ]
       },
-      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope."
+      "notes": "The curated-library row gives the ordered inputs and outputs; section 13.2 explains installation into the current document and scope.",
+      "classification_group": "curated-tools"
     },
     {
       "id": "tool:deferred/legacy.locus-mode",
@@ -3607,7 +3819,8 @@
           "getting-started/2.4"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "presentation-settings"
     },
     {
       "id": "preference:presentation-theme",
@@ -3625,7 +3838,8 @@
           "presentation-and-visualization/12.1"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Theme, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Theme, the required inputs or choices, and the observable effect.",
+      "classification_group": "themes"
     },
     {
       "id": "preference:presentation-sizes",
@@ -3643,7 +3857,8 @@
           "presentation-and-visualization/12.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Presentation sizes, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Presentation sizes, the required inputs or choices, and the observable effect.",
+      "classification_group": "presentation-sizes"
     },
     {
       "id": "preference:orientation-cue",
@@ -3661,7 +3876,8 @@
           "getting-started/2.4"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Orientation cue, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Orientation cue, the required inputs or choices, and the observable effect.",
+      "classification_group": "orientation-cue"
     },
     {
       "id": "preference:new-document-units",
@@ -3679,7 +3895,8 @@
           "getting-started/2.4"
         ]
       },
-      "notes": "The cited sections give the route or syntax for New document units, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for New document units, the required inputs or choices, and the observable effect.",
+      "classification_group": "new-document-units"
     },
     {
       "id": "preference:dimension-presentation",
@@ -3699,7 +3916,8 @@
           "getting-started/2.4"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Dimension presentation, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Dimension presentation, the required inputs or choices, and the observable effect.",
+      "classification_group": "dimension-commands"
     },
     {
       "id": "preference:layout/inherited-sections",
@@ -3715,7 +3933,8 @@
           "command-and-workflow-reference/16.6"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "layout-controls"
     },
     {
       "id": "preference:navigation-zoom",
@@ -3731,7 +3950,8 @@
           "presentation-and-visualization/12.4"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Configure navigation zoom..., the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Configure navigation zoom..., the required inputs or choices, and the observable effect.",
+      "classification_group": "zoom-preferences"
     },
     {
       "id": "preference:tab/objects",
@@ -3755,7 +3975,8 @@
           "user-tools-and-automation/13.4"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "preference-tabs"
     },
     {
       "id": "preference:tab/graphics",
@@ -3771,7 +3992,8 @@
           "command-and-workflow-reference/16.6"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "preference-tabs"
     },
     {
       "id": "preference:tab/graphics-2",
@@ -3787,7 +4009,8 @@
           "command-and-workflow-reference/16.6"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "preference-tabs"
     },
     {
       "id": "preference:tab/algebra",
@@ -3803,7 +4026,8 @@
           "command-and-workflow-reference/16.6"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "preference-tabs"
     },
     {
       "id": "preference:tab/defaults",
@@ -3819,7 +4043,8 @@
           "command-and-workflow-reference/16.6"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "preference-tabs"
     },
     {
       "id": "preference:tab/advanced",
@@ -3835,7 +4060,8 @@
           "command-and-workflow-reference/16.6"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "preference-tabs"
     },
     {
       "id": "preference:tab/spreadsheet",
@@ -3851,7 +4077,8 @@
           "command-and-workflow-reference/16.6"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "preference-tabs"
     },
     {
       "id": "preference:tab/cas",
@@ -3867,7 +4094,8 @@
           "command-and-workflow-reference/16.6"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "preference-tabs"
     },
     {
       "id": "preference:policy/continuity-locked",
@@ -3885,7 +4113,8 @@
           "classic-compatibility-and-diagnostics/14.2"
         ]
       },
-      "notes": "Preferences → Advanced shows Continuity kept off in the product; Classic is described separately."
+      "notes": "Preferences → Advanced shows Continuity kept off in the product; Classic is described separately.",
+      "classification_group": "continuity-policy"
     },
     {
       "id": "preference:feature/cedg.frontend.profile",
@@ -3915,7 +4144,8 @@
           "documents/4.4"
         ]
       },
-      "notes": "The cited sections give the route or syntax for cedg.frontend.classic-diagnostic, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for cedg.frontend.classic-diagnostic, the required inputs or choices, and the observable effect.",
+      "classification_group": "classic-session"
     },
     {
       "id": "preference:feature/cedg.legacy.ingest",
@@ -3955,7 +4185,8 @@
           "dxf-export/11.1"
         ]
       },
-      "notes": "The cited sections give the route or syntax for cedg.export.dxf.2d, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for cedg.export.dxf.2d, the required inputs or choices, and the observable effect.",
+      "classification_group": "dxf-extension"
     },
     {
       "id": "preference:feature/cedg.export.dxf.extended",
@@ -3973,7 +4204,8 @@
           "what-is-geocedg/1.3"
         ]
       },
-      "notes": "The cited sections give the route or syntax for cedg.export.dxf.extended, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for cedg.export.dxf.extended, the required inputs or choices, and the observable effect.",
+      "classification_group": "dxf-extension"
     },
     {
       "id": "preference:feature/cedg.laboratory.legacy",
@@ -3989,7 +4221,8 @@
           "classic-compatibility-and-diagnostics/14.3"
         ]
       },
-      "notes": "The cited sections give the route or syntax for cedg.laboratory.legacy, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for cedg.laboratory.legacy, the required inputs or choices, and the observable effect.",
+      "classification_group": "legacy-laboratory"
     },
     {
       "id": "preference:feature/cedg.library.curated-ggt",
@@ -4007,7 +4240,8 @@
           "getting-started/2.1"
         ]
       },
-      "notes": "The cited sections give the route or syntax for cedg.library.curated-ggt, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for cedg.library.curated-ggt, the required inputs or choices, and the observable effect.",
+      "classification_group": "installed-library"
     },
     {
       "id": "preference:feature/cedg.locus.v2",
@@ -4027,7 +4261,8 @@
           "what-is-geocedg/1.3"
         ]
       },
-      "notes": "The cited sections give the route or syntax for cedg.locus.v2, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for cedg.locus.v2, the required inputs or choices, and the observable effect.",
+      "classification_group": "locus-feature"
     },
     {
       "id": "preference:feature/cedg.spatial.semantics",
@@ -4066,7 +4301,8 @@
         ]
       },
       "notes": "The menu table lists the product entries and the reference explains their use.",
-      "profile_menu": "file"
+      "profile_menu": "file",
+      "classification_group": "file-menu"
     },
     {
       "id": "menu:file/insert",
@@ -4078,17 +4314,20 @@
         "en": [
           "documents/4.2",
           "documents/4.6",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "documents/4.2",
           "documents/4.6",
-          "command-and-workflow-reference/16.1"
+          "command-and-workflow-reference/16.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Insert, the required inputs or choices, and the observable effect.",
       "profile_submenu": "file-insert",
-      "label_es": "Insertar"
+      "label_es": "Insertar",
+      "classification_group": "file-insert"
     },
     {
       "id": "menu:edit",
@@ -4109,7 +4348,8 @@
         ]
       },
       "notes": "The menu table lists the product entries and the reference explains their use.",
-      "profile_menu": "edit"
+      "profile_menu": "edit",
+      "classification_group": "edit-menu"
     },
     {
       "id": "menu:view",
@@ -4138,7 +4378,8 @@
         ]
       },
       "notes": "The menu table lists the product entries and the reference explains their use.",
-      "profile_menu": "view"
+      "profile_menu": "view",
+      "classification_group": "view-menu"
     },
     {
       "id": "menu:view/views",
@@ -4157,7 +4398,8 @@
         ]
       },
       "notes": "The host menu exposes Algebra, Graphics2, Spreadsheet, CAS and Object Properties. The first and second Graphics views are explained in the guide. Views and Graphics2 are literal fallback menu labels in Spanish as well.",
-      "label_es": "Views"
+      "label_es": "Views",
+      "classification_group": "view-views"
     },
     {
       "id": "menu:view/visibility-and-style",
@@ -4179,7 +4421,8 @@
       },
       "notes": "The menu table lists the product entries and the reference explains their use.",
       "profile_submenu": "view-visibility-style",
-      "label_es": "Visibilidad y estilo"
+      "label_es": "Visibilidad y estilo",
+      "classification_group": "view-style"
     },
     {
       "id": "menu:view/navigation",
@@ -4189,15 +4432,18 @@
       "coverage": "COVERED",
       "anchors": {
         "en": [
-          "presentation-and-visualization/12.4"
+          "presentation-and-visualization/12.4",
+          "interface-and-workflow/3.2"
         ],
         "es": [
-          "presentation-and-visualization/12.4"
+          "presentation-and-visualization/12.4",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The cited sections give the route or syntax for Navigation, the required inputs or choices, and the observable effect.",
       "profile_submenu": "view-navigation",
-      "label_es": "Navegación"
+      "label_es": "Navegación",
+      "classification_group": "view-navigation"
     },
     {
       "id": "menu:view/construction-inspection",
@@ -4221,7 +4467,8 @@
       },
       "notes": "The menu table lists the product entries and the reference explains their use.",
       "profile_submenu": "view-construction",
-      "label_es": "Inspección de la construcción"
+      "label_es": "Inspección de la construcción",
+      "classification_group": "view-inspection"
     },
     {
       "id": "menu:view/restore-construction-layout",
@@ -4241,7 +4488,8 @@
           "getting-started/2.2"
         ]
       },
-      "notes": "The menu table lists the product entries and the reference explains their use."
+      "notes": "The menu table lists the product entries and the reference explains their use.",
+      "classification_group": "view-restore"
     },
     {
       "id": "menu:construction",
@@ -4258,7 +4506,8 @@
         ]
       },
       "notes": "The cited sections give the route or syntax for Construction, the required inputs or choices, and the observable effect.",
-      "profile_menu": "construction"
+      "profile_menu": "construction",
+      "classification_group": "construction-menu"
     },
     {
       "id": "menu:construction/points",
@@ -4278,7 +4527,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-points",
-      "label_es": "Puntos"
+      "label_es": "Puntos",
+      "classification_group": "construction-points"
     },
     {
       "id": "menu:construction/lines-and-vectors",
@@ -4298,7 +4548,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-lines-vectors",
-      "label_es": "Rectas y vectores"
+      "label_es": "Rectas y vectores",
+      "classification_group": "construction-lines"
     },
     {
       "id": "menu:construction/polygons",
@@ -4318,7 +4569,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-polygons",
-      "label_es": "Polígonos"
+      "label_es": "Polígonos",
+      "classification_group": "construction-polygons"
     },
     {
       "id": "menu:construction/list-tools",
@@ -4338,7 +4590,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-lists",
-      "label_es": "Herramientas de listas"
+      "label_es": "Herramientas de listas",
+      "classification_group": "construction-lists"
     },
     {
       "id": "menu:construction/derived-constructions",
@@ -4358,7 +4611,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-derived",
-      "label_es": "Construcciones derivadas"
+      "label_es": "Construcciones derivadas",
+      "classification_group": "construction-derived"
     },
     {
       "id": "menu:construction/parameters-and-drivers",
@@ -4378,7 +4632,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-parameters",
-      "label_es": "Parámetros y controladores"
+      "label_es": "Parámetros y controladores",
+      "classification_group": "construction-parameters"
     },
     {
       "id": "menu:construction/relations-and-intersections",
@@ -4398,7 +4653,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-relations",
-      "label_es": "Relaciones e intersecciones"
+      "label_es": "Relaciones e intersecciones",
+      "classification_group": "construction-relations"
     },
     {
       "id": "menu:construction/circles-and-conics",
@@ -4418,7 +4674,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-circles-conics",
-      "label_es": "Círculos y cónicas"
+      "label_es": "Círculos y cónicas",
+      "classification_group": "construction-conics"
     },
     {
       "id": "menu:construction/semantic-curves",
@@ -4438,7 +4695,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-semantic-curves",
-      "label_es": "Curvas semánticas"
+      "label_es": "Curvas semánticas",
+      "classification_group": "construction-semantic-curves"
     },
     {
       "id": "menu:construction/metrics-and-validation",
@@ -4458,7 +4716,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-metrics",
-      "label_es": "Métricas y validación"
+      "label_es": "Métricas y validación",
+      "classification_group": "construction-metrics"
     },
     {
       "id": "menu:construction/similarity-transformations",
@@ -4480,7 +4739,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-transforms",
-      "label_es": "Transformaciones de semejanza"
+      "label_es": "Transformaciones de semejanza",
+      "classification_group": "construction-similarity"
     },
     {
       "id": "menu:construction/annotations-and-media",
@@ -4500,7 +4760,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-annotations-media",
-      "label_es": "Anotaciones y medios"
+      "label_es": "Anotaciones y medios",
+      "classification_group": "construction-annotations"
     },
     {
       "id": "menu:construction/manual-projection-procedures",
@@ -4520,7 +4781,8 @@
       },
       "notes": "The bilingual menu table uses the localized labels in profile order; the related chapter or tool reference explains use.",
       "profile_submenu": "construction-manual-projection",
-      "label_es": "Procedimientos de proyección manual"
+      "label_es": "Procedimientos de proyección manual",
+      "classification_group": "construction-projection"
     },
     {
       "id": "menu:options",
@@ -4533,17 +4795,20 @@
           "command-and-workflow-reference/16.6",
           "interface-and-workflow/3.1",
           "getting-started/2.3",
-          "getting-started/2.4"
+          "getting-started/2.4",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "command-and-workflow-reference/16.6",
           "interface-and-workflow/3.1",
           "getting-started/2.3",
-          "getting-started/2.4"
+          "getting-started/2.4",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The preferences reference gives the access route, applicable scope and available settings.",
-      "profile_menu": "options"
+      "profile_menu": "options",
+      "classification_group": "options-menu"
     },
     {
       "id": "menu:options/algebra-display",
@@ -4554,16 +4819,19 @@
       "anchors": {
         "en": [
           "command-and-workflow-reference/16.6",
-          "interface-and-workflow/3.1"
+          "interface-and-workflow/3.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "command-and-workflow-reference/16.6",
-          "interface-and-workflow/3.1"
+          "interface-and-workflow/3.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "The preferences reference gives the access route, applicable scope and available settings.",
       "profile_submenu": "options-algebra-display",
-      "label_es": "Presentación de Álgebra"
+      "label_es": "Presentación de Álgebra",
+      "classification_group": "options-algebra-display"
     },
     {
       "id": "menu:options/sort-by",
@@ -4574,14 +4842,17 @@
       "anchors": {
         "en": [
           "command-and-workflow-reference/16.6",
-          "presentation-and-visualization/12.5"
+          "presentation-and-visualization/12.5",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "command-and-workflow-reference/16.6",
-          "presentation-and-visualization/12.5"
+          "presentation-and-visualization/12.5",
+          "interface-and-workflow/3.2"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "options-sort"
     },
     {
       "id": "menu:options/rounding",
@@ -4591,13 +4862,16 @@
       "coverage": "COVERED",
       "anchors": {
         "en": [
-          "command-and-workflow-reference/16.6"
+          "command-and-workflow-reference/16.6",
+          "interface-and-workflow/3.2"
         ],
         "es": [
-          "command-and-workflow-reference/16.6"
+          "command-and-workflow-reference/16.6",
+          "interface-and-workflow/3.2"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "options-inherited"
     },
     {
       "id": "menu:options/labeling",
@@ -4607,13 +4881,16 @@
       "coverage": "COVERED",
       "anchors": {
         "en": [
-          "command-and-workflow-reference/16.6"
+          "command-and-workflow-reference/16.6",
+          "interface-and-workflow/3.2"
         ],
         "es": [
-          "command-and-workflow-reference/16.6"
+          "command-and-workflow-reference/16.6",
+          "interface-and-workflow/3.2"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "options-inherited"
     },
     {
       "id": "menu:options/text-font-size",
@@ -4626,16 +4903,19 @@
           "command-and-workflow-reference/16.6",
           "getting-started/2.6",
           "basic-geometry/5.6",
-          "presentation-and-visualization/12.2"
+          "presentation-and-visualization/12.2",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "command-and-workflow-reference/16.6",
           "getting-started/2.6",
           "basic-geometry/5.6",
-          "presentation-and-visualization/12.2"
+          "presentation-and-visualization/12.2",
+          "interface-and-workflow/3.2"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "options-inherited"
     },
     {
       "id": "menu:options/save-settings",
@@ -4645,13 +4925,16 @@
       "coverage": "COVERED",
       "anchors": {
         "en": [
-          "command-and-workflow-reference/16.6"
+          "command-and-workflow-reference/16.6",
+          "interface-and-workflow/3.2"
         ],
         "es": [
-          "command-and-workflow-reference/16.6"
+          "command-and-workflow-reference/16.6",
+          "interface-and-workflow/3.2"
         ]
       },
-      "notes": "The preferences reference gives the access route, applicable scope and available settings."
+      "notes": "The preferences reference gives the access route, applicable scope and available settings.",
+      "classification_group": "options-inherited"
     },
     {
       "id": "menu:automation",
@@ -4676,7 +4959,8 @@
         ]
       },
       "notes": "The menu table lists the product entries and the reference explains their use.",
-      "profile_menu": "automation"
+      "profile_menu": "automation",
+      "classification_group": "automation-menu"
     },
     {
       "id": "menu:automation/user-tools",
@@ -4687,14 +4971,17 @@
       "anchors": {
         "en": [
           "user-tools-and-automation/13.1",
-          "user-tools-and-automation/13.2"
+          "user-tools-and-automation/13.2",
+          "interface-and-workflow/3.2"
         ],
         "es": [
           "user-tools-and-automation/13.1",
-          "user-tools-and-automation/13.2"
+          "user-tools-and-automation/13.2",
+          "interface-and-workflow/3.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for User tools, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for User tools, the required inputs or choices, and the observable effect.",
+      "classification_group": "automation-tools"
     },
     {
       "id": "menu:automation/user-tools/document-tools",
@@ -4704,13 +4991,16 @@
       "coverage": "COVERED",
       "anchors": {
         "en": [
-          "user-tools-and-automation/13.2"
+          "user-tools-and-automation/13.2",
+          "interface-and-workflow/3.2"
         ],
         "es": [
-          "user-tools-and-automation/13.2"
+          "user-tools-and-automation/13.2",
+          "interface-and-workflow/3.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Document tools, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Document tools, the required inputs or choices, and the observable effect.",
+      "classification_group": "automation-tools"
     },
     {
       "id": "menu:automation/user-tools/geocedg-library",
@@ -4720,13 +5010,16 @@
       "coverage": "COVERED",
       "anchors": {
         "en": [
-          "user-tools-and-automation/13.2"
+          "user-tools-and-automation/13.2",
+          "interface-and-workflow/3.2"
         ],
         "es": [
-          "user-tools-and-automation/13.2"
+          "user-tools-and-automation/13.2",
+          "interface-and-workflow/3.2"
         ]
       },
-      "notes": "The installed library is a group of tools under the User tools menu. Its entries activate an available tool; section 16.8 lists its input order and outputs."
+      "notes": "The installed library is a group of tools under the User tools menu. Its entries activate an available tool; section 16.8 lists its input order and outputs.",
+      "classification_group": "automation-library"
     },
     {
       "id": "menu:help",
@@ -4751,7 +5044,8 @@
         ]
       },
       "notes": "The menu table lists the product entries and the reference explains their use.",
-      "profile_menu": "help"
+      "profile_menu": "help",
+      "classification_group": "help-menu"
     },
     {
       "id": "menu:context/geocedg-submenu",
@@ -4771,7 +5065,8 @@
           "semantic-points-intersections-materialization/8.4"
         ]
       },
-      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable."
+      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable.",
+      "classification_group": "geocedg-context"
     },
     {
       "id": "menu:context/make-offset-draggable",
@@ -4789,7 +5084,8 @@
           "lengths-and-measurements/9.5"
         ]
       },
-      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable."
+      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable.",
+      "classification_group": "make-offset-draggable"
     },
     {
       "id": "menu:context/inherited-object-menu",
@@ -4805,7 +5101,8 @@
           "command-and-workflow-reference/16.6"
         ]
       },
-      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable."
+      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable.",
+      "classification_group": "inherited-context"
     },
     {
       "id": "menu:status-bar",
@@ -4827,7 +5124,8 @@
           "presentation-and-visualization/12.5"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Status bar (Layer, units, scale, notices), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Status bar (Layer, units, scale, notices), the required inputs or choices, and the observable effect.",
+      "classification_group": "status-bar"
     },
     {
       "id": "menu:style-bar",
@@ -4847,7 +5145,8 @@
           "presentation-and-visualization/12.3"
         ]
       },
-      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable."
+      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable.",
+      "classification_group": "graphics-style"
     },
     {
       "id": "menu:toolbar/edit-selection",
@@ -4868,7 +5167,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "edit-selection"
+      "profile_group": "edit-selection",
+      "classification_group": "toolbar-selection"
     },
     {
       "id": "menu:toolbar/construction-lists",
@@ -4889,7 +5189,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "construction-lists"
+      "profile_group": "construction-lists",
+      "classification_group": "toolbar-lists"
     },
     {
       "id": "menu:toolbar/construction-relations",
@@ -4908,7 +5209,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "construction-relations"
+      "profile_group": "construction-relations",
+      "classification_group": "toolbar-relations"
     },
     {
       "id": "menu:toolbar/construction-lines-vectors",
@@ -4927,7 +5229,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "construction-lines-vectors"
+      "profile_group": "construction-lines-vectors",
+      "classification_group": "toolbar-lines"
     },
     {
       "id": "menu:toolbar/construction-polygons",
@@ -4946,7 +5249,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "construction-polygons"
+      "profile_group": "construction-polygons",
+      "classification_group": "toolbar-polygons"
     },
     {
       "id": "menu:toolbar/construction-derived",
@@ -4965,7 +5269,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "construction-derived"
+      "profile_group": "construction-derived",
+      "classification_group": "toolbar-derived"
     },
     {
       "id": "menu:toolbar/construction-circles-conics",
@@ -4984,7 +5289,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "construction-circles-conics"
+      "profile_group": "construction-circles-conics",
+      "classification_group": "toolbar-conics"
     },
     {
       "id": "menu:toolbar/construction-semantic-curves",
@@ -5005,7 +5311,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "construction-semantic-curves"
+      "profile_group": "construction-semantic-curves",
+      "classification_group": "toolbar-semantic"
     },
     {
       "id": "menu:toolbar/construction-metrics",
@@ -5024,7 +5331,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "construction-metrics"
+      "profile_group": "construction-metrics",
+      "classification_group": "toolbar-metrics"
     },
     {
       "id": "menu:toolbar/construction-transforms",
@@ -5043,7 +5351,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "construction-transforms"
+      "profile_group": "construction-transforms",
+      "classification_group": "toolbar-transforms"
     },
     {
       "id": "menu:toolbar/construction-parameters",
@@ -5062,7 +5371,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "construction-parameters"
+      "profile_group": "construction-parameters",
+      "classification_group": "toolbar-parameters"
     },
     {
       "id": "menu:toolbar/view-navigation",
@@ -5083,7 +5393,8 @@
         ]
       },
       "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
-      "profile_group": "view-navigation"
+      "profile_group": "view-navigation",
+      "classification_group": "toolbar-navigation"
     },
     {
       "id": "document:format/cedg-native",
@@ -5101,7 +5412,8 @@
           "documents/4.3"
         ]
       },
-      "notes": "The cited sections give the route or syntax for .cedg native document, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for .cedg native document, the required inputs or choices, and the observable effect.",
+      "classification_group": "native-format"
     },
     {
       "id": "document:format/ggb-compatibility-input",
@@ -5119,7 +5431,8 @@
           "documents/4.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for .ggb compatibility input, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for .ggb compatibility input, the required inputs or choices, and the observable effect.",
+      "classification_group": "compatibility-ggb"
     },
     {
       "id": "document:open/ggt-html",
@@ -5137,7 +5450,8 @@
           "documents/4.2"
         ]
       },
-      "notes": "The file reference identifies the relevant file types, syntax or output, and its constraints."
+      "notes": "The file reference identifies the relevant file types, syntax or output, and its constraints.",
+      "classification_group": "open-compatibility"
     },
     {
       "id": "document:open/off-refused",
@@ -5153,7 +5467,8 @@
           "documents/4.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for OFF files refused, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for OFF files refused, the required inputs or choices, and the observable effect.",
+      "classification_group": "off-limit"
     },
     {
       "id": "document:export/png",
@@ -5169,7 +5484,8 @@
           "documents/4.5"
         ]
       },
-      "notes": "The cited sections give the route or syntax for PNG, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for PNG, the required inputs or choices, and the observable effect.",
+      "classification_group": "image-formats"
     },
     {
       "id": "document:export/pdf",
@@ -5187,7 +5503,8 @@
           "known-limitations"
         ]
       },
-      "notes": "The cited sections give the route or syntax for PDF (incl. Export Text as Shapes), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for PDF (incl. Export Text as Shapes), the required inputs or choices, and the observable effect.",
+      "classification_group": "image-formats"
     },
     {
       "id": "document:export/svg",
@@ -5203,7 +5520,8 @@
           "documents/4.5"
         ]
       },
-      "notes": "The cited sections give the route or syntax for SVG, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for SVG, the required inputs or choices, and the observable effect.",
+      "classification_group": "image-formats"
     },
     {
       "id": "document:export/emf-emfplus",
@@ -5219,7 +5537,8 @@
           "documents/4.5"
         ]
       },
-      "notes": "The cited sections give the route or syntax for EMF and EMF+, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for EMF and EMF+, the required inputs or choices, and the observable effect.",
+      "classification_group": "image-formats"
     },
     {
       "id": "document:export/clipboard-image",
@@ -5237,7 +5556,8 @@
           "command-and-workflow-reference/16.4"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Copy Graphics View as image (Ctrl+Shift+C), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Copy Graphics View as image (Ctrl+Shift+C), the required inputs or choices, and the observable effect.",
+      "classification_group": "image-formats"
     },
     {
       "id": "document:drawing-scale",
@@ -5257,7 +5577,8 @@
           "documents/4.7"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Drawing scale a:b, the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Drawing scale a:b, the required inputs or choices, and the observable effect.",
+      "classification_group": "drawing-scale"
     },
     {
       "id": "document:hidden-layers",
@@ -5273,7 +5594,8 @@
           "presentation-and-visualization/12.5"
         ]
       },
-      "notes": "The cited sections give the route or syntax for Hidden layers (Algebra view, Sort by Layer, eye), the required inputs or choices, and the observable effect."
+      "notes": "The cited sections give the route or syntax for Hidden layers (Algebra view, Sort by Layer, eye), the required inputs or choices, and the observable effect.",
+      "classification_group": "layer-visibility"
     },
     {
       "id": "document:export/command-line",
@@ -5291,7 +5613,8 @@
           "documents/4.5"
         ]
       },
-      "notes": "The file reference identifies the relevant file types, syntax or output, and its constraints."
+      "notes": "The file reference identifies the relevant file types, syntax or output, and its constraints.",
+      "classification_group": "command-line-export"
     },
     {
       "id": "document:export/scripting-api",
@@ -5309,7 +5632,8 @@
           "documents/4.5"
         ]
       },
-      "notes": "The file reference identifies the relevant file types, syntax or output, and its constraints."
+      "notes": "The file reference identifies the relevant file types, syntax or output, and its constraints.",
+      "classification_group": "script-export"
     },
     {
       "id": "document:export/not-offered",
@@ -5345,7 +5669,8 @@
           "presentation-and-visualization/12.5"
         ]
       },
-      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable."
+      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable.",
+      "classification_group": "edit-copy-window"
     },
     {
       "id": "document:new-window",
@@ -5365,7 +5690,8 @@
           "user-tools-and-automation/13.3"
         ]
       },
-      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable."
+      "notes": "The reference explains the focus or selection prerequisite, the available actions and the keyboard alternative where applicable.",
+      "classification_group": "edit-copy-window"
     },
     {
       "id": "document:deferred/sheet-export",
@@ -5393,14 +5719,17 @@
       "coverage": "COVERED",
       "anchors": {
         "en": [
-          "semantic-points-intersections-materialization/8.1"
+          "semantic-points-intersections-materialization/8.1",
+          "interface-and-workflow/3.2"
         ],
         "es": [
-          "semantic-points-intersections-materialization/8.1"
+          "semantic-points-intersections-materialization/8.1",
+          "interface-and-workflow/3.2"
         ]
       },
       "notes": "Explains selection of the locus and existing Q, the contextual confirmation and refusal boundaries.",
-      "label_es": "Punto sobre Locus V2 desde referencia"
+      "label_es": "Punto sobre Locus V2 desde referencia",
+      "classification_group": "point-curve-tools"
     },
     {
       "id": "action:presentation.control-layout",
@@ -5421,7 +5750,8 @@
         ]
       },
       "notes": "Covers the four families, anchors, attachment, appearance, overlap, detach, persistence and transfer restrictions.",
-      "label_es": "Disposición de controles"
+      "label_es": "Disposición de controles",
+      "classification_group": "control-layout"
     },
     {
       "id": "command:Length/rich-metric-scalar",
@@ -5438,7 +5768,8 @@
           "lengths-and-measurements/9.1"
         ]
       },
-      "notes": "Converts a rich LocusLength result to its scalar value when available."
+      "notes": "Converts a rich LocusLength result to its scalar value when available.",
+      "classification_group": "semantic-length-scalar"
     },
     {
       "id": "command:inherited/algebra-input",
@@ -5457,7 +5788,8 @@
           "command-and-workflow-reference/16.3"
         ]
       },
-      "notes": "Help → Command list is the live reference for every offered inherited Algebra Input command and its localized syntax body. The command head stays English."
+      "notes": "Help → Command list is the live reference for every offered inherited Algebra Input command and its localized syntax body. The command head stays English.",
+      "classification_group": "inherited-commands"
     },
     {
       "id": "command:inherited/cas",
@@ -5476,7 +5808,8 @@
           "command-and-workflow-reference/16.3"
         ]
       },
-      "notes": "The CAS view exposes its own command completion and syntax when available."
+      "notes": "The CAS view exposes its own command completion and syntax when available.",
+      "classification_group": "inherited-commands"
     },
     {
       "id": "menu:view/configure-navigation-zoom",
@@ -5495,7 +5828,8 @@
           "presentation-and-visualization/12.4"
         ]
       },
-      "notes": "Opens the zoom factor and shortcut dialog, including validation, reset and cancellation."
+      "notes": "Opens the zoom factor and shortcut dialog, including validation, reset and cancellation.",
+      "classification_group": "view-navigation"
     },
     {
       "id": "menu:context/reference-point",
@@ -5512,7 +5846,8 @@
           "semantic-points-intersections-materialization/8.1"
         ]
       },
-      "notes": "A contextual route for a single defined supported object; the guide distinguishes admitted native and semantic sources."
+      "notes": "A contextual route for a single defined supported object; the guide distinguishes admitted native and semantic sources.",
+      "classification_group": "reference-context"
     },
     {
       "id": "menu:context/control-layout",
@@ -5529,7 +5864,8 @@
           "presentation-and-visualization/12.6"
         ]
       },
-      "notes": "The Graphics 1 manager provides membership, visibility, anchor and appearance actions. New panels stack at the front."
+      "notes": "The Graphics 1 manager provides membership, visibility, anchor and appearance actions. New panels stack at the front.",
+      "classification_group": "control-layout"
     },
     {
       "id": "menu:guide/search",
@@ -5546,7 +5882,8 @@
           "getting-started/2.8"
         ]
       },
-      "notes": "The guide describes finding text, opening a result, keyboard access, clearing and language selection."
+      "notes": "The guide describes finding text, opening a result, keyboard access, clearing and language selection.",
+      "classification_group": "integrated-guide"
     },
     {
       "id": "preference:feature/cedg.presentation.control-layout",
@@ -5563,7 +5900,8 @@
           "presentation-and-visualization/12.6"
         ]
       },
-      "notes": "Covers availability in Graphics 1 and the four supported control families."
+      "notes": "Covers availability in Graphics 1 and the four supported control families.",
+      "classification_group": "control-layout"
     },
     {
       "id": "preference:feature/cedg.document.expert-insertion",
@@ -5580,7 +5918,8 @@
           "documents/4.2"
         ]
       },
-      "notes": "Covers availability, certified versus expert paths and review and confirmation."
+      "notes": "Covers availability, certified versus expert paths and review and confirmation.",
+      "classification_group": "expert-insertion"
     },
     {
       "id": "interaction:protocol/row-height",
@@ -5597,7 +5936,8 @@
           "interface-and-workflow/3.8"
         ]
       },
-      "notes": "The protocol adjusts row height automatically for visible content; the separate layout preference changes its font size."
+      "notes": "The protocol adjusts row height automatically for visible content; the separate layout preference changes its font size.",
+      "classification_group": "protocol-height"
     },
     {
       "id": "interaction:parallel-perpendicular-reference-memory",
@@ -5614,7 +5954,8 @@
           "basic-geometry/5.2"
         ]
       },
-      "notes": "Documents independent session memory, canonical axes and loss or suspension when the reference is ineligible."
+      "notes": "Documents independent session memory, canonical axes and loss or suspension when the reference is ineligible.",
+      "classification_group": "reference-memory"
     },
     {
       "id": "interaction:orientation/eligible-results",
@@ -5633,7 +5974,8 @@
           "presentation-and-visualization/12.3"
         ]
       },
-      "notes": "Explains which lines receive orientation and what the cue means."
+      "notes": "Explains which lines receive orientation and what the cue means.",
+      "classification_group": "orientation-cue"
     },
     {
       "id": "interaction:algebra/search",
@@ -5650,7 +5992,8 @@
           "interface-and-workflow/3.7"
         ]
       },
-      "notes": "Gives the search controls and explains matches and context."
+      "notes": "Gives the search controls and explains matches and context.",
+      "classification_group": "algebra-find"
     },
     {
       "id": "interaction:algebra/row-help",
@@ -5667,7 +6010,8 @@
           "interface-and-workflow/3.7"
         ]
       },
-      "notes": "Gives the hover route and explains available definition and value information."
+      "notes": "Gives the hover route and explains available definition and value information.",
+      "classification_group": "algebra-help"
     },
     {
       "id": "interaction:argument-capture",
@@ -5684,7 +6028,8 @@
           "interface-and-workflow/3.9"
         ]
       },
-      "notes": "Explains supported dialogs, insertion at the caret from Algebra, cancellation and the remaining Graphics 1 slider pick limit."
+      "notes": "Explains supported dialogs, insertion at the caret from Algebra, cancellation and the remaining Graphics 1 slider pick limit.",
+      "classification_group": "numeric-capture"
     },
     {
       "id": "interaction:intersection/ordinary-badge",
@@ -5701,7 +6046,8 @@
           "presentation-and-visualization/12.7"
         ]
       },
-      "notes": "Distinguishes an ordinary intersection marker from rich result candidates."
+      "notes": "Distinguishes an ordinary intersection marker from rich result candidates.",
+      "classification_group": "ordinary-intersection-badge"
     },
     {
       "id": "interaction:style/thickness-escape",
@@ -5718,7 +6064,8 @@
           "presentation-and-visualization/12.7"
         ]
       },
-      "notes": "Escape closes the thickness chooser without accepting the edit in progress."
+      "notes": "Escape closes the thickness chooser without accepting the edit in progress.",
+      "classification_group": "numeric-thickness"
     },
     {
       "id": "interaction:presentation/label-drag",
@@ -5735,7 +6082,8 @@
           "presentation-and-visualization/12.7"
         ]
       },
-      "notes": "Explains the Move-mode gesture, effect on the label and persistence."
+      "notes": "Explains the Move-mode gesture, effect on the label and persistence.",
+      "classification_group": "drag-label"
     },
     {
       "id": "interaction:native-point/reference-placement",
@@ -5752,7 +6100,8 @@
           "semantic-points-intersections-materialization/8.1"
         ]
       },
-      "notes": "Documents admitted native path/region families, exceptions and safe refusal."
+      "notes": "Documents admitted native path/region families, exceptions and safe refusal.",
+      "classification_group": "native-semantic-placement"
     },
     {
       "id": "document:controls/native-and-classic",
@@ -5771,7 +6120,8 @@
           "classic-compatibility-and-diagnostics/14.2"
         ]
       },
-      "notes": "Covers .cedg round trip, Undo/Redo and Classic fallback positions, with legacy save losses and the checkbox/slider exceptions."
+      "notes": "Covers .cedg round trip, Undo/Redo and Classic fallback positions, with legacy save losses and the checkbox/slider exceptions.",
+      "classification_group": "control-layout"
     },
     {
       "id": "document:controls/insertion-compatibility",
@@ -5790,7 +6140,8 @@
           "documents/4.2"
         ]
       },
-      "notes": "Explains that panel sources are refused, and receiver preservation is limited to certified paths."
+      "notes": "Explains that panel sources are refused, and receiver preservation is limited to certified paths.",
+      "classification_group": "control-layout"
     },
     {
       "id": "interaction:controls/organize",
@@ -5807,7 +6158,8 @@
           "presentation-and-visualization/12.6"
         ]
       },
-      "notes": "Explains the four families, fixed and world anchoring, attachment and detachment, properties, stacking and click coverage."
+      "notes": "Explains the four families, fixed and world anchoring, attachment and detachment, properties, stacking and click coverage.",
+      "classification_group": "control-layout"
     }
   ],
   "totals": {
@@ -5815,5 +6167,1670 @@
     "PARTIAL": 0,
     "MISSING": 0,
     "EXCLUDED_WITH_REASON": 12
+  },
+  "classification": {
+    "upstream_commit": "9b93256b7df401ff056c37b502d82df4d72b1522",
+    "rule": "A group ties each covered entry to its visible marks and wording in the same section of both guides. An exclamation mark alone denotes an unavailable operation or an availability boundary. Excluded entries have no group.",
+    "groups": {
+      "file-menu": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "**File**",
+          "es": "**Archivo**"
+        }
+      },
+      "file-basic": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "New file and Close",
+          "es": "Nuevo archivo y Cerrar"
+        }
+      },
+      "file-recent": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Open recent…",
+          "es": "Abrir reciente…"
+        }
+      },
+      "file-native": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Open…, Save and Save as… with the native document policy",
+          "es": "Abrir…, Guardar y Guardar como… con la política de documento nativo"
+        }
+      },
+      "file-picture-print": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Print preview…, Graphics View as Picture…, PSTricks…, PGF/TikZ… and Asymptote… use the GeoCeDG export area",
+          "es": "Vista previa de impresión…, Vista gráfica como imagen…, PSTricks…, PGF/TikZ… y Asymptote… usan el área de exportación de GeoCeDG"
+        }
+      },
+      "file-dxf": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Export 2D geometry as DXF (experimental)…",
+          "es": "Exportar geometría 2D como DXF (experimental)…"
+        }
+      },
+      "file-area": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "Define export area…, Show export area, Clear export area, Define ISO A export area… and Use selected ISO A border",
+          "es": "Definir área de exportación…, Mostrar área de exportación, Borrar área de exportación, Definir área de exportación ISO A… y Usar el marco ISO A seleccionado"
+        }
+      },
+      "file-export-points": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Use Export_1 and Export_2 activates the two-point crop explicitly",
+          "es": "Usar Export_1 y Export_2 activa explícitamente el recorte entre los dos puntos"
+        }
+      },
+      "file-insert": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "**Insert** brings together certified insertion, expert review and style transfer (section 4.2)",
+          "es": "**Insertar** reúne la inserción certificada, la revisión experta y la transferencia de estilos (sección 4.2)"
+        }
+      },
+      "edit-menu": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "**Edit**",
+          "es": "**Editar**"
+        }
+      },
+      "edit-basic": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Undo, Redo, Move, Move around Point, Select Objects, Attach / Detach Point and Delete",
+          "es": "Deshacer, Rehacer, Mueve, Gira en torno a un punto, Seleccionar objetos, Limitar/liberar punto y Borrar"
+        }
+      },
+      "edit-layer": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "Working Layer selects the layer for new objects in the current session",
+          "es": "Capa de trabajo elige la capa de los objetos nuevos de la sesión"
+        }
+      },
+      "view-menu": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "**View**",
+          "es": "**Vista**"
+        }
+      },
+      "view-views": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "**Views** toggles Algebra, Graphics 2, Spreadsheet, CAS and Object Properties",
+          "es": "**Views** activa o desactiva Álgebra, Graphics2 (segunda vista gráfica), Hoja de Cálculo, Cálculo Simbólico (CAS) y Propiedades del objeto"
+        }
+      },
+      "view-style": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "**Visibility and style** includes orientation and control layout",
+          "es": "**Visibilidad y estilo** incluye la orientación y la disposición de controles"
+        }
+      },
+      "view-style-inherited": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Show / Hide Object, Show / Hide Label and Copy Visual Style",
+          "es": "Mostrar/ocultar objeto, Mostrar/ocultar etiqueta y Copiar estilo visual"
+        }
+      },
+      "view-orientation": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Show orientation cue applies to eligible results",
+          "es": "Mostrar indicación de orientación se aplica a resultados admitidos"
+        }
+      },
+      "view-navigation": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "**Navigation** includes Zoom to rectangle, Zoom Factor In, Zoom Factor Out and Configure navigation zoom…",
+          "es": "**Navegación** incluye Zoom por rectángulo, Acercar por factor, Alejar por factor y Configurar zoom de navegación…"
+        }
+      },
+      "view-navigation-inherited": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Move Graphics View, Zoom In, Zoom Out, Standard view and Show all objects",
+          "es": "Desplaza Vista Gráfica, Aproximar, Alejar, Vista estándar y Mostrar todos los objetos"
+        }
+      },
+      "view-inspection": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "**Construction inspection** includes the Construction protocol with adaptive row height",
+          "es": "**Inspección de la construcción** incluye el Protocolo de construcción con altura de filas adaptativa"
+        }
+      },
+      "view-step-bar": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Show construction navigation bar",
+          "es": "Mostrar barra de navegación de la construcción"
+        }
+      },
+      "view-inspect-definition": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "Inspect definition… opens the definition without changing Algebra display mode",
+          "es": "Inspeccionar definición… abre la definición sin cambiar el modo de Álgebra"
+        }
+      },
+      "view-restore": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "**Restore Construction layout** restores the CeDG Construction workspace",
+          "es": "**Restaurar distribución de Construcción** restaura el espacio de Construcción CeDG"
+        }
+      },
+      "construction-menu": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "**Construction**",
+          "es": "**Construcción**"
+        }
+      },
+      "options-menu": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "**Options**",
+          "es": "**Opciones**"
+        }
+      },
+      "options-algebra-display": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "**Algebra display** (Value, Description, Definition)",
+          "es": "**Presentación de Álgebra** (Valor, Descripción, Definición)"
+        }
+      },
+      "options-inherited": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Rounding, Labeling, Text font size, Axes, Grid and Save Settings",
+          "es": "Redondeo, Etiquetado, Tamaño de fuente de Texto, Ejes, Cuadrícula y Guardar la configuración"
+        }
+      },
+      "options-sort": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Sort by groups objects by dependency, type, construction order or layer",
+          "es": "Ordenar por agrupa los objetos por dependencia, tipo, orden de construcción o capa"
+        }
+      },
+      "options-preferences": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Preferences… includes Layout & Presentation",
+          "es": "Preferencias… incluye Disposición y presentación"
+        }
+      },
+      "options-language": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Product language… switches between English and Spanish",
+          "es": "Idioma del producto… alterna entre inglés y español"
+        }
+      },
+      "options-rich": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Show solution markers and Auto-create eligible points for new explicit queries",
+          "es": "Mostrar marcadores de soluciones y Crear automáticamente puntos admisibles de nuevas consultas explícitas"
+        }
+      },
+      "options-units": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "Document units…",
+          "es": "Unidades del documento…"
+        }
+      },
+      "automation-menu": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "**Automation**",
+          "es": "**Automatización**"
+        }
+      },
+      "automation-input": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Algebra Input and Object properties and scripting…",
+          "es": "Entrada algebraica y Propiedades y guiones del objeto…"
+        }
+      },
+      "automation-lab": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Legacy laboratory (separate session)",
+          "es": "Laboratorio heredado (sesión separada)"
+        }
+      },
+      "automation-tools": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "**User tools** includes Manage user tools… and **Document tools**",
+          "es": "**Herramientas de usuario** incluye Gestionar herramientas de usuario… y **Herramientas del documento**"
+        }
+      },
+      "automation-library": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "The [GeoCeDG library](#user-tools-and-automation/13.2) offers curated tools",
+          "es": "La [Biblioteca GeoCeDG](#user-tools-and-automation/13.2) ofrece herramientas seleccionadas"
+        }
+      },
+      "help-menu": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "**Help**",
+          "es": "**Ayuda**"
+        }
+      },
+      "help-lookup": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Input help, Command list, Keyboard shortcuts and About GeoCeDG",
+          "es": "Ayuda de entrada, Lista de comandos, Atajos de teclado y Acerca de GeoCeDG"
+        }
+      },
+      "current-tool-help": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Current tool help includes GeoCeDG tools",
+          "es": "Ayuda de herramienta actual incluye las herramientas de GeoCeDG"
+        }
+      },
+      "help-integrated": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "GeoCeDG user guide opens the integrated edition",
+          "es": "Guía de usuario de GeoCeDG abre la edición integrada"
+        }
+      },
+      "construction-points": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Points",
+          "es": "Puntos"
+        }
+      },
+      "point-modes": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "Point and Point on Object include semantic curve placement",
+          "es": "Punto y Punto en objeto incluyen la colocación sobre curvas semánticas"
+        }
+      },
+      "midpoint": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Midpoint or Center",
+          "es": "Medio o Centro"
+        }
+      },
+      "construction-lines": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Lines and vectors",
+          "es": "Rectas y vectores"
+        }
+      },
+      "construction-polygons": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Polygons",
+          "es": "Polígonos"
+        }
+      },
+      "construction-lists": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "List tools",
+          "es": "Herramientas de listas"
+        }
+      },
+      "construction-derived": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Derived constructions",
+          "es": "Construcciones derivadas"
+        }
+      },
+      "parallel-perpendicular": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Parallel Line and Perpendicular Line can remember their references",
+          "es": "Paralela y Perpendicular pueden recordar sus referencias"
+        }
+      },
+      "bisectors": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Perpendicular Bisector and Angle Bisector",
+          "es": "Mediatriz y Bisectriz"
+        }
+      },
+      "construction-parameters": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Parameters and drivers",
+          "es": "Parámetros y controladores"
+        }
+      },
+      "parameter-tools": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Slider, Angle with Given Size, Check Box, Button, Input Box, Animate selected object and Text",
+          "es": "Deslizador, Ángulo dada su amplitud, Casilla de control, Botón, Casilla de Entrada, Animar objeto seleccionado y Texto"
+        }
+      },
+      "construction-relations": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Relations and intersections",
+          "es": "Relaciones e intersecciones"
+        }
+      },
+      "intersect-tool": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "Intersect supports semantic curves",
+          "es": "Intersección admite curvas semánticas"
+        }
+      },
+      "ordinary-relations": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Tangents, Relation and Polar or Diameter Line",
+          "es": "Tangentes, Relación y Polar o Conjugado"
+        }
+      },
+      "rich-intersection-tools": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Inspect rich result, Create selected intersection point, Create selected intersection points and Create all eligible intersection points",
+          "es": "Inspeccionar resultado rico, Crear punto de intersección seleccionado, Crear puntos de intersección seleccionados y Crear todos los puntos de intersección admisibles"
+        }
+      },
+      "construction-conics": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Circles and conics",
+          "es": "Círculos y cónicas"
+        }
+      },
+      "construction-semantic-curves": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Semantic curves",
+          "es": "Curvas semánticas"
+        }
+      },
+      "locus-tool": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Locus V2",
+          "es": "Locus V2"
+        }
+      },
+      "point-curve-tools": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Point on Locus V2 from reference and Point on semantic curve (explicit address)",
+          "es": "Punto sobre Locus V2 desde referencia y Punto sobre curva semántica (dirección explícita)"
+        }
+      },
+      "spline-tools": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Spline V2, Spline V2 with degree and Closed Spline V2",
+          "es": "Spline V2, Spline V2 con grado y Spline V2 cerrada"
+        }
+      },
+      "semantic-inspector": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Inspect semantic curve definition…",
+          "es": "Inspeccionar definición de curva semántica…"
+        }
+      },
+      "construction-metrics": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Metrics and validation",
+          "es": "Métricas y validación"
+        }
+      },
+      "ordinary-metrics": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Angle, Distance or Length, Area and Slope",
+          "es": "Ángulo, Distancia o Longitud, Área y Pendiente"
+        }
+      },
+      "dimension-tools": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "Aligned Dimension and Linear Dimension",
+          "es": "Cota alineada y Cota lineal"
+        }
+      },
+      "locus-length-tools": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Total semantic locus length and Partial semantic locus length (experimental)",
+          "es": "Longitud semántica total del lugar geométrico y Longitud semántica parcial del lugar geométrico (experimental)"
+        }
+      },
+      "construction-similarity": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Similarity transformations",
+          "es": "Transformaciones de semejanza"
+        }
+      },
+      "similarity-tools": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "Reflect about Point, Reflect about Line, Translate by Vector, Rotate around Point and Dilate from Point have specific support for semantic curves",
+          "es": "Simetría central, Simetría axial (reflexión), Traslación, Rotación y Homotecia tienen reglas específicas para curvas semánticas"
+        }
+      },
+      "construction-annotations": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Annotations and media",
+          "es": "Anotaciones y medios"
+        }
+      },
+      "image-tool": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Image",
+          "es": "Imagen"
+        }
+      },
+      "border-tool": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "ISO A Border",
+          "es": "Marco ISO A"
+        }
+      },
+      "construction-projection": {
+        "anchor": "interface-and-workflow/3.2",
+        "marks": [
+          "!"
+        ],
+        "text": {
+          "en": "Manual projection procedures",
+          "es": "Procedimientos de proyección manual"
+        },
+        "availability_only": true
+      },
+      "toolbar-selection": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Move",
+          "es": "Mueve"
+        }
+      },
+      "toolbar-lists": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "List tools",
+          "es": "Herramientas de listas"
+        }
+      },
+      "toolbar-relations": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Points and intersection",
+          "es": "Puntos e intersección"
+        }
+      },
+      "toolbar-lines": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Lines and vectors",
+          "es": "Rectas y vectores"
+        }
+      },
+      "toolbar-polygons": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Polygons",
+          "es": "Polígonos"
+        }
+      },
+      "toolbar-derived": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Derived constructions",
+          "es": "Construcciones derivadas"
+        }
+      },
+      "toolbar-conics": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Circles and conics",
+          "es": "Círculos y cónicas"
+        }
+      },
+      "toolbar-semantic": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Semantic curves",
+          "es": "Curvas semánticas"
+        }
+      },
+      "toolbar-metrics": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Angles and lengths",
+          "es": "Ángulos y longitudes"
+        }
+      },
+      "toolbar-transforms": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Transformations",
+          "es": "Transformaciones"
+        }
+      },
+      "toolbar-parameters": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Parameters and drivers",
+          "es": "Parámetros y controladores"
+        }
+      },
+      "toolbar-navigation": {
+        "anchor": "interface-and-workflow/3.3",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Navigation",
+          "es": "Navegación"
+        }
+      },
+      "integrated-guide": {
+        "anchor": "getting-started/2.8",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "The guide includes a section tree, internal links and local search",
+          "es": "La guía incorpora árbol de apartados, enlaces internos y búsqueda local"
+        }
+      },
+      "presentation-settings": {
+        "anchor": "getting-started/2.4",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Layout & Presentation brings the inherited layout settings together with GeoCeDG presentation controls",
+          "es": "Disposición y presentación reúne los ajustes heredados de disposición y los controles de presentación de GeoCeDG"
+        }
+      },
+      "themes": {
+        "anchor": "getting-started/2.5",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Theme choices extend the inherited appearance settings with a GeoCeDG canvas theme",
+          "es": "La elección de tema amplía los ajustes de apariencia heredados con un tema para el lienzo de GeoCeDG"
+        }
+      },
+      "presentation-sizes": {
+        "anchor": "getting-started/2.6",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Presentation sizes extend the inherited text sizing with separate canvas labels, desktop fonts and icon controls",
+          "es": "Los tamaños de presentación amplían el tamaño de texto heredado con controles separados de rótulos, fuentes de la interfaz e iconos"
+        }
+      },
+      "algebra-find": {
+        "anchor": "interface-and-workflow/3.7",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "Find in Algebra locates rows by object name",
+          "es": "La búsqueda en Álgebra localiza filas por nombre de objeto"
+        }
+      },
+      "algebra-help": {
+        "anchor": "interface-and-workflow/3.7",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Row help extends the inherited Algebra context menu",
+          "es": "La ayuda de una fila amplía el menú contextual heredado de Álgebra"
+        }
+      },
+      "protocol-height": {
+        "anchor": "interface-and-workflow/3.8",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Construction Protocol rows adapt to their contents",
+          "es": "Las filas del Protocolo de construcción se ajustan a su contenido"
+        }
+      },
+      "numeric-capture": {
+        "anchor": "interface-and-workflow/3.9",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Supported dialogs can take an existing number directly from Algebra",
+          "es": "Los diálogos compatibles permiten elegir un número existente directamente en Álgebra"
+        }
+      },
+      "object-redefinition": {
+        "anchor": "interface-and-workflow/3.6",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Object redefinition adds checks for canonical command names and dependencies",
+          "es": "La redefinición de objetos añade comprobaciones de nombres de comando canónicos y dependencias"
+        }
+      },
+      "native-format": {
+        "anchor": "documents/4.1",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "Native GeoCeDG documents use `.cedg`",
+          "es": "Los documentos nativos de GeoCeDG usan `.cedg`"
+        }
+      },
+      "compatibility-ggb": {
+        "anchor": "documents/4.1",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "Opening `.ggb` uses the inherited reader within the GeoCeDG compatibility policy",
+          "es": "La apertura de `.ggb` usa el lector heredado dentro de la política de compatibilidad de GeoCeDG"
+        }
+      },
+      "certified-insertion": {
+        "anchor": "documents/4.2",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "Insert File checks supported objects and commits the insertion as one operation",
+          "es": "Insertar archivo comprueba los objetos admitidos y realiza la inserción en una sola operación"
+        }
+      },
+      "expert-insertion": {
+        "anchor": "documents/4.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Expert review can assess additional cases on a separate copy",
+          "es": "La revisión experta puede evaluar casos adicionales sobre una copia aparte"
+        }
+      },
+      "apply-styles": {
+        "anchor": "documents/4.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Apply Styles imports the supported defaults from another document",
+          "es": "Aplicar estilos importa los valores predeterminados admitidos de otro documento"
+        }
+      },
+      "off-limit": {
+        "anchor": "documents/4.2",
+        "marks": [
+          "!"
+        ],
+        "text": {
+          "en": "OFF files are outside the GeoCeDG document input policy",
+          "es": "Los archivos OFF quedan fuera de la política de entrada de documentos de GeoCeDG"
+        },
+        "availability_only": true
+      },
+      "image-formats": {
+        "anchor": "documents/4.5",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "PNG, PDF, SVG, EMF, EMF+ and clipboard image output retain the inherited formats and use the GeoCeDG export area",
+          "es": "PNG, PDF, SVG, EMF, EMF+ y la copia como imagen conservan los formatos heredados y usan el área de exportación de GeoCeDG"
+        }
+      },
+      "drawing-scale": {
+        "anchor": "documents/4.5",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Drawing scale extends the inherited print scale to GeoCeDG units and export areas",
+          "es": "La escala de dibujo amplía la escala de impresión heredada a las unidades y áreas de exportación de GeoCeDG"
+        }
+      },
+      "export-area": {
+        "anchor": "documents/4.5",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "The explicit export area can be defined, displayed, cleared or linked to an ISO A border",
+          "es": "El área de exportación explícita se puede definir, mostrar, borrar o vincular a un marco ISO A"
+        }
+      },
+      "new-document-units": {
+        "anchor": "documents/4.6",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "New document units sets the initial construction and presentation units",
+          "es": "Unidades de documentos nuevos establece las unidades iniciales de construcción y presentación"
+        }
+      },
+      "status-bar": {
+        "anchor": "documents/4.6",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "The status bar includes working layer, units, scale and operation notices",
+          "es": "La barra de estado incluye la capa de trabajo, las unidades, la escala y los avisos de operaciones"
+        }
+      },
+      "iso-border": {
+        "anchor": "documents/4.7",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "The ISO A border tool and `IsoABorder` create a physical sheet outline",
+          "es": "La herramienta Marco ISO A e `IsoABorder` crean el contorno físico de una lámina"
+        }
+      },
+      "ordinary-point": {
+        "anchor": "basic-geometry/5.1",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Ordinary free, path and region points use the inherited construction tools",
+          "es": "Los puntos libres, sobre recorridos y en regiones ordinarias usan las herramientas de construcción heredadas"
+        }
+      },
+      "ordinary-lines": {
+        "anchor": "basic-geometry/5.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Ordinary lines, segments, rays and vectors retain their construction rules",
+          "es": "Las rectas, segmentos, semirrectas y vectores ordinarios conservan sus reglas de construcción"
+        }
+      },
+      "orientation-cue": {
+        "anchor": "basic-geometry/5.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "The orientation cue displays the construction direction of eligible results in Graphics 1",
+          "es": "La indicación de orientación muestra el sentido constructivo de los resultados admitidos en Gráficos 1"
+        }
+      },
+      "reference-memory": {
+        "anchor": "basic-geometry/5.2",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Parallel and Perpendicular can each remember their reference in the current session",
+          "es": "Paralela y Perpendicular pueden recordar cada una su referencia durante la sesión"
+        }
+      },
+      "ordinary-conics": {
+        "anchor": "basic-geometry/5.3",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Ordinary circles, arcs, sectors and conics retain their construction tools",
+          "es": "Las circunferencias, arcos, sectores y cónicas ordinarias conservan sus herramientas de construcción"
+        }
+      },
+      "ordinary-polygons": {
+        "anchor": "basic-geometry/5.4",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Polygon and polyline tools retain their inherited construction behaviour",
+          "es": "Las herramientas de polígono y poligonal conservan su comportamiento heredado"
+        }
+      },
+      "ordinary-controls": {
+        "anchor": "basic-geometry/5.5",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Sliders, check boxes, buttons and input boxes are inherited controls",
+          "es": "Los deslizadores, casillas de control, botones y casillas de entrada son controles heredados"
+        }
+      },
+      "ordinary-text": {
+        "anchor": "basic-geometry/5.6",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Ordinary text objects use the inherited editor and anchoring",
+          "es": "Los textos ordinarios usan el editor y el anclaje heredados"
+        }
+      },
+      "ordinary-transforms": {
+        "anchor": "basic-geometry/5.7",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "The transformation tools retain the inherited behaviour on ordinary geometry",
+          "es": "Las herramientas de transformación conservan el comportamiento heredado sobre geometría ordinaria"
+        }
+      },
+      "ordered-list": {
+        "anchor": "basic-geometry/5.8",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Create List from Selection adds an explicit click order and finish gesture to list creation",
+          "es": "Crear lista desde la selección añade a la creación de listas un orden explícito de clics y un gesto de cierre"
+        }
+      },
+      "classic-locus": {
+        "anchor": "locus-v2/6.2",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "The legacy `Locus` command remains available",
+          "es": "El comando heredado `Locus` sigue disponible"
+        }
+      },
+      "locus-v2-command": {
+        "anchor": "locus-v2/6.5",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Use `LocusV2` to trace the construction over a specified driver domain",
+          "es": "Use `LocusV2` para trazar la construcción en un dominio especificado del controlador"
+        }
+      },
+      "locus-feature": {
+        "anchor": "locus-v2/6.7",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Locus V2 availability depends on the active GeoCeDG profile and overrides",
+          "es": "La disponibilidad de Locus V2 depende del perfil y los ajustes de inicio de GeoCeDG"
+        }
+      },
+      "classic-spline": {
+        "anchor": "spline-v2/7.1",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "The legacy `Spline` command remains available",
+          "es": "El comando heredado `Spline` sigue disponible"
+        }
+      },
+      "spline-v2-command": {
+        "anchor": "spline-v2/7.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Use `SplineV2` for semantic spline construction",
+          "es": "Use `SplineV2` para construir una spline semántica"
+        }
+      },
+      "spline-v2-point": {
+        "anchor": "spline-v2/7.4",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "The `Point` command accepts a semantic curve, branch key and parameter",
+          "es": "El comando `Point` admite una curva semántica, una clave de rama y un parámetro"
+        }
+      },
+      "principal-point": {
+        "anchor": "semantic-points-intersections-materialization/8.1",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "The principal parameter form extends `Point` on eligible semantic curves",
+          "es": "La forma de parámetro principal amplía `Point` sobre curvas semánticas admitidas"
+        }
+      },
+      "native-semantic-placement": {
+        "anchor": "semantic-points-intersections-materialization/8.1",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "Point placement can use a reference with a proved correspondence",
+          "es": "La colocación de puntos puede usar una referencia con correspondencia comprobada"
+        }
+      },
+      "reference-context": {
+        "anchor": "semantic-points-intersections-materialization/8.1",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "The dedicated Create point from reference action opens the reference workflow",
+          "es": "La acción específica Crear punto desde referencia abre el procedimiento de referencia"
+        }
+      },
+      "semantic-intersect": {
+        "anchor": "semantic-points-intersections-materialization/8.2",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "The semantic curve and object form extends `Intersect`",
+          "es": "La forma con curva semántica y objeto amplía `Intersect`"
+        }
+      },
+      "rich-inspector": {
+        "anchor": "semantic-points-intersections-materialization/8.4",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "The rich intersection inspector can create points from eligible solutions",
+          "es": "El inspector de intersecciones ricas permite crear puntos a partir de soluciones admisibles"
+        }
+      },
+      "solution-token": {
+        "anchor": "semantic-points-intersections-materialization/8.5",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "The solution token form extends `Intersect` for reuse of an eligible root",
+          "es": "La forma con token de solución amplía `Intersect` para reutilizar una raíz admisible"
+        }
+      },
+      "materialize": {
+        "anchor": "semantic-points-intersections-materialization/8.6",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "The inspector can create a dependent point for a supported solution",
+          "es": "El inspector puede crear un punto dependiente para una solución admitida"
+        }
+      },
+      "structural-commands": {
+        "anchor": "semantic-points-intersections-materialization/8.6",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "The driver correspondence forms extend `Point` and `Intersect`",
+          "es": "Las formas con correspondencia del controlador amplían `Point` e `Intersect`"
+        }
+      },
+      "curve-pair-intersect": {
+        "anchor": "semantic-points-intersections-materialization/8.7",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "The two-curve form extends `Intersect` to eligible semantic curve pairs",
+          "es": "La forma con dos curvas amplía `Intersect` a pares de curvas semánticas admitidos"
+        }
+      },
+      "semantic-length-scalar": {
+        "anchor": "lengths-and-measurements/9.1",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "The scalar `Length` also accepts supported semantic curves, their endpoints or a metric result",
+          "es": "La `Length` escalar admite también curvas semánticas compatibles, sus extremos o un resultado métrico"
+        }
+      },
+      "locuslength-command": {
+        "anchor": "lengths-and-measurements/9.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "`LocusLength` reports metric evidence and supports explicit traversal policies",
+          "es": "`LocusLength` informa de la evidencia métrica y admite políticas explícitas de recorrido"
+        }
+      },
+      "dimension-commands": {
+        "anchor": "lengths-and-measurements/9.5",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "Engineering dimensions include the `AlignedDimension` and `LinearDimension` commands and their presentation preferences",
+          "es": "Las cotas de ingeniería incluyen los comandos `AlignedDimension` y `LinearDimension` y sus preferencias de presentación"
+        }
+      },
+      "semantic-transform": {
+        "anchor": "transformations/10.1",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "The semantic curve forms extend `Translate`, `Rotate`, `Reflect`/`Mirror` and `Dilate`",
+          "es": "Las formas para curvas semánticas amplían `Translate`, `Rotate`, `Reflect`/`Mirror` y `Dilate`"
+        }
+      },
+      "dxf-extension": {
+        "anchor": "dxf-export/11.1",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "The experimental 2D DXF exporter includes the supported extended curve scope described here",
+          "es": "El exportador DXF 2D experimental incluye el alcance ampliado de curvas que se describe aquí"
+        }
+      },
+      "zoom-preferences": {
+        "anchor": "presentation-and-visualization/12.4",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Configure navigation zoom sets a factor and shortcuts for the inherited navigation controls",
+          "es": "Configurar zoom de navegación ajusta un factor y los atajos de los controles de navegación heredados"
+        }
+      },
+      "layer-visibility": {
+        "anchor": "presentation-and-visualization/12.5",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "The inherited numeric layers gain an eye control for hiding a layer in Algebra",
+          "es": "Las capas numéricas heredadas incorporan un control de visibilidad por capa en Álgebra"
+        }
+      },
+      "control-layout": {
+        "anchor": "presentation-and-visualization/12.6",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Control layout adds panels, context actions and native persistence for eligible controls in Graphics 1",
+          "es": "Disposición de controles añade paneles, acciones contextuales y persistencia nativa para los controles admitidos en Gráficos 1"
+        }
+      },
+      "ordinary-intersection-badge": {
+        "anchor": "presentation-and-visualization/12.7",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "The ordinary intersection badge adds an indicator to inherited intersection points",
+          "es": "El distintivo de intersección ordinaria añade un indicador a los puntos de intersección heredados"
+        }
+      },
+      "numeric-thickness": {
+        "anchor": "presentation-and-visualization/12.7",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "Line style adds a numeric thickness field with Escape to cancel the edit",
+          "es": "El estilo de línea incorpora un campo numérico de grosor con Esc para cancelar la edición"
+        }
+      },
+      "drag-label": {
+        "anchor": "presentation-and-visualization/12.7",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Dragging a label retains its offset when the document is saved",
+          "es": "Arrastrar un rótulo conserva su desplazamiento al guardar el documento"
+        }
+      },
+      "macro-core": {
+        "anchor": "user-tools-and-automation/13.1",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "User macros retain the inherited input and output construction model",
+          "es": "Las macros de usuario conservan el modelo heredado de construcción con entradas y salidas"
+        }
+      },
+      "macro-manager": {
+        "anchor": "user-tools-and-automation/13.1",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "The user tool manager extends the inherited tool workflow with persistent profile choices",
+          "es": "El gestor de herramientas de usuario amplía el flujo heredado con opciones persistentes en el perfil"
+        }
+      },
+      "installed-library": {
+        "anchor": "user-tools-and-automation/13.2",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "The installed GeoCeDG library provides a curated tool catalog",
+          "es": "La biblioteca instalada de GeoCeDG proporciona un catálogo de herramientas seleccionadas"
+        }
+      },
+      "scripts": {
+        "anchor": "user-tools-and-automation/13.4",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Object scripts and events use the inherited scripting mechanism",
+          "es": "Los guiones y eventos de objeto usan el mecanismo de guiones heredado"
+        }
+      },
+      "classic-session": {
+        "anchor": "classic-compatibility-and-diagnostics/14.1",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "Open Classic diagnostic session starts a separate session for compatibility checks",
+          "es": "Abrir sesión de diagnóstico Classic inicia una sesión separada para comprobar la compatibilidad"
+        }
+      },
+      "legacy-laboratory": {
+        "anchor": "classic-compatibility-and-diagnostics/14.3",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "The separate legacy laboratory opens diagnostic resources when enabled",
+          "es": "El laboratorio heredado separado abre recursos de diagnóstico cuando está habilitado"
+        }
+      },
+      "english-command-display": {
+        "anchor": "command-and-workflow-reference/16.3",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "GeoCeDG uses the English command spelling consistently in the editor and help surfaces",
+          "es": "GeoCeDG utiliza de forma uniforme la grafía inglesa de los comandos en las superficies de edición y ayuda"
+        }
+      },
+      "inherited-commands": {
+        "anchor": "command-and-workflow-reference/16.3",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "The inherited commands available in Algebra Input and CAS are listed by their respective help and completion controls",
+          "es": "Los comandos heredados disponibles en Entrada algebraica y CAS se consultan en sus controles de ayuda y autocompletado"
+        }
+      },
+      "layout-controls": {
+        "anchor": "command-and-workflow-reference/16.6",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Layout controls for input, toolbars, view titles, style bars and the sidebar retain their inherited behaviour",
+          "es": "Los ajustes de entrada, barras de herramientas, títulos de vista, barras de estilo y panel lateral conservan el comportamiento heredado"
+        }
+      },
+      "preference-tabs": {
+        "anchor": "command-and-workflow-reference/16.6",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Objects, Graphics, Graphics 2, Algebra, Defaults, Advanced, Spreadsheet and CAS retain the inherited settings described below",
+          "es": "Objetos, Vista Gráfica, Vista Gráfica 2, Álgebra, Patrones por omisión, Avanzado, Hoja de Cálculo y CAS conservan los ajustes heredados que se describen abajo"
+        }
+      },
+      "continuity-policy": {
+        "anchor": "command-and-workflow-reference/16.6",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "GeoCeDG keeps the inherited Continuity setting off",
+          "es": "GeoCeDG mantiene desactivado el ajuste heredado de Continuidad"
+        }
+      },
+      "inherited-context": {
+        "anchor": "command-and-workflow-reference/16.6",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "The inherited object context menu provides visibility, style and editing actions",
+          "es": "El menú contextual heredado proporciona acciones de visibilidad, estilo y edición"
+        }
+      },
+      "geocedg-context": {
+        "anchor": "command-and-workflow-reference/16.6",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "The GeoCeDG context submenu collects product-specific routes for the selected object",
+          "es": "El submenú contextual GeoCeDG reúne rutas propias del producto para el objeto seleccionado"
+        }
+      },
+      "graphics-style": {
+        "anchor": "command-and-workflow-reference/16.6",
+        "marks": [
+          "A"
+        ],
+        "text": {
+          "en": "The Graphics style bar extends the inherited controls with numerical line thickness",
+          "es": "La barra de estilo de Gráficos amplía los controles heredados con el grosor numérico de línea"
+        }
+      },
+      "make-offset-draggable": {
+        "anchor": "lengths-and-measurements/9.5",
+        "marks": [
+          "N"
+        ],
+        "text": {
+          "en": "Make offset draggable makes the supported dimension placement editable in Graphics",
+          "es": "Hacer desplazamiento arrastrable permite editar en Gráficos la posición de la cota admitida"
+        }
+      },
+      "edit-copy-window": {
+        "anchor": "command-and-workflow-reference/16.6",
+        "marks": [
+          "G"
+        ],
+        "text": {
+          "en": "Copy, Paste and New window retain the inherited keyboard workflow",
+          "es": "Copiar, Pegar y Nueva ventana conservan el flujo de teclado heredado"
+        }
+      },
+      "open-compatibility": {
+        "anchor": "command-and-workflow-reference/16.7",
+        "marks": [
+          "G",
+          "!"
+        ],
+        "text": {
+          "en": "Open retains the inherited readers for `.ggt` and for GeoGebra constructions embedded in `.html` or `.htm`",
+          "es": "Abrir conserva los lectores heredados de `.ggt` y de construcciones GeoGebra incrustadas en `.html` o `.htm`"
+        }
+      },
+      "command-line-export": {
+        "anchor": "command-and-workflow-reference/16.7",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "Command-line picture export uses the GeoCeDG export area and limits the accepted formats",
+          "es": "La exportación de imágenes desde la terminal usa el área de GeoCeDG y limita los formatos admitidos"
+        }
+      },
+      "script-export": {
+        "anchor": "command-and-workflow-reference/16.7",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "The `ExportImage` command and inherited picture export APIs use the GeoCeDG export area",
+          "es": "El comando `ExportImage` y las API heredadas de exportación de imágenes usan el área de exportación de GeoCeDG"
+        }
+      },
+      "curated-tools": {
+        "anchor": "command-and-workflow-reference/16.8",
+        "marks": [
+          "N",
+          "!"
+        ],
+        "text": {
+          "en": "The twelve tool entries in this table are supplied by the GeoCeDG library",
+          "es": "Las doce herramientas de esta tabla se suministran con la biblioteca GeoCeDG"
+        }
+      }
+    }
   }
 }
