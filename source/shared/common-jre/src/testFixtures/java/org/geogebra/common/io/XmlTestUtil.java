@@ -16,11 +16,12 @@
 
 package org.geogebra.common.io;
 
-import static org.junit.Assert.fail;
-
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.StringReader;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -37,7 +38,10 @@ import org.xml.sax.SAXParseException;
 public class XmlTestUtil {
 
 	private static final String GEOGEBRA_XSD_URL = "https://www.geogebra.org/apps/xsd/ggb.xsd";
+	private static final int SCHEMA_DOWNLOAD_ATTEMPTS = 3;
+	private static final int SCHEMA_TIMEOUT_MILLIS = 10000;
 	private static Validator VALIDATOR;
+	private static IllegalStateException validatorLoadFailure;
 
 	/**
 	 * Validate app's state against XML schema.
@@ -56,9 +60,6 @@ public class XmlTestUtil {
 	public static void checkXML(String xml) {
 		try {
 			Validator validator = getValidator();
-			if (validator == null) {
-				return;
-			}
 			Source xmlFile = new StreamSource(new StringReader(xml));
 			validator.validate(xmlFile);
 		} catch (SAXParseException se) {
@@ -67,26 +68,49 @@ public class XmlTestUtil {
 			for (int i = l - 2; i < l + 3 && i > 0 && i < rows.length; i++) {
 				Log.debug(rows[i]);
 			}
-			fail(se.getLocalizedMessage());
+			throw new AssertionError(se.getLocalizedMessage(), se);
 		} catch (Exception e) {
 			Log.debug(e);
-			fail(e.getLocalizedMessage());
+			throw new AssertionError(e.getLocalizedMessage(), e);
 		}
 	}
 
-	private static Validator getValidator() throws MalformedURLException, SAXException {
+	private static Validator getValidator() {
 		if (VALIDATOR != null) {
 			return VALIDATOR;
 		}
-		URL schemaFile = new URL(GEOGEBRA_XSD_URL);
+		if (validatorLoadFailure != null) {
+			throw validatorLoadFailure;
+		}
 		try {
 			SchemaFactory schemaFactory = SchemaFactory
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-			Schema schema = schemaFactory.newSchema(schemaFile);
+			byte[] xsd = downloadSchema(new URL(GEOGEBRA_XSD_URL));
+			Schema schema = schemaFactory.newSchema(
+					new StreamSource(new ByteArrayInputStream(xsd), GEOGEBRA_XSD_URL));
 			VALIDATOR = schema.newValidator();
-		} catch (IllegalArgumentException exception) {
-			// Ignore
+		} catch (IOException | SAXException | IllegalArgumentException e) {
+			validatorLoadFailure = new IllegalStateException(
+					"Unable to load XML validation schema from " + GEOGEBRA_XSD_URL, e);
+			throw validatorLoadFailure;
 		}
 		return VALIDATOR;
+	}
+
+	private static byte[] downloadSchema(URL url) throws IOException {
+		for (int attempt = 1; ; attempt++) {
+			try {
+				URLConnection connection = url.openConnection();
+				connection.setConnectTimeout(SCHEMA_TIMEOUT_MILLIS);
+				connection.setReadTimeout(SCHEMA_TIMEOUT_MILLIS);
+				try (InputStream stream = connection.getInputStream()) {
+					return stream.readAllBytes();
+				}
+			} catch (IOException e) {
+				if (attempt == SCHEMA_DOWNLOAD_ATTEMPTS) {
+					throw e;
+				}
+			}
+		}
 	}
 }

@@ -4,6 +4,24 @@
   "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522",
   "modifications": [
     {
+      "path": "source/shared/common-jre/src/test/java/org/geogebra/common/gui/AccessibilityManagerTest.java",
+      "change": "modified",
+      "purpose": "CU8-I-R3 integration reverification: isolate the screen-reader test timer from the shared utility factory without changing assertions.",
+      "authority": "geocedg/specs/operations/verification-levels.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geogebra/common/gui/FlushableTimer.java",
+      "change": "modified",
+      "purpose": "CU8-I-R3 integration reverification: advance only the timer belonging to the current screen-reader test.",
+      "authority": "geocedg/specs/operations/verification-levels.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/testFixtures/java/org/geogebra/common/io/XmlTestUtil.java",
+      "change": "modified",
+      "purpose": "CU8-I-R3 integration reverification: bound transport retries for the official XSD and preserve the cause of schema loading failures.",
+      "authority": "geocedg/specs/operations/verification-levels.md"
+    },
+    {
       "path": "source/shared/common/src/main/java/org/geogebra/common/util/debug/Log.java",
       "change": "modified",
       "purpose": "POST-CU4 closeout: classify screen-reader narration as optional debug output.",

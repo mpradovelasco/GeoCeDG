@@ -17,7 +17,9 @@
 package org.geogebra.common.gui;
 
 import static org.mockito.ArgumentMatchers.startsWith;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 
 import org.geogebra.common.euclidian.ScreenReaderAdapter;
@@ -32,23 +34,31 @@ import org.geogebra.common.util.GTimerListener;
 import org.geogebra.test.BaseAppTestSetup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 
 class AccessibilityManagerTest extends BaseAppTestSetup {
 
-	ScreenReaderAdapter screenReaderAdapter;
+	private ScreenReaderAdapter screenReaderAdapter;
+	private FlushableTimer timer;
 
 	@BeforeEach
 	void setupTimer() {
 		setupClassicApp();
-		UtilFactory.setPrototypeIfNull(new UtilFactoryCommon() {
-			@Override
-			public GTimer newTimer(GTimerListener listener, int delay) {
-				return new FlushableTimer(listener);
-			}
-		});
 		screenReaderAdapter = mock(ScreenReaderAdapter.class);
 		((EuclidianViewNoGui) getApp().getActiveEuclidianView())
 				.setScreenReader(screenReaderAdapter);
+		UtilFactory factory = new UtilFactoryCommon() {
+			@Override
+			public GTimer newTimer(GTimerListener listener, int delay) {
+				timer = new FlushableTimer(listener);
+				return timer;
+			}
+		};
+		try (MockedStatic<UtilFactory> utilFactory = mockStatic(UtilFactory.class,
+				CALLS_REAL_METHODS)) {
+			utilFactory.when(UtilFactory::getPrototype).thenReturn(factory);
+			getApp().getAccessibilityManager();
+		}
 	}
 
 	@Test
@@ -57,7 +67,7 @@ class AccessibilityManagerTest extends BaseAppTestSetup {
 		getApp().getSelectionManager().addSelectedGeo(slider);
 		evaluate("SetValue(a,8)");
 		evaluate("SetValue(a,7)");
-		FlushableTimer.flush();
+		timer.flush();
 		verify(screenReaderAdapter).readText(startsWith("Slider a = 1 Press space"));
 		verify(screenReaderAdapter).readText("Slider a = 7 ");
 	}
@@ -71,7 +81,7 @@ class AccessibilityManagerTest extends BaseAppTestSetup {
 		slider.setLabelMode(GeoElementND.LABEL_CAPTION);
 		evaluate("SetValue(a,8)");
 		evaluate("SetValue(a,7)");
-		FlushableTimer.flush();
+		timer.flush();
 		verify(screenReaderAdapter).readText(startsWith("My value is 1 Press space"));
 		verify(screenReaderAdapter).readText("My value is 7 ");
 	}
