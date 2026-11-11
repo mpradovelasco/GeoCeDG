@@ -1821,7 +1821,8 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		if (isInsertionIsolated()) {
 			return false;
 		}
-		return GeoCeDGArgumentDialog.dispatchKey(event) || super.dispatchKeyEvent(event);
+		return GeoCeDGArgumentDialog.dispatchKey(event) || GeoCeDGGuideSearch.dispatchKey(event)
+				|| super.dispatchKeyEvent(event);
 	}
 
 	/**

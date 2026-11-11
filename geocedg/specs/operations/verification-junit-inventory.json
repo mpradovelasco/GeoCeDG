@@ -203,8 +203,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2512,
-      "expected_identities_sha256": "8968562fa408bfe9d5cdf73927721b5bb4083f460bec010172cc1b8f74f83b94",
+      "expected_identity_count": 2522,
+      "expected_identities_sha256": "f9e2653a82fbd9d3f27fcb396698e5f7c30271f1b5429bfeb1f190e465d89081",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -4967,6 +4967,62 @@
         {
           "commit": "81b6fc0661a61c7fa7a853ab17584d6a55b39a19",
           "tree": "b5d4028fa7aa32b95f175e7ac7a2467921cdb289"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-cu9.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
+        "org.geocedg.desktop.PreG9BR5AGuideNavigationTest",
+        "org.geocedg.desktop.PostP1GuideRenderingTest",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "org.geocedg.desktop.G9U1ActionRegistryTest",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "org.geocedg.desktop.PreG9BR6PlusGProductMetadataTest",
+        "org.geocedg.desktop.PreG9BP1PublicSurfaceTest",
+        "org.geocedg.desktop.PreG9BCu9GuideSearchTest",
+        "org.geocedg.desktop.PreG9BCu9GuideExamplesTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR5AGuideNavigationTest",
+        "--tests",
+        "org.geocedg.desktop.PostP1GuideRenderingTest",
+        "--tests",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1ActionRegistryTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusGProductMetadataTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BP1PublicSurfaceTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu9GuideSearchTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu9GuideExamplesTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 127,
+      "expected_identities_sha256": "3ba7ea7d271def842be08d3875fe7d4bbef4782e2a20e22d255cf1b15ee0f6cc",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "6c032394d70a004a4b91a88338e647f13d365cfa",
+          "tree": "96f155ee138b5ec3d15707791d73c46cc3c134df"
         }
       ]
     }

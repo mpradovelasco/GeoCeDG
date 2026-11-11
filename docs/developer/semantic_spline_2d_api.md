@@ -1,14 +1,8 @@
 # Semantic Spline V2 developer API
 
-- Status: **G9S1 PASS — AUTHOR APPROVED**
-- Current successor: **G9S1-R1 IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW; NOT phase PASS**
-- `implementationComplete=true`: bounded construction-precision and univariate
-  structural-certification corrections pass fresh PHASE A/B, COMPOSED and FULL
-  clean on the archived tested source cohort. Earlier failures remain historical
-  evidence; this later status-only reconciliation is not a new runtime cohort.
-- `manualAuthorSmoke=PENDING`; `selfApproved=false`;
-  `authorApprovedPhase=false`; `passClaimed=false`.
-- Public maturity: experimental, default off with Locus V2
+- G9S1 and G9S1-R1 are approved. The [roadmap record](../roadmap/geocedg_roadmap.md)
+  preserves the approval and earlier validation history.
+- Public maturity: experimental, enabled by default in GeoCeDG with Locus V2.
 - Kernel result type: `GeoLocusV2`
 
 ## Public construction
@@ -21,7 +15,7 @@
 - `SplineV2[<Point>, <Point>, ...]` through the ordinary point-list wrapping
   seam.
 
-The candidate accepts 3–32 finite 2D points, integral degree 3 through
+The command accepts 3–32 finite 2D points, integral degree 3 through
 `min(point-count,12)`, at most 512 dense unknowns and only positive finite
 weight increments. Classic `Spline` is unchanged.
 
@@ -66,12 +60,10 @@ diagnostic fixtures carry no inferred structural guarantee. Derived content
 signatures change with representation; source durable identity, oriented
 parameter contract and normal command reconstruction do not.
 
-The original native-knot failure is retained in the
-[blocker report](../validation/g9s1_r1_implementation_blocker_report.md).
-These changes are authorized work in progress, not already validated product
-claims; the complete structural and historical perimeter remains required.
+The [blocker report](../validation/g9s1_r1_implementation_blocker_report.md)
+preserves the original native-knot failure before the approved correction.
 
-The corrective candidate exposes `SplinePolynomialModel2D.getConstructionEvidence()`
+`SplinePolynomialModel2D.getConstructionEvidence()` is available
 with policy `spline-structural-precision/v1`: arithmetic route, working/retained
 precision, solve/expansion/admission work and failure categories. This evidence
 is query/revision-local derived data, not a durable selector or XML payload.
@@ -84,8 +76,7 @@ the actual structural composition and derivative before public classification.
 Floating composed polynomial roots are proposals only. Exclusion publishes no
 verified root; simple/transverse admission requires current existence/uniqueness
 and derivative-sign proof. Genuine but uncertified contacts remain rich-only.
-This is an internal prerequisite correction, not a new command, pair selector,
-materialization policy or GUI feature. Current validation is still incomplete.
+The correction applies to the internal structural certification prerequisite.
 Line/conic/circle historical paths are unchanged: a circle's rounded expanded
 matrix is not exact authority for its center/radius-defined target.
 
@@ -105,7 +96,9 @@ Use existing Locus V2 entry points for:
 
 - point evaluation/materialization by semantic address;
 - `Length(S)` and `Length(S,P,Q)` ordinary guarded scalar results;
-- `LocusLength(S)` and `LocusLength(S,P,Q)` rich status/evidence results;
+- `LocusLength(S)`, `LocusLength(S,P,Q)` and its explicit three-policy form for
+  rich status and evidence;
+- `Length(M)` as a guarded scalar adapter for a rich metric result `M`;
 - `Intersect` rich results and exact-token point children;
 - R5 transforms;
 - copy, undo/redo and XML persistence.
@@ -138,7 +131,7 @@ opposite signs may qualify; repeated same-germ sheets, unresolved coverage,
 tangency/overlap, generic polynomial providers and uncertifiable composition
 remain rich-only. This is not an uncertified materialization option.
 
-The `PRE-G9B-R2-E0/E1` technical candidate
+The approved `PRE-G9B-R2-E0/E1` extension
 ([ADR 0028](../adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md))
 generalizes that path by capability. A generic Locus V2 pair whose two sides
 both expose a certified interval curve model uses the same selector, contract
@@ -186,8 +179,7 @@ solver order.
 
 See the
 [G9S1 matrix](../validation/g9s1_semantic_spline_2d_capability_validation_matrix.md).
-The approved G9S1 baseline and authorized-but-unapproved R1 work are explicitly
-separate. The [R1 matrix](../validation/g9s1_r1_spline_pair_materialization_validation_matrix.md)
-adds structural, periodic, pair-proof and lifecycle requirements. Executed
-counts/hashes must come from current PHASE/COMPOSED/FULL evidence, not this guide.
-G9U1 is not implemented and the independent R4 quarantine round-trip risk remains open.
+The [R1 matrix](../validation/g9s1_r1_spline_pair_materialization_validation_matrix.md)
+adds structural, periodic, pair-proof and lifecycle requirements. Consult the
+verification evidence for the exact candidate under test. The [R1-R1 closeout](../validation/pre_g9b_r1_r1_closeout_record.md)
+records the disposition of the earlier periodic quarantine round-trip risk.

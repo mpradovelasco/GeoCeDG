@@ -1,9 +1,9 @@
 # GeoCeDG mathematical reference
 
-- Status: explanatory current-state reference; G9 spatial sections explain the
-  normative design but this guide is not itself semantic authority
-- Normative authority: `geocedg/specs/`
-- Current public boundary: no public/persistent Locus V2 workflow
+- Explanatory reference for the current product and for the approved G9 spatial design.
+- Normative authority is in `geocedg/specs/`.
+- For supported construction, measurement and intersection workflows, see the
+  [GeoCeDG user guides](geocedg_user_guide.md).
 
 ## 1. Constructive descriptive geometry
 
@@ -33,27 +33,31 @@ orientation, provenance and revision remain part of the semantic address.
 Invalid-domain gaps are not joined. A render tessellation is derived display
 data and is never the authority for length or intersection.
 
-The governing contract is
-`geocedg/specs/locus/locus-v2-semantics.md`. Current G6 implementation is
-experimental/internal and nonpersistent.
+The governing contracts are the [semantic model](../../geocedg/specs/locus/locus-v2-semantics.md)
+and the [public surface](../../geocedg/specs/locus/locus-v2-public-surface.md).
+The experimental Locus V2 and Spline V2 construction surface is enabled by
+default in GeoCeDG. Supported objects persist in `.cedg` documents. Generic
+path operations apply only where the public surface explicitly supports them.
 
 ## 3. Length and total variation
 
-For an absolutely continuous branch component, directed length is total
-variation,
+For an absolutely continuous branch component, the length on the interval
+from \(a\) to \(b\), with \(a\le b\), is total variation,
 
 \[
 s(a,b)=\int_a^b\lVert F'(t)\rVert\,dt.
 \]
 
-When no analytic integral is available, G7 uses a tolerance- and work-bounded
-world-coordinate method with explicit evidence. Length across branches is a
-typed aggregate; undefined, unbounded or work-limited components cannot be
-silently converted into a number. Endpoints must bind to semantic preimages,
-not merely coincident coordinates.
+Lengths are non-negative in both traversal directions. When an analytic
+integral is unavailable, the [metric contract](../../geocedg/specs/locus/locus-v2-metrics.md)
+defines tolerance- and work-bounded world-coordinate methods and their
+guarantees. Endpoints must identify positions on the construction. Coincident
+coordinates alone do not establish a position.
 
-G7 metrics are productive internal Java facilities. There is no public
-`LocusLength`, `Length` overload, `Path` or saved-file contract.
+`LocusLength` exposes the value, guarantee, coverage and diagnostics for the
+declared domain or for a route between two positions. Scalar `Length` returns
+a number only when the metric is admissible for numeric use. The route and
+point inputs persist with the construction and the value is recomputed.
 
 ## 4. Intersections
 
@@ -79,9 +83,11 @@ token-selected point when that solution is locally established even if global
 completeness is weaker. Overlap, ambiguity, unsupported target and work limit
 remain typed outcomes.
 
-G8 supports internal basic targets, selected conics, bounded functions, regular
-polynomial implicit targets and Locus V2 pairs. No public intersection command
-or persistent V2 result is claimed.
+The public `Intersect` overloads return a persistent rich result for supported
+objects and curve pairs. An individually eligible solution can supply a
+dependent point. The [intersection contract](../../geocedg/specs/locus/locus-v2-intersections.md)
+and its amendments define target families and when an intersection can supply
+a point.
 
 ## 5. Exact and approximate representations
 

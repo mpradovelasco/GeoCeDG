@@ -677,7 +677,8 @@ public final class GeoCeDGActionRegistry {
 
 	private void showUserGuide() {
 		try {
-			String markdown = readUserGuide(app.getLocale().getLanguage());
+			String language = app.getLocale().getLanguage();
+			String markdown = readUserGuide(language);
 			if (guideWindow == null) {
 				guideWindow = new GeoCeDGGuideWindow(app.getMainComponent(),
 						app.getPlainFont());
@@ -685,7 +686,7 @@ public final class GeoCeDGActionRegistry {
 			String title = GeoCeDGGuideRenderer.title(markdown);
 			// One parse yields the document and the navigation outline it derives.
 			guideWindow.show(GeoCeDGGuideRenderer.render(markdown),
-					title.isEmpty() ? text("geocedg.help.UserGuide.name") : title);
+					title.isEmpty() ? text("geocedg.help.UserGuide.name") : title, language);
 		} catch (IOException exception) {
 			message(text("Action.Unavailable.Failed") + "\n" + exception.getMessage());
 		}

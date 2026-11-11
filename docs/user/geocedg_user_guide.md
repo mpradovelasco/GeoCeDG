@@ -17,7 +17,9 @@ section identifiers:
 
 The application opens the edition matching the active product language through
 **Help → GeoCeDG user guide** / **Ayuda → Guía de usuario de GeoCeDG**, with
-English as the fallback.
+English as the fallback. Use the section tree or **Ctrl+F** to find a topic
+in the open edition. Start with section 2.7 for a first construction or
+section 16 for tool, command and preference lookup.
 
 ## Other user documentation
 

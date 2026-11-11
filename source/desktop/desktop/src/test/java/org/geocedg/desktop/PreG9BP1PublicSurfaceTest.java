@@ -288,8 +288,7 @@ class PreG9BP1PublicSurfaceTest {
 			assertTrue(guide.contains("DXF SPLINE exact entity      = NOT IMPLEMENTED"),
 					path);
 			assertTrue(guide.contains(
-					"SplineV2 DXF representation  = APPROXIMATE LWPOLYLINE"
-							+ " under current G9X1"), path);
+					"SplineV2 DXF representation  = APPROXIMATE LWPOLYLINE"), path);
 			assertTrue(guide.contains("ESTIMATED_ERROR"), path);
 			assertTrue(guide.contains("1.1.0"), path);
 		}

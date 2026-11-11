@@ -560,7 +560,7 @@ class PreG9BR6PlusGProductMetadataTest {
 			String flowing = guide.replaceAll("\\s+", " ");
 			assertEquals(1, count(guide, "(?m)^# "));
 			assertEquals(16, count(guide, "(?m)^## "));
-			assertEquals(87, count(guide, "(?m)^### "));
+			assertEquals(101, count(guide, "(?m)^### "));
 			assertEquals(17, count(guide, "geocedg-guide-section:"));
 			for (String shared : List.of("0.4·t", "AutoCAD 2026", "Type 1", "Ghostscript",
 					"Poppler", "Xpdf", "`SquarebyDiagonal`", "`SymmSymbol`", "EUPL-1.2",
@@ -571,12 +571,12 @@ class PreG9BR6PlusGProductMetadataTest {
 		}
 		for (String token : List.of("**Text in PDF.**", "**Export Text as Shapes**",
 				"**The GeoCeDG library.**", "numeric\nthickness field", "*distribution condition*",
-				"*development\nbuild*", "listed in numeric order", "**Orientation cue** option")) {
+				"*development build*", "listed in numeric order", "**Orientation cue** option")) {
 			assertTrue(english.contains(token), "EN is missing " + token);
 		}
 		for (String token : List.of("**Texto en PDF.**", "**Exportar textos como\nfiguras**",
 				"**La biblioteca GeoCeDG.**", "campo numérico de grosor",
-				"*condición de distribución*", "*compilación de\ndesarrollo*",
+				"*condición de distribución*", "*compilación de desarrollo*",
 				"se listan en orden numérico", "**Indicación de\norientación**")) {
 			assertTrue(spanish.contains(token), "ES is missing " + token);
 		}

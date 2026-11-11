@@ -2,13 +2,12 @@
 
 | Field | Value |
 |---|---|
-| Maturity | `experimental`; public GeoCeDG surface disabled by default plus internal/developer seams |
+| Maturity | `experimental`; public GeoCeDG surface enabled by default, with internal and developer seams |
 | Normative semantics | [`geocedg/specs/locus/locus-v2-semantics.md`](../../geocedg/specs/locus/locus-v2-semantics.md) |
 | Architecture | [`docs/architecture/locus_v2_implementation.md`](../architecture/locus_v2_implementation.md); [approved R6 inverse interaction](../architecture/g9u0_r6_semantic_locus_point_interaction_support.md) |
 | Additive metric API | [`docs/developer/locus_v2_metric_api.md`](locus_v2_metric_api.md), G7B internal candidate |
-| Public command/API | G9U0 surface, G9U0-R5 similarity transformations and R6 shared-kernel inverse point interaction are `PASS — AUTHOR APPROVED`; R6 adds no productive Point-tool frontend |
+| Public command/API | [Public command surface](../../geocedg/specs/locus/locus-v2-public-surface.md) and [point interaction](../../geocedg/specs/locus/locus-v2-point-interaction.md), including the supported Desktop routes |
 | Persistence / `Path` | Native `.cedg` persistence for public V2 objects / no generic `Path` conformance |
-| Date | 2026-09-01 |
 
 This reference documents the current Java seams so future kernel work does not
 infer contracts from call sites. Java `public` is used where the shared kernel,
@@ -19,8 +18,10 @@ component-state contracts are kept in the separate
 [metric API reference](locus_v2_metric_api.md). Public persistence, commands,
 metrics and rich intersections were added by later approved G9 phases; the R5
 similarity implementation described below is also `PASS — AUTHOR APPROVED`.
-The R6 section documents the accepted shared-kernel seam. It is not a claim that
-the future Desktop Point-tool frontend has been implemented or released.
+The R6 section documents the shared-kernel seam. The later Desktop Point and
+reference workflows use a bounded set of supported routes. See the [point
+interaction specification](../../geocedg/specs/locus/locus-v2-point-interaction.md)
+and the [reduced CU7 scope](../validation/pre_g9b_cu7_r5_author_decision_record.md).
 
 ## 1. Packages
 
@@ -337,19 +338,10 @@ visible and user-owned.
 `LocusV2PublicOperations.moveInteractiveSemanticPoint` publishes address
 mutation through `Construction.runAtomicConstructionMutation`: full host
 snapshot, input writes, cascade and postcondition form one fail-closed unit.
-This O(N) snapshot does not store an undo step and rollback may reconstruct Java
-instances; the future frontend must group successful gestures and reacquire
-objects after failure.
-The independent G9U1 planning checkpoint
-`857de6628489bda0b65a5ba5145e62ca0795fc32` is protected and requires post-R6
-reconciliation plus separate authorization. The retained risk
-`G9-R4-PERIODIC-QUARANTINE-NATIVE-ROUNDTRIP` remains open and is not discharged
-by ordinary R6 point round trips.
-
-Because no productive frontend consumes these methods in R6, the accepted R6
-diagnostic surface is the focused test-host/API. The end-to-end Point-tool
-smoke—create, drag, seam crossing, ambiguity chooser, transformed source,
-`k=0` and save/reopen—is explicitly deferred to G9U1.
+This O(N) snapshot creates no undo step and rollback may reconstruct Java
+instances. Desktop groups a successful gesture into one undo step and must
+reacquire objects after a failed rollback. The [R1-R1 closeout](../validation/pre_g9b_r1_r1_closeout_record.md)
+records the disposition of the separate periodic quarantine round-trip risk.
 
 ## 5. Semantic revision
 
@@ -388,8 +380,8 @@ substitute.
 
 These boundaries remain deliberate:
 
-- `GeoLocusV2` does not implement generic `Path`, and point-on-locus incidence
-  uses the explicit branch/parameter public operation;
+- `GeoLocusV2` has a separate public point surface for explicitly addressed
+  positions, driver correspondence and supported Desktop point placement;
 - legacy `isGeoLocus()` / `isGeoLocusable()` classification is not semantic V2
   authority;
 - the approved public metric/intersection APIs remain separate rich-result
@@ -423,8 +415,9 @@ its construction cannot be saved as `.ggb`.
   broad phase if separately approved.
 - G9 projection correspondence may share a provider-owned semantic parameter;
   it must not infer identity from labels or samples.
-- A future export adapter must consume branches/domain/evaluator/exactness, not
-  `LocusRenderCache2D`. G5 continues to reject V2.
+- The [extended DXF adapter](../../geocedg/specs/export/geometry-export-foundation.md)
+  consumes semantic data with explicit approximation evidence. It must not
+  take `LocusRenderCache2D` as its geometric source.
 - Any new command family, generic `Path` conformance, persistence migration, 3D
   semantic transform or concurrency contract remains a stop condition requiring
   its own phase authority. The bounded R5 ordinary 2D similarity overloads do

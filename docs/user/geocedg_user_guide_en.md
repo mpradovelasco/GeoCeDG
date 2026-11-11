@@ -3,93 +3,64 @@
 
 GeoCeDG 1.1.0 · English edition
 
-This is the official user guide for GeoCeDG. It describes what the application
-does today, how to work with it, and where its current boundaries are. A
-Spanish edition with the same structure and the same examples is available as
-`geocedg_user_guide_es.md`; the application opens the edition that matches the
-active product language.
+If this is your first time opening GeoCeDG, start with **2.7 Your first
+construction**. To identify a tool or look up command syntax, open section 16
+in the sidebar tree or search by name with **Ctrl+F**. If you get an
+unexpected result, see **15. Troubleshooting and known limits**.
 
-The guide is written for a technical or scientific user. It is not a developer
-manual: it does not describe the build, the verification system or the internal
-Java architecture. Where an internal notion is required to understand observable
-behaviour, it is explained conceptually.
-
-Everything stated here is backed by the current product, its approved
-specifications and its tests. Capabilities that are designed but not available
-are named as such, and nothing that is merely planned is presented as present.
 
 ---
 
 <!-- geocedg-guide-section: what-is-geocedg -->
 ## 1. What is GeoCeDG
 
-GeoCeDG is a dynamic-geometry application for **Computer-extended Descriptive
-Geometry (CeDG)**. It is built on the shared GeoGebra geometric kernel and
-extends it where descriptive-geometry work requires semantics that ordinary
-dynamic geometry does not provide.
+GeoCeDG is a dynamic geometry application for **Computer-Extended Descriptive
+Geometry (CeDG)**. You can build with graphical tools or type into the input
+bar. When you change an object, the objects that depend on it update.
 
-### 1.1 The central idea: the construction is the object
+### 1.1 Build with relationships
 
-In CeDG, a geometric result is never separable from the explicit sequence of
-constructions that produces it. This has practical consequences you will meet
-throughout the application:
-
-- **Constructive traceability.** Every derived object remains linked to its
-  defining inputs. Change an input and the result recomputes through the
-  dependency graph.
-- **Explicit parameterization.** Parameters, their domains and their validity
-  ranges are stated, not inferred from what happens to be drawn.
-- **Procedure and result are different things.** The curve you see on screen is
-  a *rendering* of a semantic object. It is not the object, and it is never the
-  authority for a length, an incidence or an intersection.
-- **Explicit approximation.** When a value is approximate, the application says
-  so, and reports the method and the evidence behind it. An approximation is
-  never presented as an exact result.
-- **Deliberate degeneracy handling.** Tangency, coincidence, discontinuity,
-  branch loss and near-singular configurations produce an explicit status, not
-  stale geometry left over from a previous state.
+Create a segment between two points and move one of them. The segment and its
+length change together. Use **Construction Protocol** to step through the
+construction, and Algebra to check an object's definition. The same idea lets
+you trace a curve from a point that depends on another point.
 
 ### 1.2 How this differs from CAD
 
-GeoCeDG is not a solid-first modeller. It has no feature tree, no history-based
-solid modelling workflow and no generic CAD abstraction layered over the
-geometry. The construction itself — its objects, its dependencies, its explicit
-parameters — is the model.
-
-The practical difference is that you build by *stating relations*, and the
-application preserves those relations. You do not sculpt a result and then hope
-to recover the intent behind it.
+You build points, lines and curves by defining relationships between them.
+You can prepare drawings, add dimensions and export supported 2D geometry
+for use in other applications. See section 11 before handing off a DXF and
+section 15 for the scope of the available views.
 
 ### 1.3 Version and status
 
-The application identifies itself as **GeoCeDG 1.1.0** in the window title and
-under **Help → About GeoCeDG**. That version number identifies the product
-state described by this guide. It is not, by itself, a public release: packaging
-and distribution are governed separately.
+**Help → About GeoCeDG** shows version **1.1.0**, the version date
+**2026-10-15** and the build identifier. It also shows the *distribution condition* and the notices for the copy you are running.
+Installed copies may show **INTERNAL EVALUATION — NOT FOR REDISTRIBUTION**
+or **NON-COMMERCIAL DISTRIBUTION — PROFILE NC**. A *development build* is
+labelled separately. About points to the full terms, including EUPL-1.2
+and CC BY 4.0 for the applicable GeoCeDG components.
 
-**Help → About GeoCeDG** also shows the *version date*, `2026-10-15` for
-1.1.0: the date the author designated for this version. It is not a build, commit,
-publication or release date, and the earlier version 1.0.0 has none. About then
-shows the build of the running copy (the first
-twelve hexadecimal digits of its source revision, and whether that source was
-modified) and its *distribution condition*. An installed copy carries a
-distribution record written by the GeoCeDG packaging, which the application
-checks against itself. A verified copy shows its marker, *INTERNAL EVALUATION —
-NOT FOR REDISTRIBUTION* or *NON-COMMERCIAL DISTRIBUTION — PROFILE NC*, and names
-its distribution notice. A copy started from a source checkout is a *development
-build*, and an installed copy whose record is missing or does not match is shown
-as *not verified*; neither may be redistributed. This is a consistency check, not
-a security or licensing mechanism: the distribution notice and the licensing
-files remain the authority. About then summarizes the licensing: GeoCeDG is a
-composite work, and no single licence covers the whole product; GeoCeDG-authored
-software is under EUPL-1.2, its documentation and ordinary artwork are under
-CC BY 4.0, and inherited GeoGebra material and third-party components keep their
-own terms. It points to the full texts and never replaces them.
+### 1.4 What GeoCeDG adds to GeoGebra
 
-Two capabilities described here — semantic curves (Locus V2 and Spline V2) and
-extended DXF export — are enabled by default in GeoCeDG but keep the maturity
-`experimental`. They work as normal product behaviour and require no launch
-argument; "experimental" means their public contract may still be refined.
+This comparison uses the GeoGebra revision that GeoCeDG was forked from.
+In the table, “Experimental or limited” marks a feature with a restricted
+scope. V2 curves, control panels and extended DXF export are available
+within that scope in the GeoCeDG profile.
+
+| To… | What GeoCeDG offers | Where to look |
+| --- | --- | --- |
+| Build and edit points, lines, conics and polygons | **Inherited from GeoGebra**. Dynamic geometry tools organized for the GeoCeDG profile. | Sections 5 and 16 |
+| Trace a path and place points that follow it | **New in GeoCeDG; experimental or limited**. Locus V2, Spline V2 and points associated with a position on a curve. | Sections 6 to 8 |
+| Find intersections and keep associated results | **Extended in GeoCeDG; experimental or limited**. Inspect V2 results, create points from supported crossings and find contacts using a corresponding driver point. | Section 8 |
+| Measure a whole curve or part of a path | **Extended in GeoCeDG; experimental or limited**. V2 lengths, choice of direction and a full circuit where available. | Section 9 |
+| Review construction steps and repeat parallels or perpendiculars | **Extended in GeoCeDG**. The inherited protocol, plus reference memory for each tool and a direction cue on supported results. | Sections 3 and 5 |
+| Save, open or bring in another drawing | **New in GeoCeDG**. `.cedg` document identity, checked insertion and expert review with a report before confirmation. | Section 4 |
+| Set up a sheet, add dimensions or exchange a DXF | **New in GeoCeDG**. Document units, dimensions and sheets. **Experimental or limited** for extended 2D DXF types and approximations. | Sections 4, 9 and 11 |
+| Reuse a tool | **Extended in GeoCeDG**. Inherited custom tools with document management, toolbar access and a library when installed. | Section 13 |
+| Arrange sliders, buttons, check boxes and input boxes | **New in GeoCeDG; experimental or limited**. Fixed or canvas-anchored panels in Graphics 1. | Section 12.6 |
+| Open an older drawing or use a Classic view | **Extended in GeoCeDG**. Open `.ggb` and use the Classic diagnostic session within the stated compatibility limits. | Sections 4 and 14 |
+
 
 ---
 
@@ -128,7 +99,7 @@ layout** puts the product layout back without touching the geometry.
 GeoCeDG offers two product languages: **English** and **Spanish**. English is
 the fallback when no other choice applies.
 
-Choose the language under **Options → GeoCeDG options → Product language…**.
+Choose the language under **Options → Product language…**.
 The choice affects menus, dialogs and in-application help, including which
 edition of this guide **Help → GeoCeDG user guide** opens.
 
@@ -180,6 +151,36 @@ this group, because a Text object belongs to the document.
 All six are user preferences. They are never written into a construction and
 never appear in a saved file.
 
+
+### 2.7 Your first construction
+
+Try a construction that changes as you work. In a new drawing, type
+each line into **Algebra Input** and press **Enter** after each one.
+
+```text
+A=(0,0)
+B=(3,4)
+s=Segment(A,B)
+d=Length(s)
+```
+
+Check that `d` is 5 in Algebra. Choose **Move**, drag `B` and watch the
+segment and its length change. If the input bar is hidden, turn it on from
+**Automation → Algebra Input**. The examples use English command names and a decimal point
+within commands.
+
+### 2.8 Search the guide
+
+Open **Help → GeoCeDG user guide**. Use the tree on the left to open a
+section. Press **Ctrl+F** or click the search field. Try `orientation` or
+`LocusLength`. Each result shows its section and a short excerpt.
+Activate a result with the mouse, or move down to the list and press
+**Enter**. The document scrolls to the match and the tree marks its
+section. Search ignores case and accents and lists up to 200 matches. Refine your
+query if there are more. Press **Esc** or use the
+clear button to return to normal browsing. After changing the product
+language, reopen the guide to read the other edition.
+
 ---
 
 <!-- geocedg-guide-section: interface-and-workflow -->
@@ -190,53 +191,63 @@ never appear in a saved file.
 - **Graphics** is where you construct and where the current tool acts.
 - **Algebra** lists the objects with their value, description or definition,
   depending on the display mode chosen under **Options → Algebra display**.
-- **Construction Protocol** (**View → Construction protocol**) shows the
+- **Construction Protocol** (**View → Construction inspection → Construction protocol**) shows the
   construction as an ordered sequence, which is the direct reading of its
-  dependency structure. **View → Show construction navigation bar** toggles the
+  dependency structure. **View → Construction inspection → Show construction navigation bar** toggles the
   step control attached to the Graphics view; it creates no objects and no undo
   step.
 - **Algebra Input** accepts commands and definitions.
 
 ### 3.2 Menus
 
-The menu bar contains **File**, **Edit**, **View**, **Construction**,
-**Options**, **Automation** and **Help**. They are compact projections of a
-single action catalog, so an action referenced from several groups still
-appears once.
+Use the menu bar to find tools by task. The individual Construction tools are listed below. See section 16 for their inputs and the shortcuts.
 
-**Construction** is the geometric menu and is organised as:
-
-| Group | Contents |
+| Menu | What you can do |
 |---|---|
-| Points | Point, Point on object, Midpoint |
-| Lines and vectors | Line, Segment, Ray, Vector, Segment with given length, Vector from point |
-| Polygons | Polygon, Polyline, Regular polygon, Rigid polygon, Vector polygon |
-| List tools | Create List from Selection |
-| Derived constructions | Parallel line, Perpendicular line, Perpendicular bisector, Angle bisector |
-| Parameters and drivers | Slider, Angle with given size, Check box, Button, Input box, Animate selected object, Text |
-| Relations and intersections | Intersect, Tangents, Relation, Polar/diameter line, Inspect rich result, and the three materialization actions |
-| Circles and conics | Circle (two points, three points, centre+radius), Arc, Conic through five points, Ellipse, Parabola, Hyperbola, Compass, Semicircle, Circumcircular arc, Sector, Circumcircular sector |
-| Semantic curves | Locus V2, Point on semantic curve, Spline V2, Inspect semantic curve definition… |
-| Metrics and validation | Angle, Distance or length, Aligned dimension, Linear dimension, Locus V2 total length, Locus V2 partial length, Area, Slope |
-| Similarity transformations | Reflect about point, Reflect about line, Translate by vector, Rotate by angle, Dilate from point |
-| Annotations and media | Image, ISO A Border (section 4.7) |
-| Manual projection procedures | CeDG dihedral procedures (not authorized) |
+| **File** | Direct entries include New file, Open…, Open recent…, Open Classic diagnostic session, Save, Save as…, Print preview…, Graphics View as Picture…, Export 2D geometry as DXF (experimental)…, PSTricks…, PGF/TikZ…, Asymptote…, Define export area…, Use Export_1 and Export_2, Show export area, Clear export area, Define ISO A export area…, Use selected ISO A border, Close. **Insert** opens a submenu with Insert File…, Insert with expert review…, Apply Styles…. Expert review is available by default (section 4.2). |
+| **Edit** | Undo, Redo, Move, Move around Point, Working Layer, Select Objects, Attach / Detach Point, Delete. See section 16.6 for selection and editing. |
+| **View** | **Views** toggles Algebra, Graphics2, Spreadsheet, CAS and Object Properties. **Visibility and style** — Show / Hide Object, Show / Hide Label, Copy Visual Style, Show orientation cue, Control layout. **Navigation** — Move Graphics View, Zoom to rectangle, Zoom In, Zoom Out, Zoom Factor In, Zoom Factor Out, Standard view, Show all objects. **Construction inspection** — Construction protocol, Show construction navigation bar, Inspect definition…. **Configure navigation zoom...** sets shortcuts and zoom factor. **Restore Construction layout** restores the CeDG Construction workspace. Dihedral procedures is unavailable. |
+| **Construction** | Choose a tool by group in the next table. |
+| **Options** | **Algebra display** (Value, Description, Definition), Sort by, Rounding, Labeling, Text font size. Direct entries: Preferences…, Axes, Grid, Product language…, Show solution markers, Auto-create eligible points for new explicit queries, Document units…, Save Settings. |
+| **Automation** | Algebra Input, Legacy laboratory (separate session), Object properties and scripting…. Open **User tools** to manage tools in the document or use the GeoCeDG Library (section 13). |
+| **Help** | Input help, Current tool help, Command list, GeoCeDG user guide, Keyboard shortcuts, About GeoCeDG. |
 
-The last entry is visible but unavailable: the dihedral-procedure workspace is
-not an authorized capability and reports that when selected.
+| Construction submenu | Entries |
+|---|---|
+| Points | Point, Point on Object, Midpoint or Center |
+| Lines and vectors | Line, Segment, Ray, Vector, Segment with Given Length, Vector from Point |
+| Polygons | Polygon, Polyline, Regular Polygon, Rigid Polygon, Vector Polygon |
+| List tools | Create List from Selection |
+| Derived constructions | Parallel Line, Perpendicular Line, Perpendicular Bisector, Angle Bisector |
+| Parameters and drivers | Slider, Angle with Given Size, Check Box, Button, Input Box, Animate selected object, Text |
+| Relations and intersections | Intersect, Tangents, Relation, Polar or Diameter Line, Inspect rich result, Create selected intersection point, Create selected intersection points, Create all eligible intersection points |
+| Circles and conics | Circle with Center through Point, Circle through 3 Points, Circle: Center & Radius, Circular Arc, Conic through 5 Points, Ellipse, Parabola, Compass, Semicircle, Circumcircular Arc, Circular Sector, Circumcircular Sector, Hyperbola |
+| Semantic curves | Locus V2, Point on Locus V2 from reference, Point on semantic curve (explicit address), Spline V2, Spline V2 with degree, Closed Spline V2, Inspect semantic curve definition… |
+| Metrics and validation | Angle, Distance or Length, Aligned Dimension, Linear Dimension, Total semantic locus length (experimental), Partial semantic locus length (experimental), Area, Slope |
+| Similarity transformations | Reflect about Point, Reflect about Line, Translate by Vector, Rotate around Point, Dilate from Point |
+| Annotations and media | Image, ISO A Border |
+| Manual projection procedures | CeDG dihedral procedures (not authorized) |
 
 ### 3.3 Toolbar and flyouts
 
-The toolbar projects the frequently used actions of that same catalog, grouped
-as Move; List tools; Point and Intersection; Lines and vectors; Polygons;
-Derived constructions; Circles and conics; Semantic curves; Angles and lengths;
-Transformations; Parameters and drivers; Navigation.
+Open the arrow beside a tool to see the other tools in its group. This table describes the default toolbar from left to right.
 
-**Semantic curves** and **Navigation** are compact mixed flyouts: they show the
-last action you chose as the main button. That memory is presentation state
-only; it changes no semantics.
+| Group | Tools |
+|---|---|
+| Move | Move, Move around Point, Working Layer |
+| List tools | Create List from Selection |
+| Points and intersection | Point, Point on Object, Midpoint or Center, Attach / Detach Point, Intersect |
+| Lines and vectors | Line, Segment, Ray, Vector, Segment with Given Length, Vector from Point |
+| Polygons | Polygon, Polyline, Regular Polygon, Rigid Polygon, Vector Polygon |
+| Derived constructions | Parallel Line, Perpendicular Line, Perpendicular Bisector, Angle Bisector, Angle with Given Size, Tangents |
+| Circles and conics | Circle with Center through Point, Circle through 3 Points, Circle: Center & Radius, Circular Arc, Conic through 5 Points, Ellipse, Parabola |
+| Semantic curves | Locus V2, Spline V2, Spline V2 with degree, Closed Spline V2, Point on semantic curve (explicit address), Point on Locus V2 from reference |
+| Angles and lengths | Angle, Distance or Length, Aligned Dimension, Linear Dimension, Total semantic locus length (experimental), Partial semantic locus length (experimental) |
+| Transformations | Reflect about Point, Reflect about Line, Translate by Vector, Rotate around Point, Dilate from Point |
+| Parameters and drivers | Slider, Check Box, Button, Input Box, Text |
+| Navigation | Move Graphics View, Zoom to rectangle, Zoom In, Zoom Out, Copy Visual Style |
 
-An unavailable action explains why it is unavailable and creates nothing.
+The Semantic curves and Navigation flyouts show the last tool you chose in that group. An unavailable tool shows a reason when you hover over it.
 
 ### 3.4 Selecting, creating and editing
 
@@ -252,8 +263,7 @@ its Algebra row directly, or type a compatible assignment such as `k=0.25` in
 Algebra Input. All four routes keep the same object; the edit is explicit and is
 one undo step.
 
-**Undo** is `Ctrl+Z` and **Redo** is `Ctrl+Y`, also available under **Edit →
-History**.
+**Undo** is `Ctrl+Z` and **Redo** is `Ctrl+Y`, also available under **Edit**.
 
 ### 3.5 Inspecting a definition
 
@@ -271,58 +281,66 @@ Some objects show a **read-only definition**. That is not a defect: it means
 that arbitrary direct redefinition of that object is not an approved operation.
 Edit its defining inputs instead. Properties explains this when it applies.
 
-### 3.6 Redefining an object
+### 3.6 Redefine an object
 
-GeoCeDG gives a durable identity to the objects that semantic curves and their
-results depend on, such as the point traced by a Locus V2. Such an object keeps
-its identity when you redefine it, as long as the new definition depends on the
-same durable objects. Ordinary intermediate objects do not count. In
+Edit a definition in Algebra, for example by pressing **F2**. GeoCeDG
+updates its dependents. If a semantic construction depends on the
+object and the edit changes its recorded inputs, review the choices
+the dialog offers. **Keep identity** preserves the object and updates
+its dependents when the edit allows it. **Replace** gives it a new
+identity and lists the affected objects. **Cancel** leaves the drawing
+as it was. An incompatible type or a circular definition is refused.
+
+**Example.** Use a new drawing and enter these lines one by one.
 
 ```text
+c=Circle((0,0),2)
+C=Point(c)
 f=Line(C,xAxis)
 D=Intersect(f,yAxis)
 E=Midpoint(D,C)
 a=LocusV2(E,C)
 ```
 
-`E` depends on the durable point `C`, directly and through `D`. Redefining it as
-`E=Midpoint(D,C+(1,0))` still depends only on `C`: `E` keeps its identity, and
-the locus `a` and its intersections are recomputed. The redefinition is one undo
-step and survives save and reopen.
+Redefine `E` as `E=Midpoint(D,C+(1,0))`. Compare the locus before and
+after, or use Undo to switch between them. Both definitions depend
+on the same driver `C`. A point created from an intersection of
+semantic curves stays usable while its own solution remains eligible.
+See sections 8.6 and 8.7 if it becomes undefined.
 
-A point already materialized from the intersection of two semantic curves
-follows such a recomputation only while its root remains admissible under a
-certified model. If the pair can still be computed but a curve no longer has a
-certified model, the pair becomes rich-only: its roots may still be listed, they
-can no longer be materialized, and a point already materialized from them may
-become undefined. It is never moved to another root. Undo can restore the
-earlier admissible state. In the example above, the new definition traces `a`
-through `C+(1,0)`, a translation of the driver by a fixed vector, which has a
-certified model (section 8.7): the pair roots of `a` stay admissible, and a point
-already materialized from them keeps its root and follows the recalculation. A
-definition through another kind of expression, such as `(x(C)/2+1,y(C))`, has no
-certified model, and the pair roots of `a` then behave as just described.
+### 3.7 Find an object and read its help in Algebra
 
-If the new definition depends on different durable objects, GeoCeDG does not
-guess. A dialog states the reason and offers only the choices it can guarantee:
+Use **Find by name** in the Algebra bar. Type part or all of an object's
+name, including a subscript where applicable. Press **Enter** or use
+the previous and next match arrows to select the row and scroll it into
+view. Clear the text to finish. This searches the visible names of
+objects in the list.
 
-- **Keep identity**: the object keeps its identity with its new dependencies,
-  and everything that depends on it is recomputed.
-- **Replace**: the object receives a new identity. The dialog first lists every
-  affected object, because relations built on the old identity are not carried
-  over.
-- **Cancel**: the default; nothing changes.
+Hover over a row to read the **Value** or **Definition** that complements
+the current display mode. A message appears when the object is undefined
+or its definition is unavailable.
 
-Coinciding coordinates never make two objects the same. When a redefinition
-cannot be accepted at all, for example because it would turn a point into a
-circle or create a cycle, the message states the reason and the construction is
-not changed.
+### 3.8 Read the Construction Protocol
 
-Editing an ordinary intermediate object, such as `f` above, recomputes
-everything that depends on it. When the edit changes which durable objects a
-durable object depends on, GeoCeDG updates that record only if the durable
-object itself is unchanged; otherwise it refuses the whole edit and nothing
-changes.
+Open **View → Construction inspection → Construction protocol**. Read the
+steps in the table or show the construction navigation bar from the same
+submenu. The protocol adjusts row height when a description wraps. To change
+the font size, use **Preferences → Layout & Presentation**. To change a
+result, return to the construction and edit its inputs.
+
+### 3.9 Insert an existing number into a dialog
+
+Use **Pick object** in the parameter field for a point by address on a
+Locus V2, in the angle or factor field when rotating or dilating a Locus V2 or Spline V2, or
+in the Spline V2 degree field. Select the number or angle's Algebra row.
+Its name goes at the cursor or replaces the selected text. Finish the
+expression and confirm. For example, if you already have `d=3`, choose
+its row in the Spline V2 degree dialog. GeoCeDG checks the degree when
+you confirm.
+
+**Esc** disarms picking. Press it again to cancel the dialog. If clicking
+a slider in Graphics 1 fails to supply a reference, use its Algebra row.
+The button is available in these four fields.
 
 ---
 
@@ -339,9 +357,8 @@ changes.
 `.cedg` is the native GeoCeDG document extension. Save your work as `.cedg`.
 
 `.ggb` is accepted as compatibility input. GeoCeDG opens it without altering it
-destructively. Opening a `.ggb` does not convert it, and saving GeoCeDG work as
-`.ggb` is not a promise that an external upstream application will preserve
-GeoCeDG-only object types.
+destructively. Opening a `.ggb` leaves that file in place. Use **Save as…** to save your
+GeoCeDG work in a native `.cedg` file.
 
 The extension is a product and input/output identity. It does not change
 geometric meaning, object maturity, durable identity or command behaviour, and
@@ -353,14 +370,14 @@ GeoCeDG does not introduce a new archive format.
 
 | Action | Where |
 |---|---|
-| New file | File → Open group |
-| Open… | File → Open group |
-| Open recent… | File → Open group |
+| New file | File |
+| Open… | File |
+| Open recent… | File |
 | Insert File… | File → Insert |
 | Apply Styles… | File → Insert |
-| Save | File → Save group |
-| Save as… | File → Save group |
-| Print preview… | File → Print |
+| Save | File |
+| Save as… | File |
+| Print preview… | File |
 | Close | File → Close |
 
 **Save** writes to the current native path when there is one; otherwise it
@@ -424,7 +441,9 @@ the preview shows the actual trial drawing. You can accept changes to layers,
 views, presentation or valid geometry identified in the report. A
 blocked review explains which condition prevents insertion. Cancel leaves the
 drawing as it was. A successful insertion is one Undo step. Review the drawing
-and choose **Save as…** to keep a separate copy.
+and choose **Save as…** to keep a separate copy. Both insertion routes reject
+a source with control panels. Expert review also rejects a receiving
+drawing with panels (section 12.6).
 
 **Apply Styles…** copies colour, line style, line thickness, point style, point
 size and fill opacity from the default styles of a `.cedg` or `.ggb` document (the
@@ -475,16 +494,15 @@ copy in GeoCeDG if your document uses higher layers.
 
 ### 4.5 Picture export and the export area
 
-**File → Import and export** offers **Graphics View as Picture…** (PNG, PDF,
+**File** offers **Graphics View as Picture…** (PNG, PDF,
 SVG, EMF and EMF+), **Export 2D geometry as DXF (experimental)…** (section 11),
-**PSTricks…**, **PGF/TikZ…** and **Asymptote…**; **Print preview…** (File →
-Print) prints the same picture. STL, Collada, HTML Collada, Dynamic Worksheet and
+**PSTricks…**, **PGF/TikZ…** and **Asymptote…**; **Print preview…** (in File) prints the same picture. STL, Collada, HTML Collada, Dynamic Worksheet and
 upload, Animated GIF and WebM are not offered.
 
 **The export area.** A picture always shows one rectangle of Graphics 1 or
 Graphics 2, its *export area*, chosen in this order:
 
-1. the area you choose under **File → Export area**: **Define export area…**
+1. the area you choose from **File**: **Define export area…**
    (four world bounds, starting from the current area, or the visible view) or
    **Use Export_1 and Export_2**, or an ISO A sheet or ISO A area (section 4.7);
 2. otherwise the points `Export_1` and `Export_2` of the document, when both
@@ -597,7 +615,7 @@ construction command reads them.
 | Presentation unit | same as construction unit, `mm`, `cm`, `m`, `usm` | the unit in which dimensional quantities are expressed; it needs a construction unit |
 | Custom unit (`usm`) | factor, optional name, optional symbol | at most one per document, defined as 1 usm = k m |
 
-**Document units.** **Options → GeoCeDG options → Document units…** opens the
+**Document units.** **Options → Document units…** opens the
 dialog. OK applies all its changes as one undo step and marks the document
 modified; Cancel, or OK without a change, does nothing. Undo and redo restore
 the previous units exactly. A unit change alone also makes an otherwise empty
@@ -707,8 +725,7 @@ Move a sheet by dragging its frame (or its paper when shown); a sheet without
 frame is moved by editing its point or by showing its paper.
 
 **Export area.** A new sheet never replaces the export area. After creating
-it GeoCeDG asks **Use this sheet as the export area?**; **File → Export area →
-Use selected ISO A border** links an existing sheet (select any of its
+it GeoCeDG asks **Use this sheet as the export area?**; **File → Use selected ISO A border** links an existing sheet (select any of its
 objects). A linked sheet is the export area of section 4.5: its paper
 boundary, also while hidden, never the frame, and it follows the sheet when
 it moves. The link belongs to the session: it is not saved, New and Open clear
@@ -783,7 +800,7 @@ v=Vector(A,B)
 The corresponding tools are under **Construction → Lines and vectors**.
 **Segment with given length** and **Vector from point** take a numeric input.
 
-**Orientation cue.** **View → Show orientation cue** (also **Options →
+**Orientation cue.** **View → Visibility and style → Show orientation cue** (also **Options →
 Preferences… → Layout & Presentation → Orientation cue**) draws a small hollow
 arrowhead with the direction the kernel uses for a line, segment or ray in
 Graphics 1: `Line(A,B)` points from `A` to `B`, and parallels, perpendiculars,
@@ -887,69 +904,40 @@ redefined or deleted. A list of points can be given to Spline V2, for example
 <!-- geocedg-guide-section: locus-v2 -->
 ## 6. Locus V2
 
-### 6.1 What a Locus V2 is
+### 6.1 Trace the movement of a point
 
-A **Locus V2** is a semantic curve: the image of a dependent construction
-evaluated over an explicit, oriented one-dimensional domain.
+A Locus V2 traces the positions of one point as another value changes.
+For example, you can trace the midpoint of a moving segment. The object
+you vary is the **driver**. The **domain** tells GeoCeDG how far to vary it.
 
-Informally, you have a *generator* — a driver parameter and the construction
-that depends on it — and you declare the interval over which the driver is
-allowed to move. The locus is the set of positions that the dependent point
-takes over that interval.
+### 6.2 Measure or intersect the trace
 
-### 6.2 Why it is not a rendered polyline
+You can measure a Locus V2, inspect its intersections or place points at
+specific positions along it. Zooming in helps you see the curve while
+the measurements and intersections stay the same. To create an ordinary GeoGebra locus, enter `Locus(P,Q)` with `Q`
+constrained to a path and `P` a point that depends on it.
 
-The classical sampled locus is a list of computed points joined by straight
-segments. Its identity *is* that sample. A Locus V2 is different: the sample
-drawn on screen is a derived representation, produced for display, and it is
-never the authority for anything.
+### 6.3 Identify a position on the trace
 
-In particular:
+The **parameter** gives a position along the driver's journey. Its direction
+tells you which way is forward. Each **branch** has a key, such as
+`generator.main`. If the traced point becomes undefined during that
+journey, GeoCeDG leaves a gap. Each uninterrupted part is a **component**.
+Declare the endpoints of a numeric domain and whether each one is included.
+The slider limits are independent of this domain.
 
-- lengths are computed from the semantic definition, not from the drawn chords;
-- intersections are solved in the original parameters, not against screen
-  segments;
-- results do not change with zoom, viewport or screen resolution;
-- a point "on" the curve carries a semantic parameter, not a vertex index.
+### 6.4 Check a position after editing
 
-This separation is the reason Locus V2 exists. It is also why the classical
-`Locus` command remains available and unchanged: the two are different objects
-with different contracts.
-
-### 6.3 Structure: generator, domain, orientation, branch, component
-
-- **Generator (source).** The driver and the dependent construction that
-  produces the curve. Its identity comes from the explicit semantic
-  coordinate/domain, the provider kind and version and its durable inputs —
-  never from a slider's visible range, a label, a drawn vertex or the current
-  value.
-- **Parameter.** The canonical path parameter is the driver/domain parameter.
-  It is not the index of a sampled point.
-- **Explicit domain.** You state the interval and whether each end is included.
-  The domain does not come from the visual limits of a slider or from what is
-  drawn.
-- **Orientation.** The domain is oriented, which is what makes a partial length
-  and a direction meaningful.
-- **Branch.** A semantic address within the curve. The default branch produced
-  by a generator is `generator.main`.
-- **Component.** A maximal connected piece of the curve within a given
-  evaluation. Where the construction becomes undefined, the curve is split into
-  components; the gap is never bridged.
-
-### 6.4 Currentness
-
-A semantic result is computed for a specific state of the construction. When an
-input changes, the result is recomputed and the previous evidence stops being
-current. This is why an address can be reported as **current and admissible**
-or as **retained/dormant — not current** in the definition inspector.
-
-Currentness matters most when you materialize intersection points: see
-section 8.
+When you edit an input, the curve and dependent results update. If a
+previous position is temporarily unavailable, the definition inspector
+shows it as retained but inactive. Restore the inputs if you want to
+recover that position. See section 8 for intersection points.
 
 ### 6.5 Creating a Locus V2
 
 Through the interface, **Construction → Semantic curves → Locus V2** offers the
-generator and domain selection.
+construction in two clicks. Select the dependent point first, then its
+constrained driver point. Use Algebra Input to give a numeric domain.
 
 Through Algebra Input, the command forms are:
 
@@ -1002,15 +990,12 @@ documented generators, explicit domains and targets. It is **not** a generic
 <!-- geocedg-guide-section: spline-v2 -->
 ## 7. Spline V2
 
-### 7.1 What a Spline V2 is
+### 7.1 Build a smooth curve from points
 
-A **Spline V2** is a semantic curve built from an ordered list of constructor
-points and a degree. It is a first-class semantic object of the same family as
-Locus V2: it has an explicit parameter, an oriented domain, branches and
-components, and the drawn stroke is a derived representation.
-
-It is a different object from the inherited Classic `Spline`, which is
-unchanged and remains available.
+Use **Spline V2** to join an ordered set of points with a smooth curve,
+then measure it or construct on it using the operations in sections 8 and 9.
+You can make an open curve or a loop. For an ordinary GeoGebra spline, enter `Spline({A,B,C,D})` with
+four existing points in the order you want to join them.
 
 ### 7.2 Creating a Spline V2
 
@@ -1065,19 +1050,12 @@ list and its degree as named objects of the construction (for example `l1` and
 
 The default branch key of a Spline V2 is `spline-v2/main`.
 
-### 7.3 Constructor points are not semantic points
+### 7.3 Choose points for construction or measurement
 
-The points you pass to `SplineV2` are **constructor points**. They define the
-curve. They are ordinary free or dependent points, not semantic points: they
-carry no semantic address of their own, even when their coordinates lie exactly
-on the curve.
-
-This is a deliberate contract, and it is the most common source of surprise.
-A metric or an incidence query needs a point with admissible semantic
-provenance on that curve; cartesian coincidence is not semantic position. A
-constructor point is nevertheless an admissible length endpoint on its own
-spline, through its explicit place in the constructor list — structural
-provenance, never its coordinates. See section 9.3.
+The points you give to `SplineV2` define the curve. You can use them as
+length endpoints when they identify a unique position in its point list.
+For a new point that follows the curve, use the tool or command below.
+Coordinates alone can match several positions on a curve.
 
 ### 7.4 Points on a Spline V2
 
@@ -1140,148 +1118,97 @@ Classic diagnostic session.
 
 ### 8.1 Semantic points
 
-A **semantic point** on a semantic curve carries an explicit address: the
-source curve, a branch, a component and a canonical parameter, together with
-evidence of its currentness. That address — not its coordinates — is its
-identity.
+A **semantic point** identifies a position on a Locus V2 or Spline V2 by its
+curve and position along the construction. At a crossing, two positions
+along the curve can have the same coordinates. The point keeps the position
+you chose and can be used to measure a route (§9.3).
 
-Consequently, none of the following defines a point's position on a curve:
+**Place by clicking.** With **Point** or **Point on object**, click a supported
+curve. If GeoCeDG can place the point directly, it creates it. If the panel
+offers a position instead, select it and choose **Confirm**, even when there
+is just one offer. If several objects are under the pointer, choose the curve
+first. No helper point is needed. Panning or zooming within the same view
+keeps a pending offer. Changing views or tools, editing the source or
+changing the placement policy can invalidate it. Click again if the offer
+expires.
 
-- its coordinates;
-- its proximity to the drawn stroke;
-- the graphical drawing order;
-- a visual or list index.
+**Place from a reference.** Choose **Construction → Semantic curves →
+Point on Locus V2 from reference**. Select the curve, then select the existing
+reference point `Q` in Graphics or Algebra. In the panel above the input bar,
+choose the position and click **Confirm**. To start from the click itself,
+activate **Click position** in that tool and click the curve. The panel is
+available in a bottom row even with the input bar hidden. **Cancel**,
+**Restart** or `Escape` lets you start again without creating a point.
 
-Two points with identical coordinates may have completely different semantic
-provenance, and one of them may be usable for a given query while the other is
-not.
+- **r world** is the search radius in construction units, initially 0.1 for
+  the reference tool. With **Click position** in that tool, it still uses the
+  entered radius. With an ordinary click in **Point**, GeoCeDG captures a
+  radius from the view and keeps it during confirmation.
+- **Policy** displays the equal-distance and parameter tolerances, plus
+  limits on evaluations (**Semantic misses**), subdivisions, refinement
+  iterations and candidates. Enter positive numbers with a decimal point
+  for the radius and tolerances and positive integers for the limits.
+  **Apply** saves the settings for the next selection. Increasing the limits can
+  help a search finish. It cannot make an unsupported curve eligible.
+- A verified local offer may appear even when GeoCeDG cannot establish
+  global uniqueness. An offer marked **Forward address; numerical proximity
+  is uncertified** can place the point at a supported position, with no
+  guarantee of exact projection or minimum distance. If no position is
+  offered, read the diagnostic. A refused search may leave open whether a
+  mathematical solution exists.
 
-**Initial selection (M08-S).** A position reference discovers admissible semantic
-addresses. Select one explicitly when several are offered; cancelling creates no point.
-The point stores that address and reevaluates when the locus changes. Moving the initial
-reference adds no new dependency; it can still affect the point through an existing
-dependency of the locus itself. Unresolved searches cannot authorize a selection. Loss
-of address admissibility can make the point undefined; no nearby branch is silently chosen.
-This is not an assertion of exact projection or a global distance minimum.
-Safe M09 redefinition and dynamic M08-D correspondence remain pending.
+The new point follows the curve. Moving `Q` afterwards has no direct effect,
+though it can affect the result if it already helps define the curve. If the
+chosen position becomes unavailable, the point becomes undefined until its
+position returns. The tool does not select a different branch for you.
+When you know the position, use `Point(L,u)` with a numeric parameter on
+the main branch or `Point(L,"generator.main",u)` to give the branch explicitly.
+You can also choose **Point on semantic curve (explicit address)** in
+**Construction → Semantic curves**, select the curve and enter the branch
+key and parameter in the dialog. See §7.4 for the Spline V2 branch key.
 
-To use an **existing point Q**, activate **Point on Locus V2 from reference**, select the graphical
-locus L, then select Q. Confirm a displayed semantic address in the panel above the
-algebra input. Its radius is in model units; **Policy** exposes the existing bounded
-search settings. Q is an initial reference and is not added as a parent of the result.
+**Allow dragging.** The panel initially enables dragging for new points on
+supported objects. Clear it to create a locked point that still follows its
+source. The panel remembers your reference and drag choices while you work
+in the current document. To move an unlocked point, switch to **Move** and start a new gesture.
+Supported Locus V2 and Spline V2 constructions keep the point on the same branch
+and component as you drag, including across a periodic seam when the continuation is
+established. The pointer can leave the stroke. At a gap, ambiguity or other
+barrier the point stays at its last valid position. Release the button and
+start a new drag to try again. A changed gesture adds one Undo step.
+Availability depends on the curve and the document. For example, an
+unsupported existing region point or undefined conic can prevent an operation
+whose failure GeoCeDG cannot safely undo.
 
-For the same model-unit policy with a **click position**, enable **Click position** in
-that panel and click L. This option starts a new world request directly; it does not
-use the ordinary Point tool's screen-derived search radius. Confirm or cancel the
-offered address as for Q. The option is session state and is not saved in the point.
+**Place an ordinary point using Q.** Right-click a supported native 2D
+object and choose **Create point from reference Q**. Select `Q` in Graphics
+or Algebra and **Confirm**. You can also enable **From reference Q** in the
+**Point** or **Point on object** panel and select the object, then `Q`.
+Supported objects include 2D lines, rays, segments, conics and supported conic
+parts. Axes, 3D objects, dimensions, functions, implicit curves, polylines and
+legacy loci are outside this reference mode. The native placement uses the
+ordinary point-on-object rule and ignores the V2 search radius. Leave **From
+reference Q** off for ordinary click placement.
 
-With the ordinary **Point** or **Point on object** tool, click the locus stroke.
-Existing R6 creation remains available. When global uniqueness alone is unestablished,
-a supported R2/H1 local address can instead be offered in the same confirmation panel,
-using the world radius captured for that click. The same request and radius are kept
-through the source chooser and confirmation, including after zoom or pan in that view.
-A different view, source domain, tool or query policy invalidates the offer.
-Even a single such offer needs confirmation. No helper Q
-is created. This creation does not start general dragging during that gesture.
+**Example — start a point on a segment from Q.** Enter the two lines in a new
+construction.
 
-The kernel decides admission for both forms of authoring. The result stores its forward
-address and follows changes of L. R2/H1 still requires its certified component, local
-regularity and proximity evidence. A finite forward evaluation alone cannot authorize
-creation from an unresolved search. Unsupported components or missing evidence produce no
-offer; that is not certified absence. Creation without the H1 regularity requirement is
-available through a separate experimental route for reconstructible programs with
-certified components and a complete existence inventory. It always requires explicit
-address confirmation. Its numerical proximity is labelled uncertified: the radius
-filters the computed residual, without guaranteeing ideal distance, a minimum
-projection or global uniqueness.
+```text
+source=Segment((0,0),(2,0))
+ReferenceQ=(1,0.03)
+```
 
-An unestablished metric projection minimum does not by itself prohibit that
-separate forward selection. The panel may offer a direction only when the
-forward operation establishes its own component, structural selection and
-reconstruction requirements; its numerical proximity remains uncertified.
+Open the segment's context menu and follow the ordinary reference workflow.
+After confirmation, a new point lies on the segment at `(1,0)`. Move
+`ReferenceQ` and check that the point stays in place. Move a segment endpoint
+and check that the new point still lies on the segment.
 
-**Free or locked.** The Point and Point on object panel includes **Allow dragging**,
-initially selected for new points on supported objects. Clear it to create a point
-with the normal lock enabled. During the session the panel retains your dragging
-and reference-Q choices; check both when starting another construction or document.
-Locking prevents dragging; the point still depends on its object and recomputes
-when it changes. The contextual controls remain available in their own bottom
-row when the algebra input bar is hidden.
-
-For a supported native object, its context menu provides **Create point from
-reference Q**. This selects the conductor and opens the existing reference
-panel. Select an existing Q in Graphics or Algebra, leave **Allow dragging**
-selected if desired, then **Confirm**. You can also enable **From reference Q**
-in the ordinary Point or Point on object panel and select the conductor, then Q.
-The supported native table includes 2D lines, rays, segments, conics (including
-circles and parabolas) and admitted conic parts. It uses native point-on-path
-placement and movement, without imposing Locus V2's search conditions. Q supplies
-only the initial position; it does not become a new parent. Moving Q later does
-not move the result unless Q already defines the conductor itself. Native
-placement does not use the V2 radius control. Leave **From reference Q** off for
-the usual direct click, which requires no additional confirmation dialog.
-
-**Experimental semantic dragging.** With Move, select a point whose **Allow
-dragging** option is enabled and drag it.
-Its identity and dependent updates are preserved. Alongside existing R6/Spline V2
-dragging, supported local charts include nondegenerate affine images of a circular
-driver and constructions with a coordinate proved monotone throughout the local move.
-The R3 experimental provider also uses certified reconstructible v3 programs,
-including admitted segment/arc constructions and regular line-circle intersections.
-It proves a unique local continuation within the retained component; it does not
-promise a globally closest point. Genuine included endpoints permit unilateral motion.
-A seam is crossed only with established periodic correspondence. At a barrier the
-point retains its last valid address and shows a brief diagnostic; it never jumps
-to another branch by proximity. A gesture that changes the point produces one Undo
-step; rejected or unchanged attempts add none. The proved continuation equation
-is retained for the gesture; overlapping charts may change only with demonstrated
-correspondence to the same root. After a barrier, release and select the
-point again to start another attempt. Unresolved
-singularities, gaps and ambiguities need not be traversable.
-
-The pointer can move away from the exact stroke. For an existing semantic point,
-the finite movement request neighborhood follows the pointer's displacement
-from its current position; this is separate from click/Q discovery radius. It
-does not establish continuation by itself: the kernel must still certify the
-same component and preimage before changing the point. A refused move retains
-the last valid position and its diagnostic.
-
-The experimental R4 correction can chain several established local charts for
-one mouse move. It treats the segment from the previous request to the new target
-as the request trajectory and subdivides it when continuation needs further
-proof. The point updates once, after the entire trajectory is established;
-failure or an exhausted budget preserves the last valid position. Translations,
-rotations and nondegenerate dilations of supported sources, including compatible
-compositions, retain semantic continuation. Switching to another view and back
-also invalidates a pending offer. Panning or zooming the same view preserves the
-captured world request.
-
-**Document boundary.** The new modes also check that the document's native state
-supports established recovery if an operation fails. Ordinary supported native
-points on lines, rays, segments, circles and circular arcs have typed recovery;
-their mere presence does not prohibit a new request. Regions, undefined conics,
-editable user-tool outputs and other states without a demonstrated restorer may
-still stop a new operation even when L is regular. The diagnostic distinguishes
-that document boundary from the selected curve's geometric admission.
-The usual native Point tool keeps its behavior. Old files retain historical loading;
-for admitted free conic points, the new reader explicitly preserves the saved native
-argument. The GeoCeDG profile writes that extra state only when the defining ancestor
-chain is also proved faithful. Otherwise it retains the historical readable payload,
-without claiming exact parameter persistence. Transactional native recovery is a
-separate capability and does not add public file fields for every native path.
-Within that positive native recovery table, GeoCeDG Undo states also retain a
-private memory companion. A changed gesture still creates one Undo step; undoing
-or redoing restores the captured native inputs instead of deriving them again
-from rounded coordinates. This companion is not exported to public documents.
-History states outside that recovery table retain the ordinary native Undo route
-and its historical limits; they do not prevent Undo merely by sharing a history
-with an admitted state.
-Existing user-tool
-definitions retain their historical format. A later Classic save retains its historical
-format and does not promise to preserve the added state. The
-candidate requires final verification, independent review and author smoke.
-
-Safe M09 redefinition and dynamic M08-D correspondence remain outside this workflow.
+**Save and reopen.** Save native work as `.cedg`. GeoCeDG can preserve the
+exact path position of eligible free points on complete 2D conics when
+their defining objects can also be reconstructed faithfully. Other states use
+the compatible representation, which can lose exact parameter information.
+Classic and older readers can also lose that extra information on re-save.
+Keep the original GeoCeDG file when opening a copy elsewhere.
 
 ### 8.2 Rich intersection results
 
@@ -1296,7 +1223,9 @@ c=Circle((0,0),1)
 R=Intersect(S,c)
 ```
 
-The relevant command forms are:
+To try it, add the circle and the intersection above to the Spline V2
+construction in section 7.5. Select `R` in Algebra and inspect the listed
+solutions. The relevant command forms are:
 
 ```text
 Intersect( <Locus V2>, <Supported Object> )
@@ -1307,23 +1236,17 @@ Intersect( <Rich Intersection Result>, <Solution Token> )
 A rich result is a normal dependent object: it recomputes when its inputs
 change.
 
-### 8.3 Local admissibility versus global completeness
+### 8.3 Tell which solutions can become points
 
-Two independent statements are made about an intersection:
+In the inspector, **Certified; eligible** means you can create a point from
+this solution. **Rich result only** means you can inspect it. The inspector
+also identifies solutions that already have a point and warns you if an
+edit has made the displayed result out of date.
 
-- **Local admissibility** of a single root: this specific solution is certified
-  and has a resolved, unique identity, so a point may be created from it.
-- **Global completeness** of the result: the solver established that it found
-  *all* solutions in the requested region.
-
-These are separate. A result whose global completeness is `NOT_ESTABLISHED`
-does not thereby invalidate a locally admissible root. Conversely, a root that
-is tangent, ambiguous, stale or insufficiently certified does not become
-admissible because it is visible on screen.
-
-The inspector labels these states: **Certified; eligible**, **Rich result
-only**, **Already materialized**, and a stale-result warning when the underlying
-result has changed since you looked at it.
+Check the completeness indicator when your work needs every solution.
+You can use an eligible crossing even if the result cannot establish that
+it found every crossing. A contact or an ambiguous solution can appear
+in the list without offering point creation.
 
 ### 8.4 The inspector
 
@@ -1345,21 +1268,17 @@ Solutions already materialized are identified as such.
 solutions. Markers are presentation only: they are not objects, they are not
 saved, and they confer no admissibility.
 
-### 8.5 The exact token
+### 8.5 Reuse a solution in a command
 
-Each admissible solution has an opaque **exact token**. It is the durable
-identity of that solution across recomputation, save and reopen. It is not a
-coordinate, not an index and not a label.
-
-You do not need to handle tokens manually when you use the inspector — that is
-what the inspector is for. The scripted form `Intersect(R,"<token>")` exists for
-reproducible or automated work; do not transcribe tokens by hand.
+The inspector normally handles solution selection for you. In automation,
+`Intersect(R,"<token>")` takes the exact solution identifier. Copy the
+identifier from the result when needed. Each identifier refers to a
+solution, independently of its displayed coordinates or row number.
 
 ### 8.6 Materialization
 
-Materializing a solution creates an ordinary `GeoPoint` whose parent is that
-intersection and whose identity is bound to the exact token. From then on it is
-a normal member of the dependency graph.
+Creating a point from an eligible solution lets you use it as an input to
+another construction. The point follows that solution as its inputs change.
 
 Three rules govern the lifecycle:
 
@@ -1372,8 +1291,7 @@ Three rules govern the lifecycle:
   admissible again under its exact selector, that same point is reactivated. No
   new point is invented, and no point is reassigned by proximity.
 
-**Auto-create eligible points for new explicit queries** (**Options → GeoCeDG
-options**) is an explicit, visible opt-in that applies only to a newly submitted
+**Auto-create eligible points for new explicit queries** (under **Options**) is an explicit, visible opt-in that applies only to a newly submitted
 query. The query and the points it creates form one compound undo step. It does
 not run when you merely select, reopen or recompute a result.
 
@@ -1401,8 +1319,9 @@ S=Point(L,K)
 T=Intersect(L,g,K)
 ```
 
-With `K` at `(1.2, 1.6)`, `S` and `T` are both `(1.2, 3)`. Dragging `K` moves
-them; the driver `N` of `L` never moves.
+Drag `K` along the circle. Check in Algebra that `S` and `T` both
+show `(x(K),3)` evaluated at the current position. This leaves `N` in
+place.
 
 **Preconditions and constructive authority.** Both forms need the document to
 have adopted the constructive authority. In a document under the legacy policy
@@ -1428,9 +1347,6 @@ those inputs; it contains no token, parameter, coordinate or index.
 its inputs after reopen, copy, Undo and Redo; no parameter or certificate is
 stored. Readers older than this version reject the two forms.
 
-The normative rules are in `locus-v2-public-surface.md` section 21 and the
-constructive authority amendment of `locus-v2-intersections.md`, with ADR 0039
-and ADR 0040.
 ### 8.7 Intersections of two semantic curves
 
 A pair of semantic curves consumes the same rich-result machinery. Several
@@ -1476,120 +1392,166 @@ guide.
 <!-- geocedg-guide-section: lengths-and-measurements -->
 ## 9. Lengths and measurements
 
-### 9.1 Two surfaces
+### 9.1 Choose a length result
+
+**New in GeoCeDG.** Use `LocusLength` when you want to see the measured value,
+the part of the route covered and any limitations of the calculation. It works
+with Locus V2 and Spline V2. Lengths use construction units and are non-negative
+in either direction. If you need an ordinary number for another calculation,
+use `Length(L)` for the whole curve or `Length(L,A,B)` for the default route.
+You can also use `Length(M)` on an existing `LocusLength` result `M`. In each
+case GeoCeDG supplies a number only when the result qualifies for numeric use.
+
+In **Construction → Metrics and validation**, choose **Total semantic locus
+length (experimental)** and select the curve. For **Partial semantic locus
+length (experimental)**, select the curve and two eligible points, choosing
+the start point before the end point. Each tool opens the result inspector.
+For a result you entered in Algebra, select its row and choose **Inspect rich
+result** from its context menu or from **Construction → Relations and
+intersections**. Check **Metric value**, **Computation status**, **Metric
+coverage**, **Traversal outcome** and any diagnostics. The numeric guarantee
+and error fields tell you how to interpret an estimate.
+
+### 9.2 Measure the whole curve or choose a route
 
 ```text
-Length(...)       ordinary number
-LocusLength(...)  rich result
+LocusLength(L)
+LocusLength(L,A,B)
+LocusLength(L,A,B,"direction","boundary","same-position")
 ```
 
-`Length` returns an ordinary numeric object that you can use anywhere a number
-is expected. `LocusLength` returns a **rich metric result** that additionally
-carries the computation status, the covered domain, the error estimate and the
-diagnostics. It is not an ordinary numeric row and should not be expected to
-behave as one.
+The first form measures the declared domain of `L`. If the construction
+retraces part of the curve, the traversal counts each pass. The second form
+measures from `A` to `B` using `"forward","strict","zero-length"`. Supply all
+three policy arguments together to change the route. Type the lowercase words
+in quotes in either language. You can also supply text objects containing
+those words.
 
-A scalar produced by `Length` on a semantic curve is an adapter over that same
-rich evidence: its visible definition reads `Length(S,P,Q)`, while the rich
-auxiliary remains its real parent and is visible under advanced inspection.
+| Argument | Value | When to use it |
+|---|---|---|
+| Direction | `"forward"` | Follow the curve's defined orientation, usually the increasing driver parameter. |
+| Direction | `"reverse"` | Follow the opposite orientation. The value is still a length. |
+| Open boundary | `"strict"` | Require the route to reach the target. If it cannot, the result has no value. |
+| Open boundary | `"stop-at-end"` | Measure only up to the end encountered in the chosen direction when the target lies behind that route. The result is incomplete and the target was not reached. |
+| Open boundary | `"wrap-to-start"` | Continue from the opposite end of a supported open component. The measurement adds the two pieces and leaves out the jump between ends. |
+| Same position | `"zero-length"` | Return zero when the two endpoints identify the same position along the curve. |
+| Same position | `"full-cycle"` | Measure one complete turn from that same position on a supported periodic component. An open component cannot supply a full cycle. |
 
-### 9.2 Total and partial length
+For an open curve, the boundary policies apply at the outer ends of the route.
+They cannot cross an internal gap or join disconnected components. Stopping
+or wrapping requires a verified endpoint. An open arc in a periodic
+domain can stop at a verified endpoint but cannot wrap. On a complete
+periodic component, either direction can pass through the seam where one period
+ends and the next begins. This ordinary continuation needs no open-boundary
+wrap. Two points at the same coordinates can represent different positions
+along a retraced or self-intersecting curve. Use the very same point twice
+when requesting a full cycle. The last policy only changes what happens
+when both endpoints identify the same position. A measured limit at an
+excluded end can still be unavailable as a selectable point.
+
+**Example — a straight open route.** In a new construction, enter these
+lines in Algebra, pressing Enter after each. The domain runs from 0 to 10
+and includes both endpoints.
 
 ```text
-Length( <Locus V2> )
-Length( <Locus V2>, <Start Semantic Point>, <End Semantic Point> )
-
-LocusLength( <Locus V2> )
-LocusLength( <Locus V2>, <Start Semantic Point>, <End Semantic Point> )
-LocusLength( <Locus V2>, <Start Semantic Point>, <End Semantic Point>,
-             <Direction>, <Boundary Policy>, <Same-position Policy> )
+s=0
+Q=(s,0)
+D={false,{0,10,true,true}}
+L=LocusV2(Q,s,D)
+A=Point(L,"generator.main",8)
+B=Point(L,"generator.main",2)
+T=LocusLength(L)
 ```
 
-The total form measures the whole curve over its declared domain. The partial
-form measures the oriented arc between two semantic positions.
-
-Both work on a Locus V2 and on a Spline V2, since a Spline V2 is a semantic
-curve of the same family.
-
-### 9.3 Endpoints need semantic provenance
-
-The partial form requires the two endpoints to be **admissible positions on
-that curve**. Admissibility comes from explicit provenance, never from
-coordinates. This is the practical face of the rule stated in section 8.1.
-
-A point is an admissible endpoint on the measured curve `S` when it is:
-
-- a **semantic point** of `S`, created interactively or with an explicit
-  address such as `Point(S,"spline-v2/main",0.25)`;
-- a **constructor point** of the Spline V2 `S` — or of the Spline V2 whose
-  similarity image `S` is — through its place in the constructor list;
-- a point materialized from an **intersection** in which `S` takes part
-  (section 9.4);
-- the **generator point** that traces the Locus V2 `S`, at the current value of
-  its driver;
-- if `S` is the image `T(U)` of another curve `U`, the image `T(P)` of an
-  admissible point `P` of `U`, made with the same transformation and the same
-  parameter objects;
-- a **dependent copy** `Q=P` of an admissible point `P` of `S`.
-
-In the section 7.5 example, with `K=(-2,0)` added:
+Inspect `T`: the whole curve measures 10. Then enter each query and inspect
+the value and coverage of its result.
 
 ```text
-Length(S,P,Q)   defined
-Length(S,A,C)   defined: A and C are constructor points of S
-Length(S,K,Q)   undefined, although K coincides with A
+DefaultRoute=LocusLength(L,B,A)
+StrictRoute=LocusLength(L,A,B,"forward","strict","zero-length")
+StopRoute=LocusLength(L,A,B,"forward","stop-at-end","zero-length")
+WrapRoute=LocusLength(L,A,B,"forward","wrap-to-start","zero-length")
+BackRoute=LocusLength(L,A,B,"reverse","strict","zero-length")
 ```
 
-There is no proximity selection and no implicit choice of preimage — which
-matters as soon as a curve self-intersects and a position has more than one
-preimage. Where a position has several preimages, no endpoint is chosen and the
-length is undefined.
+- `DefaultRoute` is 6, from 2 to 8.
+- `StrictRoute` has no value. Travelling forward from 8 cannot reach 2
+  before the open end at 10.
+- `StopRoute` is 2, from 8 to 10, with incomplete coverage.
+- `WrapRoute` is 4, from 8 to 10 plus 0 to 2.
+- `BackRoute` is 6, from 8 directly back to 2.
 
-A semantic point belonging to a *different* curve is not a valid endpoint for
-this one. Nor are free points, `CopyFreeObject` copies, other derived points
-such as midpoints or expressions, and outputs of user tools.
-
-### 9.4 Endpoints from intersections
-
-A point materialized from an intersection is a valid metric endpoint on each
-semantic curve that takes part in that intersection:
+**Example — a periodic route and a full cycle.** In a new construction, use a
+point on a unit circle as the driver. The period runs from `-pi` up to `pi`,
+with those angles identifying the same seam. Enter each line separately.
 
 ```text
-R=Intersect(S,T)
-X=Intersect(R,"<token>")
-Length(S,X,Q)   defined on S
-Length(T,X,E)   defined on T
+periodicCircle=Circle((0,0),1)
+periodicDriver=Point(periodicCircle)
+Q=periodicDriver+(0,0)
+L=LocusV2(Q,periodicDriver)
+A=Point(L,"generator.main",2.5)
+B=Point(L,"generator.main",-2.5)
+F=LocusLength(L,A,B,"forward","strict","zero-length")
+R=LocusLength(L,A,B,"reverse","strict","zero-length")
+Z=LocusLength(L,A,A,"forward","strict","zero-length")
+C=LocusLength(L,A,A,"forward","strict","full-cycle")
 ```
 
-The same holds for a point materialized from the intersection of a semantic
-curve with an ordinary object: a line, segment or ray, a conic, a bounded
-function graph or a polynomial implicit curve.
+Inspect the results. `F` is about 1.283185 and crosses the seam, while `R`
+is about 5. `Z` is 0, and `C` is about 6.283185. The display may round these
+values. Direction follows the construction and there is no shortest-route
+option. The command has no separate branch or tolerance argument. Use the
+point definitions to identify the intended positions.
 
-```text
-c=Circle((0,0),1)
-RC=Intersect(S,c)
-Y=Intersect(RC,"<token>")
-Length(S,Y,Q)   defined on S
-```
+### 9.3 Choose valid endpoints and diagnose a missing value
 
-This covers every **Spline V2 × Spline V2** intersection and every other pair of
-semantic curves whose roots can be materialized (section 8.7). The point is
-admitted through its explicit semantic provenance — the exact root token and the
-evidence the intersection keeps for its semantic curves — and never through its
-coordinates. In practice:
+For a partial length, each point must identify a position on the measured
+curve by how it was constructed. Use any of these:
 
-- the side of the intersection that belongs to the measured curve is found by
-  that curve's identity, so `Intersect(S,T)` and `Intersect(T,S)` give the same
-  length;
-- if the intersection point becomes dormant, the length is undefined until the
-  same root is current again; it never jumps to a nearby root;
-- an intersection point is an endpoint only on the curves of its own
-  intersection, not on a transformed copy of them; on the image curve, use the
-  image of the point made with the same transformation (section 9.3);
-- a nearby or coincident point of any other kind is still **not** an endpoint.
+- A point created on that curve, including a point placed by its parameter.
+- A point used exactly once to construct that Spline V2, or to construct its
+  source spline if you are measuring a similarity image.
+- The generator point tracing that Locus V2 at the current driver position.
+- A point created from an eligible intersection on the curve (section 9.4).
+- On a transformed curve, the image of an eligible point made with the same
+  transformation and the same parameter objects.
+- A dependent copy such as `Q=P` of an eligible point.
 
-A self-intersection `Intersect(S,S)` produces no materializable point, so it
-cannot supply an endpoint.
+For example, in the Spline V2 exercise in section 7.5, `Length(S,P,Q)` uses
+two points created on `S` and `Length(S,A,C)` uses two of its constructor
+points. Add `K=(-2,0)` and try `Length(S,K,Q)`. The last length is undefined:
+`K` only shares the coordinates of `A`. A free copy, a point on a different
+curve, or a point from an unrelated construction such as a midpoint also
+lacks the required relationship. If the source list uses the same constructor
+point at multiple positions, choose the intended position explicitly instead.
+
+If the command rejects the entry, check the argument count and types. If
+GeoCeDG creates a result but reports no value, inspect it for an invalid
+endpoint, unknown policy word, unreachable route, gap or unavailable
+measurement. Check whether the curve and both points still exist at the
+current driver value. A total on an unsupported or partly established domain
+can be unavailable. In supported cases GeoCeDG may report a conditioned
+estimate, with its guarantee and error shown in the inspector. Keep an
+incomplete or estimated result separate from a confirmed measurement of the
+whole requested route.
+
+### 9.4 Measure from an intersection
+
+Use **Inspect rich result** on the intersection result and create an eligible
+point (sections 8.4 and 8.6). Use that point as an endpoint in `LocusLength`
+or `Length` on either of the semantic curves that produced the intersection,
+or on the sole semantic curve when the other object is ordinary. For example,
+use `Length(S,X,Q)` after creating `X` from an eligible solution on `S`.
+Reversing the inputs of the intersection leaves each point associated with
+the same curves. The route direction still depends on the order of the
+length endpoints.
+
+If the solution ceases to be eligible as the construction changes, the
+length becomes undefined until that solution is available again. For a
+transformed curve, transform the endpoint with the same inputs as the curve.
+A self-intersection request `Intersect(S,S)` supplies no point for this
+workflow.
 
 ### 9.5 Engineering dimensions
 
@@ -1766,14 +1728,14 @@ line explicitly — for example `a: y = 0` — and select that line.
 
 ### 11.1 What DXF export is, and is not
 
-**File → Import and export → Export 2D geometry as DXF (experimental)…**
+**File → Export 2D geometry as DXF (experimental)…**
 writes an ASCII DXF (AC1015) drawing from already-resolved 2D model geometry.
 
 It is an interoperability adapter. It is not a screenshot, it does not clip to
 the window, it does not change the construction, and it is never geometric
 authority. Nothing in the exported file feeds back into the model.
 
-Extended DXF export (the G9X1 capability) is enabled by default in GeoCeDG,
+Extended DXF export is enabled by default in GeoCeDG,
 independently of semantic curves: the two defaults are separate decisions and
 neither implies the other. The historical `--enableExtendedDxf=false` argument
 is retained as a disabling override.
@@ -1822,7 +1784,7 @@ distinct, and endpoint proximity alone never establishes periodic closure.
 
 ```text
 DXF SPLINE exact entity      = NOT IMPLEMENTED
-SplineV2 DXF representation  = APPROXIMATE LWPOLYLINE under current G9X1
+SplineV2 DXF representation  = APPROXIMATE LWPOLYLINE
 ```
 
 There is no exact `SPLINE` entity in the approved export baseline, and none is
@@ -1927,8 +1889,7 @@ the construction unit as described in section 11.7. Neither the export nor its
 fidelity depends on zoom, pan, window size, DPI or the current view. The same
 construction revision and the same request always produce the same output.
 
-**Export area.** When you have chosen an export area under **File → Export
-area** (or `Export_1` and `Export_2` define one), the DXF contains only the
+**Export area.** When you have chosen an export area under **File** (or `Export_1` and `Export_2` define one), the DXF contains only the
 sources and Locus V2 components whose geometry meets that rectangle, each
 written whole and unchanged; nothing is cut. A Locus V2 or Spline V2 component
 is left out only when it is proven to lie outside. Everything left out is
@@ -2028,7 +1989,7 @@ session and **hidden layers** that are saved with the document.
   layers stored in the document, and **Paste** keeps the layers of the copied
   objects.
 - **Choosing it.** **Working Layer** sits in the Move group of the toolbar,
-  after Move and Rotate around Point. It is a one-shot tool: click an object to
+  after Move and Move around Point. It is a one-shot tool: click an object to
   use its layer, or click empty space to choose a layer from 0 to 99. After a
   valid choice the tool returns to Move; cancelling changes nothing. Clicking
   **Layer: n** in the status bar opens the same chooser.
@@ -2061,6 +2022,61 @@ preview, copying the Graphics view as an image, PGF/TikZ, PSTricks and Asymptote
 omit hidden layers (section 4.5). DXF keeps their objects on their layers and
 writes those layers as off, so that a CAD program shows them hidden
 (section 11.8).
+
+### 12.6 Arrange controls in a panel
+
+In **Graphics 1**, choose **Move** and open **View → Visibility and style →
+Control layout**. Create a panel. With the manager open, drag the header to
+move the panel, the lower-right handle to resize it, or a member to move
+it inside the panel. With the panel selected in the manager, click a loose control in
+Graphics 1, then choose **Attach control**. Eligible controls include numeric sliders, buttons, independent
+check boxes and input boxes with absolute positions in that view. A
+control can belong to one panel. Use **Detach control** to return it to
+the view as a loose control. If it falls outside the view, choose to place
+it in view or keep its backup position.
+
+| Manager option | What it does |
+| --- | --- |
+| Change anchor | **Fixed** keeps the panel in the window as you pan or zoom. **Canvas anchor** moves the panel's origin with the drawing and keeps its visual size. |
+| Panel appearance | Edit its name, color and transparency. Confirm to keep the preview or cancel to discard it. |
+| Show or hide panel | Show or hide the controls together with their panel. |
+| Duplicate empty panel | When the selected panel is empty, create another at the chosen position. |
+| Move panel into view | Recover a panel that has gone off screen. |
+| Remove panel | Remove the panel and return its controls to the view. |
+
+New panels are stacked at the front. A higher panel blocks clicks on
+controls behind it, even if you can see them through its background.
+A partially covered input box cannot be edited. Right-click an accessible
+member for its **Properties…** or **Open control layout**. Right-click the
+background or header to open the panel manager. Finish any active picking
+or editing first. Confirmed changes support Undo and Redo.
+
+**Quick check.** Create a slider with **Slider**, place it outside the panel,
+attach it and move the panel. Check that the slider moves with it and still
+changes the value in Algebra. Save to `.cedg`, reopen and check that it is
+still grouped. Classic from the same distribution preserves the layout on
+save and shows controls at their backup positions.
+
+Graphics 1 supports up to 32 panels and 256 attached controls in total.
+Panels cannot be nested or transferred
+between drawings. Ordinary copying produces a loose control. Insertion
+rejects a source with panels, even empty ones. A receiving drawing can keep
+its panels on supported, checked insertion routes. The passive expert
+review rejects a receiver with panels. Opening and saving in an older
+version can lose the layout or appearance, relock a check box's position
+or show only the value of a slider with a definition. Keep the original file.
+
+### 12.7 Adjust labels and read indicators
+
+- With **Move**, drag an object's visible label away from the drawing.
+  Saving preserves the offset. If the view clips the position at an edge,
+  make more room in the view to recover it.
+- In the compact thickness menu, **Esc** closes the menu and discards
+  pending text. The active tool and confirmed changes are kept.
+- Select a defined point from an ordinary line–conic intersection to see
+  its current number badge. The number describes the order of the outputs
+  you see. For V2 curve intersections, use the inspector in section 8.
+
 ---
 
 <!-- geocedg-guide-section: user-tools-and-automation -->
@@ -2133,7 +2149,7 @@ installed tools and from the bundled GeoCeDG library. Choose one to use it as an
 interactive tool: select its inputs in the Graphics or Algebra view, as with any
 tool (a point can also be created by clicking an empty place; a number or an
 angle is asked for in a dialog). The list always shows the macros of the current
-document: opening another document replaces them; **File → New** keeps them, as
+document: opening another document replaces them; **File → New file** keeps them, as
 GeoGebra does, and they are saved with the new document. A macro equivalent to
 an installed tool is offered only by its installed entry; a document macro whose
 name is used by a *different* installed definition stays in Document tools,
@@ -2201,7 +2217,7 @@ limitations and sampled numerical approximations.
 ---
 
 <!-- geocedg-guide-section: known-limitations -->
-## 15. Known limitations
+## 15. Troubleshooting and known limits
 
 These are the limitations that affect what you can do in the application today.
 
@@ -2274,6 +2290,32 @@ These are the limitations that affect what you can do in the application today.
   window of the application covers that menu; use **Properties** in that case
   (12.3).
 
+
+### 15.1 When something does not work as expected
+
+| Symptom | What to check |
+| --- | --- |
+| A tool or view is missing | Check the menu reference in section 16. Check your profile, active view and the types of selected objects. |
+| A command gives a syntax error | Check its English name, argument order and separators. See input help and section 16. |
+| A length is undefined | Check that both endpoints are available and belong to the right path. Section 9 explains boundaries and full circuits. |
+| A crossing appears in the inspector but you cannot create a point | Check its status in section 8. A contact or ambiguous result may require a different construction. |
+| A control does not respond to clicks | Check for a panel covering it, a hidden panel or an active tool or edit. |
+| You cannot insert a file | Check the diagnostic, formats, units and whether the source contains panels. Use **File → Open…** to open it separately. |
+| A DXF is missing an object | Check the scope and report before confirming the export. See section 11. |
+
+### 15.2 Short glossary
+
+| Term | In practice |
+| --- | --- |
+| Dependency | A relationship that updates an object when one of its inputs changes. |
+| Driver | A point or other object whose changing position produces a Locus V2. |
+| Parameter | A number that identifies a position along a path. Several positions can have the same coordinates. |
+| Branch and component | A branch identifies a path. A component is a stretch of that path where the curve is available without crossing a gap. |
+| Associated point | A point that keeps its position along a path when the curve changes. |
+| Create a point from a crossing | Turn an eligible crossing in the inspector into a point you can use in the construction. Also called materialization. |
+| Seam | Where the start and end of a circuit meet. |
+| Undefined | The state of an object or measurement that has no valid result for its current inputs. |
+
 ---
 
 <!-- geocedg-guide-section: command-and-workflow-reference -->
@@ -2287,7 +2329,7 @@ These are the limitations that affect what you can do in the application today.
 | Create a semantic spline | Construction → Semantic curves → Spline V2, Spline V2 with degree or Closed Spline V2 | `SplineV2({A,B,C,D},3)` | semantic curve | select the points in order, then the first point again; constructor points are not semantic points |
 | Create a list in selection order | Construction → List tools → Create List from Selection | `{A,B,C}` | list | exact click order; select the first object again to finish |
 | Choose the working layer | Toolbar → Move group → Working Layer, or click **Layer: n** in the status bar | — | session state | one-shot; click an object to use its layer or empty space to choose 0 to 99; not saved |
-| Set the document units | Options → GeoCeDG options → Document units…, or click a unit in the status bar | — | document metadata | one undo step; reinterprets the model and never converts coordinates; saved with the document |
+| Set the document units | Options → Document units…, or click a unit in the status bar | — | document metadata | one undo step; reinterprets the model and never converts coordinates; saved with the document |
 | Point on a semantic curve, interactively | Point tool, click the curve stroke | — | semantic point | unique preimage, or choose explicitly; never by proximity |
 | Point on a semantic curve, by parameter | Construction → Semantic curves → Point on semantic curve | `Point(S,"spline-v2/main",0.25)` | semantic point | branch key and canonical parameter; the parameter may be a named number |
 | Point on a Locus V2, by parameter | same | `Point(L,"generator.main",1)` | semantic point | default generator branch key |
@@ -2304,11 +2346,11 @@ These are the limitations that affect what you can do in the application today.
 | Rotate | same | `Rotate(S,angle,center)` | new semantic curve | lengths preserved |
 | Reflect | same | `Reflect(S,line)` / `Mirror(S,line)` | new semantic curve | construct the mirror line explicitly; axes are not selectable |
 | Dilate | same | `Dilate(S,k,O)` | new semantic curve | length scales by `abs(k)`; `k=0` collapses but keeps its domain |
-| Export DXF | File → Import and export → Export 2D geometry as DXF (experimental)… | — | DXF file (+ manifest) | preflight first; strict complete request by default |
-| Export a picture | File → Import and export → Graphics View as Picture… | `ExportImage` | PNG, PDF, SVG, EMF/EMF+ file | exact export area (section 4.5) |
-| Choose the export area | File → Export area | — | — | session only; the outline is never exported |
-| Use a sheet as the export area | File → Export area → Use selected ISO A border | — | session state | the paper boundary, live, never the frame; released by undo, redo and deletion |
-| ISO A export area | File → Export area → Define ISO A export area… | — | session state | computed once at the session drawing scale and unit |
+| Export DXF | File → Export 2D geometry as DXF (experimental)… | — | DXF file (+ manifest) | preflight first; strict complete request by default |
+| Export a picture | File → Graphics View as Picture… | `ExportImage` | PNG, PDF, SVG, EMF/EMF+ file | exact export area (section 4.5) |
+| Choose the export area | File → Define export area… | — | — | session only; the outline is never exported |
+| Use a sheet as the export area | File → Use selected ISO A border | — | session state | the paper boundary, live, never the frame; released by undo, redo and deletion |
+| ISO A export area | File → Define ISO A export area… | — | session state | computed once at the session drawing scale and unit |
 | Open a document | File → Open… | — | — | `.cedg` native, `.ggb` compatibility input |
 | Insert a document | File → Insert → Insert File… | — | — | supported objects only, all or nothing; one Undo step |
 | Apply the styles of a document | File → Insert → Apply Styles… | — | — | six object styles only; one Undo step |
@@ -2330,6 +2372,7 @@ SplineV2( <Point>, <Point>, <Point>, ... )
 
 Point( <Locus V2>, <Branch Key>, <Canonical Parameter> )
 
+Length( <Metric Result> )
 Length( <Locus V2> )
 Length( <Locus V2>, <Start Semantic Point>, <End Semantic Point> )
 
@@ -2412,6 +2455,102 @@ file extensions and code literals are identifiers and are never translated.
 | `Ctrl`+`Shift`+`U` | Graphics View as Picture… |
 | `Ctrl`+`Shift`+`C` | copy the Graphics view as an image of the export area |
 | `Ctrl`+`Shift`+`D` | Export 2D geometry as DXF (experimental)… |
+
+### 16.5 Using construction tools
+
+Open the Construction group shown in the first column, choose the tool, then select the inputs in order. Inherited from GeoGebra unless indicated in the chapter on the feature.
+
+| Group and tool | What to select and what you get |
+|---|---|
+| **Points → Point / Point on Object** | Click empty space for a free point. To constrain a point, click a path such as a segment or the inside of a region such as a filled polygon. Semantic curves have additional placement rules (section 8). |
+| **Points → Midpoint or Center** | Select two points or one segment for the midpoint. Select a circle or a conic with a centre for its centre. |
+| **Lines and vectors → Line / Segment / Ray / Vector** | Select two points in order. A ray starts at the first point. A vector points from the first to the second. |
+| **Lines and vectors → Segment with Given Length / Vector from Point** | Select a start point and enter the length for a segment. For a vector, select a start point and an existing vector to copy its direction and magnitude. |
+| **Derived constructions → Parallel Line / Perpendicular Line** | Select the point the new line must pass through and the reference line. The session can remember each reference independently (section 5.2). |
+| **Derived constructions → Perpendicular Bisector / Angle Bisector** | For the perpendicular bisector, select a segment or two endpoints. For an angle bisector, select a point on each side with the vertex second, or select two intersecting lines to get their two bisectors. |
+| **Polygons → Polygon / Polyline** | Select the vertices in order, then click the first again to finish. Polygon closes the boundary and creates a filled region. Polyline leaves the chain open. |
+| **Polygons → Regular Polygon** | Select two vertices of the first side and enter the number of sides, at least three. |
+| **Polygons → Rigid Polygon / Vector Polygon** | Finish by clicking the first vertex again. A rigid polygon can be moved while keeping its shape, and can also be made from an existing polygon. In a vector polygon the other vertices are positioned relative to the first. Move the first vertex to translate it. |
+| **Circles and conics → Circle with Center through Point / Circle through 3 Points / Circle: Center & Radius** | Select centre then a point on the circle, three noncollinear points on the circle, or centre then a positive radius, respectively. |
+| **Circles and conics → Compass / Semicircle** | Select a segment or two points to copy their distance as a radius, then a centre. For a semicircle, select the two ends of the diameter. |
+| **Circles and conics → Circular Arc / Circular Sector** | Select the centre, start point and end direction in that order. The second point sets the radius. The sector also fills the area bounded by the arc and radii. |
+| **Circles and conics → Circumcircular Arc / Circumcircular Sector** | Select start, a point along the intended arc, then end. Use three noncollinear points. The middle point determines which arc to take. |
+| **Circles and conics → Conic through 5 Points / Ellipse / Hyperbola / Parabola** | For a conic, select five points that determine it. For an ellipse or hyperbola, select two foci and a point on the intended curve. For a parabola, select the focus and the directrix line. |
+| **Parameters and drivers → Slider / Angle with Given Size** | Click a position and set the slider type, range and step. For a fixed angle, select a point on one side, then the vertex, and enter the angle and direction. |
+| **Parameters and drivers → Check Box / Button / Input Box** | Click where the control should go. A check box sets a Boolean value and can show or hide the objects chosen in its dialog. A button has a caption and can run an On Click script. An input box edits its linked object when you confirm the typed value. Change the binding or script in Object Properties when offered. |
+| **Parameters and drivers → Animate selected object / Text** | Select an animatable object such as a slider, then use the animation action to start or stop it. The action is also in the GeoCeDG object menu. For text, choose a position or anchor and enter the text in the editor. |
+| **Relations and intersections → Tangents / Relation / Polar or Diameter Line** | For tangents, select the defining point or line and a compatible target such as a circle or conic. The valid inputs and number of tangents depend on the target. Relation compares two objects in a dialog, for example whether two lines are parallel. For a polar line select a point and a conic, or select a line and conic for a conjugate diameter when defined. |
+| **Metrics and validation → Angle / Distance or Length / Area / Slope** | For an angle, select three points with the vertex second, or two lines. Measure distance with two points, or select a segment, polygon or circle to measure its length or perimeter. Select a polygon, circle or suitable conic for area, or a line for slope. Sections 9.1–9.4 cover curve lengths. |
+| **Similarity transformations** | Select the object first. For Reflect about Point or Reflect about Line, select the centre or axis. For Translate by Vector, select the vector. For Rotate around Point or Dilate from Point, select the centre and enter the angle or scale factor. Section 10 describes support for semantic curves. |
+| **Annotations and media → Image** | Choose the position in Graphics and select a local image file. The image is an object in the document and can be repositioned or anchored through its properties. |
+
+For semantic tools, see sections 6–10. Use **Options → Show solution markers** to display selectable markers for the active rich intersection result. Select a marker to choose its solution. Under **Construction → Relations and intersections**, **Create selected intersection point** uses the selected eligible solution, **Create selected intersection points** requires several eligible selections, and **Create all eligible intersection points** uses the whole eligible set. The single-point action is also in the GeoCeDG object menu. **Options → Auto-create eligible points for new explicit queries** is a separate choice for new queries. Sections 8.4–8.7 explain which results are eligible.
+
+### 16.6 Menus, preferences and shortcuts
+
+| Task | Where and how |
+|---|---|
+| Select or move objects | **Edit → Select Objects** selects with a click or a selection rectangle. **Edit → Move** also lets you drag movable objects. To rotate a movable object by dragging, choose **Edit → Move around Point**, select the rotation centre, then drag. The first toolbar flyout contains Move, Move around Point and Working Layer. |
+| Attach or detach a point | **Edit → Attach / Detach Point**, also in the point and intersection flyout. Select a free point and then a compatible path or region. Select a point that is already constrained to detach it when the operation is permitted. Existing dependencies can prevent the change. |
+| Remove an object or reverse an edit | **Edit → Delete** lets you click an object to remove it. With the construction focused, press `Delete` to remove a selection. A dependent object may also be removed or become undefined. Use **Edit → Undo** (`Ctrl+Z`) or **Edit → Redo** (`Ctrl+Y`). |
+| Choose what Algebra shows | **Options → Algebra display** switches between Value, Description and Definition. **Options → Sort by** groups by dependency, object type, construction order or layer. |
+| Adjust numerical display or new labels | **Options → Rounding** selects decimal places or significant figures for display. **Options → Labeling** sets automatic labels for new objects (automatic, all, none, or points only). Existing labels can be changed in Object Properties. |
+| Adjust text, axes or grid | **Options → Text font size** changes document text sizing and marks the document as modified. **Options → Axes** and **Options → Grid** toggle those features in the active Graphics view. **Options → Save Settings** stores application preferences. Save the file separately to keep document changes. |
+| Show or hide an object or label | **View → Visibility and style → Show / Hide Object** lets you mark objects and then switch to another tool to finish. **Show / Hide Label** acts when you click an object. **Copy Visual Style** takes the source first, then each target. In the same submenu, **Show orientation cue** toggles the presentation of orientation where supported. |
+| Pan or zoom | **View → Navigation → Move Graphics View** drags the background or an axis. **Zoom In** and **Zoom Out** act at the clicked location. **Zoom to rectangle** fits the rectangle you drag. **Standard view** restores the normal framing. **Show all objects** fits the visible construction. The toolbar flyout contains Move Graphics View, Zoom to rectangle, Zoom In, Zoom Out and Copy Visual Style. |
+| Show the entry bar or find any offered command | **Automation → Algebra Input** toggles the bar. **Help → Input help** and **Help → Command list** show it and open the command panel. Browse the categories or select a command to see the syntax for your installation. The panel is the complete lookup for inherited commands offered in Algebra Input. In the CAS view, use that view's command completion for CAS-specific operations. |
+| Look up the active tool | **Help → Current tool help** shows the active tool's name and instructions. The Spline V2 modes have dedicated help. **Help → Keyboard shortcuts** opens the product shortcut summary. |
+
+Open **Options → Preferences…** and choose a category from the preferences toolbar. Right-click an Algebra row and choose **Object Properties…** to go directly to an object. The available tabs depend on the object and open views.
+
+| Preferences category | What you can adjust |
+|---|---|
+| **Objects** | **Basic** for name, caption, visibility or auxiliary status. **Algebra** for the available definition or value settings. **Color**, **Style**, **Position**, **Advanced** and **Scripting** appear when applicable. Select the object in the list before changing its properties. |
+| **Graphics / Graphics 2** | Bounds, axis ratio, background and tooltips, each axis's label, unit and ticks, and grid type, spacing and style. Graphics 2 appears when that view is open and has its own settings. Axis labels and tick units are separate from **Document units…**. |
+| **Algebra** | Auxiliary-object visibility, descriptions and sorting. |
+| **Layout & Presentation** | In addition to the GeoCeDG theme and sizes, choose whether to show the input bar, input help and toolbar, where to place the bars, and whether to allow view title bars, style bars and the sidebar. |
+| **Defaults** | Pick an object type and edit its default appearance for future objects. **File → Insert → Apply Styles…** can copy default styles from another document (section 4.2). |
+| **Advanced** | Angle units, path and region parameters, right-angle marks, coordinate notation, tooltips and the virtual keyboard. GeoCeDG keeps Continuity off. Use Layout & Presentation or the Options menu for font sizes. |
+| **Spreadsheet / CAS** | Open the corresponding view first. Spreadsheet options include headings, grid, scroll bars and cell-input behaviour. CAS options include timeout, rational exponent display and the navigation bar. |
+
+The inherited object context menu can show or hide the object or label, turn on a trace, set auxiliary or fixed status, rename, edit, delete, or open properties. Equation forms, animation and recording to the spreadsheet appear only for eligible objects. In Algebra, the **GeoCeDG** submenu adds animation, rich result inspection, single intersection point creation, Standard view, Show all objects, Object properties and scripting, current tool help and definition inspection. In Graphics a right-click can open a chooser with different items. The Graphics style bar offers controls for the current tool or selection, such as colour, opacity, stroke, point style or label display. Section 12.7 covers numeric thickness and label placement.
+
+| Additional keyboard action | Result |
+|---|---|
+| `Ctrl+A` | Select all objects when the construction has focus. In a text field it selects text. |
+| `Ctrl+C` / `Ctrl+V` | Copy selected objects, then paste into the same or another construction window. Work in Graphics or Algebra, outside a text field. Section 4.6 explains layer and unit handling. |
+| `Ctrl+N` | Open a new window. **File → New file** starts a new construction in the current window. |
+
+### 16.7 Opening, saving and exporting files
+
+- **File → Open recent…** lists recently opened documents. With an empty list the action is unavailable. **File → Close** closes the window and asks about unsaved changes when necessary.
+- **File → Save as…** writes a native `.cedg` document. A non-native target is rejected. Open `.ggb` as compatibility input and save subsequent GeoCeDG work as `.cedg`.
+- **File → Open…** loads a `.ggt` package as tools for the current document. For `.html` or `.htm`, the compatibility reader looks for embedded GeoGebra worksheet data. A general web page is outside this reader's scope. **File → Print preview…** opens the printable layout.
+- From a terminal with the Desktop launcher available, the arguments `--export=out.png --dpi=72 drawing.cedg` export the saved drawing's picture area as a PNG. Use `.png`, `.pdf`, `.svg` or `.emf` on the output name. The default is 300 dpi. `--maxSize` requests a maximum size in pixels for the larger dimension of a scaled output. The document needs a valid export area (section 4.5). `--exportAnimation` is refused.
+- To export from Algebra Input or a script, pass key–value pairs to `ExportImage`. For example, `ExportImage("type","png","scale",1,"filename","C:/drawings/out.png")` writes a PNG to an existing folder. Use a writable path on your machine. `"type"` also accepts `"svg"` or `"pdf"` on Desktop. Use `"view",2` for Graphics 2 when available. The document's picture area applies and animated types are refused.
+
+### 16.8 GeoCeDG Library tool inputs
+
+Experimental or limited. In an installed distribution with the library, open
+**Automation → User tools**, find the **GeoCeDG library** group and select
+a tool to activate it. Select its inputs in the order shown. The installed
+tool's help shows the input types. Degenerate inputs can leave the result
+undefined.
+
+| Tool | Inputs in order | Output |
+|---|---|---|
+| `SquarebyDiagonal` | Two opposite vertices | Square sides and the other two vertices |
+| `CirclebyD` | Centre point, positive diameter | Circle |
+| `circArcbyAngle` | Centre, starting point, angle | Circular arc and its endpoint |
+| `ellipseLength12` | Ellipse, two points on it in traversal order | Counterclockwise ellipse arc and its length |
+| `IFPositiveSelectPoint` | First point, second point, sign variable | Second point if the number is positive, first otherwise |
+| `EllipseAxis` | Centre and endpoints of two perpendicular semiaxes | Ellipse |
+| `conj2mainAxesEllipse` | Centre and endpoints of two independent conjugate semidiameters | Four endpoints on the principal axes |
+| `pointJump` | Point, direction line, signed distance | Point displaced along the direction |
+| `relCoor` | Point to measure, reference point, direction line | Signed coordinate in that direction |
+| `translationCoor` | Point to measure, reference point, measurement direction line, point to move, target direction line | Point displaced by the measured coordinate in the target direction |
+| `DuctSymbol` | Endpoints of the diameter, duct length | Duct symbol as segments and arcs |
+| `SymmSymbol` | Point, axis, distance | Two segments of the symmetry symbol |
 
 ---
 

@@ -6,6 +6,9 @@
 package org.geocedg.desktop;
 
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
@@ -14,10 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.JViewport;
+import javax.swing.KeyStroke;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -106,6 +111,14 @@ final class GeoCeDGGuideNavigator {
 				}
 			}
 		});
+		tree.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+				"openGuideSection");
+		tree.getActionMap().put("openGuideSection", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				navigateTo(getSelectedAnchor());
+			}
+		});
 		documentScroll.getViewport().addChangeListener(event -> onViewportChange());
 	}
 
@@ -175,17 +188,28 @@ final class GeoCeDGGuideNavigator {
 	 * @return whether the document was positioned
 	 */
 	boolean navigateTo(String anchor) {
-		int index = anchor == null ? -1 : anchors.indexOf(anchor);
-		double y = index < 0 ? Double.NaN : documentY(offsets[index]);
-		if (Double.isNaN(y)) {
+		int offset = anchorOffset(anchor);
+		return offset >= 0 && position(anchor, offset, false);
+	}
+
+	/** Positions a search hit and selects its enclosing entry. */
+	boolean navigateToMatch(String anchor, int offset) {
+		return position(anchor, offset, true);
+	}
+
+	private boolean position(String anchor, int offset, boolean showColumn) {
+		Rectangle2D bounds = documentBounds(offset);
+		if (bounds == null) {
 			return false;
 		}
 		JViewport viewport = documentScroll.getViewport();
 		int bottom = Math.max(0, view.getHeight() - viewport.getExtentSize().height);
-		int target = (int) Math.max(0, Math.min(bottom, Math.round(y)));
+		int top = (int) Math.max(0, Math.min(bottom, Math.round(bounds.getY())));
+		int left = showColumn ? Math.max(0, (int) Math.ceil(bounds.getMaxX())
+				+ REFERENCE_OFFSET - viewport.getExtentSize().width) : 0;
 		// Recorded first: the change event of this move must not reselect.
-		navigatedViewY = target;
-		viewport.setViewPosition(new Point(0, target));
+		navigatedViewY = top;
+		viewport.setViewPosition(new Point(left, top));
 		synchronizing = true;
 		try {
 			select(anchor);
@@ -251,11 +275,15 @@ final class GeoCeDGGuideNavigator {
 	}
 
 	private double documentY(int offset) {
+		Rectangle2D bounds = documentBounds(offset);
+		return bounds == null ? Double.NaN : bounds.getY();
+	}
+
+	private Rectangle2D documentBounds(int offset) {
 		try {
-			Rectangle2D bounds = view.modelToView2D(offset);
-			return bounds == null ? Double.NaN : bounds.getY();
+			return view.modelToView2D(offset);
 		} catch (BadLocationException exception) {
-			return Double.NaN;
+			return null;
 		}
 	}
 
@@ -267,7 +295,12 @@ final class GeoCeDGGuideNavigator {
 		}
 		TreePath path = new TreePath(node.getPath());
 		tree.setSelectionPath(path);
-		tree.scrollPathToVisible(path);
+		tree.makeVisible(path);
+		Rectangle row = tree.getPathBounds(path);
+		if (row != null) {
+			// Keep the start of long entries readable after automatic selection.
+			tree.scrollRectToVisible(new Rectangle(tree.getVisibleRect().x, row.y, 1, row.height));
+		}
 	}
 
 	/** @return anchor of the selected entry, or {@code null} */
@@ -282,7 +315,7 @@ final class GeoCeDGGuideNavigator {
 	 * @return the model offset of its named anchor in the document, or -1
 	 */
 	int anchorOffset(String anchor) {
-		int index = anchors.indexOf(anchor);
+		int index = anchor == null ? -1 : anchors.indexOf(anchor);
 		return index < 0 ? -1 : offsets[index];
 	}
 

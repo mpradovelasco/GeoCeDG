@@ -184,5 +184,12 @@ anchor and navigation tree is derived from that source at presentation time.
    A guide edit that breaks these rules is corrected in the guide sources of both
    editions, never by an index or a special case.
 
+6. **Local guide search.** In Desktop, search operates on the rendered text of
+   the edition currently open. Each match leads to its position and the
+   enclosing navigation entry. Case and accents may be ignored for matching.
+   The displayed text, command spellings and navigation identities keep their
+   original form. The search data is rebuilt with the edition and lives only
+   in the viewer.
+
 Navigation is presentation. It is never geometric, identity, dependency-graph or
 serialization authority, and kernel code never consults it.

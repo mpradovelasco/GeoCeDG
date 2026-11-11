@@ -845,19 +845,22 @@ Casos:
 - solo evaluación puntual: subdivisión adaptativa con estimación de error;
 - discontinuidad o rama no acotada: longitud parcial o estado indefinido explícito.
 
-### API experimental
+### Superficie experimental disponible
 
 ```text
-LocusLength[L]
-LocusLength[L, A, B]
-LocusLength[L, A, B, branch, mode, tolerance]
+LocusLength(L)
+LocusLength(L, A, B)
+LocusLength(L, A, B, "direction", "boundary", "same-position")
 ```
 
-Tras validar la semántica, se podrá integrar en la familia estándar `Length`.
+El recorrido predeterminado usa `"forward","strict","zero-length"`. `Length`
+devuelve un número cuando el resultado admite uso numérico. Las opciones
+implementadas están en el [contrato métrico](../../geocedg/specs/locus/locus-v2-metrics.md)
+y en la [guía de usuario](../user/geocedg_user_guide.md).
 
 ### Ambigüedades obligatorias
 
-- curva cerrada: recorrido orientado o mínimo;
+- curva cerrada: recorrido orientado, con ciclo completo explícito cuando procede;
 - auto-intersección: un punto geométrico puede tener varios parámetros;
 - varias ramas: A y B deben identificar rama;
 - puntos arbitrarios: no se proyectan silenciosamente;

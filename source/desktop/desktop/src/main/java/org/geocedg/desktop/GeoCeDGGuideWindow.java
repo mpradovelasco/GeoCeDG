@@ -5,6 +5,7 @@
 
 package org.geocedg.desktop;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -13,8 +14,10 @@ import java.awt.Rectangle;
 import java.awt.Window;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JDialog;
 import javax.swing.JEditorPane;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTree;
@@ -57,6 +60,7 @@ final class GeoCeDGGuideWindow {
 	private JDialog dialog;
 	private JEditorPane view;
 	private GeoCeDGGuideNavigator navigator;
+	private GeoCeDGGuideSearch search;
 
 	/**
 	 * @param owner component the guide is shown relative to
@@ -153,6 +157,16 @@ final class GeoCeDGGuideWindow {
 	 * @param title window title
 	 */
 	void show(GeoCeDGGuideRenderer.Rendering rendering, String title) {
+		show(rendering, title, "en");
+	}
+
+	/**
+	 * Shows the guide and its search controls in the selected edition's language.
+	 * @param rendering rendered guide document and its outline
+	 * @param title window title
+	 * @param language product language; English is the fallback
+	 */
+	void show(GeoCeDGGuideRenderer.Rendering rendering, String title, String language) {
 		if (dialog == null) {
 			build();
 		}
@@ -160,6 +174,7 @@ final class GeoCeDGGuideWindow {
 		view.setText(rendering.html());
 		view.setCaretPosition(0);
 		navigator.load(rendering.outline());
+		search.load(rendering.outline(), title, language);
 		if (!dialog.isVisible()) {
 			dialog.setLocationRelativeTo(owner);
 			dialog.setVisible(true);
@@ -198,10 +213,16 @@ final class GeoCeDGGuideWindow {
 				JDialog.ModalityType.MODELESS);
 		dialog.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		dialog.setResizable(true);
-		dialog.setContentPane(split);
+		search = new GeoCeDGGuideSearch(view, navigator);
+		search.installShortcuts(dialog.getRootPane());
+		search.getPanel().setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
+		JPanel content = new JPanel(new BorderLayout());
+		content.add(search.getPanel(), BorderLayout.NORTH);
+		content.add(split, BorderLayout.CENTER);
+		dialog.setContentPane(content);
 		Dimension size = defaultSize(screenBounds());
 		// The size contract is applied to the window, not derived from the view.
-		split.setPreferredSize(size);
+		content.setPreferredSize(size);
 		dialog.setMinimumSize(new Dimension(MINIMUM_WIDTH, MINIMUM_HEIGHT));
 		dialog.pack();
 		dialog.setSize(size);

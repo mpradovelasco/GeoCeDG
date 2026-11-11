@@ -231,7 +231,7 @@ class PreG9BR5AGuideNavigationTest {
 			AtomicInteger selections = new AtomicInteger();
 			fixture.navigator.getTree().addTreeSelectionListener(event ->
 					selections.incrementAndGet());
-			String last = "command-and-workflow-reference/16.4";
+			String last = fixture.outline.get(fixture.outline.size() - 1).anchor();
 			assertTrue(fixture.anchorY(last) > fixture.bottom()
 					+ GeoCeDGGuideNavigator.REFERENCE_OFFSET);
 			fixture.select(last);

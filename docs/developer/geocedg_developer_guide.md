@@ -606,19 +606,19 @@ planning evidence after productive edits.
 `BaseMenu` instances can rebuild lazily. `GeoCeDGMenuBar` is an ordinary
 `JMenu`; R3 therefore repopulates it after the inherited clear using the same
 single `populateProductMenu()` method used at initialization. Do not add a
-second action registry or intersection flag. The sole public V2 opt-in remains
-`--enableLocusV2=true`.
+second action registry or intersection flag. GeoCeDG enables the experimental
+V2 surface by default. The launch setting `--enableLocusV2` remains an override.
 
 `AlgoLocusMetricScalarAdapter.getDefinition` may present `Length(L[,P,Q])` from
 its actual `AlgoLocusMetricV2`/`AlgoLocusBetweenMetricV2` parent for human-facing
 templates. Keep the adapter's single rich-result input and XML/internal command
 expression intact (`Length(o)` when o is that rich parent). No new integration,
-numeric tolerance or endpoint lookup is permitted. P/Q require existing exact
-semantic addresses on the same source; free interpolation inputs A/C must remain
-invalid endpoints. The [user guide](../user/geocedg_user_guide_en.md)
-uses explicit semantic points and distinguishes ordinary `Length` from rich
-`LocusLength`. The [re-smoke checklist](../validation/g9u1_author_resmoke_checklist.md)
-is the current author-review procedure, not an assertion of author acceptance.
+numeric tolerance or endpoint lookup is permitted in the adapter itself. The
+[metric contract](../../geocedg/specs/locus/locus-v2-metrics.md) governs endpoint
+admission, including constructor occurrences and admitted intersection points.
+The [user guide](../user/geocedg_user_guide_en.md) distinguishes ordinary
+`Length` from rich `LocusLength`. The [re-smoke checklist](../validation/g9u1_author_resmoke_checklist.md)
+belongs to the G9U1 verification record.
 
 The exact-token materialization dialog creates an auxiliary `GeoText` because
 the token is a reconstructible input of `AlgoLocusIntersectionPointV2`. R3
@@ -1196,7 +1196,7 @@ rounded expanded span cache does not become the interval certifier's authority.
 The bridge must enclose the represented structural function and its composed
 derivatives. See the [live API guide](semantic_spline_2d_api.md) for this boundary
 and the [R1 matrix](../validation/g9s1_r1_spline_pair_materialization_validation_matrix.md)
-for uncompleted acceptance obligations. Classic Spline, durable source identity,
+for the acceptance obligations. Classic Spline, durable source identity,
 ordinary reconstruction and R6 semantic direction bits remain unchanged.
 
 Metric consumers split at provider knots and reuse deterministic adaptive
@@ -1219,11 +1219,12 @@ The approved design and API are
 [here](semantic_spline_2d_api.md). ADR 0018 is `Accepted`, the spec is
 normative and all numerical certification/completeness claims must
 match the selected source-backed method and focused evidence. Missing
-scholarly support remains an explicit research requirement, never an invented
-citation. The retained periodic-quarantine round-trip risk remains open.
+scholarly support remains an explicit research requirement. The [R1-R1 closeout](../validation/pre_g9b_r1_r1_closeout_record.md)
+records the resolution of the separate periodic-quarantine round-trip risk.
 
-G9U0-R6 is a bounded `PASS — AUTHOR APPROVED` shared-kernel capability, not a
-productive Desktop Point-tool feature. Its
+G9U0-R6 is a bounded `PASS — AUTHOR APPROVED` shared-kernel capability. Later
+Desktop point routes have their own [admission contract](../../geocedg/specs/locus/locus-v2-point-interaction.md).
+The R6
 [accepted ADR](../adr/0019-semantic-locus-point-interaction-support.md),
 [normative specification](../../geocedg/specs/locus/locus-v2-point-interaction.md)
 and [architecture](../architecture/g9u0_r6_semantic_locus_point_interaction_support.md)
@@ -1263,7 +1264,8 @@ Self-intersections remain multi-preimage, and ambiguity fails closed until the
 caller explicitly selects one address. The source-level seam is documented in
 the Locus V2 API reference. The accepted evidence freezes 55 focused methods
 (52 shared-kernel and 3 Desktop) and the bounded budgets; this shared-kernel API
-does not itself make a final Point-tool frontend or public inverse command.
+provides the kernel entry points consumed by Desktop. The current public surface
+exposes the documented point workflows and no generic inverse command.
 
 An interaction-owned point stores a versioned address state plus numeric
 parameter in dedicated independent inputs. Exact persisted component lineage

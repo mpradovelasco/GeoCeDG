@@ -828,13 +828,17 @@ documental dentro de las garantías y exclusiones registradas.
 
 ### CU9 — Guía de usuario
 
-Revisión exhaustiva, completa, bilingüe y comprensible, partiendo de la
-[matriz de cobertura](../../geocedg/validation/pre-g9b-cu/guide-coverage-matrix.json)
-(269 entradas: 118 cubiertas, 119 parciales, 20 ausentes, 12 excluidas con razón, tras las dos de `DOC-CU3-CU9-STRUCTURAL-POINTS`, §2.29).
-La autorización de CU9 se decide por separado. B11 cubre
-`LocusLength`, B12 concilia la cobertura de ambas ediciones y H07
-revisa las referencias y rutas de menú desfasadas. La matriz registra
-la acción CU8 como pendiente de cobertura bilingüe.
+El autor autorizó la ejecución de B11, B12 y H07 sobre el commit
+`6c032394d70a004a4b91a88338e647f13d365cfa`. El inventario de partida
+tenía 272 entradas, con 119 cubiertas, 119 parciales, 22 ausentes y 12 excluidas
+con razón. La [matriz del candidato](../../geocedg/validation/pre-g9b-cu/guide-coverage-matrix.json)
+reconcilia ambas ediciones con el perfil y las capacidades disponibles.
+
+B11 cubre las políticas implementadas de `LocusLength`. B12 abarca las
+tareas, ejemplos, referencias y navegación bilingües, con búsqueda local
+en Desktop. H07 actualiza las rutas y las referencias vivas según el
+producto vigente. La decisión autoral sobre el candidato y su eventual
+publicación siguen pendientes.
 
 ### CU10 — Cierre integrado
 
