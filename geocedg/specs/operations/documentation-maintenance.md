@@ -150,10 +150,10 @@ not started; every later productive G9 phase remains unauthorized.
 
 ## 10. User-guide structure and derived navigation
 
-Added by `PRE-G9B-R5-A`. This section is part of that phase's technical
-candidate and becomes normative only through the author's decision on the exact
-candidate commit; until then the sections above keep their approved status
-unchanged.
+Introduced by [PRE-G9B-R5-A](../../../geocedg/validation/pre-g9b-r5-a/pre-g9b-r5-a-closeout.json).
+The [PRE-G9B-CU9 author closeout](../../../docs/validation/pre_g9b_cu9_closeout_record.md)
+adopts the bilingual guide, derived navigation, local search, internal links,
+figures and feature marks of the approved CU9-R2 product.
 
 The two user-guide editions carry their own navigation structure. The Markdown
 source of each edition is the single authored source of both its content and its
@@ -208,6 +208,13 @@ anchor and navigation tree is derived from that source at presentation time.
    its alternate text with a diagnostic. Captions and link labels are searchable
    text. The bilingual figure manifest records purpose, origin, dimensions,
    exact hashes and rights, and is evidence of those assets.
+
+9. **Feature marks.** Both editions use `[N]` for a new capability, `[A]` for
+   an extended capability, `[G]` for an inherited capability and `[!]` for
+   experimental behavior or significant limits. A standalone `[!]` records an
+   availability boundary. The coverage matrix ties the marks to the wording
+   and sections of both editions. Keep marks outside literal inputs and
+   navigation identities.
 
 Navigation is presentation. It is never geometric, identity, dependency-graph or
 serialization authority, and kernel code never consults it.

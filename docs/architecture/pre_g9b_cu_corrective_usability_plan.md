@@ -7,6 +7,7 @@
 | Estado de esta consolidación | aceptada con `CU0`, que está `PASS — AUTHOR APPROVED` (decisión autoral de 2026-10-20; [registro de cierre](../validation/pre_g9b_cu0_closeout_record.md), única autoridad de ese estado); las propuestas D–H y las enmiendas candidatas siguen siendo candidatas, no normativas; `selfApproved=false` |
 | Paquetes | `CU0` y `CU1` `PASS — AUTHOR APPROVED` (2026-10-20; [registro de cierre de `CU1`](../validation/pre_g9b_cu1_closeout_record.md), única autoridad de ese estado); `CU2` `PASS — AUTHOR APPROVED` (2026-10-24, con la comprobación manual del autor; [registro de cierre de `CU2`](../validation/pre_g9b_cu2_closeout_record.md), única autoridad de ese estado) sobre el candidato `6ff1ddf7` y su descendiente documental `098ec04f`, integrado en `main` por avance rápido con su cierre (§2.6). Historia de `CU2`: arquitectura `AUTHOR APPROVED` con la precisión D-CU2-20-R e implementación autorizada, condicionada, sobre `070af6f9` (2026-10-21; [registro de aprobación](../validation/pre_g9b_cu2_author_architecture_approval_record.md), única autoridad de ese estado), implementada como candidato técnico local (`CU2 IMPLEMENTATION CANDIDATE`) en la rama `phase/pre-g9b-cu2-implementation` ([informe del candidato](../validation/pre_g9b_cu2_implementation_candidate_report.md), [registro de verificación](../validation/pre_g9b_cu2_verification_record.md)) y corregida por su descendiente correctivo en la rama local `phase/pre-g9b-cu2-corrective` (decisiones D-CU2-T13-R1, D-CU2-T13-R2, D-CU2-T13-R4, D-CU2-T13-R6 y D-CU2-T13-R7 y mandato autoral de autonomía correctiva controlada de 2026-10-23), con el candidato correctivo `2856f246` verificado ([registro de la corrección autónoma](../validation/pre_g9b_cu2_corrective_autonomy_record.md)); la resolución autoral consolidada de 2026-10-23 aprobó sus doce decisiones de nivel C (§2.5), y el candidato final `6ff1ddf7` ([paquete de revisión final](../validation/pre_g9b_cu2_final_review_package.md)) se aprobó con el cierre de 2026-10-24. `CU3`: preparación autorizada el 2026-10-24 sobre `main` = `e6c908f2` (§2.7) y publicada en su rama de revisión en `80d72a50` ([expediente](../validation/pre_g9b_cu3_preparation_candidate_report.md)); diseño `AUTHOR APPROVED` e implementación **autorizada** en dos incrementos con puertas bloqueantes sobre `80d72a50` (2026-10-24, §2.8; [registro de aprobación](../validation/pre_g9b_cu3_author_design_approval_record.md), única autoridad de ese estado), detenida en el paso T2 porque la puerta G-M3 no se supera en la autoridad del objetivo ([informe de la puerta](../validation/pre_g9b_cu3_m3_gate_report.md); rama publicada en `1a0903aa` para su auditoría); bloqueo confirmado y estudio de la autoridad geométrica constructiva autorizado (§2.9; [estudio](pre_g9b_cu3_constructive_authority_study.md)), publicado para su auditoría en `da7ca96a`; dirección A2, B2, C y D adoptada para desarrollo normativo y consolidación focal entregada como propuesta normativa candidata (§2.10; [propuesta](pre_g9b_cu3_constructive_authority_normative_proposal.md)), publicada para su auditoría en `18740956`; dirección A2+B2+C+D aceptada como referencia arquitectónica y conciliación final de la propuesta publicada en `3cd0f710` (§2.11); arquitectura de la autoridad constructiva y su normativa **aprobadas** por el autor el 2026-10-25 e implementación reanudada desde T2 sobre `3cd0f710` en los incrementos E0 a E4 con puertas bloqueantes (§2.12; [registro de aprobación](../validation/pre_g9b_cu3_constructive_authority_approval_record.md), única autoridad de ese estado); candidato técnico de `CU3` congelado con `CU3-A` completo y `CU3-B` pendiente (`CU3 IMPLEMENTATION CANDIDATE — PENDING AUTHOR REVIEW`; [informe del candidato](../validation/pre_g9b_cu3_implementation_candidate_report.md)), publicado en su rama en `735c55c6`, con la caracterización publicada en `7f1a81ae`; `CU3-A` aceptado provisionalmente por el autor el 2026-10-26, con el smoke funcional `PASS — AUTHOR REPORTED` y el rendimiento interactivo `NOT ACCEPTED` (§2.14), optimización focal T1 a T4 autorizada y entregada como candidato optimizado `68bfd764` (§2.15), publicada en `b1813da1` con auditoría independiente favorable, y T6 entregada como candidato `3f096838` pendiente de revisión autoral (§2.16), con la caracterización de T7-a (§2.17) y su implementación, aprobada como dirección y tras su puerta normativa, entregada como candidato `9f6f27f2` (§2.18), con la estabilización de `CU3-A` preparada (§2.19), D1-A implementada y el candidato definitivo `f61f2954` verificado tras el smoke autoral funcionalmente satisfactorio (§2.20); `CU3-A` `PASS — AUTHOR APPROVED` sobre `f61f2954` (2026-10-27; [registro de cierre de `CU3-A`](../validation/pre_g9b_cu3_a_closeout_record.md), única autoridad de ese estado; §2.23), y `CU3-B1` `PASS — AUTHOR APPROVED` sobre `dd3a2676` y su descendiente de pruebas `aabfd0b9` (2026-10-28; [registro de cierre de `CU3-B1`](../validation/pre_g9b_cu3_b1_closeout_record.md), única autoridad de ese estado; §2.25); `CU3-B2` `PASS — AUTHOR APPROVED` sobre `2d13ad4c` (2026-10-28; [registro de cierre de `CU3-B2`](../validation/pre_g9b_cu3_b2_closeout_record.md), única autoridad de ese estado; §2.29); **`CU3` global `PASS — AUTHOR APPROVED`** (2026-10-28; [registro de cierre global](../validation/pre_g9b_cu3_global_closeout_record.md), única autoridad de ese estado; §2.30), con `CU3-B` completo. `CU7-D` aprobado el 2026-10-29 (§2.33), `M08-S-R2` aprobado el 2026-11-02 y `CU7-R5` aprobado con alcance reducido el 2026-11-05 e integrado en `main`. [Conciliación CU7](../validation/pre_g9b_cu7_status_reconciliation.md). `CU4` **`PASS — AUTHOR APPROVED`** (2026-11-07), incluida la adopción de B2 certificada. [Registro de cierre](../validation/pre_g9b_cu4_closeout_record.md) |
 | CU5, CU6 y CU8 | `CU5` **PASS — AUTHOR APPROVED** y `CU6` **PASS — AUTHOR APPROVED WITH EXPLICIT LIMITATION** el 2026-11-09. CU6 conserva la deuda M07 de deslizadores de Gráficos 1. `CU8-I` **PASS — AUTHOR APPROVED** el 2026-11-10, con R1 y R2, en el perímetro de §2.37. [Cierre CU5/CU6](../validation/pre_g9b_cu5_cu6_closeout_record.md) · [Cierre CU8-I](../validation/pre_g9b_cu8_i_closeout_record.md) |
+| CU9 y CU10 | CU9 **PASS — AUTHOR APPROVED** con R1 y R2 sobre `f5356cb1` (§2.38). Publicación pendiente de autorización expresa. CU10 reservado con FINAL y E1. [Cierre y traspaso](../validation/pre_g9b_cu9_closeout_record.md) |
 | Mandato editorial | E1, aprobado por el autor el 2026-10-20 como obligación de cierre del track (§2.3 y §8): diseño detallado de los apéndices pendiente de preparación y revisión; redacción e incorporación a `geocedg_book` no autorizadas |
 | Base | candidato de planificación `444ad46b1c18a6101dae68a75a8d7a5f92ed83fe` (árbol `1aff549ccf3c0deff5581ee7942d566bd5cc4e19`), hijo de `main` `48a0775e4f2f122f5e2614c62b5773777752ccd1`; local, no publicado |
 | Antecedente | el [plan candidato](pre_g9b_cu_corrective_usability_plan_candidate.md) revisado por el autor conserva las fichas detalladas de B01–B12 y M01–M10 (su sección B.2); este documento lo sustituye en estado, decisiones, paquetes y secuencia |
@@ -571,9 +572,21 @@ se atribuyen al producto técnico. La puerta del descendiente
 documental es STATIC. La publicación por avance rápido está
 autorizada. [Registro y matriz de capacidades](../validation/pre_g9b_cu8_i_closeout_record.md).
 
-CU9 sigue pendiente de autorización. Su traspaso reúne las novedades
+En ese cierre, CU9 quedó pendiente de autorización. Su traspaso reúne las novedades
 CU5–CU8 y los compromisos B11, B12 y H07. FINAL y E1 permanecen
 reservados a CU10. `selfApproved=false`.
+
+## 2.38 Cierre autoral de CU9 (2026-11-11)
+
+`PRE-G9B-CU9 — PASS — AUTHOR APPROVED` sobre el producto
+`f5356cb1e7bb60ed152ff236b7dceb3fd64bad86` con R1 y R2. Se adoptan B11,
+B12 y H07, con las guías ES/EN, la navegación y búsqueda, las marcas,
+los enlaces internos y las figuras. La verificación integrada de R1 y
+la focal de R2 se conservan sobre sus SHA. El cierre documental se
+prepara para avance rápido con la publicación pendiente de autorización.
+FINAL, la validación dinámica, el informe de limitaciones y el expediente
+E1 corresponden a CU10. `selfApproved=false`.
+[Registro de cierre y traspaso](../validation/pre_g9b_cu9_closeout_record.md).
 
 ## 3. Incidencias y paquetes
 
@@ -828,23 +841,31 @@ documental dentro de las garantías y exclusiones registradas.
 
 ### CU9 — Guía de usuario
 
+`PASS — AUTHOR APPROVED` con R1 y R2 desde el 2026-11-11 (§2.38).
 El autor autorizó la ejecución de B11, B12 y H07 sobre el commit
 `6c032394d70a004a4b91a88338e647f13d365cfa`. El inventario de partida
 tenía 272 entradas, con 119 cubiertas, 119 parciales, 22 ausentes y 12 excluidas
-con razón. La [matriz del candidato](../../geocedg/validation/pre-g9b-cu/guide-coverage-matrix.json)
+con razón. La [matriz adoptada](../../geocedg/validation/pre-g9b-cu/guide-coverage-matrix.json)
 reconcilia ambas ediciones con el perfil y las capacidades disponibles.
+Registra 294 entradas, con 282 cubiertas y 12 exclusiones justificadas.
 
 B11 cubre las políticas implementadas de `LocusLength`. B12 abarca las
 tareas, ejemplos, referencias y navegación bilingües, con búsqueda local
 en Desktop. H07 actualiza las rutas y las referencias vivas según el
-producto vigente. La decisión autoral sobre el candidato y su eventual
-publicación siguen pendientes.
+producto vigente. R1 añade enlaces internos y figuras. R2 completa las
+marcas y las capturas prácticas. Cada edición conserva 118 anclas y
+contiene 48 enlaces internos y 15 figuras. El
+[registro autoral](../validation/pre_g9b_cu9_closeout_record.md) distingue
+la aprobación del producto de la autorización de publicación pendiente.
 
 ### CU10 — Cierre integrado
 
 Cierre del alcance efectivamente autorizado y ejecutado: candidato integrado, `FINAL`
 una vez, validación dinámica con los modelos del autor, smoke autoral, informe de
 limitaciones, versión y, si se autoriza, publicación con etiqueta anotada nueva.
+El [traspaso CU9](../validation/pre_g9b_cu9_closeout_record.md#traspaso-a-cu10)
+reúne los barridos, el compromiso de empaquetado de la guía y las deudas
+que CU10 debe disponer. La ejecución de CU10 requiere autorización separada.
 
 Obligación de cierre E1 (§2.3): el expediente `SCIENTIFIC_METHODS_EDITORIAL_HANDOFF`, preparado
 a partir del [plan de transferencia científica](pre_g9b_cu_scientific_methods_editorial_handoff_plan.md)

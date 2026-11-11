@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 1,
+  "track": "PRE-G9B-CU",
+  "recordKind": "AUTHOR_CLOSEOUT",
+  "record": "docs/validation/pre_g9b_cu9_closeout_record.md",
+  "authorApprovalDate": "2026-11-11",
+  "selfApproved": false,
+  "authority": {
+    "source": "human author in the current work session",
+    "instruction": "GeoCeDG — PRE-G9B-CU9 / Cierre autoral",
+    "directPublicationAuthorized": false
+  },
+  "identities": {
+    "publishedBaseline": {
+      "remote": "https://github.com/mpradovelasco/GeoCeDG",
+      "ref": "refs/heads/main",
+      "commit": "6c032394d70a004a4b91a88338e647f13d365cfa",
+      "tree": "96f155ee138b5ec3d15707791d73c46cc3c134df"
+    },
+    "technicalCandidate": {
+      "branch": "codex/pre-g9b-cu9-r2-guide-marks-and-figures",
+      "commit": "f5356cb1e7bb60ed152ff236b7dceb3fd64bad86",
+      "tree": "84289da22ca60159d17c8077f0a38bdb6d0db759"
+    },
+    "checkpoints": [
+      {
+        "phase": "CU9",
+        "commit": "7035b01c501c9303cd75331c070d7d1061751e6b",
+        "tree": "0afd5d9289686f8c3772d28c2e3d4195f0bbcb16"
+      },
+      {
+        "phase": "CU9-R1",
+        "commit": "e2be710c43e33a22648d9729cb71b091791f538b",
+        "tree": "51284a796191e6e9fe962a785d407a3a17e62e44"
+      }
+    ],
+    "documentaryCloseout": {
+      "branch": "codex/pre-g9b-cu9-closeout",
+      "parent": "f5356cb1e7bb60ed152ff236b7dceb3fd64bad86",
+      "commitIdentity": "commit containing this record"
+    }
+  },
+  "phase": {
+    "id": "PRE-G9B-CU9",
+    "status": "PASS — AUTHOR APPROVED",
+    "includes": [
+      "CU9",
+      "CU9-R1",
+      "CU9-R2"
+    ],
+    "authorApproved": true,
+    "passClaimed": true
+  },
+  "normativeAdoption": {
+    "scope": [
+      "B11",
+      "B12",
+      "H07",
+      "BILINGUAL_GUIDE",
+      "DERIVED_NAVIGATION",
+      "LOCAL_SEARCH",
+      "FEATURE_MARKS",
+      "INTERNAL_LINKS",
+      "FIGURES"
+    ],
+    "guides": [
+      "docs/user/geocedg_user_guide_es.md",
+      "docs/user/geocedg_user_guide_en.md"
+    ],
+    "coverageMatrix": "geocedg/validation/pre-g9b-cu/guide-coverage-matrix.json",
+    "coverageEntries": 294,
+    "coverage": {
+      "COVERED": 282,
+      "PARTIAL": 0,
+      "MISSING": 0,
+      "EXCLUDED_WITH_REASON": 12
+    },
+    "anchorsPerEdition": 118,
+    "linksPerEdition": 48,
+    "figuresPerEdition": 15,
+    "packagedPngs": 17,
+    "figureInventory": "docs/user/images/figures.json"
+  },
+  "verificationTraceability": {
+    "canonicalReports": [
+      {
+        "stage": "CU9",
+        "profile": "STATIC",
+        "candidateCommit": "7035b01c501c9303cd75331c070d7d1061751e6b",
+        "candidateTree": "0afd5d9289686f8c3772d28c2e3d4195f0bbcb16",
+        "report": "artifacts/agent/pre-g9b-cu9/static-7035b01c5/verification-result.json",
+        "runId": "verification-d75fe42e28b94320917d5ed0264f43c2",
+        "resultHash": "afeff3b695ef8ae84a0a81c19d4be002c6f29ebb6775850a4b8e2c9b13fabc9d",
+        "reportFileSha256": "4c01b81fea5c51450d884268ee347c1725a8509bd6e38f2a5751018b4a1f6206",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 3
+      },
+      {
+        "stage": "CU9",
+        "profile": "PHASE",
+        "candidateCommit": "7035b01c501c9303cd75331c070d7d1061751e6b",
+        "candidateTree": "0afd5d9289686f8c3772d28c2e3d4195f0bbcb16",
+        "report": "artifacts/agent/pre-g9b-cu9/phase-7035b01c5/verification-result.json",
+        "runId": "verification-58d7ed2160d147c9ae114766d785762d",
+        "resultHash": "8e3c7cb6db9c5859b366c0f18e6e393e8d56b614b0c3073e7d844273f226cdee",
+        "reportFileSha256": "6fcfab4aa8babfe4f9d02ac463945c50d33626fe426b0dd8f91a473d444b2723",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 5
+      },
+      {
+        "stage": "CU9",
+        "profile": "INTEGRATION",
+        "candidateCommit": "7035b01c501c9303cd75331c070d7d1061751e6b",
+        "candidateTree": "0afd5d9289686f8c3772d28c2e3d4195f0bbcb16",
+        "report": "artifacts/agent/pre-g9b-cu9/integration-isolated-7035b01c5/verification/verification-result.json",
+        "runId": "verification-1684df4a41f64756a95d274b612daee0",
+        "resultHash": "12b7197ee9ec6dbbdd748e8cd316aa9e6da7bd87729f389fd14b167df7c8eac1",
+        "reportFileSha256": "868b018e5d5b2c176e71504a18a27dc9f23913a24e3e5fa25c6f6a0bc0732e95",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 19
+      },
+      {
+        "stage": "CU9-R1",
+        "profile": "STATIC",
+        "candidateCommit": "e2be710c43e33a22648d9729cb71b091791f538b",
+        "candidateTree": "51284a796191e6e9fe962a785d407a3a17e62e44",
+        "report": "artifacts/agent/pre-g9b-cu9-r1/static-e2be710c4/verification-result.json",
+        "runId": "verification-574a56b504c046acaa463276872272fd",
+        "resultHash": "92d11094700c51d856c08d3fd88f552bbd3f371a04c995e80635e0ddda7cc1f2",
+        "reportFileSha256": "4580afab692f22837af297f5bfbeeef8b706b65bb90c58b59769f4d966b31ee3",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 3
+      },
+      {
+        "stage": "CU9-R1",
+        "profile": "PHASE",
+        "candidateCommit": "e2be710c43e33a22648d9729cb71b091791f538b",
+        "candidateTree": "51284a796191e6e9fe962a785d407a3a17e62e44",
+        "report": "artifacts/agent/pre-g9b-cu9-r1/phase-e2be710c4/verification-result.json",
+        "runId": "verification-3082b5d759b040c483da0893d6dc2e42",
+        "resultHash": "2e624ff8b992f9e15e5a85a78252bd7abd18d9121880db757e69695364cb700b",
+        "reportFileSha256": "98be84ccfea29d7f7a1427b65a1c5f645d5c559628bb200996be7a016336a5a5",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 5
+      },
+      {
+        "stage": "CU9-R1",
+        "profile": "INTEGRATION",
+        "candidateCommit": "e2be710c43e33a22648d9729cb71b091791f538b",
+        "candidateTree": "51284a796191e6e9fe962a785d407a3a17e62e44",
+        "report": "artifacts/agent/pre-g9b-cu9-r1/integration-e2be710c4/verification-result.json",
+        "runId": "verification-60a787bc190f440c84301399fc1f9f01",
+        "resultHash": "94c9c2e7279cdd294d58ab588a4c92593fca191f4d2e608733b5bd9fe18f0386",
+        "reportFileSha256": "a35c52903a3b362e44535282cbd0fecd023bb0d2d017a1c4affa0cca795f292d",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 19
+      },
+      {
+        "stage": "CU9-R2",
+        "profile": "STATIC",
+        "candidateCommit": "f5356cb1e7bb60ed152ff236b7dceb3fd64bad86",
+        "candidateTree": "84289da22ca60159d17c8077f0a38bdb6d0db759",
+        "report": "artifacts/agent/pre-g9b-cu9-r2/static-f5356cb1/verification-result.json",
+        "runId": "verification-f61355585d7547a9b7436b6af2723145",
+        "resultHash": "10fda6aab0d2702179082dc0dddfbdfb63587d0e2dcc3ad37e0f935701d3f6da",
+        "reportFileSha256": "743ee9ddd2083adf5e53a7533f3fbf8c52b1f3e9c3eba01d98e1bd757ac3250c",
+        "exitCode": 0,
+        "acceptance": "ACCEPTED",
+        "coverage": "COMPLETE",
+        "acceptanceSatisfied": 3
+      }
+    ],
+    "r1GraphicSmoke": {
+      "path": "artifacts/agent/pre-g9b-cu9-r1/app-image-smoke/smoke-result.json",
+      "sha256": "09c1fa987256a76c5586242cd177ebe1c5abf52d36bde8dc891738a2d31b2c6a"
+    },
+    "r2": {
+      "focalDesktop": {
+        "path": "artifacts/agent/pre-g9b-cu9-r2/desktop-focal-f5356cb1/evidence.json",
+        "sha256": "72e6c24be74ae45dcce5a6bc79c2a4e3a49548cbe0f47fd5e5b9d0ddfea768b5"
+      },
+      "junit": {
+        "tests": 127,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "documentaryAudit": {
+        "path": "artifacts/agent/pre-g9b-cu9-r2/audit-f5356cb1.json",
+        "sha256": "3cd6f5bd72c594ae156932f2143fbd31a1b91c730c7daa762164731992175b31"
+      },
+      "packagedResources": {
+        "path": "artifacts/agent/pre-g9b-cu9-r2/packaged-resources-f5356cb1.json",
+        "sha256": "e1a67df6d5ae691d274d1edb622890a637d8e17b6dd56d2d4768fe46699fa2d6"
+      },
+      "graphicSmoke": {
+        "path": "artifacts/agent/pre-g9b-cu9-r2/smoke-result-f5356cb1.json",
+        "sha256": "52982492b591750c409929dadcd6f10318bc11456ae552f33db3601bc378da47"
+      }
+    },
+    "documentaryCloseout": {
+      "requiredProfile": "STATIC",
+      "report": "artifacts/agent/pre-g9b-cu9-author-closeout/static/verification-result.json",
+      "phaseCampaigns": "ATTRIBUTED_TO_EXECUTED_TREES",
+      "finalReceipt": "RESERVED_FOR_CU10"
+    }
+  },
+  "publication": {
+    "method": "DIRECT_FAST_FORWARD",
+    "status": "PENDING_EXPRESS_AUTHORIZATION",
+    "policy": "AGENTS.md#81-geocedg-publication-policy"
+  },
+  "handoff": {
+    "phase": "PRE-G9B-CU10",
+    "executionAuthorized": false,
+    "obligations": [
+      "FINAL_ON_FROZEN_INTEGRATED_CANDIDATE",
+      "CU10-GUIDE-INTEGRATION-CHECK",
+      "AUTHOR_MODELS_DYNAMIC_VALIDATION",
+      "AUTHOR_SMOKE",
+      "PERFORMANCE_AND_LIMITATIONS",
+      "E1"
+    ],
+    "dynamicScenarios": [
+      "B07_SWEEPS",
+      "B10_WITH_AND_WITHOUT_E2",
+      "B08_B09_CONTINUITY_AND_MATERIALIZATION",
+      "B01_INSERTION"
+    ],
+    "scientificDossier": "SCIENTIFIC_METHODS_EDITORIAL_HANDOFF",
+    "scientificPlan": "docs/architecture/pre_g9b_cu_scientific_methods_editorial_handoff_plan.md"
+  }
+}
