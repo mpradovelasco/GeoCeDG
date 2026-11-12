@@ -176,12 +176,12 @@ public final class GeoCeDGEuclidianController
 	public void wrapMousePressed(AbstractEvent event) {
 		panelContext = null;
 		panelContextDragged = false;
+		if (isInsertionIsolated()) {
+			return;
+		}
 		var controlLayout = controlLayoutWorkspace();
 		if (controlLayout != null) {
 			controlLayout.beginPointerSequence(app.isRightClick(event));
-		}
-		if (isInsertionIsolated()) {
-			return;
 		}
 		clearPointInteractionNotice();
 		if (referencePointTool.hasPendingWorldSelection()) { return; }
