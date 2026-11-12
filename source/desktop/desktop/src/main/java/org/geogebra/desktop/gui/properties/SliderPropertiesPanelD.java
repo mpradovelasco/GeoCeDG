@@ -40,7 +40,6 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.geocedg.desktop.AppGeoCeDG;
 import org.geocedg.desktop.GeoCeDGControlLayoutEdits;
 import org.geogebra.common.awt.GColor;
 import org.geogebra.common.gui.SetLabels;
@@ -51,7 +50,6 @@ import org.geogebra.common.gui.dialog.options.model.SliderModel.ISliderOptionsLi
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.arithmetic.NumberValue;
-import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.Localization;
 import org.geogebra.common.util.DoubleUtil;
 import org.geogebra.desktop.awt.GColorD;
@@ -396,8 +394,11 @@ public class SliderPropertiesPanelD extends JPanel
 	}
 
 	private void doComboBoxActionPerformed() {
-		model.applyDirection(coSliderHorizontal.getSelectedIndex());
-		updatePanel(model.getGeos());
+		int direction = coSliderHorizontal.getSelectedIndex();
+		if (direction >= 0) {
+			model.applyDirection(direction);
+			updatePanel(model.getGeos());
+		}
 	}
 
 	private void doTextFieldActionPerformed(JTextField source) {
@@ -537,20 +538,12 @@ public class SliderPropertiesPanelD extends JPanel
 
 	@Override
 	public void setLineOpacity(int value) {
-		var geos = model.getGeos();
-		boolean grouped = app instanceof AppGeoCeDG && geos.length == 1
-				&& geos[0] instanceof GeoElement geo
-				&& app.getKernel().getConstruction().getControlLayout().slot(geo) != null;
-		if (grouped) {
-			// Populating the percentage slider must not round the document's stored opacity.
-			sliderLineOpacity.removeChangeListener(this);
-		}
+		// Refreshing the editor must not write a rounded value or reenter updatePanel.
+		sliderLineOpacity.removeChangeListener(this);
 		try {
 			sliderLineOpacity.setValue(value);
 		} finally {
-			if (grouped) {
-				sliderLineOpacity.addChangeListener(this);
-			}
+			sliderLineOpacity.addChangeListener(this);
 		}
 		btnLineColor.setForeground(
 				GColorD.getAwtColor(getColorWithOpacity(model.getLineColor())));

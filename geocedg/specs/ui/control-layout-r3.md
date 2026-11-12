@@ -27,14 +27,15 @@ panel libera a todos sus miembros en su respaldo.
 
 ## Colocación
 
-El selector de miembros se llena tras confirmar un alta. El gestor
-mantiene la indicación de captura visible en su propia fila. Con el
-panel seleccionado, un clic en el control suelto y **Incorporar
-control** inicia una previsualización. La propuesta busca sitio bajo
+El selector de miembros se llena tras confirmar un alta. Con el panel
+seleccionado, **Añadir control** previsualiza el único control seleccionado
+si es elegible. Si la selección está vacía, activa una captura de un clic
+en Gráficos 1 y previsualiza el control capturado. La propuesta busca sitio bajo
 el encabezado, con margen interior, considerando las dimensiones del
 control y los miembros existentes. El puntero ajusta la propuesta en
 el panel y un clic válido o **Confirmar colocación** la aplica.
-Escape descarta la previsualización. Un solape impide confirmar el
+**Confirmar colocación** también acepta la propuesta inicial sin otro clic
+en el panel. Escape cancela la captura o la previsualización. Un solape impide confirmar el
 alta en ese punto. Si falta espacio, el panel crece por la derecha o
 por abajo hasta contener el control y el margen, conservando el origen
 y la posición de sus miembros. Los gestos de edición siguen disponibles.
@@ -43,6 +44,18 @@ La previsualización es estado local de Desktop. Confirmar revalida
 el contexto, el panel, la instancia y la transformación, y publica
 ranura y tamaño en una única operación de historial. La separación
 es otra operación. El registro se serializa por instancia.
+
+Una selección múltiple, un control incompatible o un contexto que deja de
+ser válido se indica en el gestor. El rechazo termina el intento y deja
+disponibles las acciones contextuales. Cambiar de panel, cerrar el gestor
+o abrir un menú contextual cancela la captura y la colocación pendientes.
+La propiedad nativa de orientación del deslizador rige la colocación,
+el dibujo y los gestos. Control Layout conserva esa propiedad y la
+pertenencia a vistas en todos sus recorridos.
+
+**Propiedades del panel**, en el gestor y en el menú contextual, abre el
+editor R1 de nombre, color y transparencia del panel. **Propiedades del
+objeto** abre el editor nativo del miembro.
 
 ## Formato y compatibilidad
 

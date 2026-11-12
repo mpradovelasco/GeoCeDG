@@ -115,23 +115,22 @@ public class ViewLocationModel extends OptionsModel {
 	}
 
 	public void applyToEuclidianView3D(boolean value) {
-
-		if (!app.isEuclidianView3Dinited()) {
-			return;
-		}
-
+		// Store the requested membership even if there is no live 3D drawable to update.
+		EuclidianView3DInterface view = app.isEuclidianView3Dinited()
+				? app.getEuclidianView3D() : null;
 		for (int i = 0; i < getGeosLength(); i++) {
 			GeoElement geo = getGeoAt(i);
-			EuclidianView3DInterface ev3D = app.getEuclidianView3D();
-
 			if (value) {
 				geo.addViews3D();
-				ev3D.add(geo);
+				if (view != null) {
+					view.add(geo);
+				}
 			} else {
 				geo.removeViews3D();
-				ev3D.remove(geo);
+				if (view != null) {
+					view.remove(geo);
+				}
 			}
-
 		}
 		storeUndoInfo();
 	}

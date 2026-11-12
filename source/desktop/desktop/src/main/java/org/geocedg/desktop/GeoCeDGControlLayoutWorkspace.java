@@ -82,7 +82,7 @@ final class GeoCeDGControlLayoutWorkspace {
 	private JComboBox<Slot> members;
 	private JLabel target;
 	private JButton attachButton;
-	private GeoElement candidate;
+	private Capture capture;
 	private Placement placement;
 	private Proposal proposal;
 	private Gesture gesture;
@@ -98,6 +98,8 @@ final class GeoCeDGControlLayoutWorkspace {
 
 	private record Gesture(ControlLayout layout, Panel panel, Slot slot, Transform transform,
 			int x, int y, boolean resize) { }
+
+	private record Capture(ControlLayout layout, Panel panel) { }
 
 	private record Placement(ControlLayout layout, Panel panel, GeoElement control,
 			Transform transform, Rectangle footprint, double sliderWidth) { }
@@ -488,6 +490,7 @@ final class GeoCeDGControlLayoutWorkspace {
 			JMenuItem properties = new JMenuItem(app.getLocalization().getMenu("Properties") + " ...");
 			properties.addActionListener(event -> {
 				if (eligibleContext() && context.matches(contextAt(point, type))) {
+					cancelGesture();
 					var selection = new ArrayList<>(List.of(control));
 					boolean opensProperties = !app.getGuiManager().showView(App.VIEW_PROPERTIES);
 					app.getSelectionManager().setSelectedGeos(selection, true);
@@ -507,6 +510,13 @@ final class GeoCeDGControlLayoutWorkspace {
 			}
 		});
 		menu.add(item);
+		JMenuItem properties = new JMenuItem(text("ControlLayout.PanelProperties"));
+		properties.addActionListener(event -> {
+			if (eligibleContext() && context.matches(contextAt(point, type))) {
+				editAppearance(panel);
+			}
+		});
+		menu.add(properties);
 		return menu;
 	}
 
@@ -572,7 +582,7 @@ final class GeoCeDGControlLayoutWorkspace {
 		});
 		panels.getAccessibleContext().setAccessibleName(text("ControlLayout.Panel"));
 		panels.addActionListener(event -> {
-			cancelPlacement();
+			cancelAttachment();
 			refreshMembers(null);
 		});
 		members = new JComboBox<>();
@@ -592,7 +602,7 @@ final class GeoCeDGControlLayoutWorkspace {
 		button(buttons, "Detach", this::detach);
 		button(buttons, "Anchor", this::convert);
 		button(buttons, "Visibility", this::toggleVisible);
-		button(buttons, "Appearance", this::editAppearance);
+		button(buttons, "PanelProperties", () -> editAppearance(selectedPanel()));
 		button(buttons, "Duplicate", this::duplicate);
 		button(buttons, "BringIntoView", this::bringIntoView);
 		button(buttons, "Remove", this::remove);
@@ -619,14 +629,14 @@ final class GeoCeDGControlLayoutWorkspace {
 			if (eligibleContext()) {
 				try {
 					if (button != attachButton) {
-						cancelPlacement();
+						cancelGesture();
 					}
 					command.run();
 				} catch (IllegalArgumentException | IllegalStateException exception) {
-					warn("ControlLayout.Rejected");
+					rejectAttachment("ControlLayout.Rejected");
 				}
 			} else {
-				warn("ControlLayout.Context");
+				rejectAttachment("ControlLayout.Context");
 			}
 		});
 		buttons.add(button);
@@ -693,14 +703,15 @@ final class GeoCeDGControlLayoutWorkspace {
 		commit(panel.id(), null, List.of());
 	}
 
-	private void editAppearance() {
-		Panel panel = selectedPanel();
+	private void editAppearance(Panel panel) {
 		if (panel == null) {
 			return;
 		}
 		cancelGesture();
 		ControlLayout originalLayout = layout();
-		var editor = new GeoCeDGControlLayoutStyleDialog(app, dialog, panel, preview -> {
+		JDialog manager = dialog;
+		var owner = manager != null ? manager : SwingUtilities.getWindowAncestor(view.getJPanel());
+		var editor = new GeoCeDGControlLayoutStyleDialog(app, owner, panel, preview -> {
 			stylePreviewPanel = preview;
 			view.repaintView();
 		});
@@ -714,7 +725,7 @@ final class GeoCeDGControlLayoutWorkspace {
 			stylePreviewPanel = null;
 			view.repaintView();
 		}
-		if (accepted != null && dialog != null && eligibleContext() && layout() == originalLayout
+		if (accepted != null && dialog == manager && eligibleContext() && layout() == originalLayout
 				&& layout().panel(panel.id()) == panel) {
 			update(accepted);
 		}
@@ -747,28 +758,44 @@ final class GeoCeDGControlLayoutWorkspace {
 			confirmPlacement();
 			return;
 		}
-		Panel panel = selectedPanel();
-		List<GeoElement> selected = app.getSelectionManager().getSelectedGeos();
-		GeoElement geo = candidate == null && selected.size() == 1 ? selected.get(0) : candidate;
-		if (panel == null || geo == null) {
-			warn("ControlLayout.Pick");
+		if (cancelAttachment()) {
 			return;
 		}
-		if (!layout().isEligible(geo) || layout().slot(geo) != null || !shown(geo)) {
-			warn("ControlLayout.Ineligible");
+		cancelDrag();
+		Panel panel = selectedPanel();
+		List<GeoElement> selected = app.getSelectionManager().getSelectedGeos();
+		if (panel == null) {
+			warn("ControlLayout.SelectPanel");
+		} else if (selected.size() > 1) {
+			warn("ControlLayout.SingleSelection");
+		} else if (selected.isEmpty()) {
+			capture = new Capture(layout(), panel);
+			attachButton.setText(text("ControlLayout.CancelCapture"));
+			target.setText(text("ControlLayout.Capture"));
+		} else {
+			startPlacement(panel, selected.get(0));
+		}
+	}
+
+	private boolean canAttach(GeoElement geo) {
+		return layout().isEligible(geo) && layout().slot(geo) == null && shown(geo);
+	}
+
+	private void startPlacement(Panel panel, GeoElement geo) {
+		if (!canAttach(geo)) {
+			rejectAttachment("ControlLayout.Ineligible");
 			return;
 		}
 		Rectangle footprint = attachmentFootprint(geo);
 		double width = attachmentWidth(geo);
 		if (footprint == null || !Double.isFinite(width) || !screenPoint(origin(panel))) {
-			warn("ControlLayout.Ineligible");
+			rejectAttachment("ControlLayout.Ineligible");
 			return;
 		}
 		placement = new Placement(layout(), panel, geo, transform(), footprint, width);
 		proposal = defaultPlacement();
 		if (proposal == null) {
-			cancelPlacement();
-			warn("ControlLayout.Rejected");
+			rejectAttachment("ControlLayout.Rejected");
 			return;
 		}
 		attachButton.setText(text("ControlLayout.ConfirmPlacement"));
@@ -861,8 +888,7 @@ final class GeoCeDGControlLayoutWorkspace {
 
 	private boolean placementCurrent() {
 		return placement != null && eligibleContext() && placement.layout() == layout()
-				&& selectedPanel() == placement.panel() && layout().slot(placement.control()) == null
-				&& layout().isEligible(placement.control()) && shown(placement.control())
+				&& selectedPanel() == placement.panel() && canAttach(placement.control())
 				&& transform().equals(placement.transform());
 	}
 
@@ -871,7 +897,7 @@ final class GeoCeDGControlLayoutWorkspace {
 			return false;
 		}
 		if (!placementCurrent()) {
-			cancelPlacement();
+			rejectAttachment("ControlLayout.Rejected");
 			return false;
 		}
 		if (overPlacementPanel(event)) {
@@ -879,8 +905,9 @@ final class GeoCeDGControlLayoutWorkspace {
 			target.setText(text(proposal.clear() ? "ControlLayout.Place"
 					: "ControlLayout.PlacementOccupied"));
 			view.repaintView();
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	private boolean overPlacementPanel(AbstractEvent event) {
@@ -896,8 +923,7 @@ final class GeoCeDGControlLayoutWorkspace {
 
 	private void confirmPlacement() {
 		if (!placementCurrent()) {
-			cancelPlacement();
-			warn("ControlLayout.Rejected");
+			rejectAttachment("ControlLayout.Rejected");
 			return;
 		}
 		Panel panel = placement.panel();
@@ -906,8 +932,7 @@ final class GeoCeDGControlLayoutWorkspace {
 		Rectangle footprint = attachmentFootprint(geo);
 		double width = attachmentWidth(geo);
 		if (footprint == null || !Double.isFinite(width)) {
-			cancelPlacement();
-			warn("ControlLayout.Ineligible");
+			rejectAttachment("ControlLayout.Ineligible");
 			return;
 		}
 		boolean changed = !placement.footprint().equals(footprint) || placement.sliderWidth() != width;
@@ -923,8 +948,7 @@ final class GeoCeDGControlLayoutWorkspace {
 		Slot slot = layout().addSlot(panel.id(), geo, current.dx(), current.dy(),
 				width);
 		layout().updatePanel(current.panel());
-		candidate = null;
-		cancelPlacement();
+		cancelAttachment();
 		commit(panel.id(), geo, List.of(slot));
 	}
 
@@ -1044,18 +1068,43 @@ final class GeoCeDGControlLayoutWorkspace {
 		return affected.size();
 	}
 
+	void beginPointerSequence(boolean contextClick) {
+		// A lost release must not transfer ownership to a later, unrelated press.
+		ownsPointer = false;
+		cancelDrag();
+		if (contextClick) {
+			cancelAttachment();
+		}
+	}
+
 	boolean press(AbstractEvent event, Iterable<GeoElement> hits) {
-		if (dialog == null || !eligibleContext() || event.isRightClick()) {
+		if (dialog == null || event.isRightClick()) {
 			return false;
 		}
-		if (placement != null) {
-			if (movePlacement(event) && overPlacementPanel(event)) {
-				confirmPlacement();
+		if (!eligibleContext()) {
+			if (cancelAttachment()) {
+				warn("ControlLayout.Context");
 			}
-			ownsPointer = true;
-			return true;
+			return false;
 		}
-		cancelGesture();
+		if (capture != null || placement != null) {
+			try {
+				if (capture != null) {
+					ownsPointer = true;
+					captureControl(hits);
+					return true;
+				}
+				if (movePlacement(event)) {
+					ownsPointer = true;
+					confirmPlacement();
+					return true;
+				}
+				cancelAttachment();
+			} catch (IllegalArgumentException | IllegalStateException exception) {
+				rejectAttachment("ControlLayout.Rejected");
+				return ownsPointer;
+			}
+		}
 		var available = layout().panels();
 		for (int i = available.size() - 1; i >= 0; i--) {
 			Panel panel = available.get(i);
@@ -1069,32 +1118,30 @@ final class GeoCeDGControlLayoutWorkspace {
 				break;
 			}
 		}
-		candidate = null;
-		target.setText(text("ControlLayout.Pick"));
-		GeoElement incompatible = null;
 		for (GeoElement geo : hits) {
 			Slot slot = liveSlot(geo);
 			if (slot != null) {
 				begin(layout().panel(slot.panelId()), slot, false, event);
 				return true;
 			}
-			if (geo instanceof AbsoluteScreenLocateable && layout().isEligible(geo)) {
-				candidate = geo;
-				target.setText(geo.getLabelSimple());
-				ownsPointer = true;
-				return true;
-			}
-			if (incompatible == null && isControl(geo)) {
-				incompatible = geo;
-			}
-		}
-		if (incompatible != null) {
-			candidate = incompatible;
-			target.setText(text("ControlLayout.Ineligible"));
-			ownsPointer = true;
-			return true;
 		}
 		return false;
+	}
+
+	private void captureControl(Iterable<GeoElement> hits) {
+		Capture request = capture;
+		cancelAttachment();
+		if (request.layout() != layout() || request.panel() != selectedPanel()) {
+			warn("ControlLayout.Rejected");
+			return;
+		}
+		for (GeoElement geo : hits) {
+			if (canAttach(geo)) {
+				startPlacement(request.panel(), geo);
+				return;
+			}
+		}
+		warn("ControlLayout.Ineligible");
 	}
 
 	private void begin(Panel panel, Slot slot, boolean resize, AbstractEvent event) {
@@ -1115,7 +1162,8 @@ final class GeoCeDGControlLayoutWorkspace {
 			return false;
 		}
 		if (placement != null) {
-			return movePlacement(event);
+			movePlacement(event);
+			return true;
 		}
 		if (!gestureCurrent()) {
 			cancelGesture();
@@ -1193,7 +1241,7 @@ final class GeoCeDGControlLayoutWorkspace {
 	}
 
 	boolean cancelGesture() {
-		boolean cancelled = cancelPlacement();
+		boolean cancelled = cancelAttachment();
 		return cancelDrag() || cancelled;
 	}
 
@@ -1210,14 +1258,15 @@ final class GeoCeDGControlLayoutWorkspace {
 		return true;
 	}
 
-	private boolean cancelPlacement() {
-		if (placement == null) {
+	private boolean cancelAttachment() {
+		if (capture == null && placement == null) {
 			return false;
 		}
+		capture = null;
 		placement = null;
 		proposal = null;
 		attachButton.setText(text("ControlLayout.Attach"));
-		target.setText(candidate == null ? text("ControlLayout.Pick") : candidate.getLabelSimple());
+		target.setText(text("ControlLayout.Pick"));
 		view.repaintView();
 		return true;
 	}
@@ -1234,7 +1283,6 @@ final class GeoCeDGControlLayoutWorkspace {
 		stylePreviewPanel = null;
 		JDialog previous = dialog;
 		dialog = null;
-		candidate = null;
 		if (previous != null) {
 			previous.dispose();
 			view.repaintView();
@@ -1246,7 +1294,16 @@ final class GeoCeDGControlLayoutWorkspace {
 	}
 
 	private void warn(String key) {
-		JOptionPane.showMessageDialog(view.getJPanel(), text(key),
-				text("ControlLayout.Title"), JOptionPane.WARNING_MESSAGE);
+		if (dialog != null) {
+			target.setText(text(key));
+		} else {
+			JOptionPane.showMessageDialog(view.getJPanel(), text(key),
+					text("ControlLayout.Title"), JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	private void rejectAttachment(String key) {
+		cancelGesture();
+		warn(key);
 	}
 }

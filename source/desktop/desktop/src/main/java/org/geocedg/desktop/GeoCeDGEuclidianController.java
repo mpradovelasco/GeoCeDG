@@ -176,6 +176,10 @@ public final class GeoCeDGEuclidianController
 	public void wrapMousePressed(AbstractEvent event) {
 		panelContext = null;
 		panelContextDragged = false;
+		var controlLayout = controlLayoutWorkspace();
+		if (controlLayout != null) {
+			controlLayout.beginPointerSequence(app.isRightClick(event));
+		}
 		if (isInsertionIsolated()) {
 			return;
 		}
@@ -191,7 +195,6 @@ public final class GeoCeDGEuclidianController
 					((org.geogebra.desktop.euclidian.EuclidianViewD) getView()).getJPanel(), event.getX(), event.getY());
 			return;
 		}
-		var controlLayout = controlLayoutWorkspace();
 		if (controlLayout != null && app.isRightClickEnabled() && app.isRightClick(event)
 				&& controlLayout.eligibleContext()) {
 			var target = controlLayout.contextAt(new GPoint(event.getX(), event.getY()),

@@ -2216,10 +2216,12 @@ writes those layers as off, so that a CAD program shows them hidden
 **[N]** **[!]** In **Graphics 1**, choose **Move** and open **View → Visibility and style →
 Control layout**. Create a panel. With the manager open, drag the header to
 move the panel, the lower-right handle to resize it, or a member to move
-it inside the panel. With the panel selected in the manager, click a loose control in
-Graphics 1, then choose **Attach control**. Click inside the panel to
-choose a position or select **Confirm placement** to accept the preview.
-Escape cancels. The panel grows if the control needs more room.
+it inside the panel. With the panel selected in the manager, choose
+**Attach control** to preview the single selected control. With an empty
+selection, click a loose control in Graphics 1 when prompted. Click inside
+the panel to adjust the placement or choose **Confirm placement** to
+accept the preview. Escape cancels the capture or preview. The panel grows
+if the control needs more room.
 
 Eligible controls include independent numeric and angular sliders,
 buttons, independent check boxes and input boxes. They need unlocked
@@ -2233,7 +2235,7 @@ the manager lists controls that already belong to the panel.
 | Manager option | What it does |
 | --- | --- |
 | Change anchor | **Fixed** keeps the panel in the window as you pan or zoom. **Canvas anchor** moves the panel's origin with the drawing and keeps its visual size. |
-| Panel appearance | Edit its name, color and transparency. Confirm to keep the preview or cancel to discard it. |
+| Panel properties | Edit its name, color and transparency. Also available from the panel's context menu. Confirm to keep the preview or cancel to discard it. |
 | Show or hide panel | Show or hide the controls together with their panel. |
 | Duplicate empty panel | When the selected panel is empty, create another at the chosen position. |
 | Move panel into view | Recover a panel that has gone off screen. |

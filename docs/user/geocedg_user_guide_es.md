@@ -2324,10 +2324,12 @@ programa de CAD las muestra ocultas (sección 11.8).
 Disposición de controles**. Cree un panel. Con el gestor abierto, arrastre el
 encabezado para moverlo, el tirador inferior derecho para cambiar su
 tamaño o un miembro para recolocarlo dentro del panel. Con el panel
-elegido, pulse un control suelto en Gráficos 1 y luego **Añadir
-control**. Pulse dentro del panel para elegir dónde colocarlo o use
-**Confirmar colocación** para aceptar la previsualización. Escape cancela.
-Si hace falta espacio, el panel crece para alojar el control.
+elegido, pulse **Añadir control** para previsualizar el único control
+seleccionado. Si la selección está vacía, pulse un control suelto en
+Gráficos 1 cuando el gestor lo pida. Pulse dentro del panel para ajustar
+la posición o use **Confirmar colocación** para aceptar la previsualización.
+Escape cancela la captura o la vista previa. Si hace falta espacio, el
+panel crece para alojar el control.
 
 Puede añadir deslizadores numéricos y angulares independientes, botones,
 casillas independientes y campos de entrada. Los controles deben estar
@@ -2341,7 +2343,7 @@ respaldo. El segundo selector del gestor muestra los miembros ya añadidos.
 | Opción del gestor | Qué hace |
 | --- | --- |
 | Cambiar anclaje | **Fijo** mantiene el panel en la ventana al desplazar o ampliar el dibujo. **Vinculado al lienzo** mueve el origen del panel con el dibujo y conserva el tamaño visual. |
-| Apariencia del panel | Permite editar nombre, color y transparencia. La vista previa se aplica al confirmar y se descarta al cancelar. |
+| Propiedades del panel | Permite editar nombre, color y transparencia. También está disponible en el menú contextual del panel. La vista previa se aplica al confirmar y se descarta al cancelar. |
 | Mostrar u ocultar panel | Muestra u oculta también los controles del panel. |
 | Duplicar panel vacío | Con el panel seleccionado vacío, crea otro en la posición elegida. |
 | Llevar panel a la vista | Recupera un panel que quedó fuera del área visible. |

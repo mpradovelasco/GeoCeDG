@@ -57,7 +57,7 @@ final class GeoCeDGControlLayoutStyleDialog {
 		this.original = original;
 		this.preview = preview;
 		percent = NumberFormat.getPercentInstance(app.getLocale());
-		dialog = new JDialog(owner, text("Appearance"), Dialog.ModalityType.DOCUMENT_MODAL);
+		dialog = new JDialog(owner, text("PanelProperties"), Dialog.ModalityType.DOCUMENT_MODAL);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		name = new JTextField(original.name(), 28);
 		color = new GeoGebraColorChooser(app);
