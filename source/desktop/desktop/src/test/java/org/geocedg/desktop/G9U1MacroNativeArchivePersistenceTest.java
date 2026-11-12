@@ -25,6 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.swing.JMenu;
+import javax.swing.SwingUtilities;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
@@ -146,15 +147,18 @@ class G9U1MacroNativeArchivePersistenceTest {
 	}
 
 	@Test
-	void explicitIdentityMergeRemainsForbidden() {
-		AppGeoCeDG source = G9U1TestApp.create();
-		createIdentityBearingSpline(source);
-		String identityXml = source.getXML();
-		AppGeoCeDG target = G9U1TestApp.create();
+	void explicitIdentityMergeRemainsForbidden() throws Exception {
+		// XML settings listeners synchronously update Swing views during the merge.
+		SwingUtilities.invokeAndWait(() -> {
+			AppGeoCeDG source = G9U1TestApp.create();
+			createIdentityBearingSpline(source);
+			String identityXml = source.getXML();
+			AppGeoCeDG target = G9U1TestApp.create();
 
-		SpatialIdentityException failure = assertThrows(SpatialIdentityException.class,
-				() -> target.getXMLio().processXMLString(identityXml, false, false, false));
-		assertTrue(failure.getMessage().contains("GENERIC_MERGE_FORBIDDEN"));
+			SpatialIdentityException failure = assertThrows(SpatialIdentityException.class,
+					() -> target.getXMLio().processXMLString(identityXml, false, false, false));
+			assertTrue(failure.getMessage().contains("GENERIC_MERGE_FORBIDDEN"));
+		});
 	}
 
 	private static GeoLocusV2 createIdentityBearingSpline(AppGeoCeDG app) {

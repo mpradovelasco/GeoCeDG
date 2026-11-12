@@ -4092,7 +4092,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/G9U1MacroNativeArchivePersistenceTest.java",
       "change": "added",
-      "purpose": "G9U1 author-review round 2: Verify invoked user-tool macro output survives native save, undo/redo, save-after-undo and two reopens from document-owned definition authority, plus incompatible merge rejection. Round 3 verifies that a definition-digest-equivalent installed package remains the sole user-facing entry while the embedded Macro remains portable, and that unequal/partial definitions fail closed. POST-E2-P3 reconciliation: the User tools menu now ends with a separator and the Document tools submenu; an equivalent embedded macro is not repeated there. Authority: docs/architecture/post_e2_p3_document_tools_design.md.",
+      "purpose": "G9U1 author-review round 2: Verify invoked user-tool macro output survives native save, undo/redo, save-after-undo and two reopens from document-owned definition authority, plus incompatible merge rejection. Round 3 verifies that a definition-digest-equivalent installed package remains the sole user-facing entry while the embedded Macro remains portable, and that unequal/partial definitions fail closed. POST-E2-P3 reconciliation: the User tools menu now ends with a separator and the Document tools submenu; an equivalent embedded macro is not repeated there. Authority: docs/architecture/post_e2_p3_document_tools_design.md. CU8-I-R3 integration reverification: run the incompatible merge test on the Swing event thread without changing assertions.",
       "authority": "geocedg/specs/ui/g9u1-construction-interaction.md"
     },
     {
