@@ -781,9 +781,15 @@ final class GeoCeDGControlLayoutWorkspace {
 		return layout().isEligible(geo) && layout().slot(geo) == null && shown(geo);
 	}
 
+	private boolean isFixedLooseSlider(GeoElement geo) {
+		return geo instanceof GeoNumeric slider && slider.isSlider() && slider.isLockedPosition()
+				&& layout().slot(slider) == null && shown(slider);
+	}
+
 	private void startPlacement(Panel panel, GeoElement geo) {
 		if (!canAttach(geo)) {
-			rejectAttachment("ControlLayout.Ineligible");
+			rejectAttachment(isFixedLooseSlider(geo) ? "ControlLayout.UnlockSlider"
+					: "ControlLayout.Ineligible");
 			return;
 		}
 		Rectangle footprint = attachmentFootprint(geo);
@@ -1135,13 +1141,17 @@ final class GeoCeDGControlLayoutWorkspace {
 			warn("ControlLayout.Rejected");
 			return;
 		}
+		String rejection = "ControlLayout.Ineligible";
 		for (GeoElement geo : hits) {
 			if (canAttach(geo)) {
 				startPlacement(request.panel(), geo);
 				return;
 			}
+			if (isFixedLooseSlider(geo)) {
+				rejection = "ControlLayout.UnlockSlider";
+			}
 		}
-		warn("ControlLayout.Ineligible");
+		warn(rejection);
 	}
 
 	private void begin(Panel panel, Slot slot, boolean resize, AbstractEvent event) {

@@ -32,6 +32,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.FutureTask;
@@ -39,6 +40,7 @@ import java.util.function.Predicate;
 import java.util.zip.ZipInputStream;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -69,8 +71,10 @@ import org.geogebra.common.main.App;
 import org.geogebra.common.main.App.ExportType;
 import org.geogebra.common.plugin.ScriptType;
 import org.geogebra.desktop.awt.GGraphics2DD;
+import org.geogebra.desktop.euclidian.event.MouseEventD;
 import org.geogebra.desktop.gui.app.GeoGebraFrame;
 import org.geogebra.desktop.gui.color.GeoGebraColorChooser;
+import org.geogebra.desktop.gui.dialog.PropertiesPanelD;
 import org.geogebra.desktop.gui.properties.SliderPropertiesPanelD;
 import org.geogebra.desktop.gui.view.properties.PropertiesViewD;
 import org.junit.jupiter.api.Test;
@@ -82,6 +86,91 @@ import org.junit.jupiter.api.io.TempDir;
 class GeoCeDGControlLayoutDesktopTest {
 	@TempDir
 	Path temporary;
+
+	private void assertRejectingFixedAngleKeepsItsExplicit3dExclusion() throws Exception {
+		Path original = PreG9BR6PlusD1LegacyFingerprints.findRepositoryRoot()
+				.resolve("models/regression/pre-g9b-cu/original/InterCilConoOblique.cedg");
+		Path copy = Files.copy(original, temporary.resolve("fixed-angle.cedg"));
+		onEdt(() -> {
+			AppGeoCeDG app = G9U1TestApp.create();
+			assertTrue(app.loadFile(copy.toFile(), false));
+			GeoCeDGEuclidianView view = (GeoCeDGEuclidianView) app.getEuclidianView1();
+			var workspace = view.controlLayoutWorkspace();
+			var angle = (GeoNumeric) app.getKernel().lookupLabel("α_{cone}");
+			var otherAngle = app.getKernel().lookupLabel("α_{cyl}");
+			assertFalse(app.isEuclidianView3Dinited());
+			assertFalse(angle.isAbsoluteScreenLocActive());
+			assertTrue(angle.isLockedPosition());
+			var properties = new PropertiesPanelD(app, new GeoGebraColorChooser(app), false);
+			properties.setLabels();
+			properties.updateSelection(new Object[] {angle});
+			var graphics3d = findComponent(properties, JCheckBox.class, box ->
+					app.getLocalization().getMenu("GraphicsView3D").equals(box.getText()));
+			assertNotNull(graphics3d);
+			assertTrue(graphics3d.isSelected());
+			graphics3d.doClick(0);
+			assertFalse(angle.isVisibleInView3D());
+
+			var existingWindows = List.of(Window.getWindows());
+			try {
+				app.openControlLayout();
+				var manager = List.of(Window.getWindows()).stream()
+						.filter(window -> !existingWindows.contains(window))
+						.filter(JDialog.class::isInstance).map(JDialog.class::cast)
+						.filter(dialog -> app.layerText("ControlLayout.Title").equals(dialog.getTitle()))
+						.findFirst().orElseThrow();
+				var content = manager.getContentPane();
+				var create = findComponent(content, JButton.class,
+						button -> app.layerText("ControlLayout.New").equals(button.getText()));
+				var attach = findComponent(content, JButton.class,
+						button -> app.layerText("ControlLayout.Attach").equals(button.getText()));
+				var instructions = findComponent(content, JLabel.class,
+						label -> app.layerText("ControlLayout.Pick").equals(label.getText()));
+				assertNotNull(create);
+				assertNotNull(attach);
+				assertNotNull(instructions);
+				create.doClick(0);
+				app.getSelectionManager().setSelectedGeos(List.of(angle), true);
+				attach.doClick(0);
+				assertNull(layout(app).slot(angle));
+				assertTrue(angle.isLockedPosition());
+				properties.updateSelection(new Object[] {otherAngle});
+				assertTrue(graphics3d.isSelected());
+				properties.updateSelection(new Object[] {angle});
+				assertFalse(graphics3d.isSelected());
+				assertFalse(angle.isVisibleInView3D());
+				assertEquals(app.layerText("ControlLayout.UnlockSlider"), instructions.getText());
+				app.getSelectionManager().clearSelectedGeos();
+				attach.doClick(0);
+				assertEquals(app.layerText("ControlLayout.Capture"), instructions.getText());
+				var press = MouseEventD.wrapEvent(new MouseEvent(view.getJPanel(),
+						MouseEvent.MOUSE_PRESSED, 0, MouseEvent.BUTTON1_DOWN_MASK,
+						50, 50, 1, false, MouseEvent.BUTTON1));
+				assertTrue(workspace.press(press, List.of(angle)));
+				assertTrue(workspace.release());
+				assertEquals(app.layerText("ControlLayout.UnlockSlider"), instructions.getText());
+				assertNull(layout(app).slot(angle));
+				assertFalse(angle.isVisibleInView3D());
+				var fixed = findComponent(properties, JCheckBox.class,
+						box -> app.getLocalization().getMenu("fixed").equals(box.getText()));
+				assertNotNull(fixed);
+				assertTrue(fixed.isSelected());
+				fixed.doClick(0);
+				assertFalse(angle.isLockedPosition());
+				app.getSelectionManager().setSelectedGeos(List.of(angle), true);
+				attach.doClick(0);
+				assertEquals(app.layerText("ControlLayout.ConfirmPlacement"), attach.getText());
+				attach.doClick(0);
+				assertSame(angle, layout(app).slot(angle).control());
+				assertFalse(angle.isAbsoluteScreenLocActive());
+				assertFalse(angle.isVisibleInView3D());
+			} finally {
+				workspace.close();
+				app.getFrame().dispose();
+			}
+			return null;
+		});
+	}
 
 	private void assertInteractiveAttachment() throws Exception {
 		onEdt(() -> {
@@ -332,6 +421,7 @@ class GeoCeDGControlLayoutDesktopTest {
 
 	@Test
 	void detachMovesTheControlBehindItsOldPanel() throws Exception {
+		assertRejectingFixedAngleKeepsItsExplicit3dExclusion();
 		assertInteractiveAttachment();
 		onEdt(() -> {
 			AppGeoCeDG app = G9U1TestApp.create();
