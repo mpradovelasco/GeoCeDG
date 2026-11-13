@@ -28,12 +28,14 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.FutureTask;
 import java.util.function.Predicate;
@@ -266,11 +268,18 @@ class GeoCeDGControlLayoutDesktopTest {
 				selection.clearSelectedGeos();
 				attach.doClick(0);
 				assertEquals(app.layerText("ControlLayout.Capture"), instructions.getText());
+				escape(app, attach);
+				assertTrue(manager.isShowing());
+				assertEquals(app.layerText("ControlLayout.Attach"), attach.getText());
+				assertFalse(workspace.cancelGesture());
+				attach.doClick(0);
 				click(view, sliderHit);
 				assertEquals(app.layerText("ControlLayout.ConfirmPlacement"), attach.getText());
 				assertSame(original, layout(app).panel(original.id()));
 				assertNull(layout(app).slot(slider));
-				assertTrue(workspace.cancelGesture());
+				escape(app, attach);
+				assertTrue(manager.isShowing());
+				assertEquals(app.layerText("ControlLayout.Attach"), attach.getText());
 				assertNull(layout(app).slot(slider));
 				selection.setSelectedGeos(List.of(slider), true);
 				attach.doClick(0);
@@ -342,11 +351,32 @@ class GeoCeDGControlLayoutDesktopTest {
 				var reopenedAngle = (GeoNumeric) reopened.getKernel().lookupLabel("t");
 				assertFalse(reopenedAngle.isSliderHorizontal());
 				assertFalse(reopenedAngle.isVisibleInView3D());
+				escape(app, attach);
+				assertFalse(manager.isDisplayable());
+				assertFalse(workspace.isOpen());
+				workspace.openPanel(original.id());
+				assertTrue(workspace.isOpen());
+				JDialog reopenedManager = Arrays.stream(Window.getWindows())
+						.filter(window -> window instanceof JDialog dialog && dialog.isShowing()
+								&& app.layerText("ControlLayout.Title").equals(dialog.getTitle()))
+						.map(JDialog.class::cast).findFirst().orElseThrow();
+				reopenedManager.setVisible(false);
+				assertFalse(workspace.isOpen());
+				workspace.openPanel(original.id());
+				assertTrue(workspace.isOpen());
+				assertFalse(reopenedManager.isDisplayable());
 			} finally {
 				workspace.close();
 			}
 			return null;
 		});
+	}
+
+	private static void escape(AppGeoCeDG app, Component source) {
+		for (int id : new int[] {KeyEvent.KEY_PRESSED, KeyEvent.KEY_RELEASED}) {
+			assertTrue(app.dispatchKeyEvent(new KeyEvent(source, id, 0, 0,
+					KeyEvent.VK_ESCAPE, (char) 27)));
+		}
 	}
 
 	private static void assertReadOnlySliderProperties(AppGeoCeDG app, GeoNumeric slider,

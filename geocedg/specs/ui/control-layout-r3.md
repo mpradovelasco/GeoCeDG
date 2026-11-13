@@ -35,8 +35,10 @@ el encabezado, con margen interior, considerando las dimensiones del
 control y los miembros existentes. El puntero ajusta la propuesta en
 el panel y un clic válido o **Confirmar colocación** la aplica.
 **Confirmar colocación** también acepta la propuesta inicial sin otro clic
-en el panel. Escape cancela la captura o la previsualización. Un solape impide confirmar el
-alta en ese punto. Si falta espacio, el panel crece por la derecha o
+en el panel. Escape cancela la captura, la previsualización o el gesto de edición
+y deja abierto el gestor. Con el foco en el gestor y sin una acción pendiente,
+Escape lo cierra y se puede volver a abrir desde el menú Vista o el panel.
+Un solape impide confirmar el alta en ese punto. Si falta espacio, el panel crece por la derecha o
 por abajo hasta contener el control y el margen, conservando el origen
 y la posición de sus miembros. Los gestos de edición siguen disponibles.
 
@@ -51,11 +53,14 @@ disponibles las acciones contextuales. Cambiar de panel, cerrar el gestor
 o abrir un menú contextual cancela la captura y la colocación pendientes.
 La propiedad nativa de orientación del deslizador rige la colocación,
 el dibujo y los gestos. Control Layout conserva esa propiedad y la
-pertenencia a vistas en todos sus recorridos.
+pertenencia a vistas en todos sus recorridos. Si un control suelto pertenece a
+Gráficos 3D, el gestor indica dónde desmarcar esa vista. Si la posición de un
+deslizador está fijada, indica cómo quitar la fijación.
 
 **Propiedades del panel**, en el gestor y en el menú contextual, abre el
 editor R1 de nombre, color y transparencia del panel. **Propiedades del
-objeto** abre el editor nativo del miembro.
+objeto** abre el editor nativo del miembro. Escape descarta la edición de
+apariencia y devuelve el control al gestor si está abierto.
 
 ## Formato y compatibilidad
 

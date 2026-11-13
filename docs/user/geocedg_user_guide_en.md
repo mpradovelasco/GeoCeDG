@@ -2220,7 +2220,9 @@ it inside the panel. With the panel selected in the manager, choose
 **Attach control** to preview the single selected control. With an empty
 selection, click a loose control in Graphics 1 when prompted. Click inside
 the panel to adjust the placement or choose **Confirm placement** to
-accept the preview. Escape cancels the capture or preview. The panel grows
+accept the preview. Escape cancels the capture or preview and leaves the
+manager open. Press Escape in the idle manager to close it. Reopen it from
+View or the panel's context menu. The panel grows
 if the control needs more room.
 
 Eligible controls include independent numeric and angular sliders,

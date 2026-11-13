@@ -11,7 +11,8 @@ import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -20,12 +21,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -34,7 +33,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import org.geocedg.common.document.controls.ControlLayout;
@@ -542,6 +540,9 @@ final class GeoCeDGControlLayoutWorkspace {
 			warn("ControlLayout.Context");
 			return;
 		}
+		if (dialog != null && !dialog.isShowing()) {
+			close();
+		}
 		if (dialog != null) {
 			if (panelId != null) {
 				refreshManager(panelId, null);
@@ -552,12 +553,13 @@ final class GeoCeDGControlLayoutWorkspace {
 		dialog = new JDialog(SwingUtilities.getWindowAncestor(view.getJPanel()),
 				text("ControlLayout.Title"), Dialog.ModalityType.MODELESS);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		dialog.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-				.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancelLayoutGesture");
-		dialog.getRootPane().getActionMap().put("cancelLayoutGesture", new AbstractAction() {
+		bindEscape(dialog, this::escapeManager);
+		dialog.addComponentListener(new ComponentAdapter() {
 			@Override
-			public void actionPerformed(ActionEvent event) {
-				cancelGesture();
+			public void componentHidden(ComponentEvent event) {
+				if (event.getComponent() == dialog && !dialog.isShowing()) {
+					close();
+				}
 			}
 		});
 		dialog.addWindowListener(new WindowAdapter() {
@@ -621,6 +623,36 @@ final class GeoCeDGControlLayoutWorkspace {
 		dialog.setLocationRelativeTo(view.getJPanel());
 		dialog.setVisible(true);
 		view.repaintView();
+	}
+
+	static void bindEscape(JDialog window, Runnable action) {
+		window.getRootPane().putClientProperty(GeoCeDGControlLayoutWorkspace.class, action);
+	}
+
+	/** Give the manager and its appearance editor Escape before AppD hides the dialog. */
+	static boolean dispatchKey(KeyEvent event) {
+		if (event.isConsumed() || event.getKeyCode() != KeyEvent.VK_ESCAPE) {
+			return false;
+		}
+		var root = SwingUtilities.getRootPane(event.getComponent());
+		if (root == null || !(root.getClientProperty(GeoCeDGControlLayoutWorkspace.class)
+				instanceof Runnable action)) {
+			return false;
+		}
+		if (event.getID() == KeyEvent.KEY_RELEASED) {
+			action.run();
+		}
+		return true;
+	}
+
+	private void escapeManager() {
+		if (panels.isPopupVisible()) {
+			panels.hidePopup();
+		} else if (members.isPopupVisible()) {
+			members.hidePopup();
+		} else if (!cancelGesture()) {
+			close();
+		}
 	}
 
 	private JButton button(JPanel buttons, String action, Runnable command) {
@@ -1288,7 +1320,7 @@ final class GeoCeDGControlLayoutWorkspace {
 	}
 
 	boolean isOpen() {
-		return dialog != null;
+		return dialog != null && dialog.isShowing();
 	}
 
 	void close() {

@@ -11,21 +11,16 @@ import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
 import java.text.NumberFormat;
 import java.util.function.Consumer;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -97,14 +92,7 @@ final class GeoCeDGControlLayoutStyleDialog {
 		content.add(buttons, BorderLayout.SOUTH);
 		dialog.setContentPane(content);
 		dialog.getRootPane().setDefaultButton(accept);
-		dialog.getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-				.put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cancelPanelAppearance");
-		dialog.getRootPane().getActionMap().put("cancelPanelAppearance", new AbstractAction() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				close();
-			}
-		});
+		GeoCeDGControlLayoutWorkspace.bindEscape(dialog, this::close);
 		name.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void insertUpdate(DocumentEvent event) {

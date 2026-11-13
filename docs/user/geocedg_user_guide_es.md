@@ -2328,7 +2328,9 @@ elegido, pulse **Añadir control** para previsualizar el único control
 seleccionado. Si la selección está vacía, pulse un control suelto en
 Gráficos 1 cuando el gestor lo pida. Pulse dentro del panel para ajustar
 la posición o use **Confirmar colocación** para aceptar la previsualización.
-Escape cancela la captura o la vista previa. Si hace falta espacio, el
+Escape cancela la captura o la vista previa y deja abierto el gestor.
+Con el foco en el gestor y sin una acción pendiente, Escape lo cierra.
+Puede volver a abrirlo desde Vista o el menú contextual del panel. Si hace falta espacio, el
 panel crece para alojar el control.
 
 Puede añadir deslizadores numéricos y angulares independientes, botones,
