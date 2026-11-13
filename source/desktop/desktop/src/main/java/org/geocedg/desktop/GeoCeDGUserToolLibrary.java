@@ -1120,8 +1120,9 @@ final class GeoCeDGUserToolLibrary {
 	}
 
 	private List<Macro> validateWithHost(Package tool) throws IOException {
-		ValidationKernel kernel = new ValidationKernel(app.getKernel());
+		int documentMaxLayer = app.getMaxLayerUsed();
 		try {
+			ValidationKernel kernel = new ValidationKernel(app.getKernel());
 			new MyXMLioD(kernel, kernel.getConstruction()).processXMLString(tool.xml,
 					false, true, false);
 			List<Macro> result = kernel.getAllMacros();
@@ -1145,6 +1146,9 @@ final class GeoCeDGUserToolLibrary {
 			return result;
 		} catch (Exception exception) {
 			throw new IOException("UserTools.InvalidArchive", exception);
+		} finally {
+			// The macro parser owns a separate construction but shares the host App.
+			app.restoreMaxLayerUsed(documentMaxLayer);
 		}
 	}
 

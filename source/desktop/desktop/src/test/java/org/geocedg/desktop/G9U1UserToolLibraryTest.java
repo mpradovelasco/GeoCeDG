@@ -100,15 +100,23 @@ class G9U1UserToolLibraryTest {
 
 	@Test
 	void installDoesNotChangeConstructionOrDocumentArchive() throws Exception {
-		G9U1TestApp.eval(app, "P=(3,4)");
+		G9U1TestApp.eval(app, "P=(3,4)").setLayer(2);
+		// The test owns the receiver's layer context even with a personal catalog present.
+		app.restoreMaxLayerUsed(2);
 		String before = app.getXML();
 		byte[] beforeArchive = archiveXml(app);
-		Package tool = library.install("owned.ggt", midpointPackage("OwnedMidpoint"));
+		byte[] layeredTool = changeXml(midpointPackage("OwnedMidpoint"),
+				xml -> xml.replace("<layer val=\"0\"/>", "<layer val=\"5\"/>"));
+		assertTrue(zipXml(layeredTool, "geogebra_macro.xml").contains("<layer val=\"5\"/>"));
+		Package tool = library.install("owned.ggt", layeredTool);
 		assertEquals(List.of("OwnedMidpoint"), tool.commands());
+		assertEquals(2, app.getMaxLayerUsed());
 		assertEquals(before, app.getXML());
 		assertArrayEquals(beforeArchive, archiveXml(app));
 		assertEquals(0, app.getKernel().getMacroNumber());
 		assertTrue(Files.exists(storage));
+		assertEquals(tool.id(), new GeoCeDGUserToolLibrary(app, storage).packages().get(0).id());
+		assertEquals(2, app.getMaxLayerUsed());
 	}
 
 	@Test
