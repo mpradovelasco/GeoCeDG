@@ -108,8 +108,6 @@ class GeoCeDGControlLayoutDesktopTest {
 					app.getLocalization().getMenu("GraphicsView3D").equals(box.getText()));
 			assertNotNull(graphics3d);
 			assertTrue(graphics3d.isSelected());
-			graphics3d.doClick(0);
-			assertFalse(angle.isVisibleInView3D());
 
 			var existingWindows = List.of(Window.getWindows());
 			try {
@@ -132,6 +130,16 @@ class GeoCeDGControlLayoutDesktopTest {
 				create.doClick(0);
 				app.getSelectionManager().setSelectedGeos(List.of(angle), true);
 				attach.doClick(0);
+				assertEquals(app.layerText("ControlLayout.RemoveFrom3D"), instructions.getText());
+				assertTrue(angle.isVisibleInView3D());
+				assertNull(layout(app).slot(angle));
+				assertCapturedRejection(app, workspace, view, angle, attach, instructions,
+						"ControlLayout.RemoveFrom3D");
+				assertTrue(angle.isVisibleInView3D());
+				graphics3d.doClick(0);
+				assertFalse(angle.isVisibleInView3D());
+				app.getSelectionManager().setSelectedGeos(List.of(angle), true);
+				attach.doClick(0);
 				assertNull(layout(app).slot(angle));
 				assertTrue(angle.isLockedPosition());
 				properties.updateSelection(new Object[] {otherAngle});
@@ -140,15 +148,8 @@ class GeoCeDGControlLayoutDesktopTest {
 				assertFalse(graphics3d.isSelected());
 				assertFalse(angle.isVisibleInView3D());
 				assertEquals(app.layerText("ControlLayout.UnlockSlider"), instructions.getText());
-				app.getSelectionManager().clearSelectedGeos();
-				attach.doClick(0);
-				assertEquals(app.layerText("ControlLayout.Capture"), instructions.getText());
-				var press = MouseEventD.wrapEvent(new MouseEvent(view.getJPanel(),
-						MouseEvent.MOUSE_PRESSED, 0, MouseEvent.BUTTON1_DOWN_MASK,
-						50, 50, 1, false, MouseEvent.BUTTON1));
-				assertTrue(workspace.press(press, List.of(angle)));
-				assertTrue(workspace.release());
-				assertEquals(app.layerText("ControlLayout.UnlockSlider"), instructions.getText());
+				assertCapturedRejection(app, workspace, view, angle, attach, instructions,
+						"ControlLayout.UnlockSlider");
 				assertNull(layout(app).slot(angle));
 				assertFalse(angle.isVisibleInView3D());
 				var fixed = findComponent(properties, JCheckBox.class,
@@ -170,6 +171,21 @@ class GeoCeDGControlLayoutDesktopTest {
 			}
 			return null;
 		});
+	}
+
+	private static void assertCapturedRejection(AppGeoCeDG app,
+			GeoCeDGControlLayoutWorkspace workspace, GeoCeDGEuclidianView view, GeoNumeric angle,
+			JButton attach, JLabel instructions, String messageKey) {
+		app.getSelectionManager().clearSelectedGeos();
+		attach.doClick(0);
+		assertEquals(app.layerText("ControlLayout.Capture"), instructions.getText());
+		var press = MouseEventD.wrapEvent(new MouseEvent(view.getJPanel(),
+				MouseEvent.MOUSE_PRESSED, 0, MouseEvent.BUTTON1_DOWN_MASK,
+				50, 50, 1, false, MouseEvent.BUTTON1));
+		assertTrue(workspace.press(press, List.of(angle)));
+		assertTrue(workspace.release());
+		assertEquals(app.layerText(messageKey), instructions.getText());
+		assertEquals(app.layerText("ControlLayout.Attach"), attach.getText());
 	}
 
 	private void assertInteractiveAttachment() throws Exception {
@@ -235,7 +251,7 @@ class GeoCeDGControlLayoutDesktopTest {
 				assertEquals(app.layerText("ControlLayout.SingleSelection"), instructions.getText());
 				selection.setSelectedGeos(List.of(angle), true);
 				attach.doClick(0);
-				assertEquals(app.layerText("ControlLayout.Ineligible"), instructions.getText());
+				assertEquals(app.layerText("ControlLayout.RemoveFrom3D"), instructions.getText());
 				assertTrue(angle.isVisibleInView3D());
 				assertTrue(workspace.eligibleContext());
 				assertFalse(workspace.cancelGesture());

@@ -3939,6 +3939,7 @@
     "ControlLayout.Capture": {"en": "Click an eligible loose control in Graphics 1. Esc cancels.", "es": "Pulsa un control suelto elegible en Gráficos 1. Esc cancela."},
     "ControlLayout.CancelCapture": {"en": "Cancel capture", "es": "Cancelar captura"},
     "ControlLayout.Ineligible": {"en": "Choose a movable loose control in Graphics 1 only, without a group or external anchor.", "es": "Elige un control suelto con posición desbloqueada, solo en Gráficos 1, sin grupo ni ancla externa."},
+    "ControlLayout.RemoveFrom3D": {"en": "Clear 3D Graphics in Object Properties → Advanced, then try again.", "es": "Desmarca Vista Gráfica 3D en Propiedades del objeto → Avanzado y vuelve a intentarlo."},
     "ControlLayout.UnlockSlider": {"en": "The slider is fixed. Clear Fixed in its properties and try again.", "es": "El deslizador está fijo. Desbloquea su posición en Propiedades → Deslizador y vuelve a intentarlo."},
     "ControlLayout.Place": {"en": "Click inside the panel or confirm the preview. Esc cancels.", "es": "Pulsa dentro del panel o confirma la previsualización. Esc cancela."},
     "ControlLayout.ConfirmPlacement": {"en": "Confirm placement", "es": "Confirmar colocación"},
