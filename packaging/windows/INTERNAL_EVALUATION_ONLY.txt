@@ -1,0 +1,10 @@
+GeoCeDG
+
+INTERNAL EVALUATION — NOT FOR REDISTRIBUTION
+
+This package is generated solely for controlled technical validation. Public
+redistribution remains blocked pending approval of the project license,
+third-party notices, inherited runtime assets, branding, and trademarks.
+
+See the packaged legal-status records and the repository documentation before
+copying or distributing this artifact.
