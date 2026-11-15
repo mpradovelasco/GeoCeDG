@@ -7,13 +7,7 @@ package org.geocedg.desktop;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -42,8 +36,12 @@ import org.geogebra.common.move.ggtapi.models.json.JSONException;
 import org.geogebra.common.move.ggtapi.models.json.JSONObject;
 import org.geogebra.common.util.debug.Log;
 import org.geogebra.desktop.gui.layout.LayoutD;
+import org.geogebra.desktop.gui.toolbar.ModeToggleButtonGroup;
+import org.geogebra.desktop.gui.toolbar.ModeToggleMenuD;
+import org.geogebra.desktop.gui.toolbar.ToolbarD;
 import org.geogebra.desktop.main.AppD;
 import org.geogebra.desktop.main.GeoGebraPreferencesD;
+import org.geogebra.desktop.util.ImageManagerD;
 
 /** Profile projections and isolated layout preferences; never construction XML. */
 public final class GeoCeDGWorkspaceController {
@@ -315,24 +313,22 @@ public final class GeoCeDGWorkspaceController {
 	}
 
 	/**
-	 * Build the compact adapter needed only for profile groups which mix host modes and
-	 * registered non-mode actions. Native-only groups continue to use ModeToggleMenuD.
+	 * Put a profile group of mode and non-mode actions in the native menu widget.
 	 * @param groupId stable presentation group
 	 * @param nameKey localized group name
 	 * @param actionIds exact ordered action projection
+	 * @param toolbar native popup placement authority
 	 * @param selectionGroup shared toolbar selection group
-	 * @param nativeVisualReference actual native toolbar button presentation authority
-	 * @return one normal-sized icon flyout
+	 * @return native widget with registry-backed menu entries
 	 */
-	JToggleButton createProfileFlyout(String groupId, String nameKey,
-			List<String> actionIds, ButtonGroup selectionGroup,
-			JToggleButton nativeVisualReference) {
+	ModeToggleMenuD createProfileFlyout(String groupId, String nameKey,
+			List<String> actionIds, ToolbarD toolbar, ModeToggleButtonGroup selectionGroup) {
 		if (actionIds.isEmpty()) {
 			throw new IllegalStateException("Empty profile flyout " + groupId);
 		}
 		final String name = registry.text(nameKey);
-		ProfileFlyoutButton button = new ProfileFlyoutButton(nativeVisualReference);
-		final JPopupMenu popup = new JPopupMenu();
+		ModeToggleMenuD menu = new ModeToggleMenuD(app, toolbar, selectionGroup);
+		JToggleButton button = menu.getJToggleButton();
 		ButtonGroup radios = new ButtonGroup();
 		for (String id : actionIds) {
 			Action action = registry.get(id);
@@ -351,33 +347,23 @@ public final class GeoCeDGWorkspaceController {
 				}
 			});
 			JMenuItem item = GeoCeDGMenuBar.createItem(action, radios);
-			item.setFont(app.getMenuFont());
 			item.setIcon(actionIcon(id));
 			item.addActionListener(event -> selectProfileFlyoutAction(button, id));
-			popup.add(item);
+			menu.addProfileItem(item);
 		}
+		menu.putClientProperty("geocedg.presentation.group.id", groupId);
+		menu.putClientProperty("geocedg.toolbar.action.ids", List.copyOf(actionIds));
 		button.putClientProperty("geocedg.presentation.group.id", groupId);
 		button.putClientProperty("geocedg.toolbar.action.ids", List.copyOf(actionIds));
-		button.putClientProperty("geocedg.toolbar.popup", popup);
+		button.putClientProperty("geocedg.toolbar.popup", menu.getPopupMenu());
 		button.putClientProperty("geocedg.toolbar.group.name", name);
-		button.putClientProperty("geocedg.toolbar.nativeVisualReference",
-				nativeVisualReference);
-		button.setPopup(popup);
-		selectionGroup.add(button);
 		selectProfileFlyoutAction(button, actionIds.get(0));
-		button.addActionListener(event -> {
-			if (button.consumePopupRequest()) {
-				if (button.isShowing()) {
-					popup.show(button, 0, button.getHeight());
-				}
-				return;
-			}
+		menu.setProfileActivation(event -> {
 			String activeId = (String) button.getClientProperty(
 					"geocedg.toolbar.active.action.id");
-			registry.get(activeId).actionPerformed(new ActionEvent(button,
-					ActionEvent.ACTION_PERFORMED, activeId));
+			registry.get(activeId).actionPerformed(event);
 		});
-		return button;
+		return menu;
 	}
 
 	boolean selectProfileFlyoutMode(JToggleButton button, int mode) {
@@ -408,9 +394,6 @@ public final class GeoCeDGWorkspaceController {
 		if (GeoCeDGProfile.getAction(id).mode() == null && selected instanceof Boolean) {
 			button.setSelected(Boolean.TRUE.equals(selected));
 		}
-		GeoCeDGToolbarContainer.applyNativeToolPresentation(button,
-				(JToggleButton) button.getClientProperty(
-						"geocedg.toolbar.nativeVisualReference"));
 	}
 
 	private Icon flyoutIcon(JToggleButton button, String id) {
@@ -431,95 +414,22 @@ public final class GeoCeDGWorkspaceController {
 				GeoCeDGProfile.getAction(id).iconKey());
 		Image image = artwork == null ? null : artwork.renderImage();
 		if (image != null) {
-			return app.getImageManager().getResponsiveScaledIcon(image,
+			Image nativeBacking = ImageManagerD.addBorder(image, Color.LIGHT_GRAY, Color.WHITE);
+			return app.getImageManager().getResponsiveScaledIcon(nativeBacking,
 					app.getImageManager().getMaxIconSize());
+		}
+		Integer mode = GeoCeDGProfile.getAction(id).mode();
+		if (mode != null) {
+			return app.getModeIcon(mode);
 		}
 		Action action = registry.get(id);
 		Icon icon = (Icon) action.getValue(Action.LARGE_ICON_KEY);
 		if (icon == null) {
 			icon = (Icon) action.getValue(Action.SMALL_ICON);
 		}
-		Integer mode = GeoCeDGProfile.getAction(id).mode();
-		return icon == null && mode != null ? app.getModeIcon(mode) : icon;
-	}
-
-	private static final class ProfileFlyoutButton extends JToggleButton {
-		private static final long serialVersionUID = 1L;
-		private final JToggleButton nativeVisualReference;
-		private boolean popupRequest;
-		private JPopupMenu popup;
-
-		ProfileFlyoutButton(JToggleButton nativeVisualReference) {
-			this.nativeVisualReference = nativeVisualReference;
-			addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent event) {
-					popupRequest = popup != null && (event.getX() >= arrowX() - arrowWidth()
-							|| event.getY() >= arrowY() - arrowHeight());
-				}
-			});
-		}
-
-		private int nativeIconWidth() {
-			return nativeVisualReference.getIcon().getIconWidth();
-		}
-
-		private int nativeIconHeight() {
-			return nativeVisualReference.getIcon().getIconHeight();
-		}
-
-		private int nativeHorizontalBorder() {
-			return (nativeVisualReference.getPreferredSize().width - nativeIconWidth()) / 2;
-		}
-
-		private int nativeVerticalBorder() {
-			return (nativeVisualReference.getPreferredSize().height - nativeIconHeight()) / 2;
-		}
-
-		private int arrowWidth() {
-			return nativeIconWidth() <= 40 ? 6 : 8;
-		}
-
-		private int arrowHeight() {
-			return nativeIconWidth() <= 40 ? 5 : 7;
-		}
-
-		private int arrowX() {
-			return nativeHorizontalBorder() + nativeIconWidth() + 2;
-		}
-
-		private int arrowY() {
-			return nativeVerticalBorder() + nativeIconHeight() + 1;
-		}
-
-		void setPopup(JPopupMenu popup) {
-			this.popup = popup;
-		}
-
-		boolean consumePopupRequest() {
-			boolean requested = popupRequest;
-			popupRequest = false;
-			return requested;
-		}
-
-		@Override
-		protected void paintComponent(Graphics graphics) {
-			super.paintComponent(graphics);
-			Graphics2D g2 = (Graphics2D) graphics.create();
-			try {
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-						RenderingHints.VALUE_ANTIALIAS_ON);
-				g2.setColor(isEnabled() ? getForeground() : Color.GRAY);
-				int x = arrowX();
-				int y = arrowY();
-				int width = arrowWidth();
-				int height = arrowHeight();
-				g2.fillPolygon(new int[] {x - width, x, x - width / 2},
-						new int[] {y - height, y - height, y}, 3);
-			} finally {
-				g2.dispose();
-			}
-		}
+		return icon == null ? app.getImageManager().getResponsiveScaledIcon(
+				app.getToolIconImage(Color.LIGHT_GRAY), app.getImageManager().getMaxIconSize())
+				: icon;
 	}
 
 	private JPopupMenu actionPopup(Set<String> ids) {

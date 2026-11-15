@@ -31,6 +31,7 @@ import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoImage;
 import org.geogebra.common.kernel.geos.GeoNumeric;
@@ -52,9 +53,10 @@ class G9U1DefinitionAffordanceTest {
 		for (String command : new String[] {"u=0", "Q=(u,0)",
 				"D={false,{-2,2,true,true}}", "L=LocusV2(Q,u,D)",
 				"S=SplineV2({(-2,0),(0,0),(2,0)},3)", "T=Dilate(S,-2)",
-				"M=LocusLength(S)", "axis:x=0", "R=Intersect(S,axis)"}) {
+				"axis:x=0", "R=Intersect(S,axis)"}) {
 			eval(app, command);
 		}
+		legacyMetric(app);
 		JPanel panel = namePanel(app);
 		for (String label : new String[] {"L", "S", "T"}) {
 			GeoElement geo = lookup(app, label);
@@ -84,7 +86,7 @@ class G9U1DefinitionAffordanceTest {
 			throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		eval(app, "S=SplineV2({(-2,0),(0,0),(2,0)},3)");
-		GeoElement metric = eval(app, "M=LocusLength(S)");
+		GeoElement metric = legacyMetric(app);
 		JPanel panel = namePanel(app);
 		update(panel, metric);
 		JTextField definition = definitionField(panel);
@@ -105,7 +107,7 @@ class G9U1DefinitionAffordanceTest {
 			throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		for (String command : new String[] {"k=1", "A=(1,2)", "B=(k,3)",
-				"S=SplineV2({(-2,0),(0,0),(2,0)},3)", "M=Length(S)",
+				"S=SplineV2({(-2,0),(0,0),(2,0)},3)", "M=Length(S)", "N=LocusLength(S)",
 				"P=Point(S,\"spline-v2/main\",0.25)"}) {
 			eval(app, command);
 		}
@@ -114,7 +116,7 @@ class G9U1DefinitionAffordanceTest {
 		assertNotNull(owned);
 		JPanel panel = namePanel(app);
 		for (GeoElement geo : new GeoElement[] {lookup(app, "k"), lookup(app, "A"),
-				lookup(app, "B"), lookup(app, "M"), lookup(app, "P"), owned}) {
+				lookup(app, "B"), lookup(app, "M"), lookup(app, "N"), lookup(app, "P"), owned}) {
 			assertTrue(geo.isAlgebraViewEditable());
 			assertFalse(GeoCeDGDefinitionInspector.isReadOnly(geo));
 			String before = app.getXML();
@@ -122,6 +124,11 @@ class G9U1DefinitionAffordanceTest {
 			assertTrue(definitionField(panel).isEditable());
 			assertEquals(before, app.getXML());
 		}
+	}
+
+	private static GeoElement legacyMetric(AppGeoCeDG app) {
+		return LocusV2PublicOperations.totalMetric(app.getKernel().getConstruction(), "M",
+				(GeoLocusV2) lookup(app, "S"));
 	}
 
 	@Test

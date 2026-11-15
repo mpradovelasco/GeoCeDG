@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.junit.jupiter.api.Test;
@@ -89,7 +90,8 @@ class PreG9BCu9GuideExamplesTest {
 	}
 
 	private static GeoLocusMetricResult metric(AppGeoCeDG app, String label) {
-		return assertInstanceOf(GeoLocusMetricResult.class, lookup(app, label));
+		GeoNumeric numeric = assertInstanceOf(GeoNumeric.class, lookup(app, label));
+		return AlgoLocusMetricScalarAdapter.richResultOf(numeric);
 	}
 
 	private static void enter(AppGeoCeDG app, List<String> commands) {

@@ -2658,13 +2658,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdLocusLength.java",
       "change": "added",
-      "purpose": "Expose authoritative rich total and semantic-position partial Locus V2 metrics.",
-      "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
+      "purpose": "Expose guarded numeric Locus V2 metrics while reconstructing historical rich results and the numeric children of persisted rich authorities.",
+      "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdPoint.java",
       "change": "modified",
-      "purpose": "Add the exact branch-and-parameter semantic point overload for Locus V2 without making it a generic Path. PRE-G9B-CU3 increment E1: dispatch Point(L, D) for a Locus V2 and a point to the structural point of the constructive authority before every other two-argument form. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md.",
+      "purpose": "Dispatch exact semantic addresses and CU3 structural points for Locus V2. Reconstruct explicitly selected 1.2.0 endpoint recipes from their versioned inputs.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -3834,9 +3834,10 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/toolbar/ModeToggleMenuD.java",
       "change": "modified",
-      "purpose": "PRE-G9B-P0: resolve the tool popup surface from the GeoCeDG presentation role instead of a hard-coded white literal, keeping that literal when the role is undefined.",
+      "purpose": "PRE-G9B-P0: resolve the tool popup surface from the GeoCeDG presentation role instead of a hard-coded white literal, keeping that literal when the role is undefined. GeoCeDG 1.2.0 F1: render profile actions through the native popup and its shared hover lifecycle.",
       "authority": "geocedg/specs/ui/application-presentation-theme.md"
     },
+    {"path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/toolbar/ToolToggleButton.java", "change": "modified", "purpose": "GeoCeDG 1.2.0 F1: delegate activation to the menu owner and invalidate the native arrow geometry when the icon changes.", "authority": "geocedg/specs/ui/application-profile.md"},
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/layout/panels/AlgebraDockPanel.java",
       "change": "modified",
@@ -4200,9 +4201,10 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/InputDialogD.java",
       "change": "modified",
-      "purpose": "PRE-G9B-S4-R1: expose the complete combined action-button panel, apply General UI font to Help and normalize Apply/OK/Cancel/Help heights from their normal Swing preferred content without fixed widths.",
+      "purpose": "PRE-G9B-S4-R1: expose the complete combined action-button panel, apply General UI font to Help and normalize Apply/OK/Cancel/Help heights from their normal Swing preferred content without fixed widths. GeoCeDG 1.2.0 F1: share opt-in graphical reference capture in redefine and numeric prompts while retaining their handlers.",
       "authority": "geocedg/specs/ui/application-presentation-sizing.md"
     },
+    {"path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/ButtonDialogD.java", "change": "modified", "purpose": "GeoCeDG 1.2.0 F1: populate the native Input Box link selector from an explicit graphical capture without replacing its creation handler.", "authority": "geocedg/specs/ui/application-profile.md"},
     {
       "path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/gui/dialog/TextInputDialogD.java",
       "change": "modified",
@@ -7739,7 +7741,6 @@
     {"path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/GeoCeDGExpertTrialTest.java", "change": "added", "purpose": "POST-CU4 I3–I5: Cover native passive family trials, layer evidence and invalid geometry.", "authority": "geocedg/specs/ui/expert-document-insertion-candidate.md"},
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGArgumentDialog.java", "change": "added", "purpose": "PRE-G9B-CU8-I: Expose active argument-capture ownership to prevent layout gestures from interfering with M07.", "authority": "geocedg/specs/ui/control-layout-v1.md"},
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGControlLayoutEdits.java", "change": "added", "purpose": "PRE-G9B-CU8-I: Centralize Desktop selection preflight and localized detachment requests.", "authority": "geocedg/specs/ui/control-layout-v1.md"},
-    {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGControlLayoutNotice.java", "change": "added", "purpose": "PRE-G9B-CU8-I: Present the Spanish and English loss warning for older readers before a user re-saves the document there.", "authority": "geocedg/specs/ui/control-layout-v1.md"},
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGControlLayoutStyleDialog.java", "change": "added", "purpose": "PRE-G9B-CU8-I-R1: Preview and validate Unicode panel names, colors and bounded transparency before committing an edit. POST-CU8-I-R3: title the editor Panel properties in both routes.", "authority": "geocedg/specs/ui/control-layout-r1.md"},
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGControlLayoutWorkspace.java", "change": "added", "purpose": "PRE-G9B-CU8-I: Own Graphics 1 layout management, anchor transforms, gesture previews and live control presentation. PRE-G9B-CU8-I-R1: Compose panels and members back to front, resolve pointer priority, and reuse the manager for appearance and context. R2: Offer native Properties for an accessible panel member. POST-CU8-I-R3: attach the selected control or capture one click, report rejections inline and expose panel properties directly.", "authority": "geocedg/specs/ui/control-layout-v1.md"},
     {"path": "source/desktop/desktop/src/main/java/org/geogebra/desktop/euclidian/EuclidianStyleBarD.java", "change": "modified", "purpose": "PRE-G9B-CU8-I: Preflight selection pinning before applying it to any slotted control.", "authority": "geocedg/specs/ui/control-layout-v1.md"},

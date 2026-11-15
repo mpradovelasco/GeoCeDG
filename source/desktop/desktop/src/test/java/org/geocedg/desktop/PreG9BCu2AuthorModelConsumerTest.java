@@ -203,9 +203,10 @@ class PreG9BCu2AuthorModelConsumerTest {
 					"d_9", "Q_9=pointJump(L_1,g_2,d_9)", "j_9=Line(Q_9,f_2)",
 					"R_9=translationCoor(J_1,O_1,k,Q_9,j_9)", "e_9=LocusV2(R_9,E_1)")) {
 				if ("d_9".equals(command)) {
-					// The scalar of a metric result is its explicit opt-in adapter, as d_2.
+					// Exercise a second scalar facade over the same metric authority.
 					new AlgoLocusMetricScalarAdapter(app.getKernel().getConstruction(), "d_9",
-							(GeoLocusMetricResult) app.getKernel().lookupLabel("w_9"));
+							AlgoLocusMetricScalarAdapter.richResultOf(
+									app.getKernel().lookupLabel("w_9")));
 					values.put("created d_9", "true");
 					continue;
 				}
@@ -256,8 +257,9 @@ class PreG9BCu2AuthorModelConsumerTest {
 				values.put("endToStart", distance(end.getPoint(), start.getPoint()));
 				values.put("restored", distance(again.getPoint(), atOrigin.getPoint()));
 			}
-			AlgoLocusBetweenMetricV2 w9 = (AlgoLocusBetweenMetricV2) app.getKernel()
-					.lookupLabel("w_9").getParentAlgorithm();
+			GeoLocusMetricResult authority = AlgoLocusMetricScalarAdapter.richResultOf(
+					app.getKernel().lookupLabel("w_9"));
+			AlgoLocusBetweenMetricV2 w9 = (AlgoLocusBetweenMetricV2) authority.getParentAlgorithm();
 			values.put("total", w9.resolveJumpValue().getMetricValue().getFiniteValue()
 					.getAsDouble());
 			return values;
@@ -799,9 +801,10 @@ class PreG9BCu2AuthorModelConsumerTest {
 	 *         the observed result
 	 */
 	private static String totalLength(AppGeoCeDG app, String label, int serial) {
-		LocusMetricResult2D result = ((GeoLocusMetricResult) app.getKernel()
-				.getAlgebraProcessor().processAlgebraCommand("totalLength" + serial
-						+ "=LocusLength(" + label + ")", false)[0]).getMetricResult();
+		GeoElementND[] output = app.getKernel().getAlgebraProcessor().processAlgebraCommand(
+				"totalLength" + serial + "=LocusLength(" + label + ")", false);
+		LocusMetricResult2D result = AlgoLocusMetricScalarAdapter.richResultOf(output[0].toGeoElement())
+				.getMetricResult();
 		String observed = result.getComputationStatus() + " " + result.getGuaranteeClass()
 				+ " " + result.getDiagnostics().stream().map(diagnostic -> diagnostic.getCode()
 						.name()).toList();

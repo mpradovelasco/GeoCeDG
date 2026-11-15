@@ -851,3 +851,20 @@ permits the independent R2/H1 query. No other rejection or failed commit is reco
 The exact normative perimeter, H1 cumulative accounting, single-use selection, forward
 persistence (Q transient; structural component durable; visual selector ephemeral), world
 policy and L→Q Desktop contract are defined in the accepted 2026-11-02 amendment of [M08](candidates/cu7-m08-point-placement.md#2026-11-02--accepted-m08-s-r2-implementation-amendment). The experimental Desktop consumer is implemented; there is no new public dynamic inverse command, format or general dragging operation.
+
+## GeoCeDG 1.2.0 explicit constructive cuts
+
+`LocusV2(TracedPoint, DriverPoint, "constructive-cuts/v1", Witness, ...)`
+creates a point-driven locus with one or more declared traversal cuts. Each
+witness is independent of the driver's current position. A point constructed
+by `Point` on the same supported segment, circle or circular arc contributes
+its current native driver parameter. Under legacy representation authority, a
+selected line-circle intersection on a horizontal diameter through the same
+center also contributes a direction when the root order and the captured frame
+are established. An arbitrary point coincident with the support conveys no
+direction by proximity.
+
+The command arguments persist the version and geometric witness references.
+Reopening follows the same dependency graph and resolves the directions anew.
+Traversal semantics and diagnostic states are defined by
+[Locus V2 existence components §18](locus-v2-existence-components.md#18-geocedg-120-constructive-cuts).

@@ -33,7 +33,13 @@ public final class AlgoLocusMetricScalarAdapter extends AlgoElement {
 	/** Creates the reconstructible standard scalar child of one rich query. */
 	public AlgoLocusMetricScalarAdapter(Construction construction, String label,
 			GeoLocusMetricResult richInput) {
-		this(construction, richInput, label, true, Commands.Length);
+		this(construction, label, richInput, Commands.Length);
+	}
+
+	/** Creates a public numeric result with the requested reconstructible command. */
+	public AlgoLocusMetricScalarAdapter(Construction construction, String label,
+			GeoLocusMetricResult richInput, Commands commandName) {
+		this(construction, richInput, label, true, commandName);
 	}
 
 	private AlgoLocusMetricScalarAdapter(Construction construction,
@@ -76,6 +82,16 @@ public final class AlgoLocusMetricScalarAdapter extends AlgoElement {
 		return richInput;
 	}
 
+	/** Resolves the rich authority of a metric result selected in a frontend. */
+	public static GeoLocusMetricResult richResultOf(GeoElement result) {
+		if (result instanceof GeoLocusMetricResult rich) {
+			return rich;
+		}
+		return result != null
+				&& result.getParentAlgorithm() instanceof AlgoLocusMetricScalarAdapter adapter
+				? adapter.getRichInput() : null;
+	}
+
 	public GeoNumeric getScalarOutput() {
 		return scalarOutput;
 	}
@@ -87,7 +103,7 @@ public final class AlgoLocusMetricScalarAdapter extends AlgoElement {
 	@Override
 	public String getDefinition(StringTemplate template) {
 		AlgoElement richParent = richInput.getParentAlgorithm();
-		if (commandName != Commands.Length
+		if ((commandName != Commands.Length && commandName != Commands.LocusLength)
 				|| !isPublicPresentation(template)
 				|| !(richParent instanceof AlgoLocusMetricV2
 						|| richParent instanceof AlgoLocusBetweenMetricV2)) {
@@ -95,8 +111,8 @@ public final class AlgoLocusMetricScalarAdapter extends AlgoElement {
 		}
 		StringBuilder description = new StringBuilder(
 				template.isPrintLocalizedCommandNames()
-						? getLoc().getCommandHead(Commands.Length.name())
-						: Commands.Length.name());
+						? getLoc().getCommandHead(commandName.getCommand())
+						: commandName.getCommand());
 		description.append(template.leftCommandBracket(getLoc()));
 		for (int index = 0; index < richParent.getInputLength(); index++) {
 			if (index > 0) {

@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -119,7 +120,7 @@ class PostG9U1A3R1RedefineAssessmentTest extends G9U0PublicSurfaceTestBase {
 		GeoLocusV2 source = add("S=SplineV2(pointsA,degree)");
 		GeoPoint first = add("P=Point(S,\"" + BRANCH + "\",-1)");
 		GeoPoint second = add("R=Point(S,\"" + BRANCH + "\",1)");
-		GeoLocusMetricResult metric = add("M=LocusLength(S,P,R)");
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(S,P,R)"));
 		final GeoLocusV2 coincidentButUnrelated = add(
 				"Other=SplineV2(pointsA,degree)");
 		ProjectionBindingRecord brokenBinding = new ProjectionBindingRecord(

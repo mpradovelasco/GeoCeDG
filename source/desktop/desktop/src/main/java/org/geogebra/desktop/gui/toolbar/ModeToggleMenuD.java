@@ -50,6 +50,7 @@ public class ModeToggleMenuD extends JPanel {
 	private ArrayList<JMenuItem> menuItemList;
 
 	private ActionListener popupMenuItemListener;
+	private ActionListener profileActivation;
 	private AppD app;
 	int size;
 
@@ -100,13 +101,47 @@ public class ModeToggleMenuD extends JPanel {
 	}
 
 	/**
+	 * Route the primary button action through an existing product registry.
+	 * @param activation registry listener for the currently displayed item
+	 */
+	public void setProfileActivation(ActionListener activation) {
+		profileActivation = activation;
+	}
+
+	/**
+	 * Add a registry action while retaining native popup layout and interaction.
+	 * @param item a menu item with its own action
+	 */
+	public void addProfileItem(JMenuItem item) {
+		item.setFont(app.getPlainFont());
+		item.setBackground(popupBackground());
+		app.setComponentOrientation(item);
+		popMenu.add(item);
+		if (size++ == 0) {
+			bg.add(tbutton);
+		}
+	}
+
+	/** @return native popup for product actions to preserve their active icon */
+	public JPopupMenu getPopupMenu() {
+		return popMenu;
+	}
+
+	void activateButton(ActionEvent event) {
+		if (profileActivation == null) {
+			app.setMode(Integer.parseInt(event.getActionCommand()));
+		} else {
+			profileActivation.actionPerformed(event);
+		}
+	}
+
+	/**
 	 * @param mode mode
 	 * @return success
 	 */
 	public boolean selectMode(int mode) {
 		String modeText = mode + "";
-		for (int i = 0; i < size; i++) {
-			JMenuItem mi = menuItemList.get(i);
+		for (JMenuItem mi : menuItemList) {
 			// found item for mode?
 			if (mi.getActionCommand().equals(modeText)) {
 				selectItem(mi, ModeSetter.DOCK_PANEL);

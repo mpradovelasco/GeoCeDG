@@ -13,9 +13,15 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
 
+import org.geogebra.common.kernel.geos.GeoInputBox;
+import org.geogebra.desktop.euclidian.EuclidianViewJPanelD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -118,6 +124,76 @@ class PreG9BCu6ArgumentDialogTest {
 			references.invalidateAll();
 			assertFalse(references.insert(field, pending));
 			assertEquals("4", field.getText());
+		});
+	}
+
+	@Test
+	void redefineAcceptsOtherObjectTypesAndRejectsItsOwnerAndDescendants() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = G9U1TestApp.create();
+			var owner = eval(app, "A=(1,2)");
+			var descendant = eval(app, "B=A+(1,1)");
+			var other = eval(app, "C=(4,5)");
+			var references = new GeoCeDGArgumentDialog.References(owner.getConstruction(),
+					candidate -> GeoCeDGArgumentDialog.redefineReference(owner, candidate));
+			assertFalse(references.canPick(owner));
+			assertFalse(references.canPick(descendant));
+			assertTrue(references.canPick(other));
+
+			JTextField field = field(references, "(2,3)");
+			field.selectAll();
+			assertTrue(references.insert(field, references.offer(other)));
+			assertEquals(" C ", field.getText());
+			assertNull(references.firstStale(field.getText()));
+		});
+	}
+
+	@Test
+	void redefineDoesNotOfferAnObjectShadowedByTheFunctionsLocalVariable() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = G9U1TestApp.create();
+			var number = eval(app, "k=3");
+			var owner = eval(app, "f(k)=k^2");
+			assertFalse(GeoCeDGArgumentDialog.redefineReference(owner, number));
+		});
+	}
+
+	@Test
+	void inputBoxComboStillAcceptsAnUndefinedEditableObject() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = G9U1TestApp.create();
+			var number = eval(app, "k=3");
+			number.setUndefined();
+			var references = new GeoCeDGArgumentDialog.References(number.getConstruction(),
+					GeoInputBox::isGeoLinkable);
+			assertTrue(references.canChoose(number));
+			assertFalse(references.canPick(number));
+		});
+	}
+
+	@Test
+	void canvasCaptureUsesViewportRatherThanBoundingBoxOfDrawing() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = G9U1TestApp.create();
+			eval(app, "A=(2,1)");
+			JPanel frame = new JPanel(null);
+			frame.setSize(800, 600);
+			JPanel shield = new JPanel();
+			frame.add(shield);
+			shield.setBounds(0, 0, 800, 600);
+			JPanel canvas = new EuclidianViewJPanelD(app.getEuclidianView1(), false) {
+				@Override
+				public boolean isShowing() {
+					return true;
+				}
+			};
+			frame.add(canvas);
+			canvas.setBounds(180, 120, 600, 450);
+			Point local = new Point(310, 260);
+			assertFalse(canvas.getVisibleRect().contains(local));
+			MouseEvent click = new MouseEvent(shield, MouseEvent.MOUSE_RELEASED, 0, 0,
+					490, 380, 1, false, MouseEvent.BUTTON1);
+			assertEquals(local, GeoCeDGArgumentDialog.localPoint(click, canvas));
 		});
 	}
 

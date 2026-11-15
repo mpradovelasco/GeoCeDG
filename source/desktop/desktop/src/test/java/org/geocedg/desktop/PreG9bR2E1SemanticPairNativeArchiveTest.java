@@ -24,7 +24,7 @@ import java.util.function.ToDoubleFunction;
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionPointV2;
 import org.geocedg.common.kernel.algos.SemanticMetricEndpointResolver2D;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
-import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
 import org.geocedg.common.kernel.locus.intersection.LocusPairIntersectionEvidence2D;
@@ -124,8 +124,8 @@ class PreG9bR2E1SemanticPairNativeArchiveTest {
 		eval(app, "LX=LocusLength(ring,M,X0)");
 		eval(app, "LC=LocusLength(" + copiedRing.getLabelSimple() + ","
 				+ copyOf(app, lookup(app, "M")).getLabelSimple() + "," + label + ")");
-		double length = finite((GeoLocusMetricResult) lookup(app, "LX"));
-		assertEquals(length, finite((GeoLocusMetricResult) lookup(app, "LC")), 1E-9);
+		double length = finite(lookup(app, "LX"));
+		assertEquals(length, finite(lookup(app, "LC")), 1E-9);
 		final Set<String> copiedGraph = Set.of(id(app, copiedRing), id(app, copiedDriver),
 				id(app, copyOf(app, spline)));
 
@@ -146,11 +146,11 @@ class PreG9bR2E1SemanticPairNativeArchiveTest {
 		named.add(selector.getFirst().getSourceId());
 		named.add(selector.getSecond().getSourceId());
 		assertEquals(copiedGraph, named);
-		assertEquals(length, finite((GeoLocusMetricResult) lookup(reopened, "LC")), 1E-9);
+		assertEquals(length, finite(lookup(reopened, "LC")), 1E-9);
 		// Deleting the original graph leaves the reopened copy current.
 		lookup(reopened, "A").remove();
 		assertTrue(restored.isDefined());
-		assertEquals(length, finite((GeoLocusMetricResult) lookup(reopened, "LC")), 1E-9);
+		assertEquals(length, finite(lookup(reopened, "LC")), 1E-9);
 	}
 
 	private static String effectiveToken(GeoPoint point) {
@@ -172,8 +172,9 @@ class PreG9bR2E1SemanticPairNativeArchiveTest {
 				.getPersistentGeoId(geo).toExternalForm();
 	}
 
-	private static double finite(GeoLocusMetricResult result) {
-		return result.getMetricResult().getMetricValue().getFiniteValue().orElseThrow();
+	private static double finite(GeoElement result) {
+		return AlgoLocusMetricScalarAdapter.richResultOf(result).getMetricResult()
+				.getMetricValue().getFiniteValue().orElseThrow();
 	}
 
 	private static void build(AppGeoCeDG app) {
@@ -248,7 +249,7 @@ class PreG9bR2E1SemanticPairNativeArchiveTest {
 	private static Map<String, Double> values(AppGeoCeDG app) {
 		Map<String, Double> values = new TreeMap<>();
 		for (String label : METRICS) {
-			values.put(label, ((GeoLocusMetricResult) lookup(app, label)).getMetricResult()
+			values.put(label, AlgoLocusMetricScalarAdapter.richResultOf(lookup(app, label)).getMetricResult()
 					.getMetricValue().getFiniteValue().orElseThrow());
 		}
 		return values;
@@ -269,7 +270,7 @@ class PreG9bR2E1SemanticPairNativeArchiveTest {
 		}
 		for (String label : METRICS) {
 			assertEquals(MetricComputationStatus.INVALID_QUERY,
-					((GeoLocusMetricResult) lookup(app, label)).getMetricResult()
+					AlgoLocusMetricScalarAdapter.richResultOf(lookup(app, label)).getMetricResult()
 							.getComputationStatus(), label);
 		}
 		assertEquals(SemanticMetricEndpointResolver2D.Family.GENERATOR_OCCURRENCE,

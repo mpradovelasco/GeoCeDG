@@ -10,9 +10,7 @@ import java.awt.Insets;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
@@ -30,7 +28,6 @@ import org.geogebra.desktop.main.AppD;
 final class GeoCeDGToolbarContainer extends ToolbarContainer {
 
 	private static final long serialVersionUID = 1L;
-	private static final String TOOLBAR_BUTTON = "geocedg.toolbar.button";
 	private final GeoCeDGWorkspaceController workspace;
 	private final AppD app;
 	private final ProfileToolbar profileToolbar;
@@ -103,24 +100,9 @@ final class GeoCeDGToolbarContainer extends ToolbarContainer {
 		target.setMaximumSize(maximum == null ? null : new Dimension(maximum));
 	}
 
-	private static JPanel nativeFlyoutContainer(JToggleButton button,
-			JToggleButton reference) {
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-		panel.setAlignmentX(reference.getParent().getAlignmentX());
-		panel.setAlignmentY(reference.getParent().getAlignmentY());
-		panel.putClientProperty(TOOLBAR_BUTTON, button);
-		panel.add(button);
-		return panel;
-	}
-
 	static JToggleButton toolbarButton(JComponent group) {
 		if (group instanceof ModeToggleMenuD menu) {
 			return menu.getJToggleButton();
-		}
-		Object button = group.getClientProperty(TOOLBAR_BUTTON);
-		if (button instanceof JToggleButton toggle) {
-			return toggle;
 		}
 		if (group instanceof JToggleButton toggle) {
 			return toggle;
@@ -172,21 +154,10 @@ final class GeoCeDGToolbarContainer extends ToolbarContainer {
 					}
 					if ("profile-flyout".equals(
 							group.optString("toolbar_rendering", "native"))) {
-						if (nativeVisualReference == null) {
-							throw new IllegalStateException(
-									"Profile flyout precedes every native toolbar group");
-						}
-						JToggleButton flyout = workspace.createProfileFlyout(groupId,
-								group.getString("name_key"), ids, selection,
-								nativeVisualReference);
-						actionFlyouts.add(flyout);
-						JPanel flyoutContainer = nativeFlyoutContainer(flyout,
-								nativeVisualReference);
-						flyoutContainer.putClientProperty("geocedg.presentation.group.id",
-								groupId);
-						flyoutContainer.putClientProperty("geocedg.toolbar.action.ids",
-								List.copyOf(ids));
-						add(flyoutContainer);
+						ModeToggleMenuD flyout = workspace.createProfileFlyout(groupId,
+								group.getString("name_key"), ids, this, selection);
+						actionFlyouts.add(flyout.getJToggleButton());
+						add(flyout);
 					} else {
 						addNativeGroup(groupId, ids, selection);
 					}

@@ -238,6 +238,31 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		return fidelity.isFaithful();
 	}
 
+	/** @return proved periodic cancellation for a circular length divided by its own radius */
+	public synchronized Optional<LocusExistenceStructure2D> captureClosedMetricRotation() {
+		return ClosedMetricRotationCertificate2D.capture(isolatedDependentPoint.toGeoElement(),
+				isolatedState, isolatedSupport, descriptor);
+	}
+
+	/** @return typed upstream restart directions that can affect this traced construction */
+	public synchronized List<LocusUnresolvedCompositionEvent2D> getPotentialCompositionEvents() {
+		List<LocusUnresolvedCompositionEvent2D> events = new ArrayList<>();
+		GeoElement traced = isolatedDependentPoint.toGeoElement();
+		var registry = isolatedConstruction.getSpatialIdentityRegistry();
+		for (AlgoElement algorithm : isolatedConstruction.getAlgoList()) {
+			if (algorithm instanceof AlgoLocusBetweenMetricV2 metric
+					&& traced.isChildOf(metric.getResult())) {
+				var id = registry.getPersistentGeoId(metric.getResult());
+				double direction = metric.getPotentialRestartDirection(isolatedState);
+				if (id != null && Double.isFinite(direction)) {
+					events.add(new LocusUnresolvedCompositionEvent2D(direction,
+							new LocusBoundarySource2D(id.toExternalForm(), "ORIGIN_WRAP", "composed")));
+				}
+			}
+		}
+		return events;
+	}
+
 	/** @return report of the last fidelity validation of the slice copy */
 	public synchronized ReconstructionFidelity2D.Report getFidelityReport() {
 		return fidelity;

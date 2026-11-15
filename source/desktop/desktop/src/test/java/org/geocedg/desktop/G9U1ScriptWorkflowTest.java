@@ -80,7 +80,7 @@ class G9U1ScriptWorkflowTest {
 	}
 
 	@Test
-	void allSevenSimilarityFormsAndRichCommandsUseThePublicScriptDispatcher() throws Exception {
+	void allSevenSimilarityFormsAndSemanticCommandsUseThePublicScriptDispatcher() throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
 		GeoElement trigger = eval(app, "O=(0,0)");
 		assertTrue(run(app, trigger, "u=0", "P=(u,0)", "D={false,{-2,2,true,true}}",
@@ -88,13 +88,13 @@ class G9U1ScriptWorkflowTest {
 				"v=(1,2)", "axis:y=x", "ST=Translate(S,v)", "SR=Rotate(S,0.5)",
 				"SRC=Rotate(S,0.5,O)", "SP=Reflect(S,O)", "SL=Reflect(S,axis)",
 				"SD=Dilate(S,-2)", "SDC=Dilate(S,-2,O)", "LR=LocusLength(L)",
-				"IR=Intersect(L,axis)", "M=Length(L)"));
+				"IR=Intersect(L,axis)", "M=Length(L)", "twiceLR=2*LR"));
 		for (String label : new String[] {"ST", "SR", "SRC", "SP", "SL", "SD", "SDC"}) {
 			assertInstanceOf(GeoLocusV2.class, lookup(app, label));
 			assertEquals(label.startsWith("SD") ? 8 : 4, length(app, label), 1E-8);
 		}
-		assertInstanceOf(org.geocedg.common.kernel.geos.GeoLocusMetricResult.class,
-				lookup(app, "LR"));
+		assertEquals(4, assertInstanceOf(GeoNumeric.class, lookup(app, "LR")).getDouble(), 1E-8);
+		assertEquals(8, assertInstanceOf(GeoNumeric.class, lookup(app, "twiceLR")).getDouble(), 1E-8);
 		assertInstanceOf(org.geocedg.common.kernel.geos.GeoLocusIntersectionResult.class,
 				lookup(app, "IR"));
 		assertEquals(4, ((GeoNumeric) lookup(app, "M")).getDouble(), 1E-8);

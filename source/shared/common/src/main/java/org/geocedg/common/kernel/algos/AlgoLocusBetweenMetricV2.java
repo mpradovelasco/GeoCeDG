@@ -105,7 +105,9 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 		setInputOutput();
 		construction.getConstructionDefaults().setLabelVisibilityAtCreation(result);
 		compute();
-		result.setLabel(label);
+		if (label != null) {
+			result.setLabel(label);
+		}
 	}
 
 	@Override
@@ -266,8 +268,7 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 					LocusCoverageCause2D.NOT_CERTIFIED, "target-not-the-generator-occurrence");
 		}
 		AlgoElement origin = start.getParentAlgorithm();
-		if (!(origin instanceof AlgoSemanticLocusPoint2D)
-				|| ((AlgoSemanticLocusPoint2D) origin).getSource() != source
+		if (origin == null || !isExplicitOriginOfSource(origin)
 				|| dependsOnDriver(origin, locus.getInput(1).toGeoElement())) {
 			return LocusMetricFunctionStructure2D.notEstablished(
 					LocusCoverageCause2D.NOT_CERTIFIED, "origin-not-a-fixed-semantic-position");
@@ -279,8 +280,8 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 			return LocusMetricFunctionStructure2D.notEstablished(
 					LocusCoverageCause2D.NOT_CERTIFIED, "traversal-policy-not-defined");
 		}
-		LocusSemanticAddress2D address =
-				((AlgoSemanticLocusPoint2D) origin).getCurrentSemanticAddress();
+		LocusSemanticAddress2D address = origin instanceof AlgoSemanticLocusPoint2D semantic
+				? semantic.getCurrentSemanticAddress() : ((AlgoProvenLocusEndpoint2D) origin).getAddress();
 		HybridExistenceCertifier2D.Result certificate = locus.getHybridExistenceCertificate();
 		if (address == null || certificate == null) {
 			return LocusMetricFunctionStructure2D.notEstablished(
@@ -302,6 +303,61 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 			structureKey = key;
 		}
 		return functionStructure;
+	}
+
+	private boolean isExplicitOriginOfSource(AlgoElement origin) {
+		return origin instanceof AlgoSemanticLocusPoint2D semantic && semantic.getSource() == source
+				|| origin instanceof AlgoProvenLocusEndpoint2D proven && proven.getSource() == source
+						&& proven.getBinding() != null
+						&& proven.getBinding().getSemanticRevision() == source.getSemanticRevision();
+	}
+
+	/**
+	 * Possible scalar restart consumed by a locus outside the composition proof class.
+	 * This locates the source's structural direction without asserting the scalar limit,
+	 * much less the continuity or discontinuity of the consuming image.
+	 */
+	public double getPotentialRestartDirection(GeoElement driver) {
+		if (!(source.getParentAlgorithm() instanceof AlgoDependentPointLocusV2 locus)
+				|| locus.getInput(1) != driver || locus.getInput(0) != target) {
+			return Double.NaN;
+		}
+		AlgoElement origin = start.getParentAlgorithm();
+		if (origin == null || !isExplicitOriginOfSource(origin) || dependsOnDriver(origin, driver)) {
+			return Double.NaN;
+		}
+		LocusSemanticAddress2D address = origin instanceof AlgoSemanticLocusPoint2D semantic
+				? semantic.getCurrentSemanticAddress() : ((AlgoProvenLocusEndpoint2D) origin).getAddress();
+		HybridExistenceCertifier2D.Result certificate = locus.getHybridExistenceCertificate();
+		if (address == null || certificate == null) {
+			return Double.NaN;
+		}
+		PublicLocusMetricTraversalPolicy2D traversal;
+		try {
+			traversal = currentTraversalPolicy();
+		} catch (IllegalArgumentException invalidPolicy) {
+			return Double.NaN;
+		}
+		double direction = address.getCanonicalParameter();
+		var structure = certificate.getStructure();
+		if (structure.isClosedPeriodic()) {
+			return direction;
+		}
+		var component = structure.getComponentContaining(direction);
+		if (component == null || !component.isArc() || !component.isFullLength()
+				|| traversal.getBoundaryPolicy()
+						!= org.geocedg.common.kernel.locus.metric.OpenBoundaryPolicy.STRICT
+				|| traversal.getSamePositionPolicy()
+						!= org.geocedg.common.kernel.locus.metric.SamePositionPolicy.ZERO_LENGTH) {
+			return Double.NaN;
+		}
+		boolean forward = traversal.getDirection()
+				== org.geocedg.common.kernel.locus.metric.TraversalDirection.FORWARD;
+		var atOrigin = forward ? component.getLowerBoundary() : component.getUpperBoundary();
+		var opposite = forward ? component.getUpperBoundary() : component.getLowerBoundary();
+		return direction == (forward ? component.getStart() : component.getEnd())
+				&& atOrigin.isBinaryEndIncluded() && !opposite.isBinaryEndIncluded()
+				&& opposite.supportsOneSidedLimit() ? direction : Double.NaN;
 	}
 
 	/**

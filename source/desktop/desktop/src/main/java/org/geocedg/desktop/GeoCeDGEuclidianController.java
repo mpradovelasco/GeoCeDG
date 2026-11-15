@@ -14,7 +14,7 @@ import java.util.List;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.dimension.AlgoNativeDimension;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
-import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
@@ -39,6 +39,7 @@ import org.geogebra.common.kernel.ModeSetter;
 import org.geogebra.common.kernel.Path;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoFunction;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumeric;
@@ -1213,10 +1214,9 @@ public final class GeoCeDGEuclidianController
 			return null;
 		}
 		try {
-			GeoLocusMetricResult result =
-					ensureLabel(LocusV2PublicOperations.totalMetric(
-							kernel.getConstruction(), null, source));
-			locusV2Dialogs.inspectMetric(result);
+			GeoElement result = ensureLabel(LocusV2PublicOperations.scalarLength(
+					kernel.getConstruction(), null, source, Commands.LocusLength));
+			locusV2Dialogs.inspectMetric(AlgoLocusMetricScalarAdapter.richResultOf(result));
 			return new GeoElementND[] {result};
 		} catch (IllegalArgumentException exception) {
 			showFeatureError("LocusV2.MetricUnavailable", false);
@@ -1251,12 +1251,19 @@ public final class GeoCeDGEuclidianController
 			showFeatureError("LocusV2.InvalidPosition", false);
 			return null;
 		}
+		GeoCeDGMetricEndpointAssistance assistance =
+				new GeoCeDGMetricEndpointAssistance((AppD) kernel.getApplication());
+		for (GeoPoint position : positions) {
+			if (assistance.isApplicable(source, position)) {
+				GeoPoint created = assistance.offer(source, position);
+				return created == null ? null : new GeoElementND[] {ensureLabel(created)};
+			}
+		}
 		try {
-			GeoLocusMetricResult result =
-					ensureLabel(LocusV2PublicOperations.betweenMetric(
-							kernel.getConstruction(), null, source,
-							positions[0], positions[1]));
-			locusV2Dialogs.inspectMetric(result);
+			GeoElement result = ensureLabel(LocusV2PublicOperations.scalarBetweenLength(
+					kernel.getConstruction(), null, source, positions[0], positions[1],
+					null, null, null, Commands.LocusLength));
+			locusV2Dialogs.inspectMetric(AlgoLocusMetricScalarAdapter.richResultOf(result));
 			return new GeoElementND[] {result};
 		} catch (IllegalArgumentException exception) {
 			showFeatureError("LocusV2.InvalidPosition", false);

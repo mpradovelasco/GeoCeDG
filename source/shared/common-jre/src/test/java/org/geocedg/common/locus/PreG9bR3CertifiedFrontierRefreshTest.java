@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -94,7 +95,7 @@ class PreG9bR3CertifiedFrontierRefreshTest extends PreG9bR3RedefineTestBase {
 		activateUndo();
 		witnessCore("(0,0)", "(2,0)");
 		add("P=Point(c)");
-		GeoLocusMetricResult length = add("m=LocusLength(a)");
+		GeoLocusMetricResult length = richResultOf(add("m=LocusLength(a)"));
 		assertNotNull(length);
 		getApp().storeUndoInfo();
 		GeoIdentityRecord before = record("E");
@@ -128,10 +129,10 @@ class PreG9bR3CertifiedFrontierRefreshTest extends PreG9bR3RedefineTestBase {
 		// The live dependents equal a from-scratch evaluation of the edited document.
 		AppCommon reopened = openInFreshApp(afterXml);
 		assertEquals(spatialGeoRecords(afterXml), spatialGeoRecords(reopened.getXML()));
-		double reopenedLength = ((GeoLocusMetricResult) reopened.getKernel()
+		double reopenedLength = richResultOf(reopened.getKernel()
 				.lookupLabel("m")).getMetricResult().getMetricValue().getFiniteValue()
 				.orElseThrow();
-		assertEquals(reopenedLength, ((GeoLocusMetricResult) requireLookup("m"))
+		assertEquals(reopenedLength, richResultOf(requireLookup("m"))
 				.getMetricResult().getMetricValue().getFiniteValue().orElseThrow(),
 				1E-7);
 
@@ -148,7 +149,7 @@ class PreG9bR3CertifiedFrontierRefreshTest extends PreG9bR3RedefineTestBase {
 	}
 
 	private double length() {
-		return ((GeoLocusMetricResult) requireLookup("m")).getMetricResult()
+		return richResultOf(requireLookup("m")).getMetricResult()
 				.getMetricValue().getFiniteValue().orElseThrow();
 	}
 

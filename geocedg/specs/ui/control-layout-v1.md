@@ -35,10 +35,12 @@ con lectores anteriores y la política acotada de inserción de este
 contrato. La disposición incluye la apariencia y el orden de R1.
 Las únicas excepciones adicionales para lectores anteriores son las
 dos propiedades nativas indicadas abajo. Los
-lectores anteriores carecen de aviso propio. La distribución nueva
-advierte que abrir y volver a guardar con una versión anterior puede
-eliminar irreversiblemente la disposición y aconseja conservar una
-copia original. GeoCeDG y Classic de la misma distribución conservan
+lectores anteriores carecen de aviso propio. Abrir y volver a guardar con
+una versión anterior puede eliminar irreversiblemente la disposición. La
+guía documenta estas pérdidas y aconseja conservar una copia original.
+Desde 1.2.0 se informa en la guía sin mostrar un aviso introductorio en la
+apertura ni en el gestor de Disposición de controles. GeoCeDG y Classic
+de la misma distribución conservan
 el registro, los respaldos y las propiedades nativas al abrir,
 guardar, deshacer y rehacer. Classic presenta los controles en sus
 posiciones nativas de respaldo.
@@ -55,8 +57,7 @@ los lectores anteriores pueden omitir `labelMode` al volver a guardar.
 Al reabrir, el modo puede pasar a Valor según el etiquetado efectivo.
 El mismo comportamiento se comprobó sin paneles. GeoCeDG anterior
 conserva la selección explícita con el alias `6`. Classic anterior
-puede omitir también ese alias. El aviso de la distribución nueva
-informa de los efectos verificados. El autor autorizó por separado
+puede omitir también ese alias. El autor autorizó por separado
 solo este cambio de rótulo en lectores anteriores y lo ratificó en
 el cierre. La distribución nueva conserva el modo efectivo en el
 perímetro CU8. Ambas excepciones históricas preservan los valores,

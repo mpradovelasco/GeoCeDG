@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -118,7 +119,7 @@ class G9U0R5SemanticTransformEdgeCasesTest
 		assertEquals(imagePoint.getInhomX(), 2.5, 1E-10);
 		assertEquals(imagePoint.getInhomY(), 6.5, 1E-10);
 		assertEquals(3 * metricValue(totalMetric(source)),
-				metricValue(add("MT=LocusLength(T)")), 1E-6);
+				metricValue(richResultOf(add("MT=LocusLength(T)"))), 1E-6);
 	}
 
 	@Test

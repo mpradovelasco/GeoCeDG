@@ -85,8 +85,12 @@ class G9S1NativeArchivePersistenceTest {
 			@TempDir Path temporaryDirectory) throws Exception {
 		final AppGeoCeDG app = enabledApp();
 		final GeoLocusV2 spline = createDynamicLineSpline(app);
-		final GeoLocusMetricResult metric = (GeoLocusMetricResult) eval(app,
-				"M=LocusLength(S)");
+		final GeoNumeric publicMetric = (GeoNumeric) eval(app, "M=LocusLength(S)");
+		final GeoLocusMetricResult metric = AlgoLocusMetricScalarAdapter.richResultOf(publicMetric);
+		final PersistentGeoId metricId = persistentId(app, metric);
+		assertFalse(publicMetric.isAuxiliaryObject());
+		assertTrue(metric.isAuxiliaryObject());
+		eval(app, "twiceM=2*M");
 		final GeoNumeric startParameter = (GeoNumeric) eval(app, "u=0.25");
 		final GeoNumeric endParameter = (GeoNumeric) eval(app, "v=0.75");
 		final GeoPoint metricStart = (GeoPoint) eval(app,
@@ -145,7 +149,11 @@ class G9S1NativeArchivePersistenceTest {
 		final GeoLocusV2 reopenedSpline =
 				(GeoLocusV2) lookup(reopened, "S");
 		final GeoLocusMetricResult reopenedMetric =
-				(GeoLocusMetricResult) lookup(reopened, "M");
+				AlgoLocusMetricScalarAdapter.richResultOf(lookup(reopened, "M"));
+		assertEquals(metricId, persistentId(reopened, reopenedMetric));
+		assertFalse(lookup(reopened, "M").isAuxiliaryObject());
+		assertTrue(reopenedMetric.isAuxiliaryObject());
+		assertEquals(8, ((GeoNumeric) lookup(reopened, "twiceM")).getDouble(), 1E-8);
 		final GeoNumeric reopenedPartial =
 				(GeoNumeric) lookup(reopened, "MP");
 		final AlgoLocusMetricScalarAdapter reopenedPartialAdapter =

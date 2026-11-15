@@ -5,6 +5,7 @@
 
 package org.geocedg.common.kernel.commands;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -46,7 +47,7 @@ public class GeoCeDGCommandsTest extends BaseUnitTest {
 	@Test
 	void cmdLocusLength() {
 		GeoLocusV2 locus = createLine();
-		GeoLocusMetricResult metric = add("M=LocusLength(L)");
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(L)"));
 		assertNotNull(metric);
 		assertTrue(metric.isDefined());
 		assertEquals(Commands.LocusLength, metric.getParentAlgorithm().getClassName());
@@ -66,7 +67,7 @@ public class GeoCeDGCommandsTest extends BaseUnitTest {
 		assertTrue(spline.isDefined());
 		assertFalse(spline.isPath());
 		assertEquals(Commands.SplineV2, spline.getParentAlgorithm().getClassName());
-		GeoLocusMetricResult metric = add("M=LocusLength(S)");
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(S)"));
 		assertEquals(4, metric.getMetricResult().getMetricValue().getFiniteValue()
 				.orElseThrow(), 1E-10);
 	}

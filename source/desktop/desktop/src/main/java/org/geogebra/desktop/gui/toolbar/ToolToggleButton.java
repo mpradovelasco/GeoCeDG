@@ -90,13 +90,14 @@ class ToolToggleButton extends JToggleButton
 
 		// don't select mode if popup triangle clicked
 		if (!popupTriangleClicked || !menu.isPopupShowing()) {
-			app.setMode(Integer.parseInt(e.getActionCommand()));
+			menu.activateButton(e);
 		}
 	}
 
 	@Override
 	public void setIcon(Icon icon) {
 		super.setIcon(icon);
+		gp = null;
 		iconWidth = icon.getIconWidth();
 		iconHeight = icon.getIconHeight();
 		BORDER = (int) Math.round(icon.getIconWidth() * 0.1875); // 6 pixel

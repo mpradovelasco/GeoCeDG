@@ -39,6 +39,8 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Maximality;
 import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
 import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusTraversalCut2D;
+import org.geocedg.common.kernel.locus.LocusUnresolvedCompositionEvent2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSingularParameter2D;
 import org.geocedg.common.kernel.locus.exact.CircleDriverRootStructure2D;
@@ -646,6 +648,30 @@ public final class HybridExistenceCertifier2D {
 				String declarationEvidence) {
 			return new Result(structure.restrictedTo(declared, declarationEvidence),
 					exploration == null ? null : exploration.restrictedTo(declared), roots,
+					exactEvidence, stationaryPoints, boxes, transitions, bands,
+					policySignature, diagnostic, closedWidth);
+		}
+
+		/** @return the same geometric evidence with the declared traversal partition */
+		public Result withConstructiveCuts(List<LocusTraversalCut2D> cuts) {
+			if (cuts.isEmpty()) {
+				return this;
+			}
+			return new Result(structure.withConstructiveCuts(cuts), exploration == null
+					? null : exploration.withoutCrossingsAt(cuts.stream()
+							.map(LocusTraversalCut2D::parameter).toList()), roots,
+					exactEvidence, stationaryPoints, boxes, transitions, bands,
+					policySignature, diagnostic, closedWidth);
+		}
+
+		/** @return unresolved potential event directions without a closure or jump claim */
+		public Result withUnresolvedCompositionEvents(List<LocusUnresolvedCompositionEvent2D> events) {
+			if (events.isEmpty()) {
+				return this;
+			}
+			return new Result(structure.withUnresolvedCompositionEvents(events), exploration == null
+					? null : exploration.withoutCrossingsAt(events.stream()
+							.map(LocusUnresolvedCompositionEvent2D::parameter).toList()), roots,
 					exactEvidence, stationaryPoints, boxes, transitions, bands,
 					policySignature, diagnostic, closedWidth);
 		}

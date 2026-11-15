@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -192,7 +193,7 @@ final class PreG9bR3X1ExpressionPointPairMaterializationTest
 			assertEquals(SemanticMetricEndpointResolver2D.Family.PAIR_INTERSECTION_OCCURRENCE,
 					resolution.getFamily());
 		}
-		double length = finite(add("L=LocusLength(p1,X0,X1)"));
+		double length = finite(richResultOf(add("L=LocusLength(p1,X0,X1)")));
 		assertTrue(length > 0 && length < 2 * Math.PI * RADIUS, String.valueOf(length));
 		// No new endpoint family: the traced expression point addresses its own locus
 		// through the existing generator occurrence, and any other expression point

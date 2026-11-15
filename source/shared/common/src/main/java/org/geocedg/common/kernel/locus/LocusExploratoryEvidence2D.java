@@ -112,6 +112,15 @@ public final class LocusExploratoryEvidence2D {
 				inside(bracketedTransitions, declared), inside(suspectedJumps, declared));
 	}
 
+	/** @return the sampled evidence with no vertex pair traversing the supplied directions */
+	public LocusExploratoryEvidence2D withoutCrossingsAt(List<Double> directions) {
+		List<LocusInterval2D> separated = validRuns.stream().filter(run -> directions.stream()
+				.noneMatch(direction -> run.getLower() <= direction
+						&& direction <= run.getUpper())).toList();
+		return new LocusExploratoryEvidence2D(branchKey, semanticRevision, method,
+				policyVersion, work, separated, bracketedTransitions, suspectedJumps);
+	}
+
 	private static List<LocusInterval2D> inside(List<LocusInterval2D> intervals,
 			List<LocusInterval2D> declared) {
 		List<LocusInterval2D> kept = new ArrayList<>();

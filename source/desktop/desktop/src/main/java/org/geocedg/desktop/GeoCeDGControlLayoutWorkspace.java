@@ -615,8 +615,6 @@ final class GeoCeDGControlLayoutWorkspace {
 		content.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 		content.add(selectors, BorderLayout.NORTH);
 		content.add(buttons, BorderLayout.CENTER);
-		content.add(new JLabel("<html><div style='width: 420px'>"
-				+ GeoCeDGControlLayoutNotice.message(app) + "</div></html>"), BorderLayout.SOUTH);
 		dialog.setContentPane(content);
 		refreshManager(panelId, null);
 		dialog.pack();

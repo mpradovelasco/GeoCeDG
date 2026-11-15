@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -59,7 +60,7 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 				resolver.resolve(spline, left).getFamily());
 		assertEquals(0.25, resolver.resolve(spline, left).getAddress()
 				.getCanonicalParameter(), 1E-9);
-		assertEquals(1, finite(add("M=LocusLength(S,XL,XR)")), 1E-9);
+		assertEquals(1, finite(richResultOf(add("M=LocusLength(S,XL,XR)"))), 1E-9);
 		GeoNumeric scalar = add("m=Length(S,XL,XR)");
 		assertTrue(scalar.isDefined());
 		assertEquals(1, scalar.getDouble(), 1E-9);
@@ -67,13 +68,13 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		add("ci=Circle((0,0),0.5)");
 		List<GeoPoint> circle = sortedPoints(add("RC=Intersect(S,ci)"), "PC");
 		assertEquals(2, circle.size());
-		assertEquals(1, finite(add("MC=LocusLength(S," + circle.get(0).getLabelSimple()
-				+ "," + circle.get(1).getLabelSimple() + ")")), 1E-9);
+		assertEquals(1, finite(richResultOf(add("MC=LocusLength(S," + circle.get(0).getLabelSimple()
+				+ "," + circle.get(1).getLabelSimple() + ")"))), 1E-9);
 		add("pa:y=x^2-0.25");
 		List<GeoPoint> parabola = sortedPoints(add("RP=Intersect(S,pa)"), "PP");
 		assertEquals(2, parabola.size());
-		assertEquals(1, finite(add("MP=LocusLength(S," + parabola.get(0).getLabelSimple()
-				+ "," + parabola.get(1).getLabelSimple() + ")")), 1E-9);
+		assertEquals(1, finite(richResultOf(add("MP=LocusLength(S," + parabola.get(0).getLabelSimple()
+				+ "," + parabola.get(1).getLabelSimple() + ")"))), 1E-9);
 	}
 
 	@Test
@@ -84,8 +85,8 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		GeoPoint first = roots.get(0);
 		GeoPoint second = roots.get(1);
 		double expected = semanticLength("a", parameter(first), parameter(second));
-		assertEquals(expected, finite(add("L=LocusLength(a," + first.getLabelSimple() + ","
-				+ second.getLabelSimple() + ")")), 1E-9);
+		assertEquals(expected, finite(richResultOf(add("L=LocusLength(a," + first.getLabelSimple() + ","
+				+ second.getLabelSimple() + ")"))), 1E-9);
 		GeoNumeric scalar = add("l=Length(a," + first.getLabelSimple() + ","
 				+ second.getLabelSimple() + ")");
 		assertEquals(expected, scalar.getDouble(), 1E-9);
@@ -102,14 +103,14 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 				resolver.resolve((GeoLocusV2) requireLookup("a"), x).getFamily());
 		assertEquals(Family.PAIR_INTERSECTION_OCCURRENCE,
 				resolver.resolve((GeoLocusV2) requireLookup("d"), x).getFamily());
-		assertTrue(finite(add("MD=LocusLength(d,F,X)")) > 0);
+		assertTrue(finite(richResultOf(add("MD=LocusLength(d,F,X)"))) > 0);
 		List<GeoPoint> single = sortedPoints(add("g=Intersect(a,c)"), "W");
 		double onEllipse = semanticLength("a", Math.min(parameter(single.get(0)),
 				pairParameter(x, "a")), Math.max(parameter(single.get(0)), pairParameter(x, "a")));
 		String start = parameter(single.get(0)) < pairParameter(x, "a")
 				? single.get(0).getLabelSimple() : "X";
 		String end = start.equals("X") ? single.get(0).getLabelSimple() : "X";
-		assertEquals(onEllipse, finite(add("MA=LocusLength(a," + start + "," + end + ")")),
+		assertEquals(onEllipse, finite(richResultOf(add("MA=LocusLength(a," + start + "," + end + ")"))),
 				1E-9);
 	}
 
@@ -123,8 +124,8 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 				resolver.resolve(ellipse, generator).getFamily());
 		GeoPoint target = roots.get(3);
 		setDriver(1.9);
-		GeoLocusMetricResult metric = add("LE=LocusLength(a,E," + target.getLabelSimple()
-				+ ")");
+		GeoLocusMetricResult metric = richResultOf(add("LE=LocusLength(a,E," + target.getLabelSimple()
+				+ ")"));
 		String key = resolver.resolve(ellipse, generator).getOccurrenceKey();
 		assertEquals(semanticLength("a", driver(), parameter(target)), finite(metric), 1E-9);
 		setDriver(1.2);
@@ -138,9 +139,9 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		add("Lg=LocusV2(Q0,s0,Dm)");
 		add("Rline=Point(Lg,\"" + BRANCH + "\",1.5)");
 		move("s0", -1);
-		assertEquals(2.5, finite(add("MG=LocusLength(Lg,Q0,Rline)")), 1E-9);
+		assertEquals(2.5, finite(richResultOf(add("MG=LocusLength(Lg,Q0,Rline)"))), 1E-9);
 		move("s0", 0.5);
-		assertEquals(1, finite((GeoLocusMetricResult) requireLookup("MG")), 1E-9);
+		assertEquals(1, finite(richResultOf(requireLookup("MG"))), 1E-9);
 	}
 
 	@Test
@@ -149,37 +150,37 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		List<GeoPoint> roots = sortedPoints(add("g=Intersect(a,c)"), "W");
 		String first = roots.get(0).getLabelSimple();
 		String second = roots.get(1).getLabelSimple();
-		double base = finite(add("L0=LocusLength(a," + first + "," + second + ")"));
+		double base = finite(richResultOf(add("L0=LocusLength(a," + first + "," + second + ")")));
 		add("alpha=30deg");
 		add("aR=Rotate(a,alpha,A)");
 		add("IR=Rotate(" + first + ",alpha,A)");
 		add("JR=Rotate(" + second + ",alpha,A)");
-		assertEquals(base, finite(add("LR=LocusLength(aR,IR,JR)")), 1E-9);
+		assertEquals(base, finite(richResultOf(add("LR=LocusLength(aR,IR,JR)"))), 1E-9);
 		// Durable point identity starts when the point first participates.
 		assertUnique(Family.SIMILARITY_IMAGE_OCCURRENCE, "aR", "IR");
 		// Images of an explicit semantic point and of the generator compose too.
 		add("PS=Point(a,\"" + BRANCH + "\"," + parameter(roots.get(0)) + ")");
 		add("PSR=Rotate(PS,alpha,A)");
-		assertEquals(base, finite(add("LS=LocusLength(aR,PSR,JR)")), 1E-9);
+		assertEquals(base, finite(richResultOf(add("LS=LocusLength(aR,PSR,JR)"))), 1E-9);
 		add("ER=Rotate(E,alpha,A)");
-		assertEquals(finite(add("LE=LocusLength(a,E," + second + ")")),
-				finite(add("LER=LocusLength(aR,ER,JR)")), 1E-9);
+		assertEquals(finite(richResultOf(add("LE=LocusLength(a,E," + second + ")"))),
+				finite(richResultOf(add("LER=LocusLength(aR,ER,JR)"))), 1E-9);
 		assertUnique(Family.SIMILARITY_IMAGE_OCCURRENCE, "aR", "ER");
 		add("vt=Vector((0.4,-0.2))");
 		add("aT=Translate(a,vt)");
 		add("IT=Translate(" + first + ",vt)");
 		add("JT=Translate(" + second + ",vt)");
-		assertEquals(base, finite(add("LT=LocusLength(aT,IT,JT)")), 1E-9);
+		assertEquals(base, finite(richResultOf(add("LT=LocusLength(aT,IT,JT)"))), 1E-9);
 		add("k=2");
 		add("aD=Dilate(a,k,A)");
 		add("ID=Dilate(" + first + ",k,A)");
 		add("JD=Dilate(" + second + ",k,A)");
-		assertEquals(2 * base, finite(add("LD=LocusLength(aD,ID,JD)")), 1E-7 * base);
+		assertEquals(2 * base, finite(richResultOf(add("LD=LocusLength(aD,ID,JD)"))), 1E-7 * base);
 		add("my:x=0");
 		add("aM=Mirror(a,my)");
 		add("IM=Mirror(" + first + ",my)");
 		add("JM=Mirror(" + second + ",my)");
-		assertEquals(base, finite(add("LM=LocusLength(aM,IM,JM)")), 1E-9);
+		assertEquals(base, finite(richResultOf(add("LM=LocusLength(aM,IM,JM)"))), 1E-9);
 		assertUnique(Family.SIMILARITY_IMAGE_OCCURRENCE, "aM", "IM");
 		// Equal-valued but separate literal parameters are not DAG lineage.
 		add("IL=Rotate(" + first + ",30deg,A)");
@@ -194,20 +195,20 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		List<GeoPoint> roots = sortedPoints(add("g=Intersect(a,c)"), "W");
 		String first = roots.get(0).getLabelSimple();
 		String second = roots.get(1).getLabelSimple();
-		double base = finite(add("L0=LocusLength(a," + first + "," + second + ")"));
+		double base = finite(richResultOf(add("L0=LocusLength(a," + first + "," + second + ")")));
 		add("Q=" + first);
 		assertEquals(Family.DEPENDENT_COPY_OCCURRENCE, resolver.resolve(
 				(GeoLocusV2) requireLookup("a"), (GeoPoint) requireLookup("Q")).getFamily());
-		assertEquals(base, finite(add("LQ=LocusLength(a,Q," + second + ")")), 1E-9);
+		assertEquals(base, finite(richResultOf(add("LQ=LocusLength(a,Q," + second + ")"))), 1E-9);
 		add("QF=F");
-		assertEquals(finite(add("LF=LocusLength(d,F,H)")),
-				finite(add("LQF=LocusLength(d,QF,H)")), 1E-12);
+		assertEquals(finite(richResultOf(add("LF=LocusLength(d,F,H)"))),
+				finite(richResultOf(add("LQF=LocusLength(d,QF,H)"))), 1E-12);
 		add("free=CopyFreeObject(" + first + ")");
 		assertInvalid(add("LC=LocusLength(a,free," + second + ")"));
 		// A copy never composes a transported occurrence.
 		add("vt=Vector((0.4,-0.2))");
 		add("dT=Translate(d,vt)");
-		assertTrue(finite(add("LA1=LocusLength(dT,F,H)")) > 0);
+		assertTrue(finite(richResultOf(add("LA1=LocusLength(dT,F,H)"))) > 0);
 		assertInvalid(add("LQT=LocusLength(dT,QF,H)"));
 	}
 
@@ -227,8 +228,8 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		assertInvalid(add("LE=LocusLength(aR,E,JR)"));
 		// The approved A1 constructor transport is unchanged.
 		add("dR=Rotate(d,alpha,A)");
-		assertEquals(finite(add("LD=LocusLength(d,F,H)")),
-				finite(add("LDR=LocusLength(dR,F,H)")), 1E-9);
+		assertEquals(finite(richResultOf(add("LD=LocusLength(d,F,H)"))),
+				finite(richResultOf(add("LDR=LocusLength(dR,F,H)"))), 1E-9);
 	}
 
 	@Test
@@ -264,10 +265,10 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		// Explicit semantic points at both centre passes coincide and stay distinct.
 		add("P80=Point(S8,\"spline-v2/main\",0)");
 		add("P81=Point(S8,\"spline-v2/main\",0.5)");
-		assertTrue(finite(add("L8=LocusLength(S8,P80,P81)")) > 4);
-		double across = finite(add("LZ=LocusLength(S8,Z0,Z1)"));
-		assertEquals(across, finite(add("LZ0=LocusLength(S8,Z0,P81)"))
-				+ finite(add("LZ1=LocusLength(S8,P81,Z1)")), 1E-8);
+		assertTrue(finite(richResultOf(add("L8=LocusLength(S8,P80,P81)"))) > 4);
+		double across = finite(richResultOf(add("LZ=LocusLength(S8,Z0,Z1)")));
+		assertEquals(across, finite(richResultOf(add("LZ0=LocusLength(S8,Z0,P81)")))
+				+ finite(richResultOf(add("LZ1=LocusLength(S8,P81,Z1)"))), 1E-8);
 	}
 
 	@Test
@@ -277,7 +278,7 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		String first = roots.get(0).getLabelSimple();
 		String second = roots.get(1).getLabelSimple();
 		assertInvalid(add("LW=LocusLength(d," + first + "," + second + ")"));
-		GeoLocusMetricResult metric = add("L=LocusLength(a," + first + "," + second + ")");
+		GeoLocusMetricResult metric = richResultOf(add("L=LocusLength(a," + first + "," + second + ")"));
 		final double value = finite(metric);
 		final String key = resolver.resolve((GeoLocusV2) requireLookup("a"), roots.get(0))
 				.getOccurrenceKey();
@@ -298,14 +299,14 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		straight();
 		add("vl:x=-0.5");
 		GeoPoint left = only(add("RL=Intersect(S,vl)"), "XL");
-		assertEquals(1.5, finite(add("M=LocusLength(S,XL,C)")), 1E-9);
+		assertEquals(1.5, finite(richResultOf(add("M=LocusLength(S,XL,C)"))), 1E-9);
 		assertUnique(Family.SINGLE_SOURCE_INTERSECTION_OCCURRENCE, "S", "XL");
 		String semantic = "Point(S,\"spline-v2/main\",0.5)";
 		// A compatible redefinition across families is rejected atomically; the
 		// rolled-back metric resolves the same family again.
 		assertFalse(change(left, semantic, false).isEmpty());
 		assertUnique(Family.SINGLE_SOURCE_INTERSECTION_OCCURRENCE, "S", "XL");
-		assertEquals(1.5, finite((GeoLocusMetricResult) requireLookup("M")), 1E-9);
+		assertEquals(1.5, finite(richResultOf(requireLookup("M"))), 1E-9);
 		// Replacement has replacement identity semantics for the dependent closure,
 		// so no metric object survives to be retargeted. Family change inside one
 		// metric object is NOT_APPLICABLE_UNDER_CURRENT_LIFECYCLE; the retained
@@ -343,27 +344,27 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		List<Double> values = new ArrayList<>();
 		List<GeoLocusMetricResult> results = new ArrayList<>();
 		for (String definition : metrics) {
-			GeoLocusMetricResult result = add(definition);
+			GeoLocusMetricResult result = richResultOf(add(definition));
 			results.add(result);
 			values.add(finite(result));
 		}
 		getApp().setXML(getApp().getXML(), true);
 		for (int index = 0; index < metrics.size(); index++) {
 			String label = metrics.get(index).substring(0, 2);
-			assertEquals(values.get(index), finite((GeoLocusMetricResult) requireLookup(label)),
+			assertEquals(values.get(index), finite(richResultOf(requireLookup(label))),
 					1E-9, label);
 		}
 		getApp().storeUndoInfo();
 		moveTo("Kc", 1.5, 1.2);
 		getApp().storeUndoInfo();
 		getKernel().undo();
-		assertEquals(values.get(3), finite((GeoLocusMetricResult) requireLookup("MG")), 1E-9);
+		assertEquals(values.get(3), finite(richResultOf(requireLookup("MG"))), 1E-9);
 		getKernel().redo();
-		assertTrue(((GeoLocusMetricResult) requireLookup("MG")).getMetricResult()
+		assertTrue((richResultOf(requireLookup("MG"))).getMetricResult()
 				.getMetricValue().getFiniteValue().isPresent());
 		getKernel().undo();
 		for (String label : List.of("MS", "MQ", "MI")) {
-			GeoLocusMetricResult result = (GeoLocusMetricResult) requireLookup(label);
+			GeoLocusMetricResult result = richResultOf(requireLookup(label));
 			String clipboard = InternalClipboard.getTextToSave(getApp(), List.of(result),
 					text -> text);
 			int separator = clipboard.indexOf('\n');
@@ -377,7 +378,7 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 					.map(GeoIdentityRecord.class::cast)
 					.filter(record -> original.equals(record.getCopySourceId()))
 					.findFirst().orElseThrow();
-			GeoLocusMetricResult copied = (GeoLocusMetricResult) registry.getGeo(copy.getId());
+			GeoLocusMetricResult copied = richResultOf(registry.getGeo(copy.getId()));
 			assertEquals(finite(result), finite(copied), 1E-9, label);
 		}
 	}
@@ -388,8 +389,8 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		List<GeoPoint> roots = sortedPoints(add("g=Intersect(a,c)"), "W");
 		GeoPoint first = roots.get(0);
 		GeoPoint second = roots.get(1);
-		GeoLocusMetricResult metric = add("L=LocusLength(a," + first.getLabelSimple() + ","
-				+ second.getLabelSimple() + ")");
+		GeoLocusMetricResult metric = richResultOf(add("L=LocusLength(a," + first.getLabelSimple() + ","
+				+ second.getLabelSimple() + ")"));
 		moveTo("B", 2.7, 4.9);
 		assertTrue(first.isDefined() && second.isDefined());
 		assertEquals(semanticLength("a", parameter(first), parameter(second)),
@@ -421,7 +422,7 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		List<GeoPoint> roots = sortedPoints(add("g=Intersect(a,c)"), "W");
 		String first = roots.get(0).getLabelSimple();
 		String second = roots.get(1).getLabelSimple();
-		final double base = finite(add("L0=LocusLength(a," + first + "," + second + ")"));
+		final double base = finite(richResultOf(add("L0=LocusLength(a," + first + "," + second + ")")));
 		add("inverse=Mirror(" + first + ",c)");
 		assertInvalid(add("LV=LocusLength(a,inverse," + second + ")"));
 		add("alpha=30deg");
@@ -431,7 +432,7 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		add("JR=Rotate(" + second + ",alpha,A)");
 		add("IRR=Rotate(IR,alpha,A)");
 		add("JRR=Rotate(JR,alpha,A)");
-		assertEquals(base, finite(add("LRR=LocusLength(aRR,IRR,JRR)")), 1E-9);
+		assertEquals(base, finite(richResultOf(add("LRR=LocusLength(aRR,IRR,JRR)"))), 1E-9);
 	}
 
 	@Test
@@ -439,7 +440,7 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		witness();
 		List<GeoPoint> roots = sortedPoints(add("g=Intersect(a,c)"), "W");
 		String target = roots.get(1).getLabelSimple();
-		double base = finite(add("L0=LocusLength(a,E," + target + ")"));
+		double base = finite(richResultOf(add("L0=LocusLength(a,E," + target + ")")));
 		add("vt=Vector((0.4,-0.2))");
 		add("alpha=30deg");
 		add("P0=(0.5,0.5)");
@@ -461,8 +462,8 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 			add(image + "=" + item[1] + "(a," + item[2] + ")");
 			add("ET" + suffix + "=" + item[1] + "(E," + item[2] + ")");
 			add("JT" + suffix + "=" + item[1] + "(" + target + "," + item[2] + ")");
-			GeoLocusMetricResult metric = add("LT" + suffix + "=LocusLength(" + image
-					+ ",ET" + suffix + ",JT" + suffix + ")");
+			GeoLocusMetricResult metric = richResultOf(add("LT" + suffix + "=LocusLength(" + image
+					+ ",ET" + suffix + ",JT" + suffix + ")"));
 			assertEquals(Double.parseDouble(item[3]) * base, finite(metric),
 					1E-7 * base, item[0]);
 			SemanticMetricEndpointResolver2D.Resolution resolution = resolver.resolve(
@@ -524,7 +525,7 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		List<GeoPoint> roots = sortedPoints(add("g=Intersect(a,c)"), "W");
 		String first = roots.get(0).getLabelSimple();
 		String second = roots.get(1).getLabelSimple();
-		final double base = finite(add("L0=LocusLength(a," + first + "," + second + ")"));
+		final double base = finite(richResultOf(add("L0=LocusLength(a," + first + "," + second + ")")));
 		add("alpha=30deg");
 		add("aR=Rotate(a,alpha,A)");
 		add("aRR=Rotate(aR,alpha,A)");
@@ -532,7 +533,7 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		add("JR=Rotate(" + second + ",alpha,A)");
 		add("IRR=Rotate(IR,alpha,A)");
 		add("JRR=Rotate(JR,alpha,A)");
-		GeoLocusMetricResult nested = add("LRR=LocusLength(aRR,IRR,JRR)");
+		GeoLocusMetricResult nested = richResultOf(add("LRR=LocusLength(aRR,IRR,JRR)"));
 		assertEquals(base, finite(nested), 1E-9);
 		GeoLocusV2 outer = (GeoLocusV2) requireLookup("aRR");
 		GeoPoint endpoint = (GeoPoint) requireLookup("IRR");
@@ -549,7 +550,7 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		assertTrue(key.contains("|point=" + id(roots.get(0)).toExternalForm()), key);
 		// The intermediate later gains a durable identity by participating, and is
 		// renamed: its structural address, and so the retained key, do not move.
-		assertEquals(base, finite(add("LR=LocusLength(aR,IR,JR)")), 1E-9);
+		assertEquals(base, finite(richResultOf(add("LR=LocusLength(aR,IR,JR)"))), 1E-9);
 		assertNotNull(id(requireLookup("IR")));
 		assertTrue(requireLookup("IR").rename("IRX"));
 		assertEquals(key, resolver.resolve(outer, endpoint).getOccurrenceKey());
@@ -588,8 +589,8 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		String suffix = Integer.toHexString(System.identityHashCode(new Object()));
 		add("PS" + suffix + "=Point(" + locus + ",\"" + BRANCH + "\"," + from + ")");
 		add("PT" + suffix + "=Point(" + locus + ",\"" + BRANCH + "\"," + to + ")");
-		return finite(add("LS" + suffix + "=LocusLength(" + locus + ",PS" + suffix + ",PT"
-				+ suffix + ")"));
+		return finite(richResultOf(add("LS" + suffix + "=LocusLength(" + locus + ",PS" + suffix + ",PT"
+				+ suffix + ")")));
 	}
 
 	private void setDriver(double parameter) {
@@ -699,7 +700,8 @@ final class PreG9bR2E0SemanticEndpointAdmissibilityTest extends G9U0PublicSurfac
 		assertEquals(family, resolution.getFamily());
 	}
 
-	private static void assertInvalid(GeoLocusMetricResult result) {
+	private static void assertInvalid(GeoElement output) {
+		GeoLocusMetricResult result = richResultOf(output);
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
 				result.getMetricResult().getComputationStatus(),
 				result.getMetricResult().getDiagnostics().toString());

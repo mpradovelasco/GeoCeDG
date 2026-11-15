@@ -6,7 +6,9 @@
 package org.geocedg.common.kernel.locus;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * One end of a certified component ({@code locus-v2-existence-components.md} sections
@@ -29,6 +31,8 @@ public final class LocusBoundary2D {
 		CERTIFIED_TRANSITION,
 		/** A structural event, such as a discontinuity with valid sides. */
 		STRUCTURAL_EVENT,
+		/** An explicitly declared division of a continuous traversal. */
+		DECLARED_CONSTRUCTIVE_CUT,
 		/** The edge of an {@code UNRESOLVED} band; the component is then not maximal. */
 		UNRESOLVED_BAND_EDGE,
 		/**
@@ -45,6 +49,7 @@ public final class LocusBoundary2D {
 	private final boolean included;
 	private final LocusEvidenceNature2D nature;
 	private final double[] enclosure;
+	private final List<String> constructiveCutDeclarations;
 
 	/**
 	 * @param kind kind of the end
@@ -59,11 +64,17 @@ public final class LocusBoundary2D {
 
 	private LocusBoundary2D(Kind kind, LocusBoundarySource2D source, boolean included,
 			LocusEvidenceNature2D nature, double[] enclosure) {
+		this(kind, source, included, nature, enclosure, List.of());
+	}
+
+	private LocusBoundary2D(Kind kind, LocusBoundarySource2D source, boolean included,
+			LocusEvidenceNature2D nature, double[] enclosure, List<String> declarations) {
 		this.kind = Objects.requireNonNull(kind);
 		this.source = Objects.requireNonNull(source);
 		this.included = included;
 		this.nature = Objects.requireNonNull(nature);
 		this.enclosure = enclosure;
+		this.constructiveCutDeclarations = List.copyOf(declarations);
 		if (kind == Kind.PERIODIC_CLOSURE && !included) {
 			throw new IllegalArgumentException("A periodic closure belongs to its component");
 		}
@@ -124,6 +135,23 @@ public final class LocusBoundary2D {
 		return nature;
 	}
 
+	/** @return recorded declarations, including ones coincident with a physical boundary */
+	public List<String> getConstructiveCutDeclarations() {
+		return constructiveCutDeclarations;
+	}
+
+	/** @return the existing boundary with additional declarative provenance */
+	LocusBoundary2D withConstructiveCutDeclarations(List<String> declarations) {
+		return new LocusBoundary2D(kind, source, included, nature, enclosure,
+				Stream.concat(constructiveCutDeclarations.stream(), declarations.stream())
+						.sorted().distinct().toList());
+	}
+
+	/** @return whether the excluded end is addressed through an explicit limit query */
+	public boolean supportsOneSidedLimit() {
+		return kind == Kind.STRUCTURAL_EVENT || kind == Kind.DECLARED_CONSTRUCTIVE_CUT;
+	}
+
 	/** @return whether the end is a certified root with an enclosed parameter */
 	public boolean hasEnclosure() {
 		return enclosure != null;
@@ -163,6 +191,9 @@ public final class LocusBoundary2D {
 	public String getSignature() {
 		String signature = kind + ":" + source.getSignature() + ":"
 				+ (included ? "closed" : "open") + ":" + nature;
+		if (!constructiveCutDeclarations.isEmpty()) {
+			signature += ":cuts[" + String.join(",", constructiveCutDeclarations) + "]";
+		}
 		return enclosure == null ? signature : signature + ":enclosure["
 				+ Double.toHexString(enclosure[0]) + "," + Double.toHexString(enclosure[1])
 				+ "]";
@@ -176,12 +207,13 @@ public final class LocusBoundary2D {
 		LocusBoundary2D boundary = (LocusBoundary2D) other;
 		return kind == boundary.kind && source.equals(boundary.source)
 				&& included == boundary.included && nature == boundary.nature
+				&& constructiveCutDeclarations.equals(boundary.constructiveCutDeclarations)
 				&& Arrays.equals(enclosure, boundary.enclosure);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(kind, source, included, nature)
+		return Objects.hash(kind, source, included, nature, constructiveCutDeclarations)
 				+ 31 * Arrays.hashCode(enclosure);
 	}
 

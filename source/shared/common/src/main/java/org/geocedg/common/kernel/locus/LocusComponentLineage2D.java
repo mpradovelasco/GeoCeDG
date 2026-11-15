@@ -167,6 +167,7 @@ public final class LocusComponentLineage2D {
 		case DOMAIN_END:
 		case CERTIFIED_TRANSITION:
 		case STRUCTURAL_EVENT:
+		case DECLARED_CONSTRUCTIVE_CUT:
 			return boundary.getNature().certifies();
 		default:
 			return false;

@@ -439,11 +439,16 @@ public final class LocusExistenceStructure2D {
 		 * @return arc coordinate, or {@code NaN} when the parameter does not belong
 		 */
 		public double getArcCoordinate(double canonicalParameter, double domainEpsilon) {
-			if (followsCanonicalOrder()) {
+			if (followsCanonicalOrder() && !hasDeclaredInteriorEnd()) {
 				return interval.contains(canonicalParameter, domainEpsilon)
 						? canonicalParameter - start : Double.NaN;
 			}
 			return getArcCoordinate(canonicalParameter);
+		}
+
+		private boolean hasDeclaredInteriorEnd() {
+			return lowerBoundary.getKind() == LocusBoundary2D.Kind.DECLARED_CONSTRUCTIVE_CUT
+					|| upperBoundary.getKind() == LocusBoundary2D.Kind.DECLARED_CONSTRUCTIVE_CUT;
 		}
 
 		/**
@@ -881,6 +886,132 @@ public final class LocusExistenceStructure2D {
 		return new LocusExistenceStructure2D(branchKey, canonicalDomain, topology,
 				semanticRevision, restricted, kept, points, singular, folds,
 				ordered.isEmpty() ? Completeness.COMPLETE : completeness, certifierContract);
+	}
+
+	/**
+	 * Refines the traversal of the certified components without changing existence coverage.
+	 * Each interior cut owns the start of the next piece and retains the previous side as a
+	 * one-sided limit. A declaration at an existing end records provenance on that end.
+	 *
+	 * @param cuts distinct, provider-canonical declared directions
+	 * @return the existence structure with its traversal partitioned
+	 */
+	public LocusExistenceStructure2D withConstructiveCuts(List<LocusTraversalCut2D> cuts) {
+		if (cuts.isEmpty()) {
+			return this;
+		}
+		List<ContinuousComponent> partition = new ArrayList<>();
+		for (ContinuousComponent component : components) {
+			if (component.isClosedPeriodic()) {
+				List<LocusTraversalCut2D> ordered = cuts.stream()
+						.sorted(Comparator.comparingDouble(LocusTraversalCut2D::parameter)).toList();
+				for (int index = 0; index < ordered.size(); index++) {
+					LocusTraversalCut2D start = ordered.get(index);
+					LocusTraversalCut2D end = ordered.get((index + 1) % ordered.size());
+					partition.add(cutPiece(component, start.parameter(), end.parameter(),
+							start.boundary(true), end.boundary(false)));
+				}
+			} else {
+				partition.addAll(partitionOpenComponent(component, cuts));
+			}
+		}
+		return new LocusExistenceStructure2D(branchKey, canonicalDomain, topology,
+				semanticRevision, coverage, partition, pointComponents, singularParameters,
+				certifiedFolds, completeness, certifierContract);
+	}
+
+	/** Records candidate structural events only within already unresolved coverage. */
+	public LocusExistenceStructure2D withUnresolvedCompositionEvents(
+			List<LocusUnresolvedCompositionEvent2D> events) {
+		java.util.SortedMap<Double, List<String>> signatures = new java.util.TreeMap<>();
+		for (LocusUnresolvedCompositionEvent2D event : events) {
+			signatures.computeIfAbsent(event.parameter(), key -> new ArrayList<>())
+					.add(event.source().getSignature());
+		}
+		List<Coverage> partition = new ArrayList<>();
+		for (Coverage item : coverage) {
+			if (item.state != CoverageState.UNRESOLVED) {
+				partition.add(item);
+				continue;
+			}
+			LocusInterval2D interval = item.interval;
+			double lower = interval.getLower();
+			boolean lowerClosed = interval.isLowerClosed();
+			for (var event : signatures.entrySet()) {
+				double at = event.getKey();
+				if (!interval.contains(at, 0)) {
+					continue;
+				}
+				addCoveragePart(partition, item, lower, at, lowerClosed, false);
+				partition.add(new Coverage(new LocusInterval2D(at, at, true, true),
+						CoverageState.UNRESOLVED,
+						LocusCoverageCause2D.COMPOSED_EVENT_CONTINUITY_NOT_ESTABLISHED,
+						LocusEvidenceNature2D.NONE, String.join(";", event.getValue().stream()
+								.sorted().distinct().toList())));
+				lower = at;
+				lowerClosed = false;
+			}
+			addCoveragePart(partition, item, lower, interval.getUpper(), lowerClosed,
+					interval.isUpperClosed());
+		}
+		return new LocusExistenceStructure2D(branchKey, canonicalDomain, topology,
+				semanticRevision, partition, components, pointComponents, singularParameters,
+				certifiedFolds, completeness, certifierContract);
+	}
+
+	private static void addCoveragePart(List<Coverage> partition, Coverage original,
+			double lower, double upper, boolean lowerClosed, boolean upperClosed) {
+		if (lower < upper || lower == upper && lowerClosed && upperClosed) {
+			partition.add(new Coverage(new LocusInterval2D(lower, upper, lowerClosed, upperClosed),
+					original.state, original.cause, original.nature, original.evidence));
+		}
+	}
+
+	private List<ContinuousComponent> partitionOpenComponent(ContinuousComponent component,
+			List<LocusTraversalCut2D> cuts) {
+		double start = component.getStart();
+		LocusBoundary2D lower = component.getLowerBoundary();
+		LocusBoundary2D upper = component.getUpperBoundary();
+		List<LocusTraversalCut2D> interior = new ArrayList<>();
+		for (LocusTraversalCut2D cut : cuts) {
+			boolean endpoint = false;
+			if (cut.parameter() == component.getStart()) {
+				lower = lower.withConstructiveCutDeclarations(cut.declarations());
+				endpoint = true;
+			}
+			if (cut.parameter() == component.getEnd()) {
+				upper = upper.withConstructiveCutDeclarations(cut.declarations());
+				endpoint = true;
+			}
+			if (!endpoint && component.contains(cut.parameter())) {
+				interior.add(cut);
+			}
+		}
+		if (interior.isEmpty() && lower == component.getLowerBoundary()
+				&& upper == component.getUpperBoundary()) {
+			return List.of(component);
+		}
+		interior.sort(Comparator.comparingDouble(cut -> component.getArcCoordinate(cut.parameter())));
+		List<ContinuousComponent> pieces = new ArrayList<>();
+		for (LocusTraversalCut2D cut : interior) {
+			pieces.add(cutPiece(component, start, cut.parameter(), lower, cut.boundary(false)));
+			start = cut.parameter();
+			lower = cut.boundary(true);
+		}
+		pieces.add(cutPiece(component, start, component.getEnd(), lower, upper));
+		return pieces;
+	}
+
+	private ContinuousComponent cutPiece(ContinuousComponent original, double start,
+			double end, LocusBoundary2D lower, LocusBoundary2D upper) {
+		String key = original.getEvidenceKey() + "/constructive-cut/"
+				+ lower.getSource().getSignature() + ";" + upper.getSource().getSignature();
+		return original.isArc()
+				? ContinuousComponent.arc(canonicalDomain, start, end, start == end, lower,
+						upper, original.getMaximality(), original.getNature(), key)
+				: ContinuousComponent.interval(new LocusInterval2D(start, end,
+						lower.isBinaryEndIncluded(), upper.isBinaryEndIncluded()), lower, upper,
+						original.getMaximality(), original.getNature(), key);
 	}
 
 	/**

@@ -174,8 +174,10 @@ ordered presentation groups, 11 primary-toolbar groups, workspaces, seven menu
 sections and help/localization. Taxonomy and presentation are distinct fields
 of the same authority: Java does not maintain a second action/menu/toolbar list.
 
-The final presentation-polish successor retains 44 native toolbar modes and two
-profile-declared mixed flyouts. `Semantic Curves` combines the existing Locus
+The profile retains the native toolbar modes and two profile-declared mixed
+flyouts. GeoCeDG 1.2.0 exposes Compass immediately before the first circular arc
+and Hyperbola immediately after Parabola in the toolbar and Construction menu.
+`Semantic Curves` combines the existing Locus
 V2 mode, Spline V2 command action and exact-address Point-on-semantic-curve
 action; `View navigation` combines the existing Pan, ZoomWindow, Zoom In, Zoom
 Out and Copy Visual Style actions. A mixed flyout is a rendering instruction for
@@ -189,10 +191,35 @@ Point/intersection, Lines/vectors, Polygons, Derived constructions,
 Circles/conics, Semantic curves, Metrics, Transformations,
 Parameters/drivers and Navigation. Fixed Angle and Tangent are toolbar-only
 members of Derived constructions while retaining their existing menu taxonomy.
-The two mixed flyouts render with the normal compact active-action icon and
-arrow; their last-used selection is transient UI state. An iconless installed
+The two mixed flyouts use the native Desktop mode-menu button, popup and hover
+transfer, with registry actions as menu entries. Hover transfers an already
+open toolbar popup in either direction. Normal pointer movement with every
+popup closed leaves them closed. Selected and popup states reuse the native
+button's rendering, including the tool icon backing and DPI-aware sizing.
+Their last-used selection is transient UI state. An iconless installed
 user tool uses a deterministic in-memory monogram, while an assigned PNG keeps
 precedence. None of these presentation states belongs to a construction.
+
+### Graphical reference capture
+
+GeoCeDG Desktop supports an explicit pick from Graphics 1 or Algebra in
+Redefine, the Input Box link selector and numeric geometry or algebra
+prompts. Capture reads the existing instance and its current reference.
+Where several eligible hits overlap, the user chooses the instance. A pick
+changes only the relevant field or link selection. The dialog's existing
+handler owns any construction change and its Undo entry.
+
+Redefine rejects its owner, the owner's descendants and references shadowed
+by a formal parameter. The argument handler defines what its expression
+accepts. Numeric prompts accept defined finite
+numeric references. The Input Box selector uses the existing linkability rule
+and live combo items. Manual combo selection still admits undefined editable
+objects. A link may also be edited in the `InputBox(...)` definition through
+Redefine. Text insertion replaces the active selection and keeps the
+surrounding text. The dialog validates captured references before Apply or OK
+against the same living instances, construction step and label resolution.
+Escape cancels a capture before dismissing its dialog. Closing a dialog or
+replacing the document discards its capture session and restores input focus.
 
 File and Edit use direct actions plus separators. View includes bounded host
 view controls. Construction owns object-producing groups, including semantic

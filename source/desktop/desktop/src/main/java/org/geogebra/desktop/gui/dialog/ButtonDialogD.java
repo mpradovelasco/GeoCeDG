@@ -36,6 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.text.JTextComponent;
 
+import org.geocedg.desktop.GeoCeDGArgumentDialog;
 import org.geogebra.common.gui.dialog.ButtonDialogModel;
 import org.geogebra.common.gui.view.algebra.DialogType;
 import org.geogebra.common.kernel.StringTemplate;
@@ -63,6 +64,7 @@ public class ButtonDialogD extends Dialog
 	private JButton btOK;
 	private JButton btCancel;
 	private JPanel optionPane;
+	private GeoCeDGArgumentDialog capture;
 
 	private AppD app;
 
@@ -201,6 +203,9 @@ public class ButtonDialogD extends Dialog
 		JLabel linkedLabel = new JLabel(loc.getMenu("LinkedObject") + ":");
 		linkedPanel.add(linkedLabel);
 		linkedPanel.add(cbAdd);
+		if (model.isTextField()) {
+			capture = GeoCeDGArgumentDialog.forLink(app, this, linkedPanel, cbAdd);
+		}
 
 		// buttons
 		btOK = new JButton(loc.getMenu("OK"));
@@ -256,10 +261,24 @@ public class ButtonDialogD extends Dialog
 		Object source = e.getSource();
 		Log.debug(tfScript.getText());
 		if (source == btOK) {
+			if (capture != null && !capture.isCurrent()) {
+				return;
+			}
 			model.apply(tfCaption.getText(), tfScript.getText());
 			setVisible(false);
 		} else if (source == btCancel) {
 			setVisible(false);
+		}
+	}
+
+	@Override
+	public void setVisible(boolean visible) {
+		if (visible && capture != null && !capture.begin()) {
+			return;
+		}
+		super.setVisible(visible);
+		if (!visible && capture != null) {
+			capture.end();
 		}
 	}
 

@@ -351,7 +351,7 @@ public final class LocusMetricFunctionStructure2D {
 			LocusBoundary2D.Kind kind = far.getKind();
 			stops = kind == LocusBoundary2D.Kind.CERTIFIED_TRANSITION
 					|| kind == LocusBoundary2D.Kind.DOMAIN_END
-					|| kind == LocusBoundary2D.Kind.STRUCTURAL_EVENT;
+					|| far.supportsOneSidedLimit();
 		}
 
 		/** @return whether the route certainly cannot reach the part */

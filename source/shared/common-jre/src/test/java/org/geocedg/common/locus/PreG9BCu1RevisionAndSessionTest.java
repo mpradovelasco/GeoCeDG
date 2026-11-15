@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -99,7 +100,7 @@ class PreG9BCu1RevisionAndSessionTest extends G9U0PublicSurfaceTestBase {
 		add("rnd=RandomBetween(1,1000000)");
 		add("Qr=Pr+(rnd,0)");
 		GeoLocusV2 locus = add("Lr=LocusV2(Qr,Pr)");
-		GeoLocusMetricResult metric = add("Mr=LocusLength(Lr)");
+		GeoLocusMetricResult metric = richResultOf(add("Mr=LocusLength(Lr)"));
 		double value = ((org.geogebra.common.kernel.geos.GeoNumeric) lookup("rnd"))
 				.getValue();
 		long revision = locus.getSemanticRevision();
@@ -212,7 +213,7 @@ class PreG9BCu1RevisionAndSessionTest extends G9U0PublicSurfaceTestBase {
 	}
 
 	private GeoLocusMetricResult lookupMetric(String label) {
-		GeoLocusMetricResult metric = (GeoLocusMetricResult) lookup(label);
+		GeoLocusMetricResult metric = richResultOf(lookup(label));
 		assertNotNull(metric, label);
 		return metric;
 	}

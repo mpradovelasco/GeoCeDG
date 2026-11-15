@@ -280,7 +280,7 @@ final class LocusComponentTessellator2D {
 		if (end.isBinaryEndIncluded()) {
 			return EndTreatment.EVALUATE;
 		}
-		return end.getKind() == LocusBoundary2D.Kind.STRUCTURAL_EVENT ? EndTreatment.LIMIT
+		return end.supportsOneSidedLimit() ? EndTreatment.LIMIT
 				: EndTreatment.APPROACH;
 	}
 

@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -437,7 +438,7 @@ final class PreG9bR2E1SemanticPairMaterializationTest extends G9U0PublicSurfaceT
 		assertEquals(Set.of(id(driver).toExternalForm()),
 				original.getDeclaredParticipants());
 		final String originalLedger = rich.getTokenLedgerState();
-		final double length = finite(add("LX=LocusLength(ring,M,X)"));
+		final double length = finite(richResultOf(add("LX=LocusLength(ring,M,X)")));
 		Set<String> originalGraph = identityRecords();
 
 		paste(point);
@@ -483,13 +484,13 @@ final class PreG9bR2E1SemanticPairMaterializationTest extends G9U0PublicSurfaceT
 				resolution.getFamily());
 		String metric = "LC=LocusLength(" + copiedRing.getLabelSimple() + ","
 				+ copyOf(generator).getLabelSimple() + "," + copied.getLabelSimple() + ")";
-		assertEquals(length, finite(add(metric)), 1E-9);
+		assertEquals(length, finite(richResultOf(add(metric))), 1E-9);
 		// No cross-link: moving and then deleting the original leaves the copy current.
 		moveTo("A", 40.78, 2.24);
 		moveTo("B", 42.56, 4.78);
 		assertFalse(point.isDefined());
 		assertTrue(copied.isDefined());
-		assertEquals(length, finite((GeoLocusMetricResult) requireLookup("LC")), 1E-9);
+		assertEquals(length, finite(richResultOf(requireLookup("LC"))), 1E-9);
 		requireLookup("A").remove();
 		assertNull(lookup("X"));
 		assertTrue(copied.isDefined());
@@ -499,7 +500,7 @@ final class PreG9bR2E1SemanticPairMaterializationTest extends G9U0PublicSurfaceT
 		GeoPoint reopened = (GeoPoint) requireLookup(copiedLabel);
 		assertTrue(reopened.isDefined());
 		assertEquals(copiedToken, effectiveToken(reopened));
-		assertEquals(length, finite((GeoLocusMetricResult) requireLookup("LC")), 1E-9);
+		assertEquals(length, finite(richResultOf(requireLookup("LC"))), 1E-9);
 	}
 
 	@Test

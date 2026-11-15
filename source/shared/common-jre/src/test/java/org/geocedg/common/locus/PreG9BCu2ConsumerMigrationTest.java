@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -429,8 +430,7 @@ class PreG9BCu2ConsumerMigrationTest extends BaseUnitTest {
 		GeoPoint addressed = add("X=Point(L,\""
 				+ SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY + "\",0)");
 		assertFalse(addressed.isDefined(), "a binary64 parameter never selects the point");
-		LocusMetricResult2D total = ((org.geocedg.common.kernel.geos.GeoLocusMetricResult)
-				add("T=LocusLength(L)")).getMetricResult();
+		LocusMetricResult2D total = (richResultOf(add("T=LocusLength(L)"))).getMetricResult();
 		assertEquals(2, total.getMetricValue().getFiniteValue().orElseThrow(),
 				total.getErrorEvidence().getEstablishedAbsoluteAmount());
 		add("v:x=0");

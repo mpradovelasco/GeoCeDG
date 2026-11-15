@@ -53,6 +53,10 @@ public enum LocusCoverageCause2D {
 	RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED(CoverageState.UNRESOLVED),
 	/** An upstream locus does not establish the coverage this branch needs. */
 	UPSTREAM_NOT_ESTABLISHED(CoverageState.UNRESOLVED),
+	/** An explicit cut witness has no current direction under its declared construction. */
+	CONSTRUCTIVE_CUT_WITNESS_NOT_ESTABLISHED(CoverageState.UNRESOLVED),
+	/** The effect of an upstream structural event on this image remains unproved. */
+	COMPOSED_EVENT_CONTINUITY_NOT_ESTABLISHED(CoverageState.UNRESOLVED),
 	/** No certifier established the interval. */
 	NOT_CERTIFIED(CoverageState.UNRESOLVED),
 	/** A coverage assertion recorded before PRE-G9B-CU2, without a typed cause. */

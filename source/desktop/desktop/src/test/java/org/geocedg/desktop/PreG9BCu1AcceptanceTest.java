@@ -27,6 +27,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
@@ -240,7 +241,8 @@ class PreG9BCu1AcceptanceTest {
 			values.put("d_2_defined", app.getKernel().lookupLabel("d_2").isDefined());
 			values.put("e_2_defined", PreG9BCu0Corpus.locus(app, "e_2").isDefined());
 			GeoElement length = PreG9BR6PlusF3Fixtures.q(app, "cu1E2=LocusLength(e_2)");
-			LocusMetricResult2D rich = ((GeoLocusMetricResult) length).getMetricResult();
+			LocusMetricResult2D rich = AlgoLocusMetricScalarAdapter.richResultOf(length)
+					.getMetricResult();
 			values.put("e_2_length", rich.getGuaranteeClass());
 			values.put("e_2_diagnostics", rich.getDiagnostics().toString());
 			return values;
@@ -264,8 +266,9 @@ class PreG9BCu1AcceptanceTest {
 		JSONObject baseline = PreG9BCu0Baseline.load();
 		Object[] measured = PreG9BR6PlusF3Fixtures.onEdt(() -> {
 			AppGeoCeDG app = PreG9BCu0Corpus.open(PreG9BCu0Corpus.withoutE2(work));
-			LocusMetricResult2D result = ((GeoLocusMetricResult) PreG9BR6PlusF3Fixtures.q(
-					app, "cu1O1=LocusLength(o_1)")).getMetricResult();
+			GeoElement metric = PreG9BR6PlusF3Fixtures.q(app, "cu1O1=LocusLength(o_1)");
+			LocusMetricResult2D result = AlgoLocusMetricScalarAdapter.richResultOf(metric)
+					.getMetricResult();
 			return new Object[] {result, freshComponentBuildCalls(
 					PreG9BCu0Corpus.locus(app, "o_1"))};
 		});

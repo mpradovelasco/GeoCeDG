@@ -17,6 +17,7 @@ import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.arithmetic.ValueType;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.LabelManager;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.common.plugin.GeoClass;
 
@@ -32,6 +33,7 @@ public final class GeoLocusMetricResult extends GeoElement
 	private LocusMetricResult2D metricResult;
 	private boolean explicitlyUndefined;
 	private boolean publicPersistence;
+	private boolean internalAuthority;
 
 	/** Creates an unpublished rich metric result for one source identity. */
 	public GeoLocusMetricResult(Construction construction,
@@ -63,6 +65,18 @@ public final class GeoLocusMetricResult extends GeoElement
 	/** Marks this result as reconstructible through its public parent command. */
 	public void enablePublicPersistence() {
 		publicPersistence = true;
+	}
+
+	/** Uses the construction's reserved label namespace for a scalar's private dependency. */
+	public void markAsInternalAuthority() {
+		internalAuthority = true;
+		setAuxiliaryObject(true);
+	}
+
+	@Override
+	public String getDefaultLabel() {
+		return internalAuthority ? cons.getIndexLabel(LabelManager.HIDDEN_PREFIX)
+				: super.getDefaultLabel();
 	}
 
 	public long getSourceSemanticRevision() {
@@ -141,6 +155,7 @@ public final class GeoLocusMetricResult extends GeoElement
 		GeoLocusMetricResult copy = new GeoLocusMetricResult(cons,
 				sourceLocusIdentity);
 		copy.publicPersistence = publicPersistence;
+		copy.internalAuthority = internalAuthority;
 		return copy;
 	}
 
@@ -149,6 +164,7 @@ public final class GeoLocusMetricResult extends GeoElement
 		GeoLocusMetricResult copy = new GeoLocusMetricResult(targetConstruction,
 				sourceLocusIdentity);
 		copy.publicPersistence = publicPersistence;
+		copy.internalAuthority = internalAuthority;
 		return copy;
 	}
 

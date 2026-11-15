@@ -34,13 +34,17 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.text.JTextComponent;
 
+import org.geocedg.desktop.GeoCeDGArgumentDialog;
 import org.geogebra.common.gui.InputHandler;
 import org.geogebra.common.gui.UpdateFonts;
 import org.geogebra.common.gui.VirtualKeyboardListener;
 import org.geogebra.common.gui.dialog.InputDialog;
+import org.geogebra.common.gui.dialog.handler.NumberInputHandler;
+import org.geogebra.common.gui.dialog.handler.RedefineInputHandler;
 import org.geogebra.common.gui.view.algebra.DialogType;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -85,6 +89,7 @@ public class InputDialogD extends InputDialog
 
 	protected JDialog wrappedDialog;
 	private JPanel errorPanel;
+	private GeoCeDGArgumentDialog capture;
 
 	/**
 	 * @param app application
@@ -218,6 +223,9 @@ public class InputDialogD extends InputDialog
 			public void setVisible(boolean b) {
 				super.setVisible(b);
 				if (!b) {
+					if (capture != null) {
+						capture.end();
+					}
 					showError(null);
 				}
 				handleDialogVisibilityChange(b);
@@ -251,7 +259,7 @@ public class InputDialogD extends InputDialog
 		if (textComp instanceof AutoCompleteTextFieldD) {
 			AutoCompleteTextFieldD tf = (AutoCompleteTextFieldD) textComp;
 			tf.setAutoComplete(autoComplete);
-			tf.addActionListener(this);
+			tf.addActionListener(this::processSubmitAction);
 		}
 
 		// create buttons
@@ -260,13 +268,13 @@ public class InputDialogD extends InputDialog
 		btProperties.addActionListener(this);
 		btOK = new JButton();
 		btOK.setActionCommand("OK");
-		btOK.addActionListener(this);
+		btOK.addActionListener(this::processSubmitAction);
 		btCancel = new JButton();
 		btCancel.setActionCommand("Cancel");
 		btCancel.addActionListener(this);
 		btApply = new JButton();
 		btApply.setActionCommand("Apply");
-		btApply.addActionListener(this);
+		btApply.addActionListener(this::processSubmitAction);
 
 		// create button panels
 		btPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -280,6 +288,14 @@ public class InputDialogD extends InputDialog
 		loadBtPanel(showApply);
 		if (showProperties) {
 			btPanel2.add(btProperties);
+		}
+		if (textComp instanceof JTextField field) {
+			if (getInputHandler() instanceof RedefineInputHandler redefine) {
+				capture = GeoCeDGArgumentDialog.forField(app, wrappedDialog, btPanel, field,
+						() -> redefine.getGeoElement().toGeoElement());
+			} else if (getInputHandler() instanceof NumberInputHandler) {
+				capture = GeoCeDGArgumentDialog.forField(app, wrappedDialog, btPanel, field, null);
+			}
 		}
 
 		// =====================================================================
@@ -406,6 +422,12 @@ public class InputDialogD extends InputDialog
 	// Event Handlers
 	// ===================================================
 
+	private void processSubmitAction(ActionEvent event) {
+		if (capture == null || capture.isCurrent()) {
+			actionPerformed(event);
+		}
+	}
+
 	/**
 	 * Handles button clicks for dialog.
 	 */
@@ -444,12 +466,27 @@ public class InputDialogD extends InputDialog
 	 * @param flag show the dialog?
 	 */
 	public void setVisible(boolean flag) {
+		if (capture != null && flag && !wrappedDialog.isVisible()) {
+			if (!capture.begin()) {
+				return;
+			}
+			wrappedDialog.addWindowFocusListener(this);
+			if (wrappedDialog.isModal()) {
+				wrappedDialog.setModal(false);
+				capture.showAndWait(() -> wrappedDialog.setVisible(true));
+			} else {
+				wrappedDialog.setVisible(true);
+			}
+			return;
+		}
 		if (!wrappedDialog.isModal()) {
 			if (flag) { // set old mode again
 				wrappedDialog.addWindowFocusListener(this);
 			} else {
 				wrappedDialog.removeWindowFocusListener(this);
-				app.setSelectionListenerMode(null);
+				if (capture == null) {
+					app.setSelectionListenerMode(null);
+				}
 			}
 		}
 		wrappedDialog.setVisible(flag);
@@ -460,6 +497,10 @@ public class InputDialogD extends InputDialog
 	 * @param flag whether to show dialog
 	 */
 	public void setVisibleForTools(boolean flag) {
+		if (capture != null) {
+			setVisible(flag);
+			return;
+		}
 		if (!wrappedDialog.isModal()) {
 			if (flag) { // set old mode again
 				wrappedDialog.addWindowFocusListener(this);
@@ -477,7 +518,7 @@ public class InputDialogD extends InputDialog
 
 	@Override
 	public void windowGainedFocus(WindowEvent arg0) {
-		if (!wrappedDialog.isModal()) {
+		if (!wrappedDialog.isModal() && capture == null) {
 			app.setSelectionListenerMode(sl);
 		}
 		((GuiManagerD) app.getGuiManager()).setCurrentTextfield(this, true);
@@ -519,7 +560,7 @@ public class InputDialogD extends InputDialog
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		if (!wrappedDialog.isModal()) {
+		if (!wrappedDialog.isModal() && capture == null) {
 			app.setSelectionListenerMode(null);
 		}
 	}
@@ -553,7 +594,7 @@ public class InputDialogD extends InputDialog
 	 * @param isVisible whether dialog is visible
 	 */
 	public void handleDialogVisibilityChange(boolean isVisible) {
-		if (!wrappedDialog.isModal() && !isVisible) {
+		if (!wrappedDialog.isModal() && !isVisible && capture == null) {
 			app.setSelectionListenerMode(null);
 		}
 	}

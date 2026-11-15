@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -247,7 +248,7 @@ class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 		add("P=Point(c)");
 		add("Q=Rotate(P,30deg,(1,0))");
 		GeoLocusV2 locus = add("l=LocusV2(Q,P)");
-		GeoLocusMetricResult length = add("len=LocusLength(l)");
+		GeoLocusMetricResult length = richResultOf(add("len=LocusLength(l)"));
 		GeoNumeric radius = (GeoNumeric) lookup("r");
 		radius.setValue(Math.nextUp(radius.getValue()));
 		radius.updateCascade();
@@ -319,7 +320,7 @@ class PreG9BCu2RevisionExactnessTest extends BaseUnitTest {
 		GeoLocusV2 origin = add("o=LocusV2(K,N)");
 		add("v=0");
 		add("A=Point(o,\"generator.main\",v)");
-		GeoLocusMetricResult length = add("w=LocusLength(o,A,K)");
+		GeoLocusMetricResult length = richResultOf(add("w=LocusLength(o,A,K)"));
 		add("d=Length(o,A,K)");
 		add("R=N-d*(1,0)");
 		GeoLocusV2 nested = add("e=LocusV2(R,N)");

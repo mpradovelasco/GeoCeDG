@@ -16,6 +16,8 @@
 
 package org.geogebra.common.kernel.commands;
 
+// GeoCeDG modification, 1.2.0: reconstruct explicitly selected constructive endpoints.
+
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
@@ -29,6 +31,7 @@ import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
+import org.geogebra.common.kernel.geos.GeoVector;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 import org.geogebra.common.kernel.kernelND.GeoVectorND;
 import org.geogebra.common.main.MyError;
@@ -138,6 +141,25 @@ public class CmdPoint extends CommandProcessor {
 					throw MyError.forCommand(loc,
 							loc.getMenu("LocusV2.InvalidPosition"), c.getName(),
 							exception);
+				}
+			}
+			throw argErr(c, getBadArg(ok, arg));
+
+		case 5:
+			arg = resArgs(c, info);
+			if ((ok[0] = arg[0] instanceof GeoLocusV2)
+					&& (ok[1] = arg[1] instanceof GeoPoint)
+					&& (ok[2] = arg[2] instanceof GeoPoint)
+					&& (ok[3] = arg[3] instanceof GeoVector)
+					&& (ok[4] = arg[4] instanceof GeoText)) {
+				RuntimeFeatureService.requireLocusV2Access(cons);
+				try {
+					return new GeoElement[] {LocusV2PublicOperations.createProvenEndpoint(cons,
+							c.getLabel(), (GeoLocusV2) arg[0], (GeoPoint) arg[1], (GeoPoint) arg[2],
+							(GeoVector) arg[3], (GeoText) arg[4])};
+				} catch (IllegalArgumentException exception) {
+					throw MyError.forCommand(loc, loc.getMenu("LocusV2.InvalidPosition"),
+							c.getName(), exception);
 				}
 			}
 			throw argErr(c, getBadArg(ok, arg));

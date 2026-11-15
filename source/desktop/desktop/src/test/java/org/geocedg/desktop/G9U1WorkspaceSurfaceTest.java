@@ -394,8 +394,8 @@ class G9U1WorkspaceSurfaceTest {
 				"parameter.fixed-angle", "relation.tangent"));
 		expected.put("construction-circles-conics", List.of("curve.circle-two-points",
 				"curve.circle-three-points", "curve.circle-center-radius",
-				"curve.arc-center", "curve.conic-five-points", "curve.ellipse",
-				"curve.parabola"));
+				"curve.compass", "curve.arc-center", "curve.conic-five-points",
+				"curve.ellipse", "curve.parabola", "curve.hyperbola"));
 		expected.put("construction-semantic-curves", List.of("semantic.locus-v2.create",
 				"semantic.spline-v2.create", "semantic.spline-v2.create-degree",
 				"semantic.spline-v2.create-closed", "semantic.locus-v2.point-explicit", "semantic.locus-v2.point-from-reference"));
@@ -455,9 +455,11 @@ class G9U1WorkspaceSurfaceTest {
 				assertTrue(component instanceof ModeToggleMenuD, group);
 				continue;
 			}
-			assertTrue(component instanceof JPanel, group);
+			ModeToggleMenuD modeMenu = assertInstanceOf(ModeToggleMenuD.class, component);
 			JPopupMenu popup = (JPopupMenu) button.getClientProperty("geocedg.toolbar.popup");
 			assertNotNull(popup);
+			assertSame(modeMenu.getPopupMenu(), popup);
+			assertEquals(nativeButton.getClass(), button.getClass());
 			assertEquals(expected.get(group).size(), popup.getComponentCount());
 			for (int index = 0; index < popup.getComponentCount(); index++) {
 				JMenuItem item = (JMenuItem) popup.getComponent(index);
@@ -705,7 +707,7 @@ class G9U1WorkspaceSurfaceTest {
 			toolbarIds.addAll(GeoCeDGProfile.strings(clusters.getJSONObject(i)
 					.getJSONArray("toolbar_action_ids")));
 		}
-		assertEquals(60, toolbarIds.size());
+		assertEquals(62, toolbarIds.size());
 		assertEquals(136, menuIds.size());
 		assertTrue(menuIds.containsAll(toolbarIds));
 		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())

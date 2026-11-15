@@ -148,7 +148,7 @@ class PreG9BP1PublicSurfaceTest {
 	void packageProfileKeepsOneVersionAuthorityAndUpgradeIdentity() throws IOException {
 		String profile = read("packaging/windows/package.yml");
 		assertEquals(1, occurrences(profile, "\"version\""), profile);
-		assertTrue(profile.contains("\"version\": \"1.1.0\""));
+		assertTrue(profile.contains("\"version\": \"1.2.0\""));
 		assertEquals(1, occurrences(profile, "\"version_date\""), profile);
 		assertTrue(profile.contains(
 				"\"upgrade_uuid\": \"b52d8e6d-3996-4bc5-b9ba-4f51f73c6e44\""));
@@ -290,7 +290,7 @@ class PreG9BP1PublicSurfaceTest {
 			assertTrue(guide.contains(
 					"SplineV2 DXF representation  = APPROXIMATE LWPOLYLINE"), path);
 			assertTrue(guide.contains("ESTIMATED_ERROR"), path);
-			assertTrue(guide.contains("1.1.0"), path);
+			assertTrue(guide.contains("1.2.0"), path);
 		}
 	}
 

@@ -16,11 +16,13 @@ import java.util.List;
 
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionPointV2;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
-import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.intersection.IntersectionEndpointProvenanceResolver2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionEndpointProvenanceResult2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
+import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
+import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.junit.jupiter.api.Test;
@@ -42,7 +44,7 @@ class PreG9bR2IntersectionEndpointNativeArchiveTest {
 		GeoLocusV2 spline = (GeoLocusV2) lookup(app, "S");
 		String key = key(spline, (GeoPoint) lookup(app, "X"));
 		String token = token((GeoPoint) lookup(app, "X"));
-		assertEquals(1, finite((GeoLocusMetricResult) lookup(app, "M")), 1E-9);
+		assertEquals(1, finite(lookup(app, "M")), 1E-9);
 
 		Path file = directory.resolve("r2-intersection-endpoints.cedg");
 		assertTrue(((GuiManagerGeoCeDG) app.getGuiManager()).saveAsTo(file.toFile()));
@@ -52,7 +54,7 @@ class PreG9bR2IntersectionEndpointNativeArchiveTest {
 		// The key is reconstructed from the DAG and durable identities, not stored.
 		assertEquals(key, key(restored, (GeoPoint) lookup(reopened, "X")));
 		assertEquals(token, token((GeoPoint) lookup(reopened, "X")));
-		assertEquals(1, finite((GeoLocusMetricResult) lookup(reopened, "M")), 1E-9);
+		assertEquals(1, finite(lookup(reopened, "M")), 1E-9);
 		assertEquals(1, ((GeoNumeric) lookup(reopened, "LenXY")).getDouble(), 1E-9);
 
 		// Currentness is revalidated after reopen: saved coordinates do not keep
@@ -60,8 +62,7 @@ class PreG9bR2IntersectionEndpointNativeArchiveTest {
 		move(reopened, "Ux", 5);
 		assertFalse(lookup(reopened, "Y").isDefined());
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
-				((GeoLocusMetricResult) lookup(reopened, "M")).getMetricResult()
-						.getComputationStatus());
+				metric(lookup(reopened, "M")).getComputationStatus());
 		Path dormant = directory.resolve("r2-dormant-endpoint.cedg");
 		assertTrue(((GuiManagerGeoCeDG) reopened.getGuiManager())
 				.saveAsTo(dormant.toFile()));
@@ -69,11 +70,10 @@ class PreG9bR2IntersectionEndpointNativeArchiveTest {
 		assertTrue(again.loadFile(dormant.toFile(), false));
 		assertFalse(lookup(again, "Y").isDefined());
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
-				((GeoLocusMetricResult) lookup(again, "M")).getMetricResult()
-						.getComputationStatus());
+				metric(lookup(again, "M")).getComputationStatus());
 		move(again, "Ux", 0.5);
 		assertTrue(lookup(again, "Y").isDefined());
-		assertEquals(1, finite((GeoLocusMetricResult) lookup(again, "M")), 1E-9);
+		assertEquals(1, finite(lookup(again, "M")), 1E-9);
 	}
 
 	private static void build(AppGeoCeDG app) {
@@ -130,7 +130,11 @@ class PreG9bR2IntersectionEndpointNativeArchiveTest {
 		numeric.updateCascade();
 	}
 
-	private static double finite(GeoLocusMetricResult result) {
-		return result.getMetricResult().getMetricValue().getFiniteValue().orElseThrow();
+	private static double finite(GeoElement result) {
+		return metric(result).getMetricValue().getFiniteValue().orElseThrow();
+	}
+
+	private static LocusMetricResult2D metric(GeoElement result) {
+		return AlgoLocusMetricScalarAdapter.richResultOf(result).getMetricResult();
 	}
 }

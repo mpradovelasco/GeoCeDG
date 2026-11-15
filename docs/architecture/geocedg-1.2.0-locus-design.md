@@ -1,0 +1,37 @@
+# Diseño de Locus V2 para GeoCeDG 1.2.0
+
+## Base y alcance
+
+Trabajo de implementación sobre `main` publicado en `4fc0343a1f0dc59a645ee4fe8ec6c5c40fe2051e`, árbol `7cbabc4bd967d775aa730264614d2a1f5092c996`. La copia de caracterización de `InterCilConoOblique_2.cedg` tiene SHA-256 `4cde946eba57bfd36d531c677dc9f622b9036d6e95cd92941311b51d5f786a01`. El modelo original es una entrada externa preservada. Las mediciones y capturas se guardan como artefactos generados.
+
+`VERIFICATION_CLASS = RELEASE_OR_MILESTONE`, `frozenAtPhaseStart = true`. La fase incluye cambios de kernel, DAG y reconstrucción. El mandato de la versión requiere pruebas focales, PHASE, STATIC, INTEGRATION, FINAL y PACKAGING sobre el candidato fijado.
+
+## Construcción de referencia
+
+El conductor `E_1` sigue el círculo `p`. `K` es una intersección elegida del círculo sobre la dirección horizontal positiva. `w_1 = LocusLength(o_1,N_1,K_1)`, donde `N_1 = Point(o_1,text2,v_1)`. En `e_2`, `x = x(L_1) − Length(w_1)` e `y = y(L_1) + y(J_1) − y(h)`. En `P_1`, `x = x(L_1)` y `y = y(L_1) + y(M_1) − y(h)`. La igualdad exigiría que se conserve la selección de las raíces, que coincidan las alturas construidas y que la consulta recorra longitud cero en `K`. Al desplazar `v_1`, el origen métrico se desplaza y `K` deja de satisfacer esta última condición. El documento usa autoridad de representación heredada. Un argumento algebraico para la coincidencia puntual en el caso regular no constituye evidencia de una dirección semanticamente admisible durante toda la construcción. Los dos puntos guardados incluso difieren en una unidad de último lugar en la ordenada.
+
+`s_2` usa `e_2` a través de `n_2`, el adaptador `o_2 = Length(n_2)`, `angSCbis = o_2 / Distance(H,D_1)` y la rotación generadora. `m_2` y `n_2` tienen los mismos operandos, pero son consultas con identidades distintas. La identidad del padre rico de `w_1` interviene en el selector persistente de los extremos laterales de `e_2`.
+
+## F2. Extremos y asistencia
+
+El motor sigue siendo la autoridad de admisibilidad. La interfaz ofrece una construcción derivada tras un rechazo por ausencia de una dirección. La clase de prueba inicial `translation-v1` permite sustituir el conductor en dos traducciones 2D con el mismo vector de construcción independiente del conductor. El testigo es la entrada del punto de referencia y debe ser un punto construido por el mismo mapa nativo de un segmento o círculo, ligado al mismo objeto soporte. La prueba usa la identidad de los operandos y el parámetro nativo. El enlazador sigue exigiendo un componente semántico único y válido. La receta guarda locus, referencia, testigo, vector, versión y selector de componente. Si cambia una premisa o deja de resolverse el componente retenido, el nuevo punto pasa a indefinido con causa tipada y solo recupera la misma interpretación. La ruta probada inicial deja fuera la cadena multialgoritmo de `P_1`. El flujo aprobado de colocación ensaya M08-S-R2 y admite el protocolo existente de dirección individual cuando M08-S-R2 no acredita evidencia local. Este último fue el resultado observado con `P_1`. El punto colocado tiene su propio parámetro y su conducta dinámica está ligada al locus.
+
+La comprobación de la receta se ejecuta dentro del DAG. La búsqueda y la confirmación se limitan a la autoría. El punto original conserva sus dependencias. Los tests verifican la prueba y su ausencia, identidad de soportes frente a coincidencia, degeneración, recuperación y reconstrucción. Se preserva el orden de las familias de extremo anteriores.
+
+## F3. Superficie numérica y compatibilidad
+
+El valor público usa `AlgoLocusMetricScalarAdapter` y el predicado de admisibilidad existente. Cada llamada produce un resultado público identificado y una sola autoridad rica auxiliar. Ambos se reconstruyen como comandos del DAG, sin persistir una caché de resultados. Durante carga XML, `LocusLength(locus, …)` sigue reconstruyendo un resultado rico en cada documento histórico, incluso al reabrir el padre auxiliar de un resultado nuevo. El nuevo hijo usa la firma de reconstrucción `LocusLength(resultadoRico)`, válida en XML y disjunta por tipo de todas las firmas históricas. `Length(resultadoRico)` conserva su reconstrucción. En Álgebra el hijo muestra la definición con los operandos originales y el estado de garantía tomado de la autoridad en la revisión actual. El inspector llega a la autoridad desde el objeto numérico. La evaluación de loci consumidores sigue identificando el mismo padre rico y obtiene la estructura y los eventos de ese padre.
+
+Los resultados recién creados explícitamente son ordinarios por defecto. La carga conserva los indicadores auxiliares que el archivo grabó y de los que no consta una procedencia histórica fiable. Se comprueba un archivo antiguo con consulta rica y consumidor `Length`, uno nuevo con fórmula, consultas duplicadas, un error tipado y la reapertura con las identidades y garantías originales.
+
+## F4. Estructura, recorrido y representación
+
+La presencia de una costura del conductor establece una dirección del dominio. La existencia, las componentes del recorrido y la clausura de la imagen se establecen con sus certificados propios. Un evento escalar se transmite con su parámetro y sus lados. Un salto geométrico requiere evidencia de la composición en cada lado. Una transformación periódica solo elimina la incidencia geométrica del salto con una prueba sobre sus entradas. Un dato estimado de longitud es insuficiente para esa prueba. La falta de prueba conserva la continuidad como no establecida y el render no añade un segmento de clausura por periodicidad del conductor.
+
+Un corte constructivo se declara en una dirección del conductor identificada por un testigo de la construcción. Su persistencia debe reconstruir esa dirección, la organización del recorrido, orientación y lados, preservando la naturaleza estructural de un salto demostrado. Los consumidores métricos siguen usando las componentes y lados semánticos. Ensayos focales incluyen cruce de costura, coincidencia y separación al variar `v_1`, cambios en `H`, orden y pérdida de componentes, y reapertura. Las comparaciones de representación toman el resultado semántico como autoridad.
+
+## F5. Medición
+
+Se conserva el modelo base como control y se usan las mismas posiciones de `H`, `v_1`, políticas, presupuestos y tolerancias para la comparación tras F2–F4. Se contabilizan revisiones, evaluaciones semánticas, reutilización e índices métricos, trabajo anidado y tiempo de representación. El paralelismo entre consultas públicas no autoriza fusionar sus identidades. Una optimización solo se admite si elimina trabajo observado conservando resultados, clases de garantía, diagnósticos y comportamiento de invalidación.
+
+La sonda de repetición del cono contó hasta 10 527 evaluaciones válidas repetidas entre 16 413 solicitudes anidadas en una misma sesión. La clave observada combina el ámbito del corte privado del evaluador, la identidad y revisión del locus, la rama y el parámetro canónico exacto. Se probó una caché limitada a un servicio de cálculo métrico. Las guardas de la variante no redujeron los contadores de trabajo en el cono. Un control con una dependencia aleatoria también refutó la pureza inferida de la clasificación puntual y de la fidelidad del evaluador reconstruido. La variante quedó en el expediente de medición y se conservó el cálculo de producción.

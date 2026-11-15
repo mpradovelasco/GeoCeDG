@@ -19,6 +19,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
+import org.geocedg.common.kernel.locus.metric.MetricGuaranteeClass2D;
 import org.geogebra.common.gui.view.algebra.AlgebraView.SortMode;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -271,6 +273,10 @@ final class GeoCeDGAlgebraView extends AlgebraViewD {
 				boolean itemHasFocus) {
 			Component component = super.getTreeCellRendererComponent(tree, value,
 					itemSelected, expanded, leaf, row, itemHasFocus);
+			if (value instanceof GeoMutableTreeNode node && geoCeDG != null
+					&& geoCeDG.getAlgebraStyle() == AlgebraStyle.VALUE) {
+				appendMetricGuarantee(node);
+			}
 			Integer layer = layerOfGroup(tree, value);
 			if (layer == null || geoCeDG == null) {
 				return component;
@@ -286,6 +292,23 @@ final class GeoCeDGAlgebraView extends AlgebraViewD {
 				setText(geoCeDG.layerText("Workspace.Layer.HiddenGroup", getText()));
 			}
 			return component;
+		}
+
+		private void appendMetricGuarantee(GeoMutableTreeNode node) {
+			GeoElement result = node.getGeo();
+			if (!(result.getParentAlgorithm() instanceof AlgoLocusMetricScalarAdapter adapter)
+					|| !result.isDefined() || !adapter.getRichInput().isScalarAdmissible()) {
+				return;
+			}
+			MetricGuaranteeClass2D guarantee = adapter.getRichInput().getMetricResult()
+					.getGuaranteeClass();
+			String key = guarantee.isCertified() ? "CERTIFIED" : guarantee.name();
+			String note = " (" + geoCeDG.getLocalization().getMenu("LocusV2.Results.Value." + key) + ")";
+			String description = node.getAlgebraDescription();
+			int htmlEnd = description.lastIndexOf("</html>");
+			setText(htmlEnd < 0 ? description + note
+					: description.substring(0, htmlEnd) + note + description.substring(htmlEnd));
+			setIcon(result.isEuclidianVisible() ? getIconShown() : getIconHidden());
 		}
 
 		private ScaledIcon disabledEye() {

@@ -5,6 +5,7 @@
 
 package org.geocedg.common.kernel.locus.intersection;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -307,7 +308,7 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 
 	/** @return status and exact value of the total length of the locus */
 	private String totalLength(String label) {
-		GeoLocusMetricResult length = add("length" + label + "=LocusLength(" + label + ")");
+		GeoLocusMetricResult length = richResultOf(add("length" + label + "=LocusLength(" + label + ")"));
 		return length.getMetricResult().getComputationStatus() + "/"
 				+ length.getMetricResult().getMetricValue().getFiniteValue()
 						.stream().mapToObj(Double::toHexString).findFirst().orElse("none");
@@ -693,7 +694,7 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 		add("t2=Ray(P,N)");
 		add("R2=Intersect(p,t2,2)");
 		add("lr2=LocusV2(R2,N)");
-		GeoLocusMetricResult length = add("lengthQ=LocusLength(lq)");
+		GeoLocusMetricResult length = richResultOf(add("lengthQ=LocusLength(lq)"));
 		getKernel().updateConstruction(false);
 		assertTrue(liveIntersection("Q").isSelectionFirstIntersectionPending());
 		assertNull(lookup("R"), "the pair labels only its first output at the double root");
@@ -1341,7 +1342,7 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 
 	/** @return the finite value of a length */
 	private double length(String label) {
-		return ((GeoLocusMetricResult) lookup(label)).getMetricResult().getMetricValue()
+		return (richResultOf(lookup(label))).getMetricResult().getMetricValue()
 				.getFiniteValue().orElse(Double.NaN);
 	}
 
@@ -1805,8 +1806,8 @@ class PreG9BCu2SelectionSettlementTest extends BaseUnitTest {
 		assertEquals("EMPTY", cut.getIntersectionResult().getGeometryKind().name());
 		assertEquals(Completeness.COMPLETE.name(), cut.getIntersectionResult()
 				.getCompletenessEvidence().getCompleteness().name());
-		GeoLocusMetricResult length = (GeoLocusMetricResult) add(
-				"emptyLength" + cause.ordinal() + "=LocusLength(ls)");
+		GeoLocusMetricResult length = richResultOf(add(
+				"emptyLength" + cause.ordinal() + "=LocusLength(ls)"));
 		assertEquals(0.0, length.getMetricResult().getMetricValue().getFiniteValue()
 				.orElse(-1), length.getMetricResult().toString());
 	}

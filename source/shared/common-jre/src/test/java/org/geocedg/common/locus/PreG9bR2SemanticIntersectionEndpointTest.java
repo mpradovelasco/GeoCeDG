@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -60,9 +61,9 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 		vertical("U", "0.5");
 		GeoPoint x = only(add("R=Intersect(S,T)"), "X");
 		GeoPoint y = only(add("V=Intersect(S,U)"), "Y");
-		GeoLocusMetricResult rich = add("M=LocusLength(S,X,Y)");
+		GeoLocusMetricResult rich = richResultOf(add("M=LocusLength(S,X,Y)"));
 		GeoNumeric scalar = add("d=Length(S,X,Y)");
-		GeoLocusMetricResult mixed = add("N=LocusLength(S,A,X)");
+		GeoLocusMetricResult mixed = richResultOf(add("N=LocusLength(S,A,X)"));
 
 		assertEquals(0.25, unique(spline, x).getUniqueMatch().getAddress()
 				.getCanonicalParameter(), 1E-9);
@@ -91,14 +92,14 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 		assertEquals(onSpline.getAddress().getCanonicalParameter(),
 				reversedOnSpline.getAddress().getCanonicalParameter(), 1E-12);
 		assertNotEquals(onSpline.getOccurrenceKey(), reversedOnSpline.getOccurrenceKey());
-		assertEquals(1, finite(add("M=LocusLength(S,X,Y)")), 1E-9);
-		assertEquals(1, finite(add("MR=LocusLength(S,Z,Y)")), 1E-9);
+		assertEquals(1, finite(richResultOf(add("M=LocusLength(S,X,Y)"))), 1E-9);
+		assertEquals(1, finite(richResultOf(add("MR=LocusLength(S,Z,Y)"))), 1E-9);
 
 		// The same point also addresses the other intersected source.
 		assertEquals(vertical.getPersistentLocusId(),
 				unique(vertical, forward).getUniqueMatch().getAddress().getSourceLocusId());
-		assertEquals(2, finite(add("MT=LocusLength(T,TE,X)")), 1E-9);
-		assertEquals(2, finite(add("MTR=LocusLength(T,TE,Z)")), 1E-9);
+		assertEquals(2, finite(richResultOf(add("MT=LocusLength(T,TE,X)"))), 1E-9);
+		assertEquals(2, finite(richResultOf(add("MTR=LocusLength(T,TE,Z)"))), 1E-9);
 	}
 
 	@Test
@@ -108,7 +109,7 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 		vertical("U", "0.5");
 		only(add("R=Intersect(S,T)"), "X");
 		GeoPoint y = only(add("V=Intersect(S,U)"), "Y");
-		GeoLocusMetricResult rich = add("M=LocusLength(S,X,Y)");
+		GeoLocusMetricResult rich = richResultOf(add("M=LocusLength(S,X,Y)"));
 		GeoNumeric scalar = add("d=Length(S,X,Y)");
 		final String token = token(y);
 		final String key = unique(spline, y).getUniqueMatch().getOccurrenceKey();
@@ -142,7 +143,7 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 		GeoPoint moving = LocusV2PublicOperations.selectIntersectionPoint(
 				getConstruction(), "X0", rich, selected);
 		GeoPoint other = materialize(rich, "X1", roots.get(1));
-		GeoLocusMetricResult metric = add("M=LocusLength(S,X0,C)");
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(S,X0,C)"));
 		assertTrue(metric.getMetricResult().getMetricValue().getFiniteValue().isPresent());
 		String retainedKey = unique(spline, moving).getUniqueMatch().getOccurrenceKey();
 
@@ -166,7 +167,7 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 		vertical("U", "0.5");
 		GeoPoint x = only(add("R=Intersect(S,T)"), "X");
 		only(add("V=Intersect(S,U)"), "Y");
-		GeoLocusMetricResult metric = add("M=LocusLength(S,X,Y)");
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(S,X,Y)"));
 		final PersistentGeoId metricId = id(metric);
 		final String key = unique(spline, x).getUniqueMatch().getOccurrenceKey();
 		getApp().storeUndoInfo();
@@ -175,13 +176,13 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 		getKernel().undo();
 		getKernel().redo();
 		assertEquals(1, finite(assertInstanceOf(GeoLocusMetricResult.class,
-				requireLookup("M"))), 1E-9);
+				richResultOf(requireLookup("M")))), 1E-9);
 
 		String xml = getApp().getXML();
 		assertFalse(xml.contains("metric-endpoint/intersection-occurrence/v1"));
 		getApp().setXML(xml, true);
 		spline = assertInstanceOf(GeoLocusV2.class, requireLookup("S"));
-		metric = assertInstanceOf(GeoLocusMetricResult.class, requireLookup("M"));
+		metric = assertInstanceOf(GeoLocusMetricResult.class, richResultOf(requireLookup("M")));
 		assertEquals(metricId, id(metric));
 		assertEquals(key, unique(spline, point("X")).getUniqueMatch().getOccurrenceKey());
 		assertEquals(1, finite(metric), 1E-9);
@@ -238,7 +239,7 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 		add("Qu=(Ux,0)");
 		add("Du={false,{-2,2,true,true}}");
 		add("Lu=LocusV2(Qu,Ux,Du)");
-		final GeoLocusMetricResult metric = add("M=LocusLength(S,X,Y)");
+		final GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(S,X,Y)"));
 		final PersistentGeoId pointId = id(y);
 		final String token = token(y);
 		GeoNumeric control = assertInstanceOf(GeoNumeric.class, requireLookup("Ux"));
@@ -255,7 +256,7 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 		assertEquals(0.625, unique(spline, redefined).getUniqueMatch().getAddress()
 				.getCanonicalParameter(), 1E-9);
 		assertEquals(0.75, finite(assertInstanceOf(GeoLocusMetricResult.class,
-				requireLookup("M"))), 1E-9);
+				richResultOf(requireLookup("M")))), 1E-9);
 		assertNotNull(metric);
 	}
 
@@ -286,7 +287,7 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 		assertEquals(1, singleRoots.size(), "S x line must materialize one root");
 		GeoPoint z = materialize(single, "Q", singleRoots.get(0));
 		assertEquals(Status.NO_ADDRESS, resolver.resolve(spline, z).getStatus());
-		assertEquals(0.3, finite(add("MS=LocusLength(S,Q,Y)")), 1E-9);
+		assertEquals(0.3, finite(richResultOf(add("MS=LocusLength(S,Q,Y)"))), 1E-9);
 
 		// An intersection point used as a constructor of another spline still
 		// resolves there through A1: NO_ADDRESS falls through unchanged.
@@ -296,7 +297,7 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 		assertEquals(Status.NO_ADDRESS, resolver.resolve(through, x).getStatus());
 		assertEquals(SplineConstructorOccurrenceResult2D.Status.UNIQUE,
 				new SplineConstructorOccurrenceResolver2D().resolve(through, x).getStatus());
-		assertEquals(1, finite(add("MO=LocusLength(O,OA,X)")), 1E-9);
+		assertEquals(1, finite(richResultOf(add("MO=LocusLength(O,OA,X)"))), 1E-9);
 	}
 
 	private GeoLocusV2 straight() {
@@ -379,7 +380,8 @@ class PreG9bR2SemanticIntersectionEndpointTest extends G9U0PublicSurfaceTestBase
 				.toList();
 	}
 
-	private static void assertInvalid(GeoLocusMetricResult result) {
+	private static void assertInvalid(GeoElement output) {
+		GeoLocusMetricResult result = richResultOf(output);
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
 				result.getMetricResult().getComputationStatus());
 	}

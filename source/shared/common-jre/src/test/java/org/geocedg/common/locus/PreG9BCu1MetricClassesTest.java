@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -325,7 +326,7 @@ class PreG9BCu1MetricClassesTest extends G9U0PublicSurfaceTestBase {
 	}
 
 	private LocusMetricResult2D rich(String command) {
-		GeoLocusMetricResult result = add(command);
+		GeoLocusMetricResult result = richResultOf(add(command));
 		assertNotNull(result, command);
 		assertNotNull(result.getMetricResult(), command);
 		return result.getMetricResult();

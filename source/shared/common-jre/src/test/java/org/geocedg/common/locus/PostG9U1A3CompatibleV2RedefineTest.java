@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -49,8 +50,8 @@ class PostG9U1A3CompatibleV2RedefineTest
 		final GeoLocusV2 afterAnchor = add("After=LocusV2(Q,s,D)");
 		GeoPoint first = add("P=Point(L,\"" + BRANCH + "\",-1)");
 		GeoPoint second = add("R=Point(L,\"" + BRANCH + "\",1)");
-		GeoLocusMetricResult metric = add("M=LocusLength(L,P,R,\"reverse\","
-				+ "\"wrap-to-start\",\"zero-length\")");
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(L,P,R,\"reverse\","
+				+ "\"wrap-to-start\",\"zero-length\")"));
 		PersistentGeoId sourceId = id(source);
 		PersistentGeoId firstId = id(first);
 		PersistentGeoId metricId = id(metric);
@@ -63,7 +64,7 @@ class PostG9U1A3CompatibleV2RedefineTest
 		GeoIdentityRecord after = record(sourceId);
 		assertEquals(sourceId, id(redefined));
 		assertEquals(firstId, id(requireLookup("P")));
-		assertEquals(metricId, id(requireLookup("M")));
+		assertEquals(metricId, id(richResultOf(requireLookup("M"))));
 		assertEquals(before.getDefinitionRevision() + 1,
 				after.getDefinitionRevision());
 		assertEquals(before.getTopologyRevision() + 1,
@@ -102,18 +103,18 @@ class PostG9U1A3CompatibleV2RedefineTest
 		add("degree=3");
 		add("T=SplineV2(pointsB,degree)");
 		GeoLocusV2 source = add("S=SplineV2(pointsA,degree)");
-		GeoLocusMetricResult metric = add("M=LocusLength(S,A,C,\"forward\","
-				+ "\"strict\",\"zero-length\")");
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(S,A,C,\"forward\","
+				+ "\"strict\",\"zero-length\")"));
 		PersistentGeoId sourceId = id(source);
 		PersistentGeoId metricId = id(metric);
 
 		assertTrue(change(source, "SplineV2(pointsB,degree)", false).isBlank());
 		assertEquals(sourceId, id(locus("S")));
-		assertEquals(metricId, id(requireLookup("M")));
+		assertEquals(metricId, id(richResultOf(requireLookup("M"))));
 		assertEquals(SplineConstructorOccurrenceResult2D.Status.NO_ADDRESS,
 				new SplineConstructorOccurrenceResolver2D().resolve(locus("S"),
 						(GeoPoint) requireLookup("A")).getStatus());
-		GeoLocusMetricResult invalidMetric = (GeoLocusMetricResult) requireLookup("M");
+		GeoLocusMetricResult invalidMetric = richResultOf(requireLookup("M"));
 		assertEquals(MetricValueKind.ABSENT,
 				invalidMetric.getMetricResult().getMetricValue().getKind());
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
@@ -121,12 +122,12 @@ class PostG9U1A3CompatibleV2RedefineTest
 
 		assertTrue(change(locus("S"), "SplineV2(pointsA,degree)", false).isBlank());
 		assertEquals(sourceId, id(locus("S")));
-		assertEquals(metricId, id(requireLookup("M")));
+		assertEquals(metricId, id(richResultOf(requireLookup("M"))));
 		assertTrue(requireLookup("M").isDefined());
 		String xml = getApp().getXML();
 		getApp().setXML(xml, true);
 		assertEquals(sourceId, id(locus("S")));
-		assertEquals(metricId, id(requireLookup("M")));
+		assertEquals(metricId, id(richResultOf(requireLookup("M"))));
 		assertTrue(requireLookup("M").isDefined());
 	}
 
@@ -142,7 +143,7 @@ class PostG9U1A3CompatibleV2RedefineTest
 		GeoLocusV2 source = add("S=SplineV2(points,degree)");
 		GeoPoint first = add("P=Point(S,\"" + BRANCH + "\",-1)");
 		GeoPoint second = add("R=Point(S,\"" + BRANCH + "\",1)");
-		GeoLocusMetricResult metric = add("M=LocusLength(S,P,R)");
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(S,P,R)"));
 		PersistentGeoId originalId = id(source);
 		final PersistentGeoId firstId = id(first);
 		final PersistentGeoId secondId = id(second);
@@ -177,7 +178,7 @@ class PostG9U1A3CompatibleV2RedefineTest
 		assertEquals(before, getApp().getXML());
 		assertEquals(originalId, id(locus("S")));
 		assertEquals(firstId, id(requireLookup("P")));
-		assertEquals(metricId, id(requireLookup("M")));
+		assertEquals(metricId, id(richResultOf(requireLookup("M"))));
 		getKernel().redo();
 		assertEquals(replaced, getApp().getXML());
 		assertEquals(replacementId, id(locus("S")));

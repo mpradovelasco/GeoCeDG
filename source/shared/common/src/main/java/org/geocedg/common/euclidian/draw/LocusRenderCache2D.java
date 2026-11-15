@@ -368,7 +368,7 @@ public final class LocusRenderCache2D {
 	/** @return whether an excluded end is a structural event reached as a limit */
 	private static boolean isLimitEnd(LocusBoundary2D end) {
 		return !end.isBinaryEndIncluded()
-				&& end.getKind() == LocusBoundary2D.Kind.STRUCTURAL_EVENT;
+				&& end.supportsOneSidedLimit();
 	}
 
 	private static final class CacheKey {

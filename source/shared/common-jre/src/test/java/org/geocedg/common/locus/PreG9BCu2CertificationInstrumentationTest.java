@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -162,7 +163,7 @@ class PreG9BCu2CertificationInstrumentationTest extends BaseUnitTest {
 		add("P=Point(c)");
 		add("Q=Rotate(P,30deg,(1,0))");
 		add("l=LocusV2(Q,P)");
-		GeoLocusMetricResult length = add("len=LocusLength(l)");
+		GeoLocusMetricResult length = richResultOf(add("len=LocusLength(l)"));
 		LocusInstrumentation2D owner = new LocusInstrumentation2D();
 		LocusCertificationScope2D.certify(owner, () -> length.getMetricResult());
 		assertEquals(1, owner.getCertificationWork(

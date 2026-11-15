@@ -106,7 +106,6 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
 import org.geocedg.common.document.controls.ControlLayoutException;
-import org.geocedg.desktop.GeoCeDGControlLayoutNotice;
 import org.geocedg.desktop.export.ExportScalePresentation;
 import org.geocedg.desktop.export.PictureExportRoute;
 import org.geogebra.common.GeoGebraConstants;
@@ -3400,10 +3399,6 @@ public class AppD extends App implements KeyEventDispatcher, AppDI {
 
 		refreshNativeDocumentPublication(wasIniting);
 		nativeDocumentLoadCommitted();
-		if (isErrorDialogsActive() && isUsingFullGui()
-				&& !kernel.getConstruction().getControlLayout().isEmpty()) {
-			GeoCeDGControlLayoutNotice.show(this);
-		}
 		return true;
 	}
 

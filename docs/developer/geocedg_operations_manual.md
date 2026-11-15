@@ -421,7 +421,7 @@ Generated, regenerable outputs are:
 - `app-image.SHA256SUMS.txt` and `SHA256SUMS.txt`: exact build hashes.
 
 `<version>` is `application.version` of `packaging/windows/package.yml`
-(currently `1.1.0`) and `<tag>` is the `artifact_tag` of the built profile
+and `<tag>` is the `artifact_tag` of the built profile
 (`internal` or `nc`); the examples below use the default `INTERNAL` profile.
 These outputs are ignored evidence, not durable source, and may be deleted
 after validation.
@@ -448,7 +448,7 @@ Expand-Archive `
 
 Each build recreates the output tree, so the wildcard resolves to the single
 package of the last build. The expected window title is `GeoCeDG <version>`
-(for example `GeoCeDG 1.1.0`). Both routes use the bundled runtime
+and is derived from the same package profile. Both routes use the bundled runtime
 and do not require the workstation Java installation at execution time.
 
 ### Install and uninstall with MSI

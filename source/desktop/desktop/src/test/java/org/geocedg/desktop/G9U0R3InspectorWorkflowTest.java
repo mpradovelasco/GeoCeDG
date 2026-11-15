@@ -37,7 +37,6 @@ import javax.swing.JTextArea;
 
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionPointV2;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
-import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
@@ -217,8 +216,8 @@ class G9U0R3InspectorWorkflowTest {
 	void i08MetricRichResultRemainsSupportedByTheSameMenuAction() {
 		AppGeoCeDG app = enabledApp();
 		createBaseLocus(app);
-		GeoLocusMetricResult metric = (GeoLocusMetricResult)
-				eval(app, "M=LocusLength(L)");
+		GeoElement metric = eval(app, "M=LocusLength(L)");
+		assertTrue(metric.isGeoNumeric());
 		app.getSelectionManager().addSelectedGeo(metric);
 
 		try (MockedStatic<JOptionPane> dialogs = mockStatic(JOptionPane.class)) {

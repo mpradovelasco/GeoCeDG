@@ -2991,18 +2991,18 @@
         "curve.circle-two-points",
         "curve.circle-three-points",
         "curve.circle-center-radius",
+        "curve.compass",
         "curve.arc-center",
         "curve.conic-five-points",
         "curve.ellipse",
-        "curve.parabola"
+        "curve.parabola",
+        "curve.hyperbola"
       ],
       "overflow_action_ids": [
-        "curve.compass",
         "curve.semicircle",
         "curve.arc-circumcircle",
         "curve.sector-center",
-        "curve.sector-circumcircle",
-        "curve.hyperbola"
+        "curve.sector-circumcircle"
       ],
       "menu_action_ids": [],
       "context_action_ids": [],
@@ -3691,8 +3691,8 @@
     {
       "id": "construction-circles-conics",
       "name_key": "Group.Construction.CirclesConics",
-      "action_ids": ["curve.circle-two-points", "curve.circle-three-points", "curve.circle-center-radius", "curve.arc-center", "curve.conic-five-points", "curve.ellipse", "curve.parabola", "curve.compass", "curve.semicircle", "curve.arc-circumcircle", "curve.sector-center", "curve.sector-circumcircle", "curve.hyperbola"],
-      "toolbar_action_ids": ["curve.circle-two-points", "curve.circle-three-points", "curve.circle-center-radius", "curve.arc-center", "curve.conic-five-points", "curve.ellipse", "curve.parabola"]
+      "action_ids": ["curve.circle-two-points", "curve.circle-three-points", "curve.circle-center-radius", "curve.compass", "curve.arc-center", "curve.conic-five-points", "curve.ellipse", "curve.parabola", "curve.hyperbola", "curve.semicircle", "curve.arc-circumcircle", "curve.sector-center", "curve.sector-circumcircle"],
+      "toolbar_action_ids": ["curve.circle-two-points", "curve.circle-three-points", "curve.circle-center-radius", "curve.compass", "curve.arc-center", "curve.conic-five-points", "curve.ellipse", "curve.parabola", "curve.hyperbola"]
     },
     {
       "id": "construction-semantic-curves",
@@ -3916,7 +3916,6 @@
     "ControlLayout.InvalidName": {"en": "Use up to %0 characters without control characters.", "es": "Usa hasta %0 caracteres sin caracteres de control."},
     "ControlLayout.Color": {"en": "Color", "es": "Color"},
     "ControlLayout.Transparency": {"en": "Transparency", "es": "Transparencia"},
-    "ControlLayout.LegacyWarning": {"en": "Older Control Layout readers may reject files with angular sliders or canvas-positioned controls in panels. Versions before Control Layout can lose panel membership, names, colors, transparency and order when saving. Older versions may also relock checkboxes or show only the value for sliders with a definition. Keep a copy of the original file.", "es": "Los lectores anteriores de Disposición de controles pueden rechazar archivos con deslizadores angulares o controles de lienzo en paneles. Las versiones previas a Disposición de controles pueden perder al guardar la pertenencia a los paneles, los nombres, colores, transparencias y orden. Las versiones anteriores también pueden volver a bloquear las casillas o mostrar solo el valor en deslizadores con definición. Conserva una copia del archivo original."},
     "ControlLayout.New": {"en": "Create panel", "es": "Crear panel"},
     "ControlLayout.Attach": {"en": "Attach control", "es": "Añadir control"},
     "ControlLayout.Detach": {"en": "Detach control", "es": "Separar control"},
@@ -5787,6 +5786,8 @@
     "ArgumentPick.Button": {"en": "Pick object", "es": "Seleccionar objeto"},
     "ArgumentPick.Armed": {"en": "Pick a number in Graphics 1 or Algebra.", "es": "Seleccione un número en Gráficos 1 o Álgebra."},
     "ArgumentPick.None": {"en": "No numeric reference is available here.", "es": "No hay una referencia numérica disponible aquí."},
+    "ArgumentPick.GeoArmed": {"en": "Pick an eligible object in Graphics 1 or Algebra.", "es": "Seleccione un objeto admisible en Gráficos 1 o Álgebra."},
+    "ArgumentPick.GeoNone": {"en": "No eligible reference is available here.", "es": "No hay una referencia admisible aquí."},
     "ArgumentPick.Stale": {"en": "The reference has changed. Pick it again.", "es": "La referencia ha cambiado. Vuelva a seleccionarla."},
     "ArgumentPick.OperandStale": {"en": "The initial selection has changed. Cancel and reopen the tool.", "es": "La selección inicial ha cambiado. Cancele y vuelva a abrir la herramienta."},
     "Algebra.Search.Name": {"en": "Find by name", "es": "Buscar por nombre"},

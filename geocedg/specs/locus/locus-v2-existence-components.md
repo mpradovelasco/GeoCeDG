@@ -565,3 +565,51 @@ about the constructive object consumes a certificate of §15 only through a demo
 fingerprint and its lineage keys are unchanged and keep certifying the captured configuration.
 Without a demonstrated transfer the result is `EVIDENCE_INSUFFICIENT` with a typed cause, and the
 strict consumer fails closed.
+
+## 18. GeoCeDG 1.2.0 constructive cuts
+
+A declaration identifies a direction of the generator through a typed, durable
+witness. The declaration is independent of the existence, continuity and image
+of the traced construction. The kernel resolves the witness in each revision.
+A lost or unsupported witness leaves the traversal `NOT_ESTABLISHED` with cause
+`CONSTRUCTIVE_CUT_WITNESS_NOT_ESTABLISHED`. Re-establishing the declared witness
+recovers its structural identity.
+
+A cut inside a certified continuous component partitions the traversal at the
+declared direction. The component in increasing parameter order owns its new
+start. The preceding component retains a distinct excluded end with a one-sided
+limit. A cut of the full closed periodic component produces an open traversal
+with distinct ends even when their images are equal. An existing typed end
+retains its inclusion and geometric evidence. A coincident declaration adds
+provenance and no separate point or empty component. A declaration in a region
+without a certified continuous component creates no fact about the geometry.
+
+The two new end sources record the ordered durable identities of the witness or
+witnesses at their direction and the corresponding side. Membership at a
+declared end uses its exact canonical side, independent of a query epsilon.
+The declared end's limit uses the image at the cut because the unpartitioned
+component establishes continuity there. At a certified discontinuity the
+existing lateral-limit authority still applies. Every consumer takes its
+component inventory from the resulting traversal. Total length adds lengths
+within components using the current metric policy. The drawing of exploratory
+evidence suppresses joins through declared directions without declaring the
+remaining samples continuous.
+
+When the consumption of a fixed-origin metric by the same driver yields a
+possible structural restart and its effect on the consuming image cannot be
+established, the direction stays `UNRESOLVED` with cause
+`COMPOSED_EVENT_CONTINUITY_NOT_ESTABLISHED`. The direction and typed metric
+source are derived from the construction graph. A renderer suppresses an
+exploratory join through this direction. A periodic driver and overlapping
+numeric enclosures both leave continuity undecided.
+
+In represented configurations, `circle-length-over-own-radius-periodicity/v1`
+applies to a fixed-center rotation of a fixed point whose angle is an oriented
+length divided by its own circle radius input. The source is the certified full
+closed traversal of a circle with the standard captured frame, directly
+translated by a fixed vector. The length has a certified structural restart
+with the same driver and fixed semantic origin. The two ideal angular limits
+differ by `2π`, so the rotation has a closed continuous component. This proof
+uses the captured shape, the typed DAG and the metric structure. Scalar length
+values retain their own error guarantees. A different divisor object needs
+its own proof even when the displayed numeric values coincide.

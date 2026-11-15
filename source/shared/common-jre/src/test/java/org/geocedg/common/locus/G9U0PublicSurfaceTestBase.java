@@ -18,6 +18,7 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
@@ -143,8 +144,9 @@ abstract class G9U0PublicSurfaceTestBase extends BaseUnitTest {
 	}
 
 	GeoLocusMetricResult totalMetric(GeoLocusV2 locus) {
-		GeoLocusMetricResult metric = add("M=LocusLength("
-				+ locus.getLabelSimple() + ")");
+		// Historical rich fixtures exercise rich-object persistence and lifecycle directly.
+		GeoLocusMetricResult metric = LocusV2PublicOperations.totalMetric(
+				locus.getConstruction(), "M", locus);
 		assertNotNull(metric);
 		return metric;
 	}

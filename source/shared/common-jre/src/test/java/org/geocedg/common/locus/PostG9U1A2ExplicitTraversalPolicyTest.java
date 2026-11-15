@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -43,11 +44,11 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 		final GeoLocusV2 locus = createLine();
 		add("A=Point(L,\"" + BRANCH + "\",-1)");
 		add("B=Point(L,\"" + BRANCH + "\",1)");
-		GeoLocusMetricResult legacy = add("R=LocusLength(L,A,B)");
-		GeoLocusMetricResult explicit = add("E=LocusLength(L,A,B,"
-				+ "\"forward\",\"strict\",\"zero-length\")");
+		GeoLocusMetricResult legacy = richResultOf(add("R=LocusLength(L,A,B)"));
+		GeoLocusMetricResult explicit = richResultOf(add("E=LocusLength(L,A,B,"
+				+ "\"forward\",\"strict\",\"zero-length\")"));
 		GeoNumeric scalar = add("d=Length(L,A,B)");
-		GeoLocusMetricResult total = add("T=LocusLength(L)");
+		GeoLocusMetricResult total = richResultOf(add("T=LocusLength(L)"));
 
 		assertEquals(2, finite(legacy), 1E-9);
 		assertEquals(finite(legacy), finite(explicit), 0);
@@ -70,10 +71,10 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 				"{false,{0,10,true,true}}");
 		add("A=Point(L,\"" + BRANCH + "\",8)");
 		add("B=Point(L,\"" + BRANCH + "\",2)");
-		GeoLocusMetricResult forward = add("F=LocusLength(L,A,B,"
-				+ "\"forward\",\"wrap-to-start\",\"zero-length\")");
-		GeoLocusMetricResult reverse = add("R=LocusLength(L,A,B,"
-				+ "\"reverse\",\"strict\",\"zero-length\")");
+		GeoLocusMetricResult forward = richResultOf(add("F=LocusLength(L,A,B,"
+				+ "\"forward\",\"wrap-to-start\",\"zero-length\")"));
+		GeoLocusMetricResult reverse = richResultOf(add("R=LocusLength(L,A,B,"
+				+ "\"reverse\",\"strict\",\"zero-length\")"));
 
 		assertEquals(4, finite(forward), 1E-9);
 		assertEquals(6, finite(reverse), 1E-9);
@@ -93,10 +94,10 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 				"{false,{0,10,true,true}}");
 		add("A=Point(L,\"" + BRANCH + "\",8)");
 		add("B=Point(L,\"" + BRANCH + "\",2)");
-		GeoLocusMetricResult strict = add("S=LocusLength(L,A,B,"
-				+ "\"forward\",\"strict\",\"zero-length\")");
-		GeoLocusMetricResult stop = add("T=LocusLength(L,A,B,"
-				+ "\"forward\",\"stop-at-end\",\"zero-length\")");
+		GeoLocusMetricResult strict = richResultOf(add("S=LocusLength(L,A,B,"
+				+ "\"forward\",\"strict\",\"zero-length\")"));
+		GeoLocusMetricResult stop = richResultOf(add("T=LocusLength(L,A,B,"
+				+ "\"forward\",\"stop-at-end\",\"zero-length\")"));
 		assertEquals(MetricValueKind.ABSENT,
 				strict.getMetricResult().getMetricValue().getKind());
 		assertEquals(MetricRouteStatus.TARGET_NOT_REACHABLE,
@@ -112,8 +113,8 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 		add("G=LocusV2(U,u,D2)");
 		add("C=Point(G,\"" + BRANCH + "\",-1.5)");
 		add("E=Point(G,\"" + BRANCH + "\",1.5)");
-		GeoLocusMetricResult gap = add("X=LocusLength(G,C,E,"
-				+ "\"forward\",\"wrap-to-start\",\"zero-length\")");
+		GeoLocusMetricResult gap = richResultOf(add("X=LocusLength(G,C,E,"
+				+ "\"forward\",\"wrap-to-start\",\"zero-length\")"));
 		assertEquals(MetricValueKind.ABSENT,
 				gap.getMetricResult().getMetricValue().getKind());
 		assertEquals(MetricRouteStatus.DISCONTINUITY_ENCOUNTERED,
@@ -127,10 +128,10 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 		// domain [-pi, pi), whose seam is at -pi; the forward route from 2.5 to -2.5 crosses it.
 		add("A=Point(L,\"" + BRANCH + "\",2.5)");
 		add("B=Point(L,\"" + BRANCH + "\",-2.5)");
-		GeoLocusMetricResult forward = add("F=LocusLength(L,A,B,"
-				+ "\"forward\",\"strict\",\"zero-length\")");
-		GeoLocusMetricResult reverse = add("R=LocusLength(L,A,B,"
-				+ "\"reverse\",\"strict\",\"zero-length\")");
+		GeoLocusMetricResult forward = richResultOf(add("F=LocusLength(L,A,B,"
+				+ "\"forward\",\"strict\",\"zero-length\")"));
+		GeoLocusMetricResult reverse = richResultOf(add("R=LocusLength(L,A,B,"
+				+ "\"reverse\",\"strict\",\"zero-length\")"));
 		assertTrue(route(forward).isWrapped());
 		assertEquals(TraversalDirection.FORWARD,
 				route(forward).getDirection());
@@ -138,10 +139,10 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 				route(reverse).getDirection());
 		assertNotEquals(finite(forward), finite(reverse), 1E-6);
 
-		GeoLocusMetricResult zero = add("Z=LocusLength(L,A,A,"
-				+ "\"forward\",\"strict\",\"zero-length\")");
-		GeoLocusMetricResult cycle = add("C=LocusLength(L,A,A,"
-				+ "\"forward\",\"strict\",\"full-cycle\")");
+		GeoLocusMetricResult zero = richResultOf(add("Z=LocusLength(L,A,A,"
+				+ "\"forward\",\"strict\",\"zero-length\")"));
+		GeoLocusMetricResult cycle = richResultOf(add("C=LocusLength(L,A,A,"
+				+ "\"forward\",\"strict\",\"full-cycle\")"));
 		assertEquals(0, finite(zero), 0);
 		assertTrue(route(zero).getOrderedRouteSegments().isEmpty());
 		assertEquals(2 * Math.PI, finite(cycle), 2E-7);
@@ -152,8 +153,8 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 		add("D2={false,{-2,2,true,true}}");
 		add("G=LocusV2(U,u,D2)");
 		add("P=Point(G,\"" + BRANCH + "\",0)");
-		GeoLocusMetricResult invalid = add("I=LocusLength(G,P,P,"
-				+ "\"forward\",\"strict\",\"full-cycle\")");
+		GeoLocusMetricResult invalid = richResultOf(add("I=LocusLength(G,P,P,"
+				+ "\"forward\",\"strict\",\"full-cycle\")"));
 		assertEquals(MetricValueKind.ABSENT,
 				invalid.getMetricResult().getMetricValue().getKind());
 	}
@@ -165,17 +166,17 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 		add("B=(0,0)");
 		add("C=(2*h,0)");
 		final GeoLocusV2 spline = add("S=SplineV2({A,B,C},3)");
-		GeoLocusMetricResult constructor = add("R=LocusLength(S,C,A,"
-				+ "\"reverse\",\"strict\",\"zero-length\")");
+		GeoLocusMetricResult constructor = richResultOf(add("R=LocusLength(S,C,A,"
+				+ "\"reverse\",\"strict\",\"zero-length\")"));
 		assertEquals(4, finite(constructor), 1E-9);
 		add("P=Point(S,\"spline-v2/main\",0)");
 		add("Q=Point(S,\"spline-v2/main\",1)");
-		GeoLocusMetricResult addressed = add("E=LocusLength(S,Q,P,"
-				+ "\"reverse\",\"strict\",\"zero-length\")");
+		GeoLocusMetricResult addressed = richResultOf(add("E=LocusLength(S,Q,P,"
+				+ "\"reverse\",\"strict\",\"zero-length\")"));
 		assertEquals(finite(constructor), finite(addressed), 0);
 		add("O=Point(S,0.75)");
-		GeoLocusMetricResult omittedBranch = add("A6=LocusLength(S,P,O,"
-				+ "\"forward\",\"strict\",\"zero-length\")");
+		GeoLocusMetricResult omittedBranch = richResultOf(add("A6=LocusLength(S,P,O,"
+				+ "\"forward\",\"strict\",\"zero-length\")"));
 		assertEquals(3, finite(omittedBranch), 1E-9);
 
 		scale.setValue(0);
@@ -189,8 +190,8 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 		assertEquals(4, finite(constructor), 1E-9);
 
 		add("T=SplineV2({A,B,A,C},3)");
-		GeoLocusMetricResult ambiguous = add("X=LocusLength(T,A,C,"
-				+ "\"forward\",\"strict\",\"zero-length\")");
+		GeoLocusMetricResult ambiguous = richResultOf(add("X=LocusLength(T,A,C,"
+				+ "\"forward\",\"strict\",\"zero-length\")"));
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
 				ambiguous.getMetricResult().getComputationStatus());
 	}
@@ -205,8 +206,8 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 		GeoText direction = add("direction=\"forward\"");
 		add("boundary=\"wrap-to-start\"");
 		add("same=\"zero-length\"");
-		GeoLocusMetricResult metric = add(
-				"M=LocusLength(L,A,B,direction,boundary,same)");
+		GeoLocusMetricResult metric = richResultOf(add(
+				"M=LocusLength(L,A,B,direction,boundary,same)"));
 		final PersistentGeoId resultId = id(metric);
 		assertEquals(4, finite(metric), 1E-9);
 		getApp().storeUndoInfo();
@@ -217,14 +218,14 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 		assertEquals(6, finite(metric), 1E-9);
 		getKernel().undo();
 		assertEquals(4, finite(assertInstanceOf(GeoLocusMetricResult.class,
-				requireLookup("M"))), 1E-9);
+				richResultOf(requireLookup("M")))), 1E-9);
 		getKernel().redo();
 		assertEquals(6, finite(assertInstanceOf(GeoLocusMetricResult.class,
-				requireLookup("M"))), 1E-9);
+				richResultOf(requireLookup("M")))), 1E-9);
 
 		String xml = getApp().getXML();
 		getApp().setXML(xml, true);
-		metric = assertInstanceOf(GeoLocusMetricResult.class, requireLookup("M"));
+		metric = assertInstanceOf(GeoLocusMetricResult.class, richResultOf(requireLookup("M")));
 		assertEquals(resultId, id(metric));
 		assertEquals(6, finite(metric), 1E-9);
 		requireLookup("L").setLabel("RenamedLocus");
@@ -241,8 +242,8 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 		createLine();
 		add("A=Point(L,\"" + BRANCH + "\",-1)");
 		add("B=Point(L,\"" + BRANCH + "\",1)");
-		GeoLocusMetricResult metric = add("M=LocusLength(L,A,B,"
-				+ "\"forward\",\"strict\",\"zero-length\")");
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(L,A,B,"
+				+ "\"forward\",\"strict\",\"zero-length\")"));
 		final PersistentGeoId originalId = id(metric);
 		final PersistentGeoId originalSourceId = id(requireLookup("L"));
 		String clipboard = InternalClipboard.getTextToSave(getApp(),
@@ -274,8 +275,8 @@ class PostG9U1A2ExplicitTraversalPolicyTest
 		assertEquals("zero-length", assertInstanceOf(GeoText.class,
 				copy.getParentAlgorithm().getInput(5)).getTextString());
 
-		GeoLocusMetricResult malformed = add("X=LocusLength(L,A,B,"
-				+ "\"sideways\",\"strict\",\"zero-length\")");
+		GeoLocusMetricResult malformed = richResultOf(add("X=LocusLength(L,A,B,"
+				+ "\"sideways\",\"strict\",\"zero-length\")"));
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
 				malformed.getMetricResult().getComputationStatus());
 		assertTrue(malformed.getMetricResult().getDiagnostics().stream()

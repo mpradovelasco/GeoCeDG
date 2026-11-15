@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -259,11 +260,11 @@ class G9U0R5SimilarityTransformationsTest extends G9U0PublicSurfaceTestBase {
 		GeoLocusV2 rotated = add("R=Rotate(L,pi/3,(1,2))");
 		GeoLocusV2 reflected = add("F=Reflect(L,y=x)");
 		GeoLocusV2 dilated = add("Ldi=Dilate(L,-3,(1,2))");
-		double length = metricValue(add("Ms=LocusLength(L)"));
-		assertEquals(length, metricValue(add("Mt=LocusLength(T)")), 1E-9);
-		assertEquals(length, metricValue(add("Mr=LocusLength(R)")), 1E-9);
-		assertEquals(length, metricValue(add("Mf=LocusLength(F)")), 1E-9);
-		assertEquals(3 * length, metricValue(add("Md=LocusLength(Ldi)")), 1E-8);
+		double length = metricValue(richResultOf(add("Ms=LocusLength(L)")));
+		assertEquals(length, metricValue(richResultOf(add("Mt=LocusLength(T)"))), 1E-9);
+		assertEquals(length, metricValue(richResultOf(add("Mr=LocusLength(R)"))), 1E-9);
+		assertEquals(length, metricValue(richResultOf(add("Mf=LocusLength(F)"))), 1E-9);
+		assertEquals(3 * length, metricValue(richResultOf(add("Md=LocusLength(Ldi)"))), 1E-8);
 	}
 
 	@Test
@@ -274,8 +275,8 @@ class G9U0R5SimilarityTransformationsTest extends G9U0PublicSurfaceTestBase {
 		add("P1=Point(L,\"" + BRANCH + "\",1)");
 		add("TP0=Point(T,\"" + BRANCH + "\",-1)");
 		add("TP1=Point(T,\"" + BRANCH + "\",1)");
-		assertEquals(2, metricValue(add("Mp=LocusLength(L,P0,P1)")), 1E-9);
-		assertEquals(6, metricValue(add("Mtp=LocusLength(T,TP0,TP1)")), 1E-8);
+		assertEquals(2, metricValue(richResultOf(add("Mp=LocusLength(L,P0,P1)"))), 1E-9);
+		assertEquals(6, metricValue(richResultOf(add("Mtp=LocusLength(T,TP0,TP1)"))), 1E-8);
 
 		// PRE-G9B-CU2 declared conformity: a periodic scalar locus is outside class v3 and has
 		// no certified component since step T11; the same unit circle, driven by a point on a
@@ -291,9 +292,9 @@ class G9U0R5SimilarityTransformationsTest extends G9U0PublicSurfaceTestBase {
 		add("CT0=Point(CycT,\"" + BRANCH + "\",pi/2)");
 		add("CT1=Point(CycT,\"" + BRANCH + "\",3*pi/2)");
 		assertEquals(Math.PI,
-				metricValue(add("Mc=LocusLength(Cyc,C0,C1)")), 2E-7);
+				metricValue(richResultOf(add("Mc=LocusLength(Cyc,C0,C1)"))), 2E-7);
 		assertEquals(Math.PI,
-				metricValue(add("Mct=LocusLength(CycT,CT0,CT1)")), 2E-7);
+				metricValue(richResultOf(add("Mct=LocusLength(CycT,CT0,CT1)"))), 2E-7);
 	}
 
 	@Test

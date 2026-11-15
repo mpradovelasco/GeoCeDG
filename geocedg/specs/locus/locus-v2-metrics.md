@@ -1501,3 +1501,31 @@ v3 without attributing certified existence or completeness to them.
 6. **Scalar adapter.** §25.4 applies unchanged: the scalar publishes the value when its
    estimated error does not exceed `τ`, as an estimate under the contract of §25.5, never as a
    geometric certificate.
+
+## 27. GeoCeDG 1.2.0 endpoint assistance and numeric public result
+
+The author enables two independent creation routes when a metric operand has
+no admitted address. A proven endpoint is a new point in the construction.
+The `locus-endpoint/translation/v1` recipe links a locus, a translated
+reference, a witness on the same native segment or circle as the driver, and
+the same construction vector in the traced and reference translations. The
+vector and witness are independent of the instantaneous driver position. The
+point binds the witness parameter in the retained branch and component.
+Premise loss, unresolved selection and binding failure remain typed undefined
+states. An explicit placement uses the existing reference-placement routes
+and retains the selected forward address independently of the reference.
+
+New `LocusLength` queries with one, three or six arguments publish the guarded
+numeric result of §25.4. The rich query retains its guarantee, coverage,
+revision, traversal and structural events. The scalar reads that single query
+through its adapter. A newly authored scalar is ordinary by default. Its
+internal rich dependency is auxiliary. The result inspector follows the
+dependency and Algebra value mode shows the certified or estimated status.
+
+Existing XML `LocusLength(locus, …)` still reconstructs the historical rich
+output. Its `Length(richResult)` children and persisted style flags keep their
+loaded meanings. New scalar children reconstruct through the typed XML-only
+`LocusLength(richResult)` signature. This signature distinguishes the two
+outputs independently of labels, document version and application defaults.
+The scope and validation design are recorded in the
+[1.2.0 design](../../../docs/architecture/geocedg-1.2.0-locus-design.md).

@@ -25,6 +25,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
 
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
+import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
@@ -286,8 +288,9 @@ final class GeoCeDGLocusV2Dialogs {
 			return null;
 		}
 		GeoElement rich = chooseRichResult();
-		if (rich instanceof GeoLocusMetricResult) {
-			showMetric((GeoLocusMetricResult) rich);
+		GeoLocusMetricResult metric = AlgoLocusMetricScalarAdapter.richResultOf(rich);
+		if (metric != null) {
+			showMetric(metric);
 			return null;
 		}
 		if (rich instanceof GeoLocusIntersectionResult) {
@@ -312,9 +315,16 @@ final class GeoCeDGLocusV2Dialogs {
 			if (intersectionSession.getActive() != null) {
 				return intersectionSession.getActive();
 			}
-			for (GeoElement geo : app.getKernel().getConstruction()
-					.getGeoSetConstructionOrder()) {
-				if (isRichResult(geo)) {
+			var constructionGeos = app.getKernel().getConstruction().getGeoSetConstructionOrder();
+			Set<GeoElement> represented = new LinkedHashSet<>();
+			for (GeoElement geo : constructionGeos) {
+				if (geo.getParentAlgorithm() instanceof AlgoLocusMetricScalarAdapter adapter
+						&& adapter.getClassName() == org.geogebra.common.kernel.commands.Commands.LocusLength) {
+					represented.add(adapter.getRichInput());
+				}
+			}
+			for (GeoElement geo : constructionGeos) {
+				if (isRichResult(geo) && !represented.contains(geo)) {
 					candidates.add(geo);
 				}
 			}
@@ -381,7 +391,34 @@ final class GeoCeDGLocusV2Dialogs {
 		} else {
 			text.append(menu("LocusV2.Results.Undefined"));
 		}
-		showReadOnlyText(text.toString(), "LocusV2.Results.Inspect");
+		if (!offerMetricEndpointAssistance(rich, text.toString())) {
+			showReadOnlyText(text.toString(), "LocusV2.Results.Inspect");
+		}
+	}
+
+	private boolean offerMetricEndpointAssistance(GeoLocusMetricResult rich, String details) {
+		if (!(rich.getParentAlgorithm() instanceof AlgoLocusBetweenMetricV2 between)) {
+			return false;
+		}
+		GeoCeDGMetricEndpointAssistance assistance = new GeoCeDGMetricEndpointAssistance(app);
+		GeoLocusV2 source = (GeoLocusV2) between.getInput(0);
+		for (int i = 1; i <= 2; i++) {
+			GeoPoint point = (GeoPoint) between.getInput(i);
+			if (assistance.isApplicable(source, point)) {
+				String help = menu("LocusV2.Results.PrepareEndpoint");
+				String close = menu("Close");
+				String[] choices = {help, close};
+				int choice = JOptionPane.showOptionDialog(app.getMainComponent(),
+						new JScrollPane(createTextArea(details)), menu("LocusV2.Results.Inspect"),
+						JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+						null, choices, close);
+				if (choice == 0 && assistance.offer(source, point) != null) {
+					app.storeUndoInfo();
+				}
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private GeoPoint showIntersection(GeoLocusIntersectionResult rich) {
@@ -764,7 +801,7 @@ final class GeoCeDGLocusV2Dialogs {
 	}
 
 	private static boolean isRichResult(GeoElement geo) {
-		return geo instanceof GeoLocusMetricResult
+		return AlgoLocusMetricScalarAdapter.richResultOf(geo) != null
 				|| geo instanceof GeoLocusIntersectionResult;
 	}
 

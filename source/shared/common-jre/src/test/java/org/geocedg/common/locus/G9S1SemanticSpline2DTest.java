@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -258,10 +259,10 @@ final class G9S1SemanticSpline2DTest extends G9U0PublicSurfaceTestBase {
 	@Test
 	void s17AndS18TotalAndPartialLengthUseSemanticAddresses() {
 		createLineSpline("S");
-		GeoLocusMetricResult total = add("M=LocusLength(S)");
+		GeoLocusMetricResult total = richResultOf(add("M=LocusLength(S)"));
 		GeoPoint first = add("P=Point(S,\"" + SPLINE_BRANCH + "\",0.25)");
 		GeoPoint second = add("Q=Point(S,\"" + SPLINE_BRANCH + "\",0.75)");
-		GeoLocusMetricResult partial = add("MP=LocusLength(S,P,Q)");
+		GeoLocusMetricResult partial = richResultOf(add("MP=LocusLength(S,P,Q)"));
 
 		assertEquals(4, metricValue(total), 1E-8);
 		assertEquals(2, metricValue(partial), 1E-8);
@@ -274,7 +275,7 @@ final class G9S1SemanticSpline2DTest extends G9U0PublicSurfaceTestBase {
 		GeoLocusV2 locus = createLine();
 		GeoPoint locusStart = add("LP=Point(L,\"" + BRANCH + "\",-1)");
 		GeoPoint locusEnd = add("LQ=Point(L,\"" + BRANCH + "\",1)");
-		GeoLocusMetricResult locusRich = add("LR=LocusLength(L,LP,LQ)");
+		GeoLocusMetricResult locusRich = richResultOf(add("LR=LocusLength(L,LP,LQ)"));
 		assertRichBetweenMetric(locus, locusRich, locusStart, locusEnd,
 				BRANCH, -1, 1, 2);
 		GeoNumeric locusScalar = add("LS=Length(L,LP,LQ)");
@@ -285,7 +286,7 @@ final class G9S1SemanticSpline2DTest extends G9U0PublicSurfaceTestBase {
 				+ "\",0.25)");
 		GeoPoint splineEnd = add("SQ=Point(S,\"" + SPLINE_BRANCH
 				+ "\",0.75)");
-		GeoLocusMetricResult splineRich = add("SR=LocusLength(S,SP,SQ)");
+		GeoLocusMetricResult splineRich = richResultOf(add("SR=LocusLength(S,SP,SQ)"));
 		assertRichBetweenMetric(spline, splineRich, splineStart, splineEnd,
 				SPLINE_BRANCH, 0.25, 0.75, 2);
 		GeoNumeric splineScalar = add("SS=Length(S,SP,SQ)");
@@ -460,11 +461,11 @@ final class G9S1SemanticSpline2DTest extends G9U0PublicSurfaceTestBase {
 		createSelfIntersectingSpline("S");
 		add("P=Point(S,\"" + SPLINE_BRANCH + "\",0.25)");
 		add("Q=Point(S,\"" + SPLINE_BRANCH + "\",0.75)");
-		GeoLocusMetricResult addressed = add("M=LocusLength(S,P,Q)");
+		GeoLocusMetricResult addressed = richResultOf(add("M=LocusLength(S,P,Q)"));
 		assertTrue(metricValue(addressed) > 0);
 
 		add("A=(0,1)");
-		GeoLocusMetricResult ambiguous = add("Ambiguous=LocusLength(S,A,Q)");
+		GeoLocusMetricResult ambiguous = richResultOf(add("Ambiguous=LocusLength(S,A,Q)"));
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
 				ambiguous.getMetricResult().getComputationStatus());
 	}
@@ -483,12 +484,12 @@ final class G9S1SemanticSpline2DTest extends G9U0PublicSurfaceTestBase {
 		assertNotEquals(translated.getPersistentLocusId(),
 				composed.getPersistentLocusId());
 
-		double sourceLength = metricValue(add("MS=LocusLength(S)"));
-		assertEquals(sourceLength, metricValue(add("MT=LocusLength(T)")), 1E-8);
+		double sourceLength = metricValue(richResultOf(add("MS=LocusLength(S)")));
+		assertEquals(sourceLength, metricValue(richResultOf(add("MT=LocusLength(T)"))), 1E-8);
 		assertEquals(2 * sourceLength,
-				metricValue(add("MC=LocusLength(C)")), 1E-7);
+				metricValue(richResultOf(add("MC=LocusLength(C)"))), 1E-7);
 		assertEquals(2 * sourceLength,
-				metricValue(add("MF=LocusLength(F)")), 1E-7);
+				metricValue(richResultOf(add("MF=LocusLength(F)"))), 1E-7);
 
 		add("c1=Circle((0,0),1)");
 		add("c2=Circle((3,4),1)");
@@ -552,7 +553,7 @@ final class G9S1SemanticSpline2DTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(ledger, reopenedResult.getTokenLedgerState());
 		assertTrue(assertInstanceOf(GeoPoint.class, requireLookup("X")).isDefined());
 		assertEquals(4, metricValue(assertInstanceOf(GeoLocusMetricResult.class,
-				requireLookup("M"))), 1E-8);
+				richResultOf(requireLookup("M")))), 1E-8);
 	}
 
 	@Test
@@ -673,11 +674,11 @@ final class G9S1SemanticSpline2DTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(lowerSeam.getPoint().getY(),
 				equivalentUpperSeam.getPoint().getY(), 1E-9);
 
-		final GeoLocusMetricResult total = add("M=LocusLength(S)");
+		final GeoLocusMetricResult total = richResultOf(add("M=LocusLength(S)"));
 		add("P=Point(S,\"" + SPLINE_BRANCH + "\",0.9)");
 		add("Q=Point(S,\"" + SPLINE_BRANCH + "\",0.1)");
-		final GeoLocusMetricResult acrossSeam = add(
-				"MP=LocusLength(S,P,Q)");
+		final GeoLocusMetricResult acrossSeam = richResultOf(add(
+				"MP=LocusLength(S,P,Q)"));
 		assertEquals(MetricComputationStatus.SUCCESS,
 				total.getMetricResult().getComputationStatus());
 		assertEquals(MetricComputationStatus.SUCCESS,

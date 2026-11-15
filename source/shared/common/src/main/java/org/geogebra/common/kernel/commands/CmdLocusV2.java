@@ -5,7 +5,11 @@
 
 package org.geogebra.common.kernel.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.ConstructiveLocusCuts2D;
 import org.geocedg.common.kernel.locus.LocusV2DomainDescriptor;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
@@ -15,6 +19,7 @@ import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
+import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.main.MyError;
 
 /** Reconstructible public processor for the experimental semantic locus. */
@@ -37,6 +42,20 @@ public final class CmdLocusV2 extends CommandProcessor {
 		GeoElement[] arguments = resArgs(command, info);
 		boolean[] valid = new boolean[argumentCount];
 		try {
+			if (argumentCount >= 4 && arguments[0] instanceof GeoPoint dependent
+					&& arguments[1] instanceof GeoPoint driver
+					&& arguments[2] instanceof GeoText version) {
+				List<GeoPoint> witnesses = new ArrayList<>();
+				for (int index = 3; index < argumentCount; index++) {
+					if (!(arguments[index] instanceof GeoPoint witness)) {
+						throw argErr(command, arguments[index]);
+					}
+					witnesses.add(witness);
+				}
+				return singleton(LocusV2PublicOperations.createPointDriven(cons,
+						command.getLabel(), dependent, driver,
+						new ConstructiveLocusCuts2D(version, witnesses)));
+			}
 			switch (argumentCount) {
 			case 2:
 				if ((valid[0] = arguments[0] instanceof GeoPoint)

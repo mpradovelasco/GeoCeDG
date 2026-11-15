@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -60,10 +61,10 @@ class PreG9bR3X1EvaluatorCorrectnessTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(0.5, first.getInhomX(), 1E-12);
 		assertEquals(1.5, second.getInhomX(), 1E-12);
 		// The author's recorded wrong value: 2.25 on the base, where 1 is expected.
-		assertEquals(1, finite(add("between=LocusLength(ls,Pa,Pb)")), 1E-9);
+		assertEquals(1, finite(richResultOf(add("between=LocusLength(ls,Pa,Pb)"))), 1E-9);
 		GeoNumeric lengthBetween = add("lengthBetween=Length(ls,Pa,Pb)");
 		assertEquals(1, lengthBetween.getDouble(), 1E-9);
-		assertEquals(2, finite(add("total=LocusLength(ls)")), 1E-9);
+		assertEquals(2, finite(richResultOf(add("total=LocusLength(ls)"))), 1E-9);
 		// The certified model now agrees with the evaluator, so it is available.
 		assertEquals(CertifiedConstructionProgram2D.VERSION, program(locus).getVersion());
 	}
@@ -135,8 +136,8 @@ class PreG9bR3X1EvaluatorCorrectnessTest extends G9U0PublicSurfaceTestBase {
 				CertifiedConstructionProgram2D.Operation.MEET),
 				program.getSteps().stream().map(CertifiedConstructionProgram2D.Step::getOperation)
 						.toList());
-		double length = finite(add("Lliteral=LocusLength(literal)"));
-		assertEquals(finite(add("Lnamed=LocusLength(named)")), length, 1E-9);
+		double length = finite(richResultOf(add("Lliteral=LocusLength(literal)")));
+		assertEquals(finite(richResultOf(add("Lnamed=LocusLength(named)"))), length, 1E-9);
 		assertTrue(length > 2, String.valueOf(length));
 		// A reopened document evaluates the same curve.
 		getApp().setXML(getApp().getXML(), true);

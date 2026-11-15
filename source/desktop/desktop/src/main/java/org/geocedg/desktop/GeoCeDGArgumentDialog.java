@@ -25,12 +25,16 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -49,28 +53,32 @@ import javax.swing.text.DocumentFilter;
 import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.euclidian.event.PointerEventType;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.arithmetic.FunctionalNVar;
 import org.geogebra.common.kernel.arithmetic.SymbolicMode;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoInputBox;
 import org.geogebra.common.kernel.geos.GeoNumberValue;
 import org.geogebra.common.main.error.ErrorHandler;
 import org.geogebra.common.plugin.Event;
 import org.geogebra.common.plugin.EventListener;
 import org.geogebra.common.plugin.EventType;
 import org.geogebra.common.util.AsyncOperation;
+import org.geogebra.desktop.euclidian.EuclidianViewJPanelD;
 import org.geogebra.desktop.gui.GuiManagerD;
 import org.geogebra.desktop.gui.view.algebra.AlgebraTree;
 import org.geogebra.desktop.gui.view.algebra.AlgebraTreeCellRenderer;
 import org.geogebra.desktop.main.AppD;
 
 /** One modeless Desktop argument prompt with a document-local input shield. */
-final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
+public final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 	private static final String SESSION = "geocedg.argumentDialog";
 	private final AppGeoCeDG app;
 	private final JDialog dialog;
 	private final JTextField field;
+	private final JComboBox<GeoElement> linkSelector;
 	private final References references;
 	private final List<GeoElement> operands;
-	private final int mode;
+	private int mode;
 	private final Construction construction;
 	private final Object registry;
 	private final Consumer<GeoCeDGArgumentDialog> submit;
@@ -78,6 +86,10 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 	private final JLabel status = new JLabel(" ");
 	private final JButton confirm;
 	private final JButton pick;
+	private PropertyChangeListener focusListener;
+	private AbstractDocument document;
+	private References.Choice selectedLink;
+	private Supplier<GeoElement> redefineOwner;
 	private SecondaryLoop loop;
 	private boolean armed;
 	private boolean processing;
@@ -113,41 +125,22 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 
 	static void show(AppGeoCeDG app, String title, JComponent form, JTextField field,
 			List<GeoElement> operands, Consumer<GeoCeDGArgumentDialog> submit) {
-		if (!EventQueue.isDispatchThread() || app.isInsertionIsolated()
-				|| !(owner(app) instanceof RootPaneContainer owner)
-				|| owner.getRootPane().getClientProperty(SESSION) != null
-				|| app.getEuclidianView1().getEuclidianController()
-						instanceof GeoCeDGEuclidianController controller
-						&& controller.referencePointTool().isPanelActive()) {
+		if (!supports(app) || isOpen(app)) {
 			return;
 		}
-		app.closeControlLayout();
-		new GeoCeDGArgumentDialog(app, (Window) owner, title, form, field, operands, submit)
-				.open(owner.getRootPane());
+		new GeoCeDGArgumentDialog(app, owner(app), title, form, field, operands, submit).open();
 	}
 
 	private GeoCeDGArgumentDialog(AppGeoCeDG app, Window owner, String title,
 			JComponent form, JTextField field, List<GeoElement> operands,
 			Consumer<GeoCeDGArgumentDialog> submit) {
-		this.app = app;
-		this.field = field;
-		this.operands = List.copyOf(operands);
-		this.submit = submit;
-		mode = app.getMode();
-		construction = app.getKernel().getConstruction();
-		registry = construction.getSpatialIdentityRegistry();
-		references = new References(construction);
-		dialog = new JDialog(owner, title, java.awt.Dialog.ModalityType.MODELESS);
+		this(app, new JDialog(owner, title, java.awt.Dialog.ModalityType.MODELESS),
+				field, null, operands, References.NUMERIC, submit);
 		dialog.setName(SESSION);
 		dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
-		confirm = new JButton(app.getLocalization().getMenu("OK"));
-		confirm.addActionListener(event -> confirm());
 		JButton cancel = new JButton(app.getLocalization().getMenu("Cancel"));
 		cancel.addActionListener(event -> finish());
-		pick = new JButton(text("Button"));
-		pick.setMnemonic(KeyEvent.getExtendedKeyCodeForChar(pick.getText().charAt(0)));
-		pick.addActionListener(event -> arm());
 		JPanel buttons = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 		buttons.add(pick);
 		buttons.add(confirm);
@@ -160,7 +153,26 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		content.add(buttons, BorderLayout.SOUTH);
 		dialog.setContentPane(content);
 		dialog.getRootPane().setDefaultButton(confirm);
-		dialog.getRootPane().putClientProperty(SESSION, this);
+	}
+
+	private GeoCeDGArgumentDialog(AppGeoCeDG app, JDialog dialog, JTextField field,
+			JComboBox<GeoElement> linkSelector, List<GeoElement> operands,
+			Predicate<GeoElement> eligibility, Consumer<GeoCeDGArgumentDialog> submit) {
+		this.app = app;
+		this.dialog = dialog;
+		this.field = field;
+		this.linkSelector = linkSelector;
+		this.operands = List.copyOf(operands);
+		this.submit = submit;
+		construction = app.getKernel().getConstruction();
+		registry = construction.getSpatialIdentityRegistry();
+		references = new References(construction, eligibility);
+
+		confirm = new JButton(app.getLocalization().getMenu("OK"));
+		confirm.addActionListener(event -> confirm());
+		pick = new JButton(text("Button"));
+		pick.setMnemonic(KeyEvent.getExtendedKeyCodeForChar(pick.getText().charAt(0)));
+		pick.addActionListener(event -> arm());
 		dialog.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentHidden(ComponentEvent event) {
@@ -181,57 +193,174 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		});
 	}
 
-	private void open(JRootPane owner) {
-		if (!(field.getDocument() instanceof AbstractDocument document)
-				|| document.getDocumentFilter() != null) {
+	/**
+	 * Install capture for an existing numeric or Redefine field.
+	 * @param app Desktop application supplying the construction
+	 * @param dialog existing dialog
+	 * @param panel panel receiving the pick button and status
+	 * @param field active expression field
+	 * @param owner current redefinition target, or null for a numeric prompt
+	 * @return capture session when the Desktop context supports it
+	 */
+	public static GeoCeDGArgumentDialog forField(AppD app, JDialog dialog, JPanel panel,
+			JTextField field, Supplier<GeoElement> owner) {
+		if (!supports(app) || !(field.getDocument() instanceof AbstractDocument fieldDocument)
+				|| fieldDocument.getDocumentFilter() != null) {
+			return null;
+		}
+		Predicate<GeoElement> eligibility = owner == null ? References.NUMERIC
+				: candidate -> redefineReference(owner.get(), candidate);
+		GeoCeDGArgumentDialog capture = new GeoCeDGArgumentDialog((AppGeoCeDG) app,
+				dialog, field, null, List.of(), eligibility, null);
+		capture.redefineOwner = owner;
+		panel.add(capture.pick, 0);
+		panel.add(capture.status, 1);
+		return capture;
+	}
+
+	/**
+	 * Install capture for the native Input Box link selector.
+	 * @param app Desktop application supplying the construction
+	 * @param dialog existing Input Box dialog
+	 * @param panel panel receiving the pick button and status
+	 * @param selector native link selector
+	 * @return capture session when the Desktop context supports it
+	 */
+	public static GeoCeDGArgumentDialog forLink(AppD app, JDialog dialog, JPanel panel,
+			JComboBox<GeoElement> selector) {
+		if (!supports(app)) {
+			return null;
+		}
+		GeoCeDGArgumentDialog capture = new GeoCeDGArgumentDialog((AppGeoCeDG) app,
+				dialog, null, selector, List.of(), candidate -> {
+					for (int index = 0; index < selector.getItemCount(); index++) {
+						if (candidate == selector.getItemAt(index)) {
+							return GeoInputBox.isGeoLinkable(candidate);
+						}
+					}
+					return false;
+				}, null);
+		selector.addActionListener(event -> capture.selectedLink = null);
+		panel.add(capture.pick);
+		panel.add(capture.status);
+		return capture;
+	}
+
+	static boolean redefineReference(GeoElement owner, GeoElement candidate) {
+		return owner != null && !candidate.isChildOrEqual(owner)
+				&& (!(owner instanceof GeoInputBox) || GeoInputBox.isGeoLinkable(candidate))
+				&& (!(owner instanceof FunctionalNVar function) || function.getFunction() == null
+						|| Arrays.stream(function.getFunction().getFunctionVariables())
+								.noneMatch(variable -> variable.getSetVarString()
+										.equals(candidate.getLabelSimple())));
+	}
+
+	private void open() {
+		if (!begin()) {
 			dialog.dispose();
 			return;
 		}
-		document.setDocumentFilter(references);
-		var events = app.getEventDispatcher();
-		var focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-		PropertyChangeListener focusListener = event -> {
+		try {
+			app.setComponentOrientation(dialog);
+			dialog.pack();
+			dialog.setLocationRelativeTo(dialog.getOwner());
+			showAndWait(() -> dialog.setVisible(true));
+		} finally {
+			dialog.dispose();
+			end();
+		}
+	}
+
+	/** @return whether the dialog claimed the current document's input shield */
+	public boolean begin() {
+		if (focusListener != null) {
+			return true;
+		}
+		if (finished || app.isInsertionIsolated() || isOpen(app)
+				|| !(owner(app) instanceof RootPaneContainer main)
+				|| app.getEuclidianView1().getEuclidianController()
+						instanceof GeoCeDGEuclidianController controller
+						&& controller.referencePointTool().isPanelActive()) {
+			return false;
+		}
+		app.closeControlLayout();
+		mode = app.getMode();
+		if (!shield(main.getRootPane())) {
+			return false;
+		}
+		for (var panel : ((GuiManagerD) app.getGuiManager()).getLayout()
+				.getDockManager().getPanels()) {
+			if (panel.getFrame() instanceof RootPaneContainer detached
+					&& !shield(detached.getRootPane())) {
+				end();
+				return false;
+			}
+		}
+		if (field != null) {
+			if (!(field.getDocument() instanceof AbstractDocument currentDocument)
+					|| currentDocument.getDocumentFilter() != null) {
+				end();
+				return false;
+			}
+			document = currentDocument;
+			document.setDocumentFilter(references);
+		}
+		dialog.getRootPane().putClientProperty(SESSION, this);
+		focusListener = event -> {
 			if (armed && event.getNewValue() instanceof Window window && !ownsFocus(window)) {
 				armed = false;
 				resetError();
 			}
 		};
-		events.addEventListener(this);
-		focusManager.addPropertyChangeListener("focusedWindow", focusListener);
+		app.getEventDispatcher().addEventListener(this);
+		KeyboardFocusManager.getCurrentKeyboardFocusManager()
+				.addPropertyChangeListener("focusedWindow", focusListener);
+		return true;
+	}
+
+	/**
+	 * Maintain the blocking API for an originally modal prompt using the document shield.
+	 * @param show action that makes the shielded dialog visible
+	 */
+	public void showAndWait(Runnable show) {
 		loop = Toolkit.getDefaultToolkit().getSystemEventQueue().createSecondaryLoop();
 		try {
-			if (!shield(owner)) {
-				return;
-			}
-			for (var panel : ((GuiManagerD) app.getGuiManager()).getLayout()
-					.getDockManager().getPanels()) {
-				if (panel.getFrame() instanceof RootPaneContainer detached
-						&& !shield(detached.getRootPane())) {
-					return;
-				}
-			}
-			app.setComponentOrientation(dialog);
-			dialog.pack();
-			dialog.setLocationRelativeTo(dialog.getOwner());
-			dialog.setVisible(true);
-			// The first field of the form keeps normal keyboard order.
+			show.run();
 			if (!finished) {
 				loop.enter();
 			}
 		} finally {
-			finished = true;
-			dialog.dispose();
-			shields.forEach((root, previous) -> {
-				if (root.getClientProperty(SESSION) == this) {
-					root.getGlassPane().setVisible(false);
-					root.setGlassPane(previous);
-					root.putClientProperty(SESSION, null);
-				}
-			});
-			events.removeEventListener(this);
-			focusManager.removePropertyChangeListener("focusedWindow", focusListener);
+			end();
+		}
+	}
+
+	/** Release the existing dialog's capture when it closes. */
+	public void end() {
+		finished = true;
+		armed = false;
+		if (loop != null) {
+			loop.exit();
+			loop = null;
+		}
+		shields.forEach((root, previous) -> {
+			if (root.getClientProperty(SESSION) == this) {
+				root.getGlassPane().setVisible(false);
+				root.setGlassPane(previous);
+				root.putClientProperty(SESSION, null);
+			}
+		});
+		shields.clear();
+		dialog.getRootPane().putClientProperty(SESSION, null);
+		if (focusListener != null) {
+			app.getEventDispatcher().removeEventListener(this);
+			KeyboardFocusManager.getCurrentKeyboardFocusManager()
+					.removePropertyChangeListener("focusedWindow", focusListener);
+			focusListener = null;
+		}
+		if (document != null && document.getDocumentFilter() == references) {
 			document.setDocumentFilter(null);
 		}
+		document = null;
 	}
 
 	private boolean ownsFocus(Window window) {
@@ -310,9 +439,9 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 	}
 
 	private void arm() {
-		if (!processing && operandsCurrent()) {
+		if (focusListener != null && !processing && operandsCurrent()) {
 			armed = true;
-			showError(text("Armed"));
+			showError(text(referenceMessage("Armed")));
 		}
 	}
 
@@ -360,13 +489,14 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		}
 
 		if (choices.isEmpty()) {
-			showError(text("None"));
+			showError(text(referenceMessage("None")));
 			return;
 		}
 		List<References.Choice> candidates = choices.stream().map(references::offer).toList();
 		References.Choice selected = candidates.get(0);
 		if (candidates.size() > 1) {
-			Object answer = JOptionPane.showInputDialog(dialog, text("Armed"), dialog.getTitle(),
+			Object answer = JOptionPane.showInputDialog(dialog, text(referenceMessage("Armed")),
+					dialog.getTitle(),
 					JOptionPane.QUESTION_MESSAGE, null, candidates.toArray(), null);
 			if (!(answer instanceof References.Choice choice)) {
 				disarm(null);
@@ -374,28 +504,52 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 			}
 			selected = choice;
 		}
-		if (!finished && operandsCurrent() && references.insert(field, selected)) {
+		if (!finished && operandsCurrent() && insert(selected)) {
 			disarm(null);
 		} else {
 			disarm(text("Stale"));
 		}
 	}
 
-	private static Point localPoint(MouseEvent event, JComponent component) {
+	private String referenceMessage(String suffix) {
+		return references.eligibility == References.NUMERIC ? suffix : "Geo" + suffix;
+	}
+
+	private boolean insert(References.Choice choice) {
+		if (linkSelector == null) {
+			return references.insert(field, choice);
+		}
+		references.offers.clear();
+		if (!references.current(choice)) {
+			return false;
+		}
+		linkSelector.setSelectedItem(choice.geo);
+		selectedLink = choice;
+		return true;
+	}
+
+	static Point localPoint(MouseEvent event, JComponent component) {
 		if (!component.isShowing()
 				|| SwingUtilities.getWindowAncestor(component)
 						!= SwingUtilities.getWindowAncestor(event.getComponent())) {
 			return null;
 		}
 		Point point = SwingUtilities.convertPoint(event.getComponent(), event.getPoint(), component);
-		return component.getVisibleRect().contains(point) ? point : null;
+		// The Graphics panel's getBounds() is the drawing's extent, not the viewport.
+		boolean inside = component instanceof EuclidianViewJPanelD ? component.contains(point)
+				: component.getVisibleRect().contains(point);
+		return inside ? point : null;
 	}
 
 	private void disarm(String message) {
 		armed = false;
 		showError(message);
 		dialog.toFront();
-		field.requestFocusInWindow();
+		if (field == null) {
+			linkSelector.requestFocusInWindow();
+		} else {
+			field.requestFocusInWindow();
+		}
 	}
 
 	static boolean dispatchKey(KeyEvent event) {
@@ -438,12 +592,23 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		}
 	}
 
-	boolean isCurrent() {
+	/** @return whether the existing submit handler can use the captured instance identities */
+	public boolean isCurrent() {
 		if (finished) {
 			return false;
 		}
 		if (!operandsCurrent()) {
 			showError(text("OperandStale"));
+			return false;
+		}
+		if (linkSelector != null) {
+			GeoElement candidate = (GeoElement) linkSelector.getSelectedItem();
+			if (candidate == null || (selectedLink != null && selectedLink.geo == candidate
+					? references.current(selectedLink) : references.canChoose(candidate))) {
+				return true;
+			}
+			showError(text("Stale"));
+			linkSelector.requestFocusInWindow();
 			return false;
 		}
 		References.Token stale = references.firstStale(field.getText());
@@ -460,6 +625,7 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		return !operandStale && !historyChanged && app.getMode() == mode
 				&& app.getKernel().getConstruction() == construction
 				&& construction.getSpatialIdentityRegistry() == registry
+				&& (redefineOwner == null || references.isLive(redefineOwner.get()))
 				&& operands.stream().allMatch(references::isLive);
 	}
 
@@ -485,22 +651,25 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		if (finished) {
 			return;
 		}
-		finished = true;
+		end();
 		dialog.setVisible(false);
-		if (loop != null) {
-			loop.exit();
-		}
 	}
 
 	@Override
 	public void sendEvent(Event event) {
 		if (event.type == EventType.REMOVE || event.type == EventType.RENAME) {
 			references.invalidate(event.target);
+			if (selectedLink != null) {
+				selectedLink.invalidate(event.target);
+			}
 			if (event.type == EventType.REMOVE && operands.stream().anyMatch(geo -> geo == event.target)) {
 				operandStale = true;
 			}
 		} else if (event.type == EventType.UNDO || event.type == EventType.REDO) {
 			references.invalidateAll();
+			if (selectedLink != null) {
+				selectedLink.invalid = true;
+			}
 		}
 	}
 
@@ -543,12 +712,23 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 
 	/** Tracks only field spans supplied by graphical selection. */
 	static final class References extends DocumentFilter {
+		private static final Predicate<GeoElement> NUMERIC = References::numeric;
 		private final Construction construction;
+		private final Predicate<GeoElement> eligibility;
 		private final List<Token> tokens = new ArrayList<>();
 		private final List<Choice> offers = new ArrayList<>();
 
 		References(Construction construction) {
+			this(construction, NUMERIC);
+		}
+
+		References(Construction construction, Predicate<GeoElement> eligibility) {
 			this.construction = construction;
+			this.eligibility = eligibility;
+		}
+
+		private static boolean numeric(GeoElement geo) {
+			return geo instanceof GeoNumberValue number && Double.isFinite(number.getDouble());
 		}
 
 		boolean isLive(GeoElement geo) {
@@ -560,8 +740,12 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		}
 
 		boolean canPick(GeoElement geo) {
-			return geo instanceof GeoNumberValue && geo.isLabelSet()
-					&& isLive(geo) && labelNames(geo.getLabelSimple(), geo);
+			return canChoose(geo) && geo.isDefined();
+		}
+
+		boolean canChoose(GeoElement geo) {
+			return isLive(geo) && geo.isLabelSet() && labelNames(geo.getLabelSimple(), geo)
+					&& eligibility.test(geo);
 		}
 
 		private boolean labelNames(String label, GeoElement geo) {
@@ -602,7 +786,8 @@ final class GeoCeDGArgumentDialog implements ErrorHandler, EventListener {
 		}
 
 		private boolean current(Choice choice) {
-			return !choice.invalid && isLive(choice.geo) && labelNames(choice.label, choice.geo);
+			return !choice.invalid && choice.label.equals(choice.geo.getLabelSimple())
+					&& canPick(choice.geo);
 		}
 
 		@Override

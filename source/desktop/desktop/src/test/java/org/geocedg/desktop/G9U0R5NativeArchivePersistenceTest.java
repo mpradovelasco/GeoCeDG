@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionPointV2;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
@@ -224,8 +225,8 @@ class G9U0R5NativeArchivePersistenceTest {
 		assertTrue(collapsed.getSemanticDefinition().getBranch(BRANCH)
 				.getProperties().contains(BranchProperty.COLLAPSED_IMAGE));
 		assertPoint(collapsed, 0.5, 3, -1);
-		GeoLocusMetricResult collapsedMetric = (GeoLocusMetricResult) eval(app,
-				"Mz=LocusLength(Lz)");
+		GeoLocusMetricResult collapsedMetric = AlgoLocusMetricScalarAdapter.richResultOf(
+				eval(app, "Mz=LocusLength(Lz)"));
 		assertEquals(0, collapsedMetric.getMetricResult().getMetricValue()
 				.getFiniteValue().orElseThrow(), 0);
 
@@ -253,7 +254,7 @@ class G9U0R5NativeArchivePersistenceTest {
 				.getProperties().contains(BranchProperty.COLLAPSED_IMAGE));
 		assertPoint(reopenedCollapsed, 0.5, 3, -1);
 		GeoLocusMetricResult reopenedCollapsedMetric =
-				(GeoLocusMetricResult) lookup(reopened, "Mz");
+				AlgoLocusMetricScalarAdapter.richResultOf(lookup(reopened, "Mz"));
 		assertEquals(0, reopenedCollapsedMetric.getMetricResult().getMetricValue()
 				.getFiniteValue().orElseThrow(), 0);
 		GeoLocusV2 reopenedDilation = (GeoLocusV2) lookup(reopened, "Ld");
@@ -276,8 +277,7 @@ class G9U0R5NativeArchivePersistenceTest {
 		GeoLocusV2 transformed = (GeoLocusV2) eval(app, "T=Translate(L,v)");
 		GeoPoint semanticPoint = (GeoPoint) eval(app,
 				"P=Point(T,\"" + BRANCH + "\",0.5)");
-		GeoLocusMetricResult metric = (GeoLocusMetricResult) eval(app,
-				"M=LocusLength(T)");
+		eval(app, "M=LocusLength(T)");
 		eval(app, "target:x=0");
 		GeoLocusIntersectionResult sourceResult =
 				(GeoLocusIntersectionResult) eval(app, "Rs=Intersect(L,target)");
@@ -311,8 +311,7 @@ class G9U0R5NativeArchivePersistenceTest {
 		GeoLocusV2 reopenedSource = (GeoLocusV2) lookup(reopened, "L");
 		GeoLocusV2 reopenedTransform = (GeoLocusV2) lookup(reopened, "T");
 		GeoPoint reopenedSemanticPoint = (GeoPoint) lookup(reopened, "P");
-		GeoLocusMetricResult reopenedMetric =
-				(GeoLocusMetricResult) lookup(reopened, "M");
+		GeoElement reopenedMetric = lookup(reopened, "M");
 		GeoLocusIntersectionResult reopenedSourceResult =
 				(GeoLocusIntersectionResult) lookup(reopened, "Rs");
 		GeoLocusIntersectionResult reopenedTransformResult =

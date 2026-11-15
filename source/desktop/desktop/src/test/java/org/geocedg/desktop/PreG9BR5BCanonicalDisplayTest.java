@@ -20,6 +20,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.main.command.CanonicalCommandEntry;
 import org.geocedg.common.main.command.CanonicalCommandSurface;
 import org.geogebra.common.gui.inputfield.DynamicTextElement;
@@ -75,7 +77,7 @@ class PreG9BR5BCanonicalDisplayTest {
 	void englishDisplayEditableTextAndSyntaxAreUnchangedFromTheBase() {
 		JSONObject fixture = PreG9BR5BFingerprints.baseFixture();
 		AppGeoCeDG app = application(Locale.ENGLISH);
-		build(app, false);
+		build(app, false, true);
 		for (String[] witness : PreG9BR5BFingerprints.WITNESS) {
 			GeoElement geo = app.getKernel().lookupLabel(witness[0]);
 			for (String template : TEMPLATES) {
@@ -103,7 +105,7 @@ class PreG9BR5BCanonicalDisplayTest {
 	void spanishDisplayAndEditableTextUseCanonicalEnglishHeads() {
 		JSONObject fixture = PreG9BR5BFingerprints.baseFixture();
 		AppGeoCeDG app = application(PreG9BR5BFingerprints.SPANISH);
-		build(app, true);
+		build(app, true, true);
 		for (String[] witness : PreG9BR5BFingerprints.WITNESS) {
 			String label = witness[0];
 			GeoElement geo = app.getKernel().lookupLabel(label);
@@ -316,12 +318,12 @@ class PreG9BR5BCanonicalDisplayTest {
 	}
 
 	@Test
-	void freshConstructionsPersistTheBaseCommandIdentitiesInBothLanguages() {
+	void legacyResultFixturePersistsTheBaseCommandIdentitiesInBothLanguages() {
 		JSONObject fixture = PreG9BR5BFingerprints.baseFixture();
 		for (Locale language : new Locale[] {Locale.ENGLISH, PreG9BR5BFingerprints.SPANISH}) {
 			boolean spanish = PreG9BR5BFingerprints.SPANISH.equals(language);
 			AppGeoCeDG app = application(language);
-			build(app, spanish);
+			build(app, spanish, true);
 			String core = PreG9BR5BFingerprints.constructionCore(app);
 			assertEquals(PreG9BR5BFingerprints.string(fixture, "constructionCore",
 					language.getLanguage()), core, language.toString());
@@ -443,7 +445,16 @@ class PreG9BR5BCanonicalDisplayTest {
 	}
 
 	static void build(App app, boolean spanish) {
+		build(app, spanish, false);
+	}
+
+	private static void build(App app, boolean spanish, boolean legacyMetric) {
 		for (String input : PreG9BR5BFingerprints.witnessInputs(spanish)) {
+			if (legacyMetric && input.startsWith("M=")) {
+				LocusV2PublicOperations.totalMetric(app.getKernel().getConstruction(), "M",
+						(GeoLocusV2) app.getKernel().lookupLabel("L"));
+				continue;
+			}
 			assertNotNull(app.getKernel().getAlgebraProcessor().processAlgebraCommand(input,
 					false), input);
 		}

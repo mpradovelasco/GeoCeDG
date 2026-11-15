@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -85,12 +86,12 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 		add("P=Point(s)");
 		add("Q=(x(P),sin(4*pi*x(P)))");
 		GeoLocusV2 sine = add("L=LocusV2(Q,P)");
-		GeoLocusMetricResult metric = add("M=LocusLength(L)");
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(L)"));
 		assertCoherentEstimate(metric.getMetricResult(), simpson(x -> Math.hypot(1,
 				4 * Math.PI * Math.cos(4 * Math.PI * x)), 0, 1, 1 << 16), "public k=2");
 		assertConditionedWithoutAuthority(metric.getMetricResult(), sine, "public k=2");
 		certifiedParabola("Lp", "Qp", "publicParabola");
-		GeoLocusMetricResult parabola = add("Mp=LocusLength(Lp)");
+		GeoLocusMetricResult parabola = richResultOf(add("Mp=LocusLength(Lp)"));
 		assertCoherentEstimate(parabola.getMetricResult(), simpson(x -> Math.hypot(1, 2 * x),
 				-2, 2, 1 << 16), "public parabola");
 	}
@@ -160,13 +161,13 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 		add("P=Point(s)");
 		add("Q=(x(P),sin(2*pi*1048576*x(P)))");
 		GeoLocusV2 publicAliasing = add("L=LocusV2(Q,P)");
-		LocusMetricResult2D aliased = ((GeoLocusMetricResult) add("M=LocusLength(L)"))
+		LocusMetricResult2D aliased = (richResultOf(add("M=LocusLength(L)")))
 				.getMetricResult();
 		assertNotCertified(aliased, "public aliasing");
 		assertConditionedWithoutAuthority(aliased, publicAliasing, "public aliasing");
 		add("F=(x(P),floor(4*x(P)))");
 		GeoLocusV2 publicFloor = add("Lf=LocusV2(F,P)");
-		LocusMetricResult2D floored = ((GeoLocusMetricResult) add("Mf=LocusLength(Lf)"))
+		LocusMetricResult2D floored = (richResultOf(add("Mf=LocusLength(Lf)")))
 				.getMetricResult();
 		assertNotCertified(floored, "public floor");
 		assertConditionedWithoutAuthority(floored, publicFloor, "public floor");
@@ -300,15 +301,15 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 		// PRE-G9B-CU2 declared conformity (step T11): the public scalar (t,sin(t)) is outside
 		// class v3 and has no total length; the certified parabola is estimated publicly.
 		certifiedParabola("Lt", "Qt", "firstParabola");
-		final LocusMetricResult2D first = ((GeoLocusMetricResult) add("M1=LocusLength(Lt)"))
+		final LocusMetricResult2D first = (richResultOf(add("M1=LocusLength(Lt)")))
 				.getMetricResult();
 		getApp().getEuclidianView1().setCoordSystem(400, 300, 250, 250);
 		getApp().getEuclidianView1().setRealWorldCoordSystem(-100, 100, -50, 50);
 		getKernel().updateConstruction(false);
-		LocusMetricResult2D recomputed = ((GeoLocusMetricResult) lookup("M1"))
+		LocusMetricResult2D recomputed = (richResultOf(lookup("M1")))
 				.getMetricResult();
 		certifiedParabola("Lu", "Qu", "secondParabola");
-		LocusMetricResult2D second = ((GeoLocusMetricResult) add("M2=LocusLength(Lu)"))
+		LocusMetricResult2D second = (richResultOf(add("M2=LocusLength(Lu)")))
 				.getMetricResult();
 		for (LocusMetricResult2D other : List.of(recomputed, second)) {
 			assertBitwiseEqual(first, other);

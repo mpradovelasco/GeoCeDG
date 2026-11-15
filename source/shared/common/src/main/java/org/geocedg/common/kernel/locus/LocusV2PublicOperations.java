@@ -22,6 +22,7 @@ import org.geocedg.common.kernel.algos.AlgoLocusIntersectionPointV2;
 import org.geocedg.common.kernel.algos.AlgoLocusIntersectionV2;
 import org.geocedg.common.kernel.algos.AlgoLocusLocusIntersectionV2;
 import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
+import org.geocedg.common.kernel.algos.AlgoProvenLocusEndpoint2D;
 import org.geocedg.common.kernel.algos.AlgoLocusMetricV2;
 import org.geocedg.common.kernel.algos.AlgoLocusSimilarityTransform2D;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
@@ -140,18 +141,33 @@ public final class LocusV2PublicOperations {
 	 */
 	public static GeoLocusV2 createPointDriven(Construction construction,
 			String label, GeoPoint dependent, GeoPoint driverPoint) {
+		return createPointDriven(construction, label, dependent, driverPoint, null);
+	}
+
+	/** Creates a point-driven locus with explicit driver-direction cuts. */
+	public static GeoLocusV2 createPointDriven(Construction construction,
+			String label, GeoPoint dependent, GeoPoint driverPoint, ConstructiveLocusCuts2D cuts) {
 		requireAccess(construction);
 		PointDriver driver = PointDriver.resolve(driverPoint);
 		ParticipationBatch batch = new ParticipationBatch(construction);
 		if (!construction.isFileLoading()) {
-			batch.prepareAll(driver.dependencies(dependent));
+			List<GeoElement> dependencies = new ArrayList<>(driver.dependencies(dependent));
+			if (cuts != null) {
+				if (cuts.getWitnesses().stream().anyMatch(witness ->
+						witness.getConstruction() != construction || witness == driverPoint
+								|| witness.isChildOf(driverPoint))) {
+					throw new IllegalArgumentException("A cut witness must be independent of the driver");
+				}
+				dependencies.addAll(cuts.getWitnesses());
+			}
+			batch.prepareAll(dependencies);
 		}
 		PersistentGeoId outputId = batch.reserveOutput();
 		AlgoDependentPointLocusV2 algorithm = null;
 		try {
 			algorithm = new AlgoDependentPointLocusV2(construction, dependent,
 					driverPoint, driver.coordinate, driver.support, null,
-					driver.branch, driver.family, DEFAULT_DOMAIN_EPSILON);
+					driver.branch, driver.family, DEFAULT_DOMAIN_EPSILON, cuts);
 			GeoLocusV2 output = algorithm.getLocus();
 			finishLabel(output, label, false);
 			if (!construction.isFileLoading()) {
@@ -639,6 +655,47 @@ public final class LocusV2PublicOperations {
 		}
 	}
 
+	/** Publishes an explicitly selected versioned proof after rechecking its premises. */
+	public static GeoPoint createProvenEndpoint(Construction construction, String label,
+			GeoLocusV2 source, GeoPoint reference, GeoPoint witness,
+			org.geogebra.common.kernel.geos.GeoVector vector, GeoText recipe) {
+		requireAccess(construction);
+		if (recipe.isLabelSet()
+				|| AlgoProvenLocusEndpoint2D.decodeRecipe(recipe.getTextString()) == null) {
+			throw new IllegalArgumentException("Invalid constructive endpoint recipe");
+		}
+		boolean loading = construction.isFileLoading();
+		if (!loading) {
+			var proposal = AlgoProvenLocusEndpoint2D.propose(source, reference);
+			if (proposal == null || proposal.witness() != witness || proposal.vector() != vector
+					|| !proposal.recipe().equals(recipe.getTextString())) {
+				throw new IllegalArgumentException("Constructive endpoint proof is no longer current");
+			}
+		}
+		ParticipationBatch batch = new ParticipationBatch(construction);
+		List<GeoElement> dependencies = direct(source, reference, witness, vector);
+		if (!loading) {
+			batch.prepareAll(dependencies);
+		}
+		PersistentGeoId outputId = batch.reserveOutput();
+		AlgoProvenLocusEndpoint2D algorithm = null;
+		try {
+			algorithm = new AlgoProvenLocusEndpoint2D(construction, source, reference, witness,
+					vector, recipe);
+			GeoPoint output = algorithm.getPoint();
+			finishLabel(output, label, false);
+			if (!loading) {
+				batch.stageReserved(output, outputId, dependencies);
+				batch.publish();
+			}
+			return output;
+		} catch (RuntimeException exception) {
+			batch.abandonBeforePublication();
+			removeFailed(algorithm);
+			throw exception;
+		}
+	}
+
 	private static boolean isCurrentCandidate(LocusDefinition2D definition,
 			LocusPointInteractionCandidate2D candidate) {
 		LocusSemanticAddress2D address = candidate.getAddress();
@@ -736,6 +793,12 @@ public final class LocusV2PublicOperations {
 	 */
 	public static GeoNumeric scalarLength(Construction construction,
 			String label, GeoLocusV2 source) {
+		return scalarLength(construction, label, source, Commands.Length);
+	}
+
+	/** Creates a guarded numeric total metric with a single rich authority. */
+	public static GeoNumeric scalarLength(Construction construction,
+			String label, GeoLocusV2 source, Commands publicCommand) {
 		requireAccess(construction);
 		ParticipationBatch batch = new ParticipationBatch(construction);
 		List<GeoElement> sourceDependency = direct(source);
@@ -750,9 +813,9 @@ public final class LocusV2PublicOperations {
 			richAlgorithm = new AlgoLocusMetricV2(construction, null, source,
 					richId);
 			GeoLocusMetricResult rich = richAlgorithm.getResult();
-			finishLabel(rich, null, true);
+			finishScalarAuthorityLabel(rich, label, publicCommand);
 			scalarAlgorithm = new AlgoLocusMetricScalarAdapter(construction, label,
-					rich);
+					rich, publicCommand);
 			GeoNumeric scalar = scalarAlgorithm.getScalarOutput();
 			finishLabel(scalar, label, false);
 			if (!construction.isFileLoading()) {
@@ -777,9 +840,18 @@ public final class LocusV2PublicOperations {
 	 */
 	public static GeoNumeric scalarBetweenLength(Construction construction,
 			String label, GeoLocusV2 source, GeoPoint start, GeoPoint end) {
+		return scalarBetweenLength(construction, label, source, start, end,
+				null, null, null, Commands.Length);
+	}
+
+	/** Creates a guarded numeric partial metric with the requested traversal. */
+	public static GeoNumeric scalarBetweenLength(Construction construction,
+			String label, GeoLocusV2 source, GeoPoint start, GeoPoint end,
+			GeoText direction, GeoText boundary, GeoText samePosition, Commands publicCommand) {
 		requireAccess(construction);
 		ParticipationBatch batch = new ParticipationBatch(construction);
-		List<GeoElement> sourceDependencies = direct(source, start, end);
+		List<GeoElement> sourceDependencies = direct(source, start, end, direction,
+				boundary, samePosition);
 		if (!construction.isFileLoading()) {
 			batch.prepareAll(sourceDependencies);
 		}
@@ -789,11 +861,11 @@ public final class LocusV2PublicOperations {
 		AlgoLocusMetricScalarAdapter scalarAlgorithm = null;
 		try {
 			richAlgorithm = new AlgoLocusBetweenMetricV2(construction, null,
-					source, start, end, richId);
+					source, start, end, direction, boundary, samePosition, richId);
 			GeoLocusMetricResult rich = richAlgorithm.getResult();
-			finishLabel(rich, null, true);
+			finishScalarAuthorityLabel(rich, label, publicCommand);
 			scalarAlgorithm = new AlgoLocusMetricScalarAdapter(construction, label,
-					rich);
+					rich, publicCommand);
 			GeoNumeric scalar = scalarAlgorithm.getScalarOutput();
 			finishLabel(scalar, label, false);
 			if (!construction.isFileLoading()) {
@@ -817,6 +889,12 @@ public final class LocusV2PublicOperations {
 	 */
 	public static GeoNumeric scalarFromMetric(Construction construction,
 			String label, GeoLocusMetricResult rich) {
+		return scalarFromMetric(construction, label, rich, Commands.Length);
+	}
+
+	/** Reconstructs a persisted scalar child of an already loaded rich authority. */
+	public static GeoNumeric scalarFromMetric(Construction construction,
+			String label, GeoLocusMetricResult rich, Commands publicCommand) {
 		if (!construction.isFileLoading()) {
 			throw new IllegalStateException(
 					"Length[richMetric] is reserved for XML reconstruction");
@@ -830,7 +908,7 @@ public final class LocusV2PublicOperations {
 		PersistentGeoId outputId = batch.reserveOutput();
 		AlgoLocusMetricScalarAdapter algorithm = null;
 		try {
-			algorithm = new AlgoLocusMetricScalarAdapter(construction, label, rich);
+			algorithm = new AlgoLocusMetricScalarAdapter(construction, label, rich, publicCommand);
 			GeoNumeric output = algorithm.getScalarOutput();
 			finishLabel(output, label, false);
 			if (!construction.isFileLoading()) {
@@ -1064,6 +1142,14 @@ public final class LocusV2PublicOperations {
 			throw new IllegalArgumentException(
 					"The experimental Locus V2 surface is not enabled");
 		}
+	}
+
+	private static void finishScalarAuthorityLabel(GeoLocusMetricResult rich, String publicLabel,
+			Commands publicCommand) {
+		if (publicCommand == Commands.LocusLength || rich.getFreeLabel(null).equals(publicLabel)) {
+			rich.markAsInternalAuthority();
+		}
+		finishLabel(rich, null, true);
 	}
 
 	private static void finishLabel(GeoElement geo, String label,

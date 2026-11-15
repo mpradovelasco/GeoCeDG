@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -52,11 +53,11 @@ class PostG9U1A1SplineConstructorProvenanceTest
 		GeoLocusV2 spline = lineSpline();
 		GeoPoint a = point("A");
 		GeoPoint c = point("C");
-		GeoLocusMetricResult occurrence = add("R=LocusLength(S,A,C)");
+		GeoLocusMetricResult occurrence = richResultOf(add("R=LocusLength(S,A,C)"));
 		GeoNumeric scalar = add("d=Length(S,A,C)");
 		add("P=Point(S,\"spline-v2/main\",0)");
 		add("Q=Point(S,\"spline-v2/main\",1)");
-		GeoLocusMetricResult addressed = add("E=LocusLength(S,P,Q)");
+		GeoLocusMetricResult addressed = richResultOf(add("E=LocusLength(S,P,Q)"));
 
 		assertEquals(Status.UNIQUE, resolver.resolve(spline, a).getStatus());
 		assertEquals(Status.UNIQUE, resolver.resolve(spline, c).getStatus());
@@ -72,7 +73,7 @@ class PostG9U1A1SplineConstructorProvenanceTest
 		add("B=(1,1)");
 		add("C=(2,0)");
 		GeoLocusV2 repeated = add("S=SplineV2({A,B,A,C},3)");
-		GeoLocusMetricResult ambiguous = add("R=LocusLength(S,A,C)");
+		GeoLocusMetricResult ambiguous = richResultOf(add("R=LocusLength(S,A,C)"));
 		SplineConstructorOccurrenceResult2D repeatedResult =
 				resolver.resolve(repeated, point("A"));
 		assertEquals(Status.MULTIPLE, repeatedResult.getStatus());
@@ -114,7 +115,7 @@ class PostG9U1A1SplineConstructorProvenanceTest
 				.getStatus());
 
 		GeoPoint arbitrary = add("X=(0,1)");
-		GeoLocusMetricResult absent = add("Q=LocusLength(S,X,C)");
+		GeoLocusMetricResult absent = richResultOf(add("Q=LocusLength(S,X,C)"));
 		assertEquals(Status.NO_ADDRESS, resolver.resolve(spline, arbitrary)
 				.getStatus());
 		assertEquals(MetricValueKind.ABSENT,
@@ -161,7 +162,7 @@ class PostG9U1A1SplineConstructorProvenanceTest
 		add("C=(2*h,0)");
 		add("points={A,B,C}");
 		GeoLocusV2 spline = add("S=SplineV2(points,3)");
-		GeoLocusMetricResult metric = add("R=LocusLength(S,A,C)");
+		GeoLocusMetricResult metric = richResultOf(add("R=LocusLength(S,A,C)"));
 		final PersistentGeoId metricId = id(metric);
 		final String occurrenceKey = resolver.resolve(spline, point("A"))
 				.getUniqueMatch().getOccurrenceKey();
@@ -190,7 +191,7 @@ class PostG9U1A1SplineConstructorProvenanceTest
 		assertEquals(Code.REDEFINE_REJECTED,
 				rejectedReplacementCode(requireLookup("points"), "{B,A,C}"));
 		assertEquals(beforeReplacement, getApp().getXML());
-		metric = assertInstanceOf(GeoLocusMetricResult.class, requireLookup("R"));
+		metric = assertInstanceOf(GeoLocusMetricResult.class, richResultOf(requireLookup("R")));
 		spline = assertInstanceOf(GeoLocusV2.class, requireLookup("S"));
 		assertEquals(metricId, id(metric));
 		assertEquals(occurrenceKey, resolver.resolve(spline, point("A"))
@@ -202,7 +203,7 @@ class PostG9U1A1SplineConstructorProvenanceTest
 	void saveReopenUndoRedoRenameAndDeterministicRerunReconstructProvenance() {
 		activateUndo();
 		GeoLocusV2 spline = lineSpline();
-		GeoLocusMetricResult metric = add("R=LocusLength(S,A,C)");
+		GeoLocusMetricResult metric = richResultOf(add("R=LocusLength(S,A,C)"));
 		final PersistentGeoId sourceId = spline.getPersistentLocusId();
 		final PersistentGeoId resultId = id(metric);
 		final String key = resolver.resolve(spline, point("A"))
@@ -213,13 +214,13 @@ class PostG9U1A1SplineConstructorProvenanceTest
 		getKernel().undo();
 		getKernel().redo();
 		assertEquals(4, finite(assertInstanceOf(GeoLocusMetricResult.class,
-				requireLookup("R"))), 1E-9);
+				richResultOf(requireLookup("R")))), 1E-9);
 
 		String xml = getApp().getXML();
 		assertFalse(xml.contains("spline-v2/input-occurrence/v1"));
 		getApp().setXML(xml, true);
 		spline = assertInstanceOf(GeoLocusV2.class, requireLookup("S"));
-		metric = assertInstanceOf(GeoLocusMetricResult.class, requireLookup("R"));
+		metric = assertInstanceOf(GeoLocusMetricResult.class, richResultOf(requireLookup("R")));
 		assertEquals(sourceId, spline.getPersistentLocusId());
 		assertEquals(resultId, id(metric));
 		assertEquals(key, resolver.resolve(spline, point("A"))
@@ -283,7 +284,7 @@ class PostG9U1A1SplineConstructorProvenanceTest
 		GeoLocusV2 spline = lineSpline();
 		GeoLocusV2 transformed = add("T=Translate(S,(2,3))");
 		GeoLocusMetricResult transformedMetric =
-				add("R=LocusLength(T,A,C)");
+				richResultOf(add("R=LocusLength(T,A,C)"));
 		SplineConstructorOccurrenceResult2D transformedA =
 				resolver.resolve(transformed, point("A"));
 		assertEquals(Status.UNIQUE, transformedA.getStatus());
@@ -297,7 +298,7 @@ class PostG9U1A1SplineConstructorProvenanceTest
 		add("U=(u,0)");
 		add("Domain={false,{-2,2,true,true}}");
 		GeoLocusV2 ordinary = add("L=LocusV2(U,u,Domain)");
-		GeoLocusMetricResult rejected = add("Q=LocusLength(L,A,C)");
+		GeoLocusMetricResult rejected = richResultOf(add("Q=LocusLength(L,A,C)"));
 		assertEquals(Status.NO_ADDRESS, resolver.resolve(ordinary, point("A"))
 				.getStatus());
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
@@ -312,7 +313,7 @@ class PostG9U1A1SplineConstructorProvenanceTest
 		add("k=1");
 		add("inputs=If(k>0,{A,B,C},{A,C,B})");
 		GeoLocusV2 spline = add("S=SplineV2(inputs,3)");
-		GeoLocusMetricResult metric = add("R=LocusLength(S,A,C)");
+		GeoLocusMetricResult metric = richResultOf(add("R=LocusLength(S,A,C)"));
 		assertEquals(Status.UNRESOLVED_INVALID,
 				resolver.resolve(spline, point("A")).getStatus());
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
@@ -324,7 +325,7 @@ class PostG9U1A1SplineConstructorProvenanceTest
 		GeoLocusV2 spline = lineSpline();
 		GeoPoint explicit = add("P=Point(S,\"spline-v2/main\",0.25)");
 		GeoPoint omitted = add("Q=Point(S,0.75)");
-		GeoLocusMetricResult metric = add("R=LocusLength(S,P,Q)");
+		GeoLocusMetricResult metric = richResultOf(add("R=LocusLength(S,P,Q)"));
 		assertTrue(explicit.isDefined());
 		assertTrue(omitted.isDefined());
 		assertEquals(2, finite(metric), 1E-9);

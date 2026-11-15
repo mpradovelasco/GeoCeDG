@@ -171,7 +171,7 @@ public final class LocusBranch2D {
 
 	private static boolean isEvaluable(LocusBoundary2D end) {
 		return end.isBinaryEndIncluded()
-				|| end.getKind() == LocusBoundary2D.Kind.STRUCTURAL_EVENT;
+				|| end.supportsOneSidedLimit();
 	}
 
 	/**

@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -112,12 +113,12 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 		add("C=Point(cc)");
 		add("Qc=C+(0,0)");
 		GeoLocusV2 circle = add("Lc=LocusV2(Qc,C)");
-		GeoLocusMetricResult circleMetric = add("Mc=LocusLength(Lc)");
+		GeoLocusMetricResult circleMetric = richResultOf(add("Mc=LocusLength(Lc)"));
 		add("e=0");
 		add("Qe=(3*cos(e),2*sin(e))");
 		add("De={true,{0,2*pi,true,false}}");
 		GeoLocusV2 ellipse = add("Le=LocusV2(Qe,e,De)");
-		GeoLocusMetricResult ellipseMetric = add("Me=LocusLength(Le)");
+		GeoLocusMetricResult ellipseMetric = richResultOf(add("Me=LocusLength(Le)"));
 
 		assertRichTotal(segment, 4, 1E-10);
 		assertRichTotal(circleMetric, 2 * Math.PI, 2E-7);
@@ -154,13 +155,13 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 		GeoLocusV2 locus = createLine();
 		GeoPoint first = semanticPoint(locus, -1);
 		GeoPoint second = add("P2=Point(L,\"" + BRANCH + "\",1)");
-		GeoLocusMetricResult metric = add("M=LocusLength(L,P,P2)");
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(L,P,P2)"));
 		assertTrue(metric.isDefined());
 		assertSame(first, metric.getParentAlgorithm().getInput(1));
 		assertSame(second, metric.getParentAlgorithm().getInput(2));
 		assertEquals(2, finite(metric), 1E-10);
 
-		GeoLocusMetricResult reversed = add("Mreverse=LocusLength(L,P2,P)");
+		GeoLocusMetricResult reversed = richResultOf(add("Mreverse=LocusLength(L,P2,P)"));
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
 				reversed.getMetricResult().getComputationStatus());
 		assertEquals(TraversalOutcome.TARGET_NOT_REACHABLE,
@@ -172,8 +173,8 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 		add("Ld=LocusV2(Qd,d,Dd)");
 		add("Pd1=Point(Ld,\"" + BRANCH + "\",-1.5)");
 		add("Pd2=Point(Ld,\"" + BRANCH + "\",1.5)");
-		GeoLocusMetricResult acrossGap = add(
-				"Mgap=LocusLength(Ld,Pd1,Pd2)");
+		GeoLocusMetricResult acrossGap = richResultOf(add(
+				"Mgap=LocusLength(Ld,Pd1,Pd2)"));
 		assertEquals(MetricComputationStatus.INVALID_QUERY,
 				acrossGap.getMetricResult().getComputationStatus());
 		assertEquals(TraversalOutcome.DISCONTINUITY_ENCOUNTERED,
@@ -188,8 +189,8 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 		add("Lw=LocusV2(Qw,W)");
 		add("Pw1=Point(Lw,\"" + BRANCH + "\",pi/2)");
 		add("Pw2=Point(Lw,\"" + BRANCH + "\",-pi/2)");
-		GeoLocusMetricResult wrapped = add(
-				"Mwrap=LocusLength(Lw,Pw1,Pw2)");
+		GeoLocusMetricResult wrapped = richResultOf(add(
+				"Mwrap=LocusLength(Lw,Pw1,Pw2)"));
 		assertEquals(TraversalOutcome.TARGET_REACHED,
 				wrapped.getMetricResult().getTraversalOutcome().orElseThrow());
 		assertEquals(2, wrapped.getMetricResult().getContributions().size());
@@ -378,16 +379,16 @@ class G9U0MetricPositionTest extends G9U0PublicSurfaceTestBase {
 		add("Sd=Point(cd)");
 		add("Qdirect=Sd+(0,0)");
 		GeoLocusV2 direct = add("Ldirect=LocusV2(Qdirect,Sd)");
-		GeoLocusMetricResult directMetric = add(
-				"Mdirect=LocusLength(Ldirect)");
+		GeoLocusMetricResult directMetric = richResultOf(add(
+				"Mdirect=LocusLength(Ldirect)"));
 
 		add("sf=0");
 		add("Qdeveloped=(sf,0)");
 		add("Ddeveloped={false,{0,2*pi,true,true}}");
 		GeoLocusV2 developed = add(
 				"Ldeveloped=LocusV2(Qdeveloped,sf,Ddeveloped)");
-		GeoLocusMetricResult developedMetric = add(
-				"Mdeveloped=LocusLength(Ldeveloped)");
+		GeoLocusMetricResult developedMetric = richResultOf(add(
+				"Mdeveloped=LocusLength(Ldeveloped)"));
 
 		assertEquals(2 * Math.PI, finite(directMetric), 2E-7);
 		assertEquals(finite(directMetric), finite(developedMetric), 2E-7);

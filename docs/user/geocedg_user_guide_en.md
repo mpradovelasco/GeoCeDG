@@ -1,7 +1,7 @@
 <!-- geocedg-guide-section: about-this-guide -->
 # GeoCeDG user guide
 
-GeoCeDG 1.1.0 · English edition
+GeoCeDG 1.2.0 · English edition
 
 Start with [Your first construction](#getting-started/2.7), look up a tool
 in the [reference](#command-and-workflow-reference), or press **Ctrl+F** to
@@ -49,12 +49,14 @@ compatibility boundaries.
 
 ### 1.3 Version and status
 
-**Help → About GeoCeDG** shows version **1.1.0**, the version date
-**2026-10-15** and the build identifier. It also shows the *distribution condition* and the notices for the copy you are running.
+**Help → About GeoCeDG** shows version **1.2.0**, the version date
+**2026-11-16** and the build identifier. It also shows the *distribution condition* and the notices for the copy you are running.
 Installed copies may show **INTERNAL EVALUATION — NOT FOR REDISTRIBUTION**
 or **NON-COMMERCIAL DISTRIBUTION — PROFILE NC**. A *development build* is
 labelled separately. About points to the full terms, including EUPL-1.2
 and CC BY 4.0 for the applicable GeoCeDG components.
+
+This guide includes the 1.2.0 candidate workflows. Final validation is pending.
 
 ### 1.4 What GeoCeDG adds to GeoGebra
 
@@ -67,7 +69,7 @@ revision `9b93256b7df401ff056c37b502d82df4d72b1522`.
 | Semantic curves | **[N]** **[!]** Locus V2 and Spline V2 give a curve a parameter you can use to locate a point and measure a path. | `LocusV2`, `SplineV2` | Trace a moving point or fit a smooth curve from a point list. | [Locus V2](#locus-v2/6.5) · [Spline V2](#spline-v2/7.2) |
 | Points and intersections | **[A]** **[!]** `Point` and `Intersect` gain V2 forms. Intersections can return a result you inspect before creating points. | `Point`, `Intersect`, Inspect rich result | Choose a position on the curve or review the intersection solutions. | [Points on curves](#semantic-points-intersections-materialization/8.1) · [Intersection results](#semantic-points-intersections-materialization/8.2) |
 | Tangencies and creating points | **[G]** Ordinary Tangents. **[A]** **[!]** V2 crossings can become points when admitted. Certain contacts have an explicit construction through the driver. | Tangents, Create selected intersection point, `Intersect(L,r,D)` | Keep a supported crossing or a proved contact as part of the construction. A tangency reported in an inspector does not by itself authorize point creation. | [Which solutions can become points](#semantic-points-intersections-materialization/8.3) · [Structural points](#semantic-points-intersections-materialization/8.6) |
-| Length and traversal | **[A]** **[!]** `Length` can measure supported V2 curves. **[N]** **[!]** `LocusLength` adds evidence and lets you choose a traversal where supported. | `Length`, `LocusLength` | Measure a whole curve, an arc between two points, or a full circuit of a supported periodic branch. | [Traversal and length](#lengths-and-measurements/9.2) |
+| Length and traversal | **[A]** **[!]** `Length` can measure supported V2 curves. **[N]** **[!]** `LocusLength` supplies a number when admissible, retains the measurement evidence and lets you choose a traversal where supported. | `Length`, `LocusLength` | Measure a whole curve, an arc between two points, or a full circuit of a supported periodic branch. | [Traversal and length](#lengths-and-measurements/9.2) |
 | Dynamic validity | **[G]** Objects update with their inputs. **[A]** **[!]** V2 positions and selected intersection points report when they lose validity after an edit. | Inspect definition…, Inspect rich result | Check whether a retained point is still usable after moving a driver. | [Check after editing](#locus-v2/6.4) · [Keep or recover a point](#semantic-points-intersections-materialization/8.6) |
 | Construction steps, memory and orientation | **[A]** The inherited protocol adapts row height. Parallel and Perpendicular can each remember a reference during the session. **[N]** **[!]** Supported results can show a direction cue. | Construction protocol, Parallel Line, Perpendicular Line, Show orientation cue | Review a construction step or repeat a family of aligned lines. | [Construction protocol](#interface-and-workflow/3.8) · [Lines and reference memory](#basic-geometry/5.2) |
 | Document units, dimensions and sheets | **[N]** Set a unit for the drawing, add engineering dimensions and define an ISO A border. | Document units…, `AlignedDimension`, `LinearDimension`, `IsoABorder` | Prepare a scaled sheet with readable dimensions. | [Units](#documents/4.6) · [Dimensions](#lengths-and-measurements/9.5) · [ISO A sheets](#documents/4.7) |
@@ -86,7 +88,7 @@ revision `9b93256b7df401ff056c37b502d82df4d72b1522`.
 ### 2.1 Starting GeoCeDG
 
 Start GeoCeDG from its installed shortcut. The window title reads
-`GeoCeDG 1.1.0`, or `GeoCeDG 1.1.0 — <file name>` once a document is open.
+`GeoCeDG 1.2.0`, or `GeoCeDG 1.2.0 — <file name>` once a document is open.
 
 If you are working from a prepared source checkout instead of an installed
 copy, the product profile is launched through the Gradle task
@@ -257,7 +259,7 @@ Use the menu bar to find tools by task. The individual Construction tools are li
 | **[A]** Derived constructions | **[A]** Parallel Line and Perpendicular Line can remember their references. **[G]** Perpendicular Bisector and Angle Bisector. |
 | **[G]** Parameters and drivers | **[G]** Slider, Angle with Given Size, Check Box, Button, Input Box, Animate selected object and Text. |
 | **[A]** Relations and intersections | **[A]** **[!]** Intersect supports semantic curves. **[G]** Tangents, Relation and Polar or Diameter Line. **[N]** **[!]** Inspect rich result, Create selected intersection point, Create selected intersection points and Create all eligible intersection points. |
-| **[G]** Circles and conics | Circle with Center through Point, Circle through 3 Points, Circle: Center & Radius, Circular Arc, Conic through 5 Points, Ellipse, Parabola, Compass, Semicircle, Circumcircular Arc, Circular Sector, Circumcircular Sector and Hyperbola. |
+| **[G]** Circles and conics | Circle with Center through Point, Circle through 3 Points, Circle: Center & Radius, Compass, Circular Arc, Conic through 5 Points, Ellipse, Parabola, Hyperbola, Semicircle, Circumcircular Arc, Circular Sector and Circumcircular Sector. |
 | **[N]** **[!]** Semantic curves | **[N]** **[!]** Locus V2. **[N]** **[!]** Point on Locus V2 from reference and Point on semantic curve (explicit address). **[N]** **[!]** Spline V2, Spline V2 with degree and Closed Spline V2. **[N]** **[!]** Inspect semantic curve definition…. |
 | **[A]** Metrics and validation | **[G]** Angle, Distance or Length, Area and Slope. **[N]** Aligned Dimension and Linear Dimension. **[N]** **[!]** Total semantic locus length and Partial semantic locus length (experimental). |
 | **[A]** Similarity transformations | **[A]** **[!]** Reflect about Point, Reflect about Line, Translate by Vector, Rotate around Point and Dilate from Point have specific support for semantic curves. |
@@ -276,7 +278,7 @@ Open the arrow beside a tool to see the other tools in its group. This table des
 | **[G]** Lines and vectors | Line, Segment, Ray, Vector, Segment with Given Length, Vector from Point |
 | **[G]** Polygons | Polygon, Polyline, Regular Polygon, Rigid Polygon, Vector Polygon |
 | **[A]** Derived constructions | **[A]** Parallel Line and Perpendicular Line · **[G]** Perpendicular Bisector, Angle Bisector, Angle with Given Size and Tangents |
-| **[G]** Circles and conics | Circle with Center through Point, Circle through 3 Points, Circle: Center & Radius, Circular Arc, Conic through 5 Points, Ellipse, Parabola |
+| **[G]** Circles and conics | Circle with Center through Point, Circle through 3 Points, Circle: Center & Radius, Compass, Circular Arc, Conic through 5 Points, Ellipse, Parabola, Hyperbola |
 | **[N]** **[!]** Semantic curves | Locus V2, Spline V2, Spline V2 with degree, Closed Spline V2, Point on semantic curve (explicit address), Point on Locus V2 from reference |
 | **[A]** Angles and lengths | **[G]** Angle and Distance or Length · **[N]** Aligned Dimension and Linear Dimension · **[N]** **[!]** Total and partial semantic locus length |
 | **[A]** Transformations | Reflect about Point, Reflect about Line, Translate by Vector, Rotate around Point, Dilate from Point |
@@ -284,6 +286,9 @@ Open the arrow beside a tool to see the other tools in its group. This table des
 | **[A]** Navigation | **[A]** Zoom to rectangle · **[G]** Move Graphics View, Zoom In, Zoom Out and Copy Visual Style |
 
 A mark beside a group describes its scope. Marks in the Tools column identify individual tools or runs of tools. The Semantic curves and Navigation flyouts show the last tool you chose in that group. An unavailable tool shows a reason when you hover over it.
+
+With a flyout open, move the pointer onto another tool group to open that
+group. The Semantic curves flyout participates in this interaction.
 
 ### 3.4 Selecting, creating and editing
 
@@ -373,17 +378,23 @@ submenu. The protocol adjusts row height when a description wraps. To change
 the font size, use **Preferences → Layout & Presentation**. To change a
 result, return to the construction and edit its inputs.
 
-### 3.9 Insert an existing number into a dialog
+### 3.9 Pick an existing object in a dialog
 
-**[A]** Supported dialogs can take an existing number directly from Algebra.
+**[A]** Supported dialogs can pick references from Graphics 1 or Algebra.
 
-Use **Pick object** in the parameter field for a point by address on a
-Locus V2, in the angle or factor field when rotating or dilating a Locus V2 or Spline V2, or
-in the Spline V2 degree field. Select the number or angle's Algebra row.
-Its name goes at the cursor or replaces the selected text. Finish the
-expression and confirm. For example, if you already have `d=3`, choose
-its row in the Spline V2 degree dialog. GeoCeDG checks the degree when
-you confirm.
+Choose **Pick object** in a supported field. Select an eligible object in
+Graphics 1 or its row in Algebra. If several objects are eligible at that
+location, choose from the list. A formula field inserts the reference at the
+cursor or replaces selected text. Finish the expression and confirm it.
+
+- In **Redefine**, pick objects used by the new expression. The object being
+  redefined and objects that already depend on it are ineligible.
+- In **Input Box** creation, picking updates **Linked object**. To change the
+  link through **Redefine**, use `InputBox(...)` with the new reference.
+- Numeric prompts such as **Circle: Center & Radius**, the angle or factor
+  for a semantic curve transformation, the semantic point parameter and the
+  Spline V2 degree accept eligible numeric references. For example, pick the
+  Algebra row `d=3` to supply the degree.
 
 ![The Spline V2 degree dialog shows d, the number selected in Algebra.](images/numeric-reference.png)
 
@@ -391,7 +402,6 @@ you confirm.
 
 **Esc** disarms picking. Press it again to cancel the dialog. If clicking
 a slider in Graphics 1 fails to supply a reference, use its Algebra row.
-The button is available in these four fields.
 
 ---
 
@@ -1054,11 +1064,27 @@ Through Algebra Input, the command forms are:
 
 ```text
 LocusV2( <Dependent Point>, <Constrained Point> )
+LocusV2( <Dependent Point>, <Constrained Point>, "constructive-cuts/v1", <Witness>, ... )
 LocusV2( <Dependent Point>, <Scalar State>, <Domain Descriptor> )
 LocusV2( <Dependent Point>, <Scalar State>, <True Driver>, <Domain Descriptor> )
 ```
 
 A domain descriptor is a list `{periodic, {start, end, startIncluded, endIncluded}}`.
+
+Use the cut form to divide the traversal at one or more declared driver
+directions. For example, when `E` and `K` are points constructed on the
+same supported circle, `LocusV2(Q,E,"constructive-cuts/v1",K)` cuts the
+traversal traced by `Q` at the direction of `K`. The two sides of a cut in a
+continuous part can meet at the same place. The next component owns the cut
+position, and the preceding component keeps its excluded end as a limit.
+A strict metric route stays within its component. The total length adds
+the lengths within the components using the applicable metric policy.
+
+If a witness loses its admissible direction, GeoCeDG reports that the
+traversal is not established. A structural reset in a dependency and a
+declared cut have different meaning. For a composition whose continuity
+cannot be established, the definition inspector reports the unresolved
+coverage and the drawing keeps exploratory traces separate across the event.
 
 ### 6.6 Worked example
 
@@ -1550,15 +1576,17 @@ guide.
 
 ### 9.1 Choose a length result
 
-**[A]** **[!]** The scalar `Length` also accepts supported semantic curves, their endpoints or a metric result.
+**[A]** **[!]** `Length` accepts supported semantic curves and their eligible endpoints, using the default traversal.
 
-**[N]** **[!]** Use `LocusLength` when you want to see the measured value,
-the part of the route covered and any limitations of the calculation. It works
-with Locus V2 and Spline V2. Lengths use construction units and are non-negative
-in either direction. If you need an ordinary number for another calculation,
-use `Length(L)` for the whole curve or `Length(L,A,B)` for the default route.
-You can also use `Length(M)` on an existing `LocusLength` result `M`. In each
-case GeoCeDG supplies a number only when the result qualifies for numeric use.
+**[N]** **[!]** `LocusLength` measures supported Locus V2 and Spline V2
+traversals. For example, after `m=LocusLength(L,A,B)`, use `m` directly in
+`2*m` when the measurement qualifies for numeric use. Lengths use construction
+units and are non-negative in either direction. A result without an admissible
+value appears undefined. The inspector still shows the available evidence.
+An admissible number in Algebra's **Value** mode shows its guarantee, such
+as **Estimated** or **Certified**. New explicitly created results are ordinary
+objects by default. When reopening older files, existing rich results keep
+their type and existing consumers such as `Length(M)` continue to use them.
 
 In **Construction → Metrics and validation**, choose **Total semantic locus
 length (experimental)** and select the curve. For **Partial semantic locus
@@ -1572,7 +1600,8 @@ and error fields tell you how to interpret an estimate.
 
 ### 9.2 Measure the whole curve or choose a route
 
-**[N]** **[!]** `LocusLength` reports metric evidence and supports explicit traversal policies.
+**[N]** **[!]** `LocusLength` supports explicit traversal policies.
+The inspector retains evidence for the requested route.
 
 ```text
 LocusLength(L)
@@ -1637,7 +1666,8 @@ BackRoute=LocusLength(L,A,B,"reverse","strict","zero-length")
 - `DefaultRoute` is 6, from 2 to 8.
 - `StrictRoute` has no value. Travelling forward from 8 cannot reach 2
   before the open end at 10.
-- `StopRoute` is 2, from 8 to 10, with incomplete coverage.
+- `StopRoute` is undefined in Algebra. The inspector reports the partial
+  length 2, from 8 to 10, with incomplete coverage.
 - `WrapRoute` is 4, from 8 to 10 plus 0 to 2.
 - `BackRoute` is 6, from 8 directly back to 2.
 
@@ -1703,6 +1733,16 @@ can be unavailable. In supported cases GeoCeDG may report a conditioned
 estimate, with its guarantee and error shown in the inspector. Keep an
 incomplete or estimated result separate from a confirmed measurement of the
 whole requested route.
+
+If the inspector offers **Construct a metric endpoint**, review the available
+routes. **Create equivalent point** requires a constructively established
+direction, such as two translations using the same vector.
+The new point retains its construction when a premise temporarily fails and
+can become defined again once the same premise is restored. **Choose a position
+on the locus** uses the reference to find an admissible selection. You choose
+the position explicitly and the new point follows the locus at that position.
+Use the new point in the length query. In the oblique-cone example, shifting
+the metric origin can separate two points that coincide in the starting view.
 
 ### 9.4 Measure from an intersection
 
@@ -2560,7 +2600,7 @@ These are the limitations that affect what you can do in the application today.
 | **[A]** **[!]** Point on a Locus V2, by parameter | same dedicated tool | `Point(L,"generator.main",1)` | semantic point | default generator branch key |
 | **[A]** **[!]** Total length | Construction → Metrics and validation | `Length(S)` | number | scalar adapter over the rich metric result |
 | **[A]** **[!]** Partial length | Construction → Metrics and validation | `Length(S,P,Q)` | number | both endpoints need admissible semantic provenance |
-| **[N]** **[!]** Rich metric evidence | Construction → Metrics and validation | `LocusLength(S)` / `LocusLength(S,P,Q)` | rich result | status, coverage, error estimate, diagnostics |
+| **[N]** **[!]** Length with metric evidence | Construction → Metrics and validation | `LocusLength(S)` / `LocusLength(S,P,Q)` | number when admissible | guarantee in Algebra's Value mode, with route, coverage, error and diagnostics in the inspector |
 | **[N]** Aligned dimension | Construction → Metrics and validation → Aligned dimension | `AlignedDimension(A,B,1)` | number, lines and text | the value is in model units; the text follows the document units |
 | **[N]** Linear dimension | Construction → Metrics and validation → Linear dimension | `LinearDimension(A,B,g,1)` | number, lines and text | measured along a line or vector; the offset side is fixed by `A → B` or the direction |
 | **[N]** Create an ISO A sheet | Construction → Annotations and media → ISO A Border | `IsoABorder(P,3,true,1,50,1,true)` | two polylines and a text | needs a physical construction unit; scale and unit factor captured once; menu only (section 4.7) |
@@ -2585,7 +2625,7 @@ These are the limitations that affect what you can do in the application today.
 
 ### 16.2 Command syntax summary
 
-**[N]** **[!]** Locus and spline V2 construction and rich length. **[N]** Engineering dimensions and the ISO A border. **[A]** **[!]** The semantic forms of Point, Length and Intersect. See the [reference table](#command-and-workflow-reference/16.1) for the forms and their scope.
+**[N]** **[!]** Locus and spline V2 construction and length with metric evidence. **[N]** Engineering dimensions and the ISO A border. **[A]** **[!]** The semantic forms of Point, Length and Intersect. See the [reference table](#command-and-workflow-reference/16.1) for the forms and their scope.
 
 ```text
 LocusV2( <Dependent Point>, <Constrained Point> )
@@ -2807,7 +2847,7 @@ undefined.
 
 ---
 
-*GeoCeDG 1.1.0 — Manuel Prado-Velasco, Universidad de Sevilla. Required upstream
+*GeoCeDG 1.2.0 — Manuel Prado-Velasco, Universidad de Sevilla. Required upstream
 credits and licenses are retained in `LICENSE`, `NOTICE.md` and
 `THIRD_PARTY.md`.*
 

@@ -209,7 +209,8 @@ public final class LocusDefinition2D {
 		if (component.isClosedPeriodic()) {
 			return evaluate(branchKey, canonicalParameter, session);
 		}
-		if (end.isBinaryEndIncluded()) {
+		if (end.isBinaryEndIncluded()
+				|| end.getKind() == LocusBoundary2D.Kind.DECLARED_CONSTRUCTIVE_CUT) {
 			// The binary64 end belongs to the component (section 15.3). The periodic
 			// canonicalization of the provider, lower + (t - lower), can move it by a few ulps
 			// off an arc whose membership is exact, so the end is evaluated as given.
@@ -257,7 +258,7 @@ public final class LocusDefinition2D {
 				LocusBoundary2D end = lowerEnd ? component.getLowerBoundary()
 						: component.getUpperBoundary();
 				if (!component.isClosedPeriodic() && (end.isBinaryEndIncluded()
-						|| end.getKind() == LocusBoundary2D.Kind.STRUCTURAL_EVENT)) {
+						|| end.supportsOneSidedLimit())) {
 					return evaluateComponentEnd(branchKey,
 							lowerEnd ? component.getStart() : component.getEnd(), !lowerEnd,
 							session);

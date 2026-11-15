@@ -26,6 +26,7 @@ import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
@@ -411,8 +412,8 @@ class PreG9BCu2AuthorModelCertificationTest {
 		LocusExistenceStructure2D structure = definition.getBranch(PreG9BCu0Corpus.MAIN)
 				.getExistenceStructure();
 		String name = label.replace("_", "");
-		GeoLocusMetricResult total = (GeoLocusMetricResult) app.getKernel()
-				.lookupLabel("emptyCoverTotal" + name);
+		GeoLocusMetricResult total = AlgoLocusMetricScalarAdapter.richResultOf(app.getKernel()
+				.lookupLabel("emptyCoverTotal" + name));
 		GeoLocusIntersectionResult cut = (GeoLocusIntersectionResult) app.getKernel()
 				.lookupLabel("emptyCoverCut" + name);
 		ReconstructibleLocusEvaluator2D evaluator = evaluator(locus);

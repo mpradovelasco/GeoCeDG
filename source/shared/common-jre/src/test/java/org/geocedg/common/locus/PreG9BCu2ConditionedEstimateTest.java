@@ -5,6 +5,7 @@
 
 package org.geocedg.common.locus;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -83,7 +84,7 @@ class PreG9BCu2ConditionedEstimateTest extends G9U0PublicSurfaceTestBase {
 		add("Q=(x(P),sin(4*pi*x(P)))");
 		GeoLocusV2 sine = add("L=LocusV2(Q,P)");
 		final String before = structure(sine).getSemanticSignature();
-		LocusMetricResult2D rich = ((GeoLocusMetricResult) add("M=LocusLength(L)"))
+		LocusMetricResult2D rich = (richResultOf(add("M=LocusLength(L)")))
 				.getMetricResult();
 		double reference = simpson(x -> Math.hypot(1,
 				4 * Math.PI * Math.cos(4 * Math.PI * x)), 0, 1, 1 << 16);
@@ -199,7 +200,7 @@ class PreG9BCu2ConditionedEstimateTest extends G9U0PublicSurfaceTestBase {
 		add("Qe=(3*cos(e),2*sin(e))");
 		add("De={true,{0,2*pi,true,false}}");
 		GeoLocusV2 ellipse = add("Le=LocusV2(Qe,e,De)");
-		LocusMetricResult2D closed = ((GeoLocusMetricResult) add("Me=LocusLength(Le)"))
+		LocusMetricResult2D closed = (richResultOf(add("Me=LocusLength(Le)")))
 				.getMetricResult();
 		assertEquals(MetricGuaranteeClass2D.ESTIMATED, closed.getGuaranteeClass(),
 				closed.getDiagnostics().toString());
@@ -214,7 +215,7 @@ class PreG9BCu2ConditionedEstimateTest extends G9U0PublicSurfaceTestBase {
 		add("Qu=(u,u)");
 		add("Du={true,{0,1,true,false}}");
 		GeoLocusV2 open = add("Lu=LocusV2(Qu,u,Du)");
-		LocusMetricResult2D jump = ((GeoLocusMetricResult) add("Mu=LocusLength(Lu)"))
+		LocusMetricResult2D jump = (richResultOf(add("Mu=LocusLength(Lu)")))
 				.getMetricResult();
 		assertNotEquals(MetricComputationStatus.SUCCESS, jump.getComputationStatus(),
 				jump.getDiagnostics().toString());
@@ -233,7 +234,7 @@ class PreG9BCu2ConditionedEstimateTest extends G9U0PublicSurfaceTestBase {
 		add("Qv=(v,v^2)");
 		add("Dv={false,{0,1,true,false}}");
 		GeoLocusV2 locus = add("Lv=LocusV2(Qv,v,Dv)");
-		LocusMetricResult2D rich = ((GeoLocusMetricResult) add("Mv=LocusLength(Lv)"))
+		LocusMetricResult2D rich = (richResultOf(add("Mv=LocusLength(Lv)")))
 				.getMetricResult();
 		assertEquals(MetricComputationStatus.LIMIT_NOT_ESTABLISHED,
 				rich.getComputationStatus(), rich.getDiagnostics().toString());
@@ -252,18 +253,18 @@ class PreG9BCu2ConditionedEstimateTest extends G9U0PublicSurfaceTestBase {
 		add("P=Point(s)");
 		add("Q=(x(P),sin(2*pi*x(P)))");
 		GeoLocusV2 sine = add("L=LocusV2(Q,P)");
-		LocusMetricResult2D source = ((GeoLocusMetricResult) add("M=LocusLength(L)"))
+		LocusMetricResult2D source = (richResultOf(add("M=LocusLength(L)")))
 				.getMetricResult();
 		assertConditionedWithoutAuthority(source, sine, "source");
 		GeoLocusV2 moved = add("T=Translate(L,(3,-2))");
-		LocusMetricResult2D translated = ((GeoLocusMetricResult) add("MT=LocusLength(T)"))
+		LocusMetricResult2D translated = (richResultOf(add("MT=LocusLength(T)")))
 				.getMetricResult();
 		assertConditionedWithoutAuthority(translated, moved, "translation");
 		assertEquals(value(source), value(translated),
 				source.getErrorEvidence().getEstablishedAbsoluteAmount()
 						+ translated.getErrorEvidence().getEstablishedAbsoluteAmount());
 		GeoLocusV2 dilated = add("D=Dilate(L,2,(1,1))");
-		LocusMetricResult2D doubled = ((GeoLocusMetricResult) add("MD=LocusLength(D)"))
+		LocusMetricResult2D doubled = (richResultOf(add("MD=LocusLength(D)")))
 				.getMetricResult();
 		assertConditionedWithoutAuthority(doubled, dilated, "dilation");
 		assertEquals(2 * value(source), value(doubled),

@@ -1053,15 +1053,17 @@
         "en": [
           "command-and-workflow-reference/16.5",
           "interface-and-workflow/3.2",
+          "interface-and-workflow/3.3",
           "basic-geometry/5.3"
         ],
         "es": [
           "command-and-workflow-reference/16.5",
           "interface-and-workflow/3.2",
+          "interface-and-workflow/3.3",
           "basic-geometry/5.3"
         ]
       },
-      "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
+      "notes": "The tool reference gives the click sequence and input types. The toolbar and menu tables list Compass before Circular Arc.",
       "label_es": "Compás",
       "classification_group": "construction-conics"
     },
@@ -1225,15 +1227,17 @@
         "en": [
           "command-and-workflow-reference/16.5",
           "interface-and-workflow/3.2",
+          "interface-and-workflow/3.3",
           "basic-geometry/5.3"
         ],
         "es": [
           "command-and-workflow-reference/16.5",
           "interface-and-workflow/3.2",
+          "interface-and-workflow/3.3",
           "basic-geometry/5.3"
         ]
       },
-      "notes": "The tool reference gives the click sequence, input types, and result; the menu table uses the product label.",
+      "notes": "The tool reference gives the click sequence and input types. The toolbar and menu tables list Hyperbola after Parabola.",
       "label_es": "Hipérbola",
       "classification_group": "construction-conics"
     },
@@ -3027,7 +3031,7 @@
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "The cited sections give the route or syntax for LocusV2, the required inputs or choices, and the observable effect.",
+      "notes": "Covers the original creation routes, numeric domains and declared driver cuts, including half-open limits and the distinction from unresolved composition events.",
       "classification_group": "locus-v2-command"
     },
     {
@@ -3075,7 +3079,7 @@
           "command-and-workflow-reference/16.3"
         ]
       },
-      "notes": "The cited sections give the route or syntax for LocusLength, the required inputs or choices, and the observable effect.",
+      "notes": "Covers scalar admissibility, formula use, Algebra guarantees, the result inspector, endpoint assistance routes and preservation of historical rich results on reopening.",
       "classification_group": "locuslength-command"
     },
     {
@@ -5288,7 +5292,7 @@
           "interface-and-workflow/3.2"
         ]
       },
-      "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
+      "notes": "The toolbar section lists the enabled flyout tools in order, including Compass and Hyperbola, and the menu table adds the remaining actions.",
       "profile_group": "construction-circles-conics",
       "classification_group": "toolbar-conics"
     },
@@ -5310,7 +5314,7 @@
           "spline-v2/7.2"
         ]
       },
-      "notes": "The toolbar section lists the flyout contents separately from the broader Construction or View submenu.",
+      "notes": "The toolbar section lists the flyout tools and covers pointer transfer from an already open flyout.",
       "profile_group": "construction-semantic-curves",
       "classification_group": "toolbar-semantic"
     },
@@ -5768,7 +5772,7 @@
           "lengths-and-measurements/9.1"
         ]
       },
-      "notes": "Converts a rich LocusLength result to its scalar value when available.",
+      "notes": "Preserves the stored scalar consumer of a historical rich LocusLength result on reopening.",
       "classification_group": "semantic-length-scalar"
     },
     {
@@ -6017,8 +6021,8 @@
       "id": "interaction:argument-capture",
       "kind": "interaction",
       "source": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGArgumentDialog.java",
-      "label_en": "Capture a numeric argument",
-      "label_es": "Capturar un argumento numérico",
+      "label_en": "Pick an object reference",
+      "label_es": "Capturar una referencia a un objeto",
       "coverage": "COVERED",
       "anchors": {
         "en": [
@@ -6028,7 +6032,7 @@
           "interface-and-workflow/3.9"
         ]
       },
-      "notes": "Explains supported dialogs, insertion at the caret from Algebra, cancellation and the remaining Graphics 1 slider pick limit.",
+      "notes": "Explains Redefine, Input Box linkage and numeric prompts, reference capture from Graphics 1 and Algebra, ambiguity, text insertion and cancellation.",
       "classification_group": "numeric-capture"
     },
     {
@@ -7106,8 +7110,8 @@
           "A"
         ],
         "text": {
-          "en": "Supported dialogs can take an existing number directly from Algebra",
-          "es": "Los diálogos compatibles permiten elegir un número existente directamente en Álgebra"
+          "en": "Supported dialogs can pick references from Graphics 1 or Algebra",
+          "es": "Los diálogos compatibles permiten capturar referencias desde Gráficos 1 o Álgebra"
         }
       },
       "object-redefinition": {
@@ -7515,8 +7519,8 @@
           "!"
         ],
         "text": {
-          "en": "The scalar `Length` also accepts supported semantic curves, their endpoints or a metric result",
-          "es": "La `Length` escalar admite también curvas semánticas compatibles, sus extremos o un resultado métrico"
+          "en": "`Length` accepts supported semantic curves and their eligible endpoints, using the default traversal",
+          "es": "`Length` admite curvas semánticas compatibles y sus extremos admisibles con el recorrido predeterminado"
         }
       },
       "locuslength-command": {
@@ -7526,8 +7530,8 @@
           "!"
         ],
         "text": {
-          "en": "`LocusLength` reports metric evidence and supports explicit traversal policies",
-          "es": "`LocusLength` informa de la evidencia métrica y admite políticas explícitas de recorrido"
+          "en": "`LocusLength` supports explicit traversal policies",
+          "es": "`LocusLength` admite políticas explícitas de recorrido"
         }
       },
       "dimension-commands": {

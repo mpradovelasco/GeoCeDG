@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
+import org.geocedg.common.kernel.locus.ConstructiveLocusCuts2D;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusCertificationScope2D;
 import org.geocedg.common.kernel.locus.LocusCertificationWork2D;
@@ -38,12 +39,14 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationMethod;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.RepresentationRole;
+import org.geocedg.common.kernel.locus.LocusTraversalCut2D;
 import org.geocedg.common.kernel.locus.LocusV2DomainDescriptor;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDomainProvider1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorFamily1D;
+import org.geocedg.common.kernel.locus.constructive.AuthorityPolicy;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geocedg.common.kernel.locus.intersection.RouteSourceFacts2D;
@@ -76,6 +79,7 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private final GeoElement support;
 	private final GeoList domainInput;
 	private final GeoText supportBranchInput;
+	private final ConstructiveLocusCuts2D constructiveCuts;
 	private final SemanticGeneratorFamily1D family;
 	private final double configuredDomainEpsilon;
 	private SemanticGeneratorDescriptor1D descriptor;
@@ -86,6 +90,8 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private ReconstructibleLocusEvaluator2D certifiedEvaluator;
 	private String certifiedLimitation;
 	private HybridExistenceCertifier2D.Result certificate;
+	private HybridExistenceCertifier2D.Result baseCertificate;
+	private List<LocusTraversalCut2D> certifiedCuts;
 	private ReconstructibleLocusEvaluator2D routeFactsEvaluator;
 	private double routeLengthBound = Double.NaN;
 	private String certifiedSelection;
@@ -100,17 +106,28 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 			GeoPointND dependentPoint, GeoElement state, GeoElement coordinate,
 			GeoElement support, GeoList domainInput, GeoText supportBranchInput,
 			SemanticGeneratorFamily1D family, double domainEpsilon) {
+		this(construction, dependentPoint, state, coordinate, support, domainInput,
+				supportBranchInput, family, domainEpsilon, null);
+	}
+
+	/** Creates the same generator with optional explicit traversal cuts. */
+	public AlgoDependentPointLocusV2(Construction construction,
+			GeoPointND dependentPoint, GeoElement state, GeoElement coordinate,
+			GeoElement support, GeoList domainInput, GeoText supportBranchInput,
+			SemanticGeneratorFamily1D family, double domainEpsilon,
+			ConstructiveLocusCuts2D constructiveCuts) {
 		super(construction,
 				publicCommandInputs(dependentPoint, state, coordinate, support,
-						domainInput, supportBranchInput, family, domainEpsilon),
+						domainInput, supportBranchInput, family, domainEpsilon, constructiveCuts),
 				evaluatorInputs(dependentPoint, state, coordinate, support,
-						domainInput, supportBranchInput));
+						domainInput, supportBranchInput, constructiveCuts));
 		this.dependentPoint = Objects.requireNonNull(dependentPoint);
 		this.state = Objects.requireNonNull(state);
 		this.coordinate = Objects.requireNonNull(coordinate);
 		this.support = support;
 		this.domainInput = domainInput;
 		this.supportBranchInput = supportBranchInput;
+		this.constructiveCuts = constructiveCuts;
 		this.family = Objects.requireNonNull(family);
 		configuredDomainEpsilon = domainEpsilon == 0 ? 0 : domainEpsilon;
 		publishInitialSnapshot();
@@ -126,6 +143,16 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	 *         command/provider order
 	 */
 	public List<GeoElement> getDurableDependencyGeos() {
+		List<GeoElement> base = generatorInputs();
+		if (constructiveCuts == null) {
+			return base;
+		}
+		Set<GeoElement> all = new LinkedHashSet<>(base);
+		all.addAll(constructiveCuts.getWitnesses());
+		return List.copyOf(all);
+	}
+
+	private List<GeoElement> generatorInputs() {
 		return directInputs(dependentPoint, state, coordinate, support, domainInput,
 				supportBranchInput);
 	}
@@ -236,7 +263,8 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 				candidateRevision, DefinitionStatus.VALID, provider,
 				Collections.singletonList(branch), evaluator,
 				Determinism.POINTWISE_DETERMINISTIC,
-				evaluator.getEvaluatorSignature() + "|slice=" + sliceFingerprint,
+				evaluator.getEvaluatorSignature() + "|slice=" + sliceFingerprint
+						+ (constructiveCuts == null ? "" : "|constructive-cuts/v1=" + certifiedCuts),
 				getLocus().getInstrumentation());
 	}
 
@@ -261,25 +289,38 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 			return null;
 		}
 		String limitation = upstreamLimitation();
-		if (certifiedEvaluator != current
-				|| !Objects.equals(certifiedLimitation, limitation)) {
+		List<LocusTraversalCut2D> cuts = constructiveCuts == null ? List.of()
+				: constructiveCuts.resolve(state, support, descriptor, provider);
+		boolean recertify = certifiedEvaluator != current
+				|| !Objects.equals(certifiedLimitation, limitation);
+		if (recertify || !Objects.equals(certifiedCuts, cuts)) {
 			LocusExistenceStructure2D previous = certificate == null ? null
 					: certificate.getStructure();
 			String previousSelection = certifiedSelection;
-			certificate = LocusCertificationScope2D.certify(getLocus().getInstrumentation(),
+			if (recertify) {
+				baseCertificate = LocusCertificationScope2D.certify(getLocus().getInstrumentation(),
 					() -> {
 						HybridExistenceCertifier2D.Result composed =
 								composition(current, limitation);
 						return composed != null ? composed
 								: declared(certificate(current, limitation), limitation);
 					});
-			certifiedSelection = current.captureCertifiedProgramV3()
-					.map(CertifiedConstructionProgram2D::getSelectionSignature).orElse(null);
+				certifiedSelection = current.captureCertifiedProgramV3()
+						.map(CertifiedConstructionProgram2D::getSelectionSignature).orElse(null);
+			}
+			certificate = cuts == null
+					? HybridExistenceCertifier2D.notEstablished(descriptor.getDeclaredDomain(),
+							descriptor.isPeriodic(), SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY,
+							LocusCoverageCause2D.CONSTRUCTIVE_CUT_WITNESS_NOT_ESTABLISHED,
+							"constructive-cuts/v1: witness not established", null,
+							HybridExistenceCertifier2D.Policy.DEFAULT, getLocus().getInstrumentation())
+					: baseCertificate.withConstructiveCuts(cuts);
 			certificateLineage = LocusComponentLineage2D.transitions(previous,
 					certificate.getStructure(),
 					Objects.equals(previousSelection, certifiedSelection));
 			certifiedEvaluator = current;
 			certifiedLimitation = limitation;
+			certifiedCuts = cuts;
 		}
 		return certificate;
 	}
@@ -383,13 +424,21 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 			Optional<CertifiedConstructionProgram2D> program =
 					current.captureCertifiedProgramV3();
 			if (!program.isPresent()) {
+				Optional<LocusExistenceStructure2D> periodicRotation =
+						AuthorityPolicy.of(cons).isConstructive()
+								? Optional.empty() : current.captureClosedMetricRotation();
+				if (periodicRotation.isPresent()) {
+					return HybridExistenceCertifier2D.particular(periodicRotation.get(), null,
+							policy, instrumentation);
+				}
 				String refusal = current.getProgramV3Refusal();
 				return HybridExistenceCertifier2D.notEstablished(domain, periodic, key,
 						"unsettled-selection".equals(refusal)
 								? LocusCoverageCause2D.NOT_CERTIFIED
 								: LocusCoverageCause2D.OPERATION_OUTSIDE_CLASS,
 						refusal == null ? "outside-class" : refusal, sampler, policy,
-						instrumentation);
+						instrumentation).withUnresolvedCompositionEvents(
+								current.getPotentialCompositionEvents());
 			}
 			return HybridExistenceCertifier2D.certify(
 					new ConstructionBoxModel2D(program.get()), current.getMetricStructuresV3(),
@@ -599,7 +648,7 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private SemanticGeneratorDescriptor1D currentDescriptor() {
 		SpatialIdentityRegistry registry = cons.getSpatialIdentityRegistry();
 		DomainSnapshot domain = resolveDomain();
-		List<GeoElement> required = getDurableDependencyGeos();
+		List<GeoElement> required = generatorInputs();
 		ArrayList<PersistentGeoId> dependencyIds = new ArrayList<>();
 		StringBuilder revisionSignature = new StringBuilder("records/v1");
 		for (GeoElement geo : required) {
@@ -738,7 +787,8 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private static GeoElement[] publicCommandInputs(GeoPointND dependentPoint,
 			GeoElement state, GeoElement coordinate, GeoElement support,
 			GeoList domainInput, GeoText supportBranchInput,
-			SemanticGeneratorFamily1D family, double domainEpsilon) {
+			SemanticGeneratorFamily1D family, double domainEpsilon,
+			ConstructiveLocusCuts2D constructiveCuts) {
 		Objects.requireNonNull(dependentPoint);
 		Objects.requireNonNull(state);
 		Objects.requireNonNull(coordinate);
@@ -757,6 +807,9 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 				inputs.add(coordinate);
 			}
 			inputs.add(domainInput);
+		}
+		if (constructiveCuts != null) {
+			inputs.addAll(constructiveCuts.getCommandArguments());
 		}
 		return inputs.toArray(new GeoElement[0]);
 	}
@@ -785,9 +838,15 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 
 	private static GeoElement[] evaluatorInputs(GeoPointND dependentPoint,
 			GeoElement state, GeoElement coordinate, GeoElement support,
-			GeoList domainInput, GeoText supportBranchInput) {
-		return collectRequiredInputs(dependentPoint, state, coordinate, support,
-				domainInput, supportBranchInput).toArray(new GeoElement[0]);
+			GeoList domainInput, GeoText supportBranchInput, ConstructiveLocusCuts2D cuts) {
+		Set<GeoElement> dependencies = new LinkedHashSet<>(collectRequiredInputs(dependentPoint,
+				state, coordinate, support, domainInput, supportBranchInput));
+		if (cuts != null) {
+			for (GeoElement witness : cuts.getWitnesses()) {
+				addWithPredecessors(dependencies, witness);
+			}
+		}
+		return dependencies.toArray(new GeoElement[0]);
 	}
 
 	private static void addWithPredecessors(Set<GeoElement> result,

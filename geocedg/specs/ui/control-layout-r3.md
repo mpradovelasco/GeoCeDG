@@ -80,7 +80,7 @@ los límites de 32 paneles y 256 ranuras.
 Los lectores anteriores a CU8 que ignoran las marcas abren la
 construcción nativa y pueden perder la disposición al guardar.
 Los lectores CU8 que solo admiten v1 rechazan un encabezado v2.
-El aviso de Desktop identifica ambas situaciones.
+La guía de uso recoge ambas situaciones.
 
 ## Verificación
 

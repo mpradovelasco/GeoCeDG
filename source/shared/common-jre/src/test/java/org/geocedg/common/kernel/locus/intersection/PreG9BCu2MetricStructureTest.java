@@ -5,6 +5,7 @@
 
 package org.geocedg.common.kernel.locus.intersection;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -547,7 +548,7 @@ class PreG9BCu2MetricStructureTest extends BaseUnitTest {
 
 	private AlgoLocusBetweenMetricV2 metric(String label) {
 		return (AlgoLocusBetweenMetricV2) assertInstanceOf(GeoLocusMetricResult.class,
-				lookup(label), label).getParentAlgorithm();
+				richResultOf(lookup(label)), label).getParentAlgorithm();
 	}
 
 	private LocusMetricFunctionStructure2D structure(String label) {

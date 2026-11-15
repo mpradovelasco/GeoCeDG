@@ -206,6 +206,22 @@ public final class SemanticMetricEndpointResolver2D {
 	private static Resolution semanticPoint(GeoLocusV2 source, GeoPoint endpoint,
 			boolean topLevel) {
 		AlgoElement parent = endpoint.getParentAlgorithm();
+		if (parent instanceof AlgoProvenLocusEndpoint2D proven && proven.getSource() == source) {
+			if (proven.getAddress() == null || proven.getBinding() == null
+					|| proven.getBinding().getSemanticRevision() != source.getSemanticRevision()) {
+				return Resolution.failed(Status.UNRESOLVED_INVALID, Family.SEMANTIC_POINT,
+						proven.getCause().name());
+			}
+			PersistentGeoId pointId = identity(endpoint);
+			if (pointId == null) {
+				return Resolution.failed(Status.UNRESOLVED_INVALID, Family.SEMANTIC_POINT,
+						"Constructive endpoint identity is not attached");
+			}
+			return new Resolution(Status.UNIQUE, Family.SEMANTIC_POINT,
+					AlgoProvenLocusEndpoint2D.RECIPE_PREFIX + pointId.toExternalForm(),
+					proven.getAddress(), topLevel ? proven.getBinding() : null, true,
+					"Explicit current constructive endpoint");
+		}
 		if (!(parent instanceof AlgoSemanticLocusPoint2D)
 				|| ((AlgoSemanticLocusPoint2D) parent).getSource() != source) {
 			return Resolution.noAddress("The endpoint is not a semantic point of the source");

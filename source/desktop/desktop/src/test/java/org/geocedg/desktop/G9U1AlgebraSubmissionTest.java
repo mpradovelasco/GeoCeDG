@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.kernel.commands.EvalInfo;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -130,8 +131,8 @@ class G9U1AlgebraSubmissionTest {
 	@Test
 	void noneditableSemanticDefinitionCannotBeSilentlyReplaced() throws Exception {
 		AppGeoCeDG app = G9U1TestApp.create();
-		eval(app, "S=SplineV2({(0,0),(1,0),(2,0)},3)");
-		eval(app, "M=LocusLength(S)");
+		GeoLocusV2 spline = (GeoLocusV2) eval(app, "S=SplineV2({(0,0),(1,0),(2,0)},3)");
+		LocusV2PublicOperations.totalMetric(app.getKernel().getConstruction(), "M", spline);
 		String xml = app.getXML();
 		ErrorAccumulator errors = new ErrorAccumulator();
 		AtomicReference<GeoElementND[]> result = new AtomicReference<>();

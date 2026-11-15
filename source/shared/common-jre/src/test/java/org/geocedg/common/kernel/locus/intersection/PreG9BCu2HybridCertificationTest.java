@@ -5,6 +5,7 @@
 
 package org.geocedg.common.kernel.locus.intersection;
 
+import static org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter.richResultOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -437,7 +438,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		GeoPoint point = add("A=Point(lq,\"" + BRANCH + "\",tStar)");
 		AlgoSemanticLocusPoint2D parent = assertInstanceOf(AlgoSemanticLocusPoint2D.class,
 				point.getParentAlgorithm());
-		GeoLocusMetricResult length = add("lengthQ=LocusLength(lq)");
+		GeoLocusMetricResult length = richResultOf(add("lengthQ=LocusLength(lq)"));
 		LocusExistenceStructure2D reference = structure("lq");
 		LocusPointComponent2D certified = reference.getPointComponents().get(0);
 		assertEquals(LocusPointComponent2D.PositionState.CERTIFIED_ENCLOSURE,
@@ -586,7 +587,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 							&& coverage.getEvidence().endsWith(
 									"upstream-point-components-not-composed")),
 					context + " " + limited);
-			GeoLocusMetricResult length = add("lengthQ=LocusLength(lq)");
+			GeoLocusMetricResult length = richResultOf(add("lengthQ=LocusLength(lq)"));
 			LocusMetricResult2D total = length.getMetricResult();
 			assertEquals(MetricComputationStatus.SUCCESS, total.getComputationStatus(),
 					context + " " + total.getDiagnostics());
@@ -871,7 +872,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 					}
 				}
 			}
-			LocusMetricResult2D length = ((GeoLocusMetricResult) lookup("lengthQ"))
+			LocusMetricResult2D length = (richResultOf(lookup("lengthQ")))
 					.getMetricResult();
 			String status = radius + " " + length.getComputationStatus() + " "
 					+ length.getDiagnostics();
@@ -1150,7 +1151,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		references.put("lengthQ", sweptLength(near, context));
 		references.put("lengthR", sweptLength(far, context));
 		for (Map.Entry<String, BigDecimal> reference : references.entrySet()) {
-			LocusMetricResult2D length = ((GeoLocusMetricResult) lookup(reference.getKey()))
+			LocusMetricResult2D length = (richResultOf(lookup(reference.getKey())))
 					.getMetricResult();
 			String status = reference.getKey() + " " + length.getComputationStatus() + " "
 					+ length.getGuaranteeClass() + " " + length.getDiagnostics();
@@ -1847,7 +1848,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			add("A=Point(lr2,\"" + BRANCH + "\",2)");
 			add("wl=LocusLength(lr2,A,R2)");
 			new AlgoLocusMetricScalarAdapter(getConstruction(), "dl",
-					(GeoLocusMetricResult) lookup("wl"));
+					richResultOf(lookup("wl")));
 			add("Rl=N-dl*(1,0)");
 			add("el=LocusV2(Rl,N)");
 		});
@@ -2075,7 +2076,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 		add("A=Point(o,\"" + BRANCH + "\"," + origin + ")");
 		add("w=LocusLength(o,A,K" + policy + ")");
 		new AlgoLocusMetricScalarAdapter(getConstruction(), "d",
-				(GeoLocusMetricResult) lookup("w"));
+				richResultOf(lookup("w")));
 		add("R=N-d*(1,0)");
 		add("e=LocusV2(R,N)");
 	}
@@ -2165,10 +2166,12 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 								+ Double.toHexString(point.getInhomY()) : "undefined")
 						.append(" cause=").append(parent.getResolutionCause())
 						.append(" selector=").append(parent.getSelectorStatus()).append('\n');
-			} else if (geo.getParentAlgorithm() instanceof AlgoLocusBetweenMetricV2) {
-				text.append(geo.getLabelSimple()).append(" metric=").append(
-						((AlgoLocusBetweenMetricV2) geo.getParentAlgorithm())
-								.getFunctionStructure().getSignature()).append('\n');
+			} else {
+				GeoLocusMetricResult rich = richResultOf(geo);
+				if (rich != null && rich.getParentAlgorithm() instanceof AlgoLocusBetweenMetricV2 metric) {
+					text.append(geo.getLabelSimple()).append(" metric=")
+							.append(metric.getFunctionStructure().getSignature()).append('\n');
+				}
 			}
 		}
 		return text.toString();
@@ -2647,7 +2650,7 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 				}
 				if (configuration == Configuration.CRITICAL) {
 					add("lengthQ=LocusLength(lq)");
-					LocusMetricResult2D length = ((GeoLocusMetricResult) lookup("lengthQ"))
+					LocusMetricResult2D length = (richResultOf(lookup("lengthQ")))
 							.getMetricResult();
 					assertEquals(MetricComputationStatus.NUMERICAL_FAILURE,
 							length.getComputationStatus(), context);
