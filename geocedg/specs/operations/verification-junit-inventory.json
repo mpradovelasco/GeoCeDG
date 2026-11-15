@@ -24,6 +24,88 @@
   ],
   "selections": [
     {
+      "selection_id": "geocedg-1-2-0.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2MetricStructureTest",
+        "org.geocedg.common.locus.GeoCeDG120ConstructiveCutsTest",
+        "org.geocedg.common.locus.GeoCeDG120EndpointAssistanceTest",
+        "org.geocedg.common.locus.GeoCeDG120MetricPublicContractTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.kernel.locus.intersection.PreG9BCu2MetricStructureTest",
+        "--tests",
+        "org.geocedg.common.locus.GeoCeDG120ConstructiveCutsTest",
+        "--tests",
+        "org.geocedg.common.locus.GeoCeDG120EndpointAssistanceTest",
+        "--tests",
+        "org.geocedg.common.locus.GeoCeDG120MetricPublicContractTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 24,
+      "expected_identities_sha256": "0b4687c5b50151ad3cf3b5acd9e110e66173d4d627ed3273bfb1402f142b5561",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "2a71696cc9bf91d368f4ea2c0a1858f36dfae962",
+          "tree": "569ad073ce634c5283351e8505624825dfddb7a0"
+        }
+      ]
+    },
+    {
+      "selection_id": "geocedg-1-2-0.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "org.geocedg.desktop.PreG9BCu6ArgumentDialogTest",
+        "org.geocedg.desktop.PreG9BCu9GuideExamplesTest",
+        "org.geocedg.desktop.PreG9BR4SplineV2AuthoringTest",
+        "org.geocedg.desktop.PreG9BR6PlusGProductMetadataTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu6ArgumentDialogTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu9GuideExamplesTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR4SplineV2AuthoringTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusGProductMetadataTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 79,
+      "expected_identities_sha256": "4bbe142179f1ac3c661febbd4b8ffdf5cce42e845eb858d17ff775f5870bf8a7",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "2a71696cc9bf91d368f4ea2c0a1858f36dfae962",
+          "tree": "569ad073ce634c5283351e8505624825dfddb7a0"
+        }
+      ]
+    },
+    {
       "selection_id": "discovery.shared",
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
