@@ -52,8 +52,9 @@ class G9U1ProfileCompilerTest {
 		// Identity-stable name; PRE-G9B-R4 adds the ordered list mode and three SplineV2 modes;
 		// PRE-G9B-R6-plus-A-1 adds the working-layer mode; the menu-only ISO A sheet mode of
 		// PRE-G9B-R6-plus-E3 adds a catalog mode but no toolbar entry.
-		assertEquals(49, modes.length);
-		assertEquals(49, new HashSet<>(Arrays.asList(modes)).size());
+		// GeoCeDG 1.2.0 adds the existing Compass and Hyperbola modes to the toolbar.
+		assertEquals(51, modes.length);
+		assertEquals(51, new HashSet<>(Arrays.asList(modes)).size());
 		assertEquals(75, GeoCeDGProfile.getActions().stream()
 				.filter(action -> action.mode() != null).count());
 		assertFalse(Arrays.asList(modes).contains("47"));

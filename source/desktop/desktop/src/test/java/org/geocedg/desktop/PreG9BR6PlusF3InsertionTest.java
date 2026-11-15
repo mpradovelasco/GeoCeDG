@@ -239,6 +239,8 @@ class PreG9BR6PlusF3InsertionTest {
 		assertEquals(GeoCeDGDocumentInsertion.Outcome.INSERTED, result.getOutcome(),
 				() -> result.getMessage() + " " + result.getFailure());
 		assertEquals(uuid, target.getUniqueId());
+		assertEquals(0, target.getKernel().lookupLabel("len").getLayer());
+		assertEquals(0, target.getKernel().lookupLabel("lenS").getLayer());
 		assertOneUndoStep(target, before);
 		Map<GeoElement, PersistentGeoId> idsAfter = GeoCeDGDocumentInsertion.identities(target);
 		assertTrue(idsAfter.size() > idsBefore.size());
@@ -247,6 +249,11 @@ class PreG9BR6PlusF3InsertionTest {
 		}
 		assertEquals(before.certificate.linkedSheet, target.getLinkedIsoABorder(),
 				"the target's export link survives a success");
+		onEdt(() -> undo(target).undo());
+		assertNull(target.getKernel().lookupLabel("len"));
+		onEdt(() -> undo(target).redo());
+		assertEquals(0, target.getKernel().lookupLabel("len").getLayer());
+		assertEquals(0, target.getKernel().lookupLabel("lenS").getLayer());
 		// save and reopen keep the identities and the document identity
 		File saved = dir.resolve("t7-after.cedg").toFile();
 		assertTrue(target.saveGeoGebraFile(saved));
@@ -254,6 +261,8 @@ class PreG9BR6PlusF3InsertionTest {
 		assertTrue(reopened.loadFile(saved, false));
 		assertEquals(uuid, reopened.getUniqueId());
 		assertEquals(idsAfter.size(), GeoCeDGDocumentInsertion.identities(reopened).size());
+		assertEquals(0, reopened.getKernel().lookupLabel("len").getLayer());
+		assertEquals(0, reopened.getKernel().lookupLabel("lenS").getLayer());
 		assertEquals(GeoCeDGRecoverySnapshot.documentId(Files.readAllBytes(saved.toPath())),
 				uuid);
 	}

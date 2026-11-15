@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.geocedg.common.kernel.algos.AlgoLocusMetricScalarAdapter;
 import org.geocedg.common.kernel.units.UnitState;
 import org.geogebra.common.kernel.Macro;
+import org.geogebra.common.kernel.algos.ConstructionElement;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.main.App;
 import org.geogebra.desktop.util.CopyPasteD;
@@ -63,6 +65,11 @@ final class GeoCeDGInsertionCopyPaste extends CopyPasteD {
 	@Override
 	protected boolean requiresStrictImport() {
 		return strictImport;
+	}
+
+	@Override
+	protected boolean writesNumericLayers(ConstructionElement element) {
+		return element instanceof AlgoLocusMetricScalarAdapter;
 	}
 
 	@Override

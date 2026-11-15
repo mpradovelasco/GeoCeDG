@@ -375,6 +375,7 @@ public class CopyPasteD extends CopyPaste {
 			for (int i = 0; i < cons.steps(); ++i) {
 				ce = cons.getConstructionElement(i);
 				if (geoslocal.contains(ce)) {
+					xmlBuilder.setWriteNumericLayers(writesNumericLayers(ce));
 					ce.getXML(false, xmlBuilder);
 				}
 			}
@@ -413,6 +414,7 @@ public class CopyPasteD extends CopyPaste {
 				for (int i = 0; i < cons.steps(); ++i) {
 					ce = cons.getConstructionElement(i);
 					if (geoslocalsw.contains(ce)) {
+						xmlBuilder.setWriteNumericLayers(writesNumericLayers(ce));
 						ce.getXML(false, xmlBuilder);
 					}
 				}
@@ -569,6 +571,11 @@ public class CopyPasteD extends CopyPaste {
 	 */
 	protected void onClipboardXmlImported(App app, List<String> addresses) {
 		// upstream: nothing
+	}
+
+	/** Whether an operation requires explicit numeric layers for this copied producer. */
+	protected boolean writesNumericLayers(ConstructionElement element) {
+		return false;
 	}
 
 	/** @return whether the caller requires strict native diagnostics and owns recovery */

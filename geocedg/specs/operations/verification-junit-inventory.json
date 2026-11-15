@@ -67,6 +67,7 @@
       "gradle_task": ":desktop:desktop:test",
       "test_filters": [
         "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "org.geocedg.desktop.GeoCeDG120MetricInsertionTest",
         "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
         "org.geocedg.desktop.PreG9BCu6ArgumentDialogTest",
         "org.geocedg.desktop.PreG9BCu9GuideExamplesTest",
@@ -78,6 +79,8 @@
         ":desktop:desktop:test",
         "--tests",
         "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDG120MetricInsertionTest",
         "--tests",
         "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
         "--tests",
