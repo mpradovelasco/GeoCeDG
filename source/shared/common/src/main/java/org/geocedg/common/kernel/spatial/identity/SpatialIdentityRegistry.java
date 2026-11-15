@@ -21,6 +21,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.geocedg.common.kernel.algos.AlgoProvenLocusEndpoint2D;
+import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geogebra.common.io.DocHandler;
 import org.geogebra.common.io.QDParser;
 import org.geogebra.common.io.XMLParseException;
@@ -7612,10 +7614,25 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 					}
 					IdentityHashMap<GeoElement, PersistentGeoId> remappedAttachments =
 							new IdentityHashMap<>();
+					Map<PersistentGeoId, GeoElement> originalAttachmentsById = new LinkedHashMap<>();
 					for (Map.Entry<GeoElement, PersistentGeoId> entry
 							: attachments.entrySet()) {
 						remappedAttachments.put(entry.getKey(),
 								(PersistentGeoId) remap.get(entry.getValue()));
+						originalAttachmentsById.put(entry.getValue(), entry.getKey());
+					}
+					for (SpatialIdentityRecord record : remappedRecords) {
+						if (!(record instanceof GeoIdentityRecord copied)) {
+							continue;
+						}
+						GeoElement geo = originalAttachmentsById.get(copied.getCopySourceId());
+						AlgoElement parent = geo == null ? null : geo.getParentAlgorithm();
+						if (parent instanceof AlgoProvenLocusEndpoint2D endpoint) {
+							endpoint.remapClipboardRecipe(attachments, remappedAttachments);
+						} else if (parent instanceof AlgoSemanticLocusPoint2D semanticPoint) {
+							semanticPoint.remapClipboardSelection(copied.getStableOutputRole(),
+									attachments, remappedAttachments);
+						}
 					}
 					publishBatch(withCopiedFrontiers(remappedRecords, remappedAttachments),
 							remappedAttachments, true, true);

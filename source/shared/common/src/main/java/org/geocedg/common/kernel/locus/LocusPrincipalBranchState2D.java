@@ -20,9 +20,12 @@ public final class LocusPrincipalBranchState2D {
 	/** @return deterministic opaque text retaining branch/component/provider */
 	public static String encode(LocusSemanticAddress2D address) {
 		Objects.requireNonNull(address);
-		return PREFIX + text(address.getBranchKey()) + "|"
-				+ text(address.getComponentLineageKey()) + "|"
-				+ text(address.getProviderVersion());
+		return encode(address.getBranchKey(), address.getComponentLineageKey(),
+				address.getProviderVersion());
+	}
+
+	private static String encode(String branch, String component, String provider) {
+		return PREFIX + text(branch) + "|" + text(component) + "|" + text(provider);
 	}
 
 	/** @return decoded selector, or {@code null} for another input form */
@@ -91,6 +94,11 @@ public final class LocusPrincipalBranchState2D {
 
 		public String getComponentLineageKey() {
 			return componentLineageKey;
+		}
+
+		/** @return encoded selector with the specified component and the retained branch and provider */
+		public String encodeWithComponent(String component) {
+			return encode(branchKey, component, providerVersion);
 		}
 
 		/** @return whether the current address is exactly this retained selector */

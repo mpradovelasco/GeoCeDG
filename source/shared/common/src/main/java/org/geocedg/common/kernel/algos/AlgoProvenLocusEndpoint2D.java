@@ -4,6 +4,8 @@
  */
 package org.geocedg.common.kernel.algos;
 
+import java.util.Map;
+
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusPrincipalBranchState2D;
@@ -13,6 +15,7 @@ import org.geocedg.common.kernel.locus.SemanticGeneratorFamily1D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionEndpointProvenanceResolver2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPositionBinder2D;
 import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
+import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
@@ -127,6 +130,26 @@ public final class AlgoProvenLocusEndpoint2D extends AlgoElement {
 		}
 	}
 
+	/** Rebases a parsed inline recipe using the validated clipboard attachments of its closure. */
+	public void remapClipboardRecipe(Map<GeoElement, PersistentGeoId> originalAttachments,
+			Map<GeoElement, PersistentGeoId> copiedAttachments) {
+		if (!(source.getParentAlgorithm() instanceof AlgoDependentPointLocusV2 generator)
+				|| recipe.isLabelSet() || !recipe.isIndependent()
+				|| recipe.getAlgorithmList().size() != 1) {
+			return;
+		}
+		var selector = decodeRecipe(recipe.getTextString());
+		if (selector == null) {
+			return;
+		}
+		String retained = selector.getComponentLineageKey();
+		String remapped = generator.remapClipboardCutComponent(selector.getBranchKey(),
+				retained, originalAttachments, copiedAttachments);
+		if (!retained.equals(remapped)) {
+			recipe.setTextString(RECIPE_PREFIX + selector.encodeWithComponent(remapped));
+		}
+	}
+
 	private static boolean provesSubstitution(GeoLocusV2 source, GeoPoint reference,
 			GeoPoint witness, GeoVector vector) {
 		if (!(source.getParentAlgorithm() instanceof AlgoDependentPointLocusV2 generator)
@@ -141,9 +164,14 @@ public final class AlgoProvenLocusEndpoint2D extends AlgoElement {
 		if (descriptor == null || driver.getPath() == null
 				|| driver.getPath() != witness.getPath()
 				|| !(witness.getParentAlgorithm() instanceof AlgoPointOnPath pathPoint)
-				|| pathPoint.getPath() != driver.getPath()
+				|| pathPoint.getP() != witness || pathPoint.getPath() != driver.getPath()
 				|| witness.isChildOf(driver) || vector.isChildOf(driver)) {
 			return false;
+		}
+		for (GeoElement input : pathPoint.getInput()) {
+			if (!input.isDefined()) {
+				return false;
+			}
 		}
 		if (descriptor.getFamily() != SemanticGeneratorFamily1D.CIRCLE_POINT
 				&& descriptor.getFamily() != SemanticGeneratorFamily1D.SEGMENT_POINT) {

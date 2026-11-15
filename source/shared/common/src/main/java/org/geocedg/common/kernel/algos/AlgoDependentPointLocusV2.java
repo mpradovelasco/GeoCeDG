@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -61,6 +63,7 @@ import org.geogebra.common.kernel.algos.AlgoIntersectSingle;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoList;
+import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.kernel.geos.GeoText;
 import org.geogebra.common.kernel.kernelND.GeoPointND;
 
@@ -136,6 +139,24 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	/** @return current late-bound descriptor, or {@code null} before attachment */
 	public SemanticGeneratorDescriptor1D getGeneratorDescriptor() {
 		return descriptor;
+	}
+
+	/** @return the retained component with only its copied cut witnesses remapped */
+	public String remapClipboardCutComponent(String branch, String component,
+			Map<GeoElement, PersistentGeoId> originalAttachments,
+			Map<GeoElement, PersistentGeoId> copiedAttachments) {
+		if (constructiveCuts == null || !copiedAttachments.containsKey(getLocus())) {
+			return component;
+		}
+		Map<String, String> witnesses = new LinkedHashMap<>();
+		for (GeoPoint cut : constructiveCuts.getWitnesses()) {
+			PersistentGeoId original = originalAttachments.get(cut);
+			PersistentGeoId copied = copiedAttachments.get(cut);
+			if (original != null && copied != null) {
+				witnesses.put(original.toExternalForm(), copied.toExternalForm());
+			}
+		}
+		return LocusComponentLineage2D.remapDeclaredCuts(branch, component, witnesses);
 	}
 
 	/**

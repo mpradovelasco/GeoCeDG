@@ -660,7 +660,7 @@ public final class LocusV2PublicOperations {
 			GeoLocusV2 source, GeoPoint reference, GeoPoint witness,
 			org.geogebra.common.kernel.geos.GeoVector vector, GeoText recipe) {
 		requireAccess(construction);
-		if (recipe.isLabelSet()
+		if (recipe.isLabelSet() || !recipe.isIndependent()
 				|| AlgoProvenLocusEndpoint2D.decodeRecipe(recipe.getTextString()) == null) {
 			throw new IllegalArgumentException("Invalid constructive endpoint recipe");
 		}
