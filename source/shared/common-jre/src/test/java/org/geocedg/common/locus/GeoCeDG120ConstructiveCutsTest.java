@@ -6,19 +6,24 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.geocedg.common.kernel.algos.AlgoLocusIntersectionPointV2;
+import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.intersection.LocusSemanticIntersectionToken2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.geogebra.common.util.InternalClipboard;
@@ -200,6 +205,83 @@ class GeoCeDG120ConstructiveCutsTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(witnessId, registry.getGeoRecord(copyWitnessId).getCopySourceId());
 		assertTrue(copyRecord.getDependencies().contains(copyWitnessId));
 		assertEquals(List.of(0.0, 0.25), componentStarts(topology(copy)));
+		assertEquals(LocusComponentLineage2D.keys(topology(locus)),
+				LocusComponentLineage2D.keys(topology(copy)));
+	}
+
+	@Test
+	void exactMaterializedRootSurvivesTwoClosureCopiesAndReopenWithOrWithoutCut() {
+		String empty = getApp().getXML();
+		for (boolean cut : List.of(false, true)) {
+			getApp().setXML(empty, true);
+			add("S=Segment((0,0),(4,0))");
+			add("E=Point(S)");
+			add("u=Vector((0,0),(0,1))");
+			add("Q=Translate(E,u)");
+			if (cut) {
+				add("J=Point(S,0.5)");
+				add("L=LocusV2(Q,E,\"constructive-cuts/v1\",J)");
+			} else {
+				add("L=LocusV2(Q,E)");
+			}
+			add("vertical=Line((1,0),(1,2))");
+			GeoLocusIntersectionResult rich = add("R=Intersect(L,vertical)");
+			var roots = rich.getIntersectionResult().getFiniteSolutions();
+			assertEquals(1, roots.size());
+			String token = roots.get(0).getIdentity().getRootToken();
+			assertTrue(rich.findExactPointAdmissibleSolution(token).isPresent());
+			GeoPoint point = add("X=Intersect(R,\"" + token + "\")");
+			assertTrue(point.isDefined());
+			var original = LocusSemanticIntersectionToken2D.decode(token).orElseThrow();
+			for (int generation = 0; generation < 2; generation++) {
+				String copiedXml = InternalClipboard.getTextToSave(getApp(), List.of(point), text -> text);
+				int separator = copiedXml.indexOf('\n');
+				getApp().setXML(empty, true);
+				InternalClipboard.pasteGeoGebraXMLInternal(getApp(),
+						new ArrayList<>(List.of(copiedXml.substring(0, separator).split(" "))),
+						copiedXml.substring(separator));
+				point = (GeoPoint) requireLookup("X");
+				String expected = assertExactCopiedRoot(point);
+				assertNotEquals(token, expected);
+				assertEquals(original.getIncarnation(), LocusSemanticIntersectionToken2D
+						.decode(expected).orElseThrow().getIncarnation());
+				getApp().setXML(getApp().getXML(), true);
+				point = (GeoPoint) requireLookup("X");
+				assertEquals(expected, assertExactCopiedRoot(point));
+				token = expected;
+			}
+		}
+	}
+
+	private static String assertExactCopiedRoot(GeoPoint point) {
+		assertTrue(point.isDefined());
+		assertEquals(1, point.getInhomX(), 1e-12);
+		assertEquals(1, point.getInhomY(), 1e-12);
+		var parent = (AlgoLocusIntersectionPointV2) point.getParentAlgorithm();
+		String token = parent.getEffectiveRootToken();
+		assertEquals(parent.getSelectedRootToken(), token);
+		assertTrue(parent.getRichInput().findExactPointAdmissibleSolution(token).isPresent());
+		return token;
+	}
+
+	@Test
+	void clipboardCutBindingsWithoutAnAttachedOwnerCannotEditALiveLocus() {
+		add("S=Segment((0,0),(4,0))");
+		add("E=Point(S)");
+		GeoPoint witness = add("K=Point(S,0.5)");
+		add("u=Vector((0,0),(0,1))");
+		add("Q=Translate(E,u)");
+		GeoLocusV2 locus = add("L=LocusV2(Q,E,\"constructive-cuts/v1\",K)");
+		String witnessId = getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(witness)
+				.toExternalForm();
+		String injected = "<element type=\"locusv2\" label=\"L\"><locusCutWitnessBindings state=\""
+				+ "cut-witness-bindings/v1|" + witnessId + "=geo:11111111111111111111111111111111"
+				+ "\"/></element>";
+		String before = getApp().getXML();
+		assertThrows(SpatialIdentityException.class,
+				() -> InternalClipboard.evalClipboardXMLAtomically(getApp(), injected));
+		assertEquals(before, getApp().getXML());
+		assertEquals(List.of(0.0, 0.5), componentStarts(topology(locus)));
 	}
 
 	private static LocusExistenceStructure2D topology(GeoLocusV2 locus) {

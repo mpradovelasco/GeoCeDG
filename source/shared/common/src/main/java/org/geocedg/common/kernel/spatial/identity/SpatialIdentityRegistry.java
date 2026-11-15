@@ -21,8 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.geocedg.common.kernel.algos.AlgoProvenLocusEndpoint2D;
-import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
+import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geogebra.common.io.DocHandler;
 import org.geogebra.common.io.QDParser;
 import org.geogebra.common.io.XMLParseException;
@@ -7126,6 +7125,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 		private boolean identityBearing;
 		private boolean sectionSeen;
 		private int sectionDepth = -1;
+		private int geoAttachmentDepth = -1;
 
 		@Override
 		public void startElement(String tag, Map<String, String> attributes)
@@ -7133,6 +7133,13 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			String parent = elements.isEmpty() ? null
 					: elements.get(elements.size() - 1);
 			elements.add(tag);
+			if ("locusCutWitnessBindings".equals(tag)) {
+				identityBearing = true;
+				if (!"element".equals(parent) || geoAttachmentDepth != elements.size() - 1) {
+					throw preflightFailure(SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+							"Cut witness bindings require a directly attached clipboard owner");
+				}
+			}
 			if (attributes.containsKey("geocedgId")) {
 				identityBearing = true;
 				if (!"element".equals(tag) || attributes.get("label") == null
@@ -7144,6 +7151,7 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 				try {
 					attachmentIds.add(PersistentGeoId.parse(
 							attributes.get("geocedgId")));
+					geoAttachmentDepth = elements.size();
 				} catch (IllegalArgumentException exception) {
 					throw preflightFailure(SpatialIdentityDiagnostic.Code.MALFORMED_ID,
 							"Malformed clipboard geocedgId attachment", exception);
@@ -7219,6 +7227,9 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 			}
 			if ("geocedgSpatial".equals(tag)) {
 				sectionDepth = -1;
+			}
+			if (geoAttachmentDepth == elements.size()) {
+				geoAttachmentDepth = -1;
 			}
 			elements.remove(elements.size() - 1);
 		}
@@ -7614,24 +7625,14 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 					}
 					IdentityHashMap<GeoElement, PersistentGeoId> remappedAttachments =
 							new IdentityHashMap<>();
-					Map<PersistentGeoId, GeoElement> originalAttachmentsById = new LinkedHashMap<>();
 					for (Map.Entry<GeoElement, PersistentGeoId> entry
 							: attachments.entrySet()) {
 						remappedAttachments.put(entry.getKey(),
 								(PersistentGeoId) remap.get(entry.getValue()));
-						originalAttachmentsById.put(entry.getValue(), entry.getKey());
 					}
-					for (SpatialIdentityRecord record : remappedRecords) {
-						if (!(record instanceof GeoIdentityRecord copied)) {
-							continue;
-						}
-						GeoElement geo = originalAttachmentsById.get(copied.getCopySourceId());
-						AlgoElement parent = geo == null ? null : geo.getParentAlgorithm();
-						if (parent instanceof AlgoProvenLocusEndpoint2D endpoint) {
-							endpoint.remapClipboardRecipe(attachments, remappedAttachments);
-						} else if (parent instanceof AlgoSemanticLocusPoint2D semanticPoint) {
-							semanticPoint.remapClipboardSelection(copied.getStableOutputRole(),
-									attachments, remappedAttachments);
+					for (GeoElement geo : remappedAttachments.keySet()) {
+						if (geo.getParentAlgorithm() instanceof AlgoDependentPointLocusV2 locus) {
+							locus.copyCutWitnessBindings(attachments, remappedAttachments);
 						}
 					}
 					publishBatch(withCopiedFrontiers(remappedRecords, remappedAttachments),

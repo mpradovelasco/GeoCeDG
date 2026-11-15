@@ -584,8 +584,12 @@ retains its inclusion and geometric evidence. A coincident declaration adds
 provenance and no separate point or empty component. A declaration in a region
 without a certified continuous component creates no fact about the geometry.
 
-The two new end sources record the ordered durable identities of the witness or
-witnesses at their direction and the corresponding side. Membership at a
+The two new end sources record the ordered declaration identities at their
+direction and the corresponding side. Each identity is scoped to one locus and
+is persistently bound to its typed witness. A validated closure copy remaps the
+witness operands and their bindings and keeps the local declaration identities.
+The copied locus has its own durable owner identity. Its component selectors
+and root allocations use the same local keys under that new owner. Membership at a
 declared end uses its exact canonical side, independent of a query epsilon.
 The declared end's limit uses the image at the cut because the unpartitioned
 component establishes continuity there. At a certified discontinuity the

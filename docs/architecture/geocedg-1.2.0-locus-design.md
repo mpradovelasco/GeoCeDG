@@ -20,7 +20,7 @@ La comprobación de la receta se ejecuta dentro del DAG. La búsqueda y la confi
 
 La vigencia del testigo requiere que todos los operandos de su productor nativo estén definidos. El punto de ese productor puede conservar un parámetro anterior al perder su entrada numérica. La receta retira su dirección en esa revisión y recupera la misma prueba cuando vuelven sus premisas.
 
-Al pegar una copia de la construcción, el importador usa el mapa validado de identidades originales a nuevas para trasladar los testigos declarados en el selector. Cada testigo citado debe ser un operando del locus copiado. El selector conserva rama, proveedor y lados del corte. Un grupo de testigos coincidentes debe estar ordenado en origen y se vuelve a ordenar con las identidades nuevas. El traslado se prepara en las entradas dedicadas antes de publicar las identidades y abarca la receta de equivalencia, el selector principal y la dirección de colocación. Se conserva la comprobación ordinaria de la prueba, incluso si el extremo estaba indefinido al copiarse. La reapertura reconstruye el selector ya trasladado.
+Al pegar una copia de la construcción, el importador traslada la vinculación de cada declaración de corte a su testigo copiado. La identidad de la declaración se conserva dentro del locus copiado, que tiene su propia identidad durable. La receta de equivalencia, el selector principal, la dirección de colocación y las raíces de intersección conservan las claves locales y resuelven con sus reglas ordinarias de persistencia. La comprobación de las premisas sigue vigente, incluso si el extremo estaba indefinido al copiarse.
 
 ## F3. Superficie numérica y compatibilidad
 

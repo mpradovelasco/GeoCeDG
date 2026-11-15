@@ -27,7 +27,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
+import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GColor;
@@ -141,6 +144,7 @@ public class ConsElementXMLHandler {
 	private GeoElement geo;
 	// GeoCeDG CU7: strict, additive native state; old untagged coords are unchanged.
 	private boolean conicPointStateProcessed;
+	private boolean hasSpatialGeoAttachment;
 	private boolean nativeRollbackStateProcessed;
 	private boolean coordinatesProcessed;
 	private boolean curveParameterProcessed;
@@ -537,6 +541,7 @@ public class ConsElementXMLHandler {
 		lineStyleTagProcessed = false;
 		lineOpacityTagProcessed = false;
 		geo = getGeoElement(attrs);
+		hasSpatialGeoAttachment = attrs.containsKey("geocedgId");
 		xmlHandler.stageSpatialGeoAttachment(geo, attrs.get("geocedgId"));
 		if (geo instanceof GeoPoint) {
 			nativeRollbackStateProcessed = geo.getConstruction().bindNativeRollbackDurable(
@@ -2287,6 +2292,22 @@ public class ConsElementXMLHandler {
 				.restoreTokenLedgerState(attrs.get("state"));
 	}
 
+	private void handleLocusCutWitnessBindings(Map<String, String> attrs) {
+		if (!hasSpatialGeoAttachment || !(geo.getParentAlgorithm() instanceof AlgoDependentPointLocusV2 locus)
+				|| locus.getLocus() != geo || attrs.size() != 1 || !attrs.containsKey("state")) {
+			throw new SpatialIdentityException(SpatialIdentityDiagnostic.of(
+					SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+					"Cut witness XML requires an attached point-driven locus and state"));
+		}
+		try {
+			locus.restoreCutWitnessBindings(attrs.get("state"));
+		} catch (IllegalArgumentException invalid) {
+			throw new SpatialIdentityException(SpatialIdentityDiagnostic.of(
+					SpatialIdentityDiagnostic.Code.MALFORMED_RECORD,
+					"Invalid cut witness bindings"), invalid);
+		}
+	}
+
 	/**
 	 * Handle start tag inside &lt;element&gt;
 	 * 
@@ -2493,6 +2514,9 @@ public class ConsElementXMLHandler {
 				break;
 			case "locusIntersectionTokenLedger":
 				handleLocusIntersectionTokenLedger(attrs);
+				break;
+			case "locusCutWitnessBindings":
+				handleLocusCutWitnessBindings(attrs);
 				break;
 			case "listener":
 				handleListeners(attrs);

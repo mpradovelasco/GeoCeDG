@@ -175,42 +175,6 @@ public final class LocusComponentLineage2D {
 	}
 
 	/**
-	 * Translates the declared-cut sources of a retained key during closure import.
-	 * The map covers only explicit cut witnesses of the copied locus.
-	 *
-	 * @return the remapped key, or the original key when no complete remap is established
-	 */
-	public static String remapDeclaredCuts(String branch, String key, Map<String, String> witnesses) {
-		String prefix = branch + "/component/";
-		if (!key.startsWith(prefix) || witnesses.isEmpty()) {
-			return key;
-		}
-		String[] boundaries = key.substring(prefix.length()).split(";", -1);
-		if (boundaries.length != 2) {
-			return key;
-		}
-		for (int index = 0; index < boundaries.length; index++) {
-			String[] source = boundaries[index].split("/", -1);
-			if (source.length != 3 || !LocusTraversalCut2D.BOUNDARY_PREDICATE.equals(source[1])) {
-				continue;
-			}
-			List<String> translated = new ArrayList<>();
-			String previous = "";
-			for (String original : source[0].split("\\+", -1)) {
-				String fresh = witnesses.get(original);
-				if (fresh == null || previous.compareTo(original) >= 0) {
-					return key;
-				}
-				translated.add(fresh);
-				previous = original;
-			}
-			translated.sort(String::compareTo);
-			boundaries[index] = String.join("+", translated) + "/" + source[1] + "/" + source[2];
-		}
-		return prefix + String.join(";", boundaries);
-	}
-
-	/**
 	 * Typed lineage transitions between two certified structures of one branch, derived from
 	 * their lineage keys and the structural sources of the components that change ({@code
 	 * locus-v2-existence-components.md} sections 15.4 and 15.6; certification design section

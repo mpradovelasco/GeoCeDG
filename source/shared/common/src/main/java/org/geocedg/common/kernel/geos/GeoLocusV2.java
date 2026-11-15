@@ -5,6 +5,8 @@
 
 package org.geocedg.common.kernel.geos;
 
+import java.util.function.Function;
+
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusV2;
 import org.geocedg.common.kernel.algos.AlgoSplineV2;
@@ -18,6 +20,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
 import org.geocedg.common.kernel.locus.metric.LocusMetricInstrumentation2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricOwnerLease2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricSharedOwner2D;
+import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoIdentityListener;
 import org.geogebra.common.io.XMLStringBuilder;
@@ -84,6 +87,17 @@ public final class GeoLocusV2 extends GeoElement
 	/** @return current lifecycle-owned locus ID, never a cached pre-copy value */
 	public PersistentGeoId getPersistentLocusId() {
 		return cons.getSpatialIdentityRegistry().getPersistentGeoId(this);
+	}
+
+	@Override
+	public void validatePersistentGeoIdentityAttachment(PersistentGeoId id, GeoIdentityRecord record,
+			Function<GeoElement, GeoIdentityRecord> prospectiveRecord, boolean immediateCopy) {
+		if (getParentAlgorithm() instanceof AlgoDependentPointLocusV2 generator) {
+			generator.validateCutWitnessBindings(witness -> {
+				GeoIdentityRecord witnessRecord = prospectiveRecord.apply(witness);
+				return witnessRecord == null ? null : witnessRecord.getId();
+			});
+		}
 	}
 
 	@Override
@@ -419,6 +433,18 @@ public final class GeoLocusV2 extends GeoElement
 			return;
 		}
 		super.getXML(getListenersToo, builder);
+	}
+
+	@Override
+	protected void getXMLTags(XMLStringBuilder builder) {
+		super.getXMLTags(builder);
+		if (getParentAlgorithm() instanceof AlgoDependentPointLocusV2 generator
+				&& cons.getSpatialIdentityRegistry().getPersistentGeoIdForSerialization(this) != null) {
+			String state = generator.getCutWitnessBindingsForXML();
+			if (state != null) {
+				builder.startTag("locusCutWitnessBindings").attr("state", state).endTag();
+			}
+		}
 	}
 
 	private boolean isPublicPersistentLocus() {

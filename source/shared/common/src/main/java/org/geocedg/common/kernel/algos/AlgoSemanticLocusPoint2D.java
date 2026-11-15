@@ -6,7 +6,6 @@
 package org.geocedg.common.kernel.algos;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Objects;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
@@ -265,32 +264,6 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 
 	public GeoText getBranchInput() {
 		return branchInput;
-	}
-
-	/** Translates cut witnesses of a private selection while importing its complete closure. */
-	public void remapClipboardSelection(String role, Map<GeoElement, PersistentGeoId> originalAttachments,
-			Map<GeoElement, PersistentGeoId> copiedAttachments) {
-		if (!(source.getParentAlgorithm() instanceof AlgoDependentPointLocusV2 generator)
-				|| !copiedAttachments.containsKey(branchInput)) {
-			return;
-		}
-		if (ConstructionGeoRedefineProvider.INTERACTION_POINT_OUTPUT_ROLE.equals(role)
-				&& ConstructionGeoRedefineProvider.hasDedicatedInteractionPointState(point)) {
-			var address = LocusSemanticAddressState2D.decode(branchInput.getTextString());
-			String component = generator.remapClipboardCutComponent(address.getBranchKey(),
-					address.getComponentLineageKey(), originalAttachments, copiedAttachments);
-			if (!component.equals(address.getComponentLineageKey())) {
-				branchInput.setTextString(address.encodeWithComponent(component));
-			}
-		} else if (ConstructionGeoRedefineProvider.PRINCIPAL_BRANCH_POINT_OUTPUT_ROLE.equals(role)
-				&& ConstructionGeoRedefineProvider.hasDedicatedPrincipalBranchState(point)) {
-			var selector = LocusPrincipalBranchState2D.decode(branchInput.getTextString());
-			String component = generator.remapClipboardCutComponent(selector.getBranchKey(),
-					selector.getComponentLineageKey(), originalAttachments, copiedAttachments);
-			if (!component.equals(selector.getComponentLineageKey())) {
-				branchInput.setTextString(selector.encodeWithComponent(component));
-			}
-		}
 	}
 
 	public GeoNumberValue getParameterInput() {

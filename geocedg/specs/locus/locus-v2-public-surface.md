@@ -865,6 +865,9 @@ are established. An arbitrary point coincident with the support conveys no
 direction by proximity.
 
 The command arguments persist the version and geometric witness references.
-Reopening follows the same dependency graph and resolves the directions anew.
+The locus records the binding between each current witness identity and its
+locus-local declaration identity. Reopening follows the same dependency graph
+and resolves the directions anew. A closure copy translates the binding to the
+copied witness while preserving the declaration's local identity.
 Traversal semantics and diagnostic states are defined by
 [Locus V2 existence components §18](locus-v2-existence-components.md#18-geocedg-120-constructive-cuts).

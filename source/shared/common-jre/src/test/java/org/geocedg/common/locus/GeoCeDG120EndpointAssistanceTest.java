@@ -11,13 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.geocedg.common.kernel.algos.AlgoProvenLocusEndpoint2D;
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.algos.SemanticMetricEndpointResolver2D;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
-import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.locus.interaction.LocusPointCreation2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionPolicy2D;
@@ -175,9 +173,9 @@ class GeoCeDG120EndpointAssistanceTest extends G9U0PublicSurfaceTestBase {
 		String pastedLabel = pasted.getLabelSimple();
 		String newKey = ((AlgoProvenLocusEndpoint2D) pasted.getParentAlgorithm())
 				.getAddress().getComponentLineageKey();
-		assertNotEquals(originalKey, newKey);
-		assertTrue(newKey.contains(copiedRecord(firstCutId).getId().toExternalForm()));
-		assertTrue(newKey.contains(copiedRecord(secondCutId).getId().toExternalForm()));
+		assertEquals(originalKey, newKey);
+		assertNotEquals(firstCutId, copiedRecord(firstCutId).getId());
+		assertNotEquals(secondCutId, copiedRecord(secondCutId).getId());
 		assertEquals(0.5, ((GeoNumeric) lookup("measure")).getDouble(), 1e-12);
 		assertCopiedPlacement(newKey, placedX);
 		getApp().setXML(getApp().getXML(), true);
@@ -258,20 +256,6 @@ class GeoCeDG120EndpointAssistanceTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(copied.getId(), reopened.getConstruction().getSpatialIdentityRegistry()
 				.getPersistentGeoId(reopened));
 		assertFalse(lookup("Pexact").isDefined());
-	}
-
-	@Test
-	void cutSelectorRemapReordersFreshWitnessesAndRequiresTheFullBoundaryClosure() {
-		String prefix = "generator.main/component/declared-domain/domain-end/lower;";
-		String suffix = "/DECLARED_CONSTRUCTIVE_CUT_V1/end";
-		String retained = prefix + "geo:a+geo:b" + suffix;
-		assertEquals(prefix + "geo:c+geo:z" + suffix, LocusComponentLineage2D.remapDeclaredCuts(
-				"generator.main", retained, Map.of("geo:a", "geo:z", "geo:b", "geo:c")));
-		assertEquals(retained, LocusComponentLineage2D.remapDeclaredCuts(
-				"generator.main", retained, Map.of("geo:a", "geo:z", "geo:unrelated", "geo:c")));
-		String noncanonical = prefix + "geo:b+geo:a" + suffix;
-		assertEquals(noncanonical, LocusComponentLineage2D.remapDeclaredCuts(
-				"generator.main", noncanonical, Map.of("geo:a", "geo:z", "geo:b", "geo:c")));
 	}
 
 	private GeoIdentityRecord copiedRecord(PersistentGeoId originalId) {

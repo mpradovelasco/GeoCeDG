@@ -5,7 +5,6 @@ import java.util.List;
 
 /** One revision's direction and durable declarations for a constructive cut. */
 public record LocusTraversalCut2D(double parameter, List<String> declarations) {
-	static final String BOUNDARY_PREDICATE = "DECLARED_CONSTRUCTIVE_CUT_V1";
 
 	public LocusTraversalCut2D {
 		if (!Double.isFinite(parameter) || declarations.isEmpty()) {
@@ -18,7 +17,7 @@ public record LocusTraversalCut2D(double parameter, List<String> declarations) {
 	LocusBoundary2D boundary(boolean start) {
 		return new LocusBoundary2D(LocusBoundary2D.Kind.DECLARED_CONSTRUCTIVE_CUT,
 				new LocusBoundarySource2D(String.join("+", declarations),
-						BOUNDARY_PREDICATE, start ? "start" : "end"), start,
+						"DECLARED_CONSTRUCTIVE_CUT_V1", start ? "start" : "end"), start,
 				LocusEvidenceNature2D.EXACT).withConstructiveCutDeclarations(declarations);
 	}
 }

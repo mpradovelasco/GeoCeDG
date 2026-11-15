@@ -26,16 +26,12 @@ public final class LocusSemanticAddressState2D {
 	/** @return deterministic opaque text for one reconstructible address */
 	public static String encode(LocusSemanticAddress2D address) {
 		Objects.requireNonNull(address);
-		return encode(address.getBranchKey(), address.getComponentLineageKey(),
-				address.getProviderVersion(), address.getCanonicalParameter(),
-				address.getPeriodicLift(), address.getSeamSide());
-	}
-
-	private static String encode(String branch, String component, String provider,
-			double parameter, long lift, SeamSide seam) {
-		return PREFIX + text(branch) + "|" + text(component) + "|" + text(provider) + "|"
-				+ Long.toUnsignedString(Double.doubleToLongBits(normalized(parameter)), 16)
-				+ "|" + lift + "|" + seam.name();
+		return PREFIX + text(address.getBranchKey()) + "|"
+				+ text(address.getComponentLineageKey()) + "|"
+				+ text(address.getProviderVersion()) + "|"
+				+ Long.toUnsignedString(Double.doubleToLongBits(normalized(
+						address.getCanonicalParameter())), 16) + "|"
+				+ address.getPeriodicLift() + "|" + address.getSeamSide().name();
 	}
 
 	/**
@@ -138,11 +134,6 @@ public final class LocusSemanticAddressState2D {
 
 		public String getComponentLineageKey() {
 			return componentLineageKey;
-		}
-
-		/** @return encoded address retaining every other field of this selection */
-		public String encodeWithComponent(String component) {
-			return encode(branchKey, component, providerVersion, canonicalParameter, periodicLift, seamSide);
 		}
 
 		/** @return whether this selector belongs to the current provider contract */

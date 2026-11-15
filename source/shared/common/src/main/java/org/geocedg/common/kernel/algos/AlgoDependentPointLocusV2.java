@@ -9,13 +9,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
@@ -141,22 +141,33 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		return descriptor;
 	}
 
-	/** @return the retained component with only its copied cut witnesses remapped */
-	public String remapClipboardCutComponent(String branch, String component,
-			Map<GeoElement, PersistentGeoId> originalAttachments,
-			Map<GeoElement, PersistentGeoId> copiedAttachments) {
-		if (constructiveCuts == null || !copiedAttachments.containsKey(getLocus())) {
-			return component;
+	/** @return persisted cut declarations, when present */
+	public String getCutWitnessBindingsForXML() {
+		return constructiveCuts == null ? null : constructiveCuts.bindingsForXML();
+	}
+
+	/** Restores the local bindings of the cut command's actual witness operands. */
+	public void restoreCutWitnessBindings(String state) {
+		if (constructiveCuts == null || !cons.isFileLoading()
+				|| getLocus().getPersistentLocusId() != null) {
+			throw new IllegalArgumentException("Cut witness bindings require a cut declaration in XML");
 		}
-		Map<String, String> witnesses = new LinkedHashMap<>();
-		for (GeoPoint cut : constructiveCuts.getWitnesses()) {
-			PersistentGeoId original = originalAttachments.get(cut);
-			PersistentGeoId copied = copiedAttachments.get(cut);
-			if (original != null && copied != null) {
-				witnesses.put(original.toExternalForm(), copied.toExternalForm());
-			}
+		constructiveCuts.restoreBindings(state);
+	}
+
+	/** Reassociates the actual copied operands without changing local declaration identity. */
+	public void copyCutWitnessBindings(Map<GeoElement, PersistentGeoId> original,
+			Map<GeoElement, PersistentGeoId> copied) {
+		if (constructiveCuts != null) {
+			constructiveCuts.copyWitnessBindings(original, copied);
 		}
-		return LocusComponentLineage2D.remapDeclaredCuts(branch, component, witnesses);
+	}
+
+	/** Checks the persisted cut associations against the prospective identity graph. */
+	public void validateCutWitnessBindings(Function<GeoPoint, PersistentGeoId> prospectiveId) {
+		if (constructiveCuts != null) {
+			constructiveCuts.validateBindings(prospectiveId);
+		}
 	}
 
 	/**
