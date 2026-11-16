@@ -1,6 +1,6 @@
 # GeoCeDG 1.2.0 — Expediente de verificación
 
-**Estado en preparación.** Las ejecuciones focales y de caracterización documentadas aquí no son un recibo de aceptación de un árbol final.
+Este expediente registra la implementación, las revisiones y la preparación del candidato. La aceptación técnica del árbol exacto se acredita mediante los resultados y recibos de las puertas canónicas, conservados con la entrega en `artifacts/agent/geocedg-1.2.0/`.
 
 ## Procedencia
 
@@ -43,6 +43,7 @@
 | Gradle focal compartido y Desktop tras las rondas 5 y 6 | Salida interna 0, 153 pruebas Shared y 17 Desktop, cero fallos y omisiones. `round6-regressions/evidence.json` y XML conservados. Checkpoint fuente `a7377d801a26ff9699f421a04f72d1f74b9e5c14`, árbol `c50d201404b27795fc9f34ec016c27c65f99023d`. |
 | Gradle focal Shared tras la ronda 7 | Salida interna 0, 105 pruebas, cero fallos y omisiones. Registro en `round7-hardened/evidence.json` y XML archivado. La selección incluye `GeoCeDG120*`, continuidad y ledger de intersecciones, ledger de intersecciones entre loci y registro espacial. |
 | Gradle focal Desktop tras la ronda 8 | Salida interna 0, 71 pruebas, cero fallos y omisiones. `round8-focused/evidence.json` y XML archivado. Se verificaron los dos buffers, ambas firmas de longitud, capa del siguiente número, inserción con Undo/Redo y reapertura, recuperación, toolbar y reentrada canónica. |
+| Selecciones registradas Desktop R8 | Sobre `503a28fad4310bc47aca93213808b5110e47c29b`, árbol `0e1bec6165cb2556b02f24915f9f80be47105c27`, fase focal 81/81, amplia 2 527 aprobadas y una omisión autorizada, fase de inserción 472/472. Salida interna 0 en los tres productores. Evidencias en `inventory-r8`, `inventory-r8-final-desktop-retry` e `inventory-r8-f3`. |
 
 ## Rondas 5 a 9
 
@@ -53,5 +54,9 @@ La revisión de integración reprodujo un caso distinto en el registro de inters
 La revisión independiente de la ronda 7 reprodujo un intento de sustituir las vinculaciones de un locus vivo mediante un fragmento sin propietario adjunto. Se comprobó su rechazo tipado antes de importar y la conservación de las claves anteriores. La validación prospectiva exige la correspondencia con los operandos reales. Las sondas `cut-intersection-round7-hardened.log`, `cut-metadata-round7-hardened.log` y `cut-redefine-round7-hardened.log` conservan evidencia nativa adicional. La redefinición idéntica de un locus copiado conservó el objeto, sus claves y el punto dependiente. El control de copia con raíz ya inactiva falló en la ronda 6 tanto con corte como sin él, previo al cambio de identidad de la declaración.
 
 El autor amplió el límite a nueve rondas. La ronda 8 corrige dos causas identificadas en la suite amplia de Desktop de la ronda 7. El perfil incorpora Compass e Hyperbola y sus dos aserciones de recuento pasan a 51. En Insert File, el adaptador de longitud pública requiere serializar la capa de su número de salida para conservar la fidelidad del resultado rico anterior. El buffer de inserción activa el tag existente para ese productor y mantiene el tratamiento heredado de los otros números. La revisión independiente de compatibilidad distingue la escritura del documento nativo, la inserción y el portapapeles ordinario conforme a F3 §2.6 y CU6. Las dos pruebas de recuperación reutilizan el mismo origen y alcanzan su inyección tras superar el ensayo de inserción.
+
+El primer intento amplio R8 se detuvo antes de JUnit por una reserva de memoria nativa rechazada por Windows, errno 1455. El diagnóstico y el cierre de procesos anteriores de la campaña liberaron recursos. El único reintento justificado pasó sobre el mismo código. Se conservan el fallo, los dos diarios, las muestras de procesos y el resultado aprobado en `inventory-r8-environment`.
+
+La limitación de copia de una raíz de intersección que ya está inactiva se reprodujo también en el binario CU10 INTERNAL de GeoCeDG 1.1.0. La reparación de R7 conserva las raíces exactas activas en las dos generaciones comprobadas. El resultado rico puede volver a ofrecer una raíz admisible mientras un punto copiado desde el estado inactivo sigue indefinido. La [matriz de requisitos](../../artifacts/agent/geocedg-1.2.0/final-requirements-matrix.md) conserva la referencia de esa sonda histórica.
 
 `GUIDE_IMPACT = UPDATED`, con ediciones ES/EN e inventario de cobertura. Bootstrap sin cambio de prerrequisitos. Las fuentes de producto, los contratos geométricos y de interacción, las pruebas y la verificación de fase se separan de los artefactos generados. El autor designó `2026-11-16` como `application.version_date` de 1.2.0. El empaquetado definitivo espera el árbol técnico fijado. La aprobación del candidato y la publicación son decisiones autorales posteriores.

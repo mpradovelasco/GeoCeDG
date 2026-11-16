@@ -56,8 +56,6 @@ or **NON-COMMERCIAL DISTRIBUTION — PROFILE NC**. A *development build* is
 labelled separately. About points to the full terms, including EUPL-1.2
 and CC BY 4.0 for the applicable GeoCeDG components.
 
-This guide includes the 1.2.0 candidate workflows. Final validation is pending.
-
 ### 1.4 What GeoCeDG adds to GeoGebra
 
 This comparison covers the pinned **GeoGebra Classic 5.4.928.0** source

@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "0e5ddaf8b3ca2d5b96377dfcb82f1e6cdd278ee8adf7ad62cb2714df9145ac9b",
-      "discovered_identity_count": 6781,
-      "discovered_identities_sha256": "f9fa657ebeedfc4fc0e4a54209188f2a494988f774d4768dd085eb718705b173"
+      "discovery_evidence_sha256": "5240da679400c3900ac61f504bbab686593f6191f7e15b47a2bbdeb786479e58",
+      "discovered_identity_count": 6808,
+      "discovered_identities_sha256": "e77ecf3781a699293040c48346057256115d38624b74609a22812684cddeedb6"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "fe5797c32bea6f6a33e70e70315ba5fb1e840a91ec63ed2df6ddc62f97799ac4",
-      "discovered_identity_count": 2417,
-      "discovered_identities_sha256": "02a070b55ef9ce796ccb6a5bb9f2e8693be66b3f1c68dd8f93d160fd1e20c0a0"
+      "discovery_evidence_sha256": "5dff85018e625127b5c4f488b149dcdbe16ae8650997330a5e3306619a270b0a",
+      "discovered_identity_count": 2534,
+      "discovered_identities_sha256": "4c440867ada041423f153854fb731af24e7a8898e618307becb0d04717a3b986"
     }
   ],
   "selections": [
@@ -51,13 +51,17 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 24,
-      "expected_identities_sha256": "0b4687c5b50151ad3cf3b5acd9e110e66173d4d627ed3273bfb1402f142b5561",
+      "expected_identity_count": 30,
+      "expected_identities_sha256": "46ef88abdb5c1610e269967845709ecdf9451d827ed55e28feb931f91af482cf",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
           "commit": "2a71696cc9bf91d368f4ea2c0a1858f36dfae962",
           "tree": "569ad073ce634c5283351e8505624825dfddb7a0"
+        },
+        {
+          "commit": "8940e4a3cade1ef7ff502c964d55ecd62d4c8a00",
+          "tree": "d05960bbb6946854921546998c0bb6a8458ba5e2"
         }
       ]
     },
@@ -98,13 +102,17 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 79,
-      "expected_identities_sha256": "4bbe142179f1ac3c661febbd4b8ffdf5cce42e845eb858d17ff775f5870bf8a7",
+      "expected_identity_count": 81,
+      "expected_identities_sha256": "ec4b4c00692045132c11ab261431489f5088f644f08a80f3e72e31e790e900f8",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
           "commit": "2a71696cc9bf91d368f4ea2c0a1858f36dfae962",
           "tree": "569ad073ce634c5283351e8505624825dfddb7a0"
+        },
+        {
+          "commit": "503a28fad4310bc47aca93213808b5110e47c29b",
+          "tree": "0e1bec6165cb2556b02f24915f9f80be47105c27"
         }
       ]
     },
@@ -123,13 +131,17 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 6781,
-      "expected_identities_sha256": "f9fa657ebeedfc4fc0e4a54209188f2a494988f774d4768dd085eb718705b173",
+      "expected_identity_count": 6808,
+      "expected_identities_sha256": "e77ecf3781a699293040c48346057256115d38624b74609a22812684cddeedb6",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
           "commit": "0692d78cd2cbee21c4e687f3f3cdb8a896019d77",
           "tree": "51fdd4ec3ca7686922e1c07d319f038e6aaac028"
+        },
+        {
+          "commit": "8940e4a3cade1ef7ff502c964d55ecd62d4c8a00",
+          "tree": "d05960bbb6946854921546998c0bb6a8458ba5e2"
         }
       ]
     },
@@ -148,13 +160,17 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2417,
-      "expected_identities_sha256": "02a070b55ef9ce796ccb6a5bb9f2e8693be66b3f1c68dd8f93d160fd1e20c0a0",
+      "expected_identity_count": 2534,
+      "expected_identities_sha256": "4c440867ada041423f153854fb731af24e7a8898e618307becb0d04717a3b986",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
           "commit": "0692d78cd2cbee21c4e687f3f3cdb8a896019d77",
           "tree": "51fdd4ec3ca7686922e1c07d319f038e6aaac028"
+        },
+        {
+          "commit": "503a28fad4310bc47aca93213808b5110e47c29b",
+          "tree": "0e1bec6165cb2556b02f24915f9f80be47105c27"
         }
       ]
     },
@@ -173,8 +189,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 7732,
-      "expected_identities_sha256": "6492675fa780380ac43063fadab014e5783360c152fadef6979bdad8cd43108a",
+      "expected_identity_count": 7751,
+      "expected_identities_sha256": "8abf602e0191d6b63e45691a8078c7527c4bf674b1d9975905315d665791ae41",
       "not_applicable_allowlist": [
         {
           "identity": "shared::org.geogebra.common.euclidian.EuclidianConstantsTest::allModesShouldHaveHelpPage()::invocation[1/1]",
@@ -263,6 +279,10 @@
         {
           "commit": "81b6fc0661a61c7fa7a853ab17584d6a55b39a19",
           "tree": "b5d4028fa7aa32b95f175e7ac7a2467921cdb289"
+        },
+        {
+          "commit": "8940e4a3cade1ef7ff502c964d55ecd62d4c8a00",
+          "tree": "d05960bbb6946854921546998c0bb6a8458ba5e2"
         }
       ]
     },
@@ -288,8 +308,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2522,
-      "expected_identities_sha256": "f9e2653a82fbd9d3f27fcb396698e5f7c30271f1b5429bfeb1f190e465d89081",
+      "expected_identity_count": 2528,
+      "expected_identities_sha256": "c379251b3cf8fe9d8285268242de6a73dd2b89cd46b9f51c0bdb47bffa7032db",
       "not_applicable_allowlist": [
         {
           "identity": "desktop::org.geogebra.CasValueExtractor::extractMockValues(String)::invocation[1/1]",
@@ -327,6 +347,10 @@
         {
           "commit": "81b6fc0661a61c7fa7a853ab17584d6a55b39a19",
           "tree": "b5d4028fa7aa32b95f175e7ac7a2467921cdb289"
+        },
+        {
+          "commit": "503a28fad4310bc47aca93213808b5110e47c29b",
+          "tree": "0e1bec6165cb2556b02f24915f9f80be47105c27"
         }
       ]
     },
@@ -3148,12 +3172,16 @@
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
       "expected_identity_count": 472,
-      "expected_identities_sha256": "056b8fa581522e8a93e1debead07a955bbf22c8165952e0e486683efe36a63ef",
+      "expected_identities_sha256": "7b671f19d66780f50ed4369d703a4e06c503fd4076c677ed3e393d6477fff3ee",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
           "commit": "108d9cb6591aef92135a95ec9bf71482fcd78e7f",
           "tree": "45644a6fabdb5e3b4cb23df063761f57d3fdf133"
+        },
+        {
+          "commit": "503a28fad4310bc47aca93213808b5110e47c29b",
+          "tree": "0e1bec6165cb2556b02f24915f9f80be47105c27"
         }
       ]
     },

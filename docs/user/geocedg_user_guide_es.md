@@ -58,8 +58,6 @@ tiene su propia indicación. Acerca de enlaza a las condiciones completas,
 incluidas EUPL-1.2 y CC BY 4.0 para los componentes de GeoCeDG a los que se
 aplican.
 
-Esta guía incluye los procedimientos del candidato a 1.2.0. La validación final está pendiente.
-
 ### 1.4 Novedades y ampliaciones de GeoCeDG respecto a GeoGebra
 
 La comparación se limita al código de **GeoGebra Classic 5.4.928.0** fijado
