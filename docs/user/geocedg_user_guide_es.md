@@ -74,7 +74,7 @@ en la revisión `9b93256b7df401ff056c37b502d82df4d72b1522`.
 | Pasos, memoria y orientación | **[A]** El protocolo heredado ajusta el alto de las filas. Paralela y Perpendicular pueden recordar una referencia cada una durante la sesión. **[N]** **[!]** Los resultados admitidos pueden mostrar una indicación de sentido. | Protocolo de construcción, Paralela, Perpendicular, Mostrar indicación de orientación | Revise un paso de la construcción o repita una familia de rectas alineadas. | [Protocolo de construcción](#interface-and-workflow/3.8) · [Rectas y memoria de referencia](#basic-geometry/5.2) |
 | Unidades, cotas y láminas | **[N]** Defina la unidad del dibujo, añada cotas y prepare un marco ISO A. | Unidades del documento…, `AlignedDimension`, `LinearDimension`, `IsoABorder` | Prepare una lámina a escala con cotas legibles. | [Unidades](#documents/4.6) · [Cotas](#lengths-and-measurements/9.5) · [Láminas ISO A](#documents/4.7) |
 | Presentación y capas | **[A]** Los estilos de objeto y las capas numéricas heredadas se amplían con controles de presentación y una capa de trabajo. | Preferencias, Capa de trabajo, visibilidad de capas | Agrupe objetos por capa y oculte elementos auxiliares al revisar el dibujo. | [Presentación](#presentation-and-visualization) · [Capa de trabajo](#presentation-and-visualization/12.5) |
-| Documento nativo e inserción | **[N]** Use el documento nativo `.cedg`. **[A]** **[!]** Insertar archivo comprueba la construcción antes de incorporarla. **[N]** **[!]** La revisión experta realiza un ensayo en una copia. | Guardar como…, Insertar archivo…, Insertar con revisión experta… | Incorpore una construcción existente y revise los cambios antes de confirmar cuando esté disponible la revisión experta. | [Formatos](#documents/4.1) · [Inserción](#documents/4.2) |
+| Documento nativo e inserción | **[N]** Use el documento nativo `.cedg`. **[A]** **[!]** Insertar archivo comprueba la construcción antes de incorporarla. **[N]** **[!]** La revisión experta realiza un ensayo en una copia. **[A]** **[!]** Las imágenes del portapapeles permiten elegir la capa y la posición de construcción. | Guardar como…, Insertar archivo…, Insertar con revisión experta…, Imagen desde el portapapeles… | Incorpore una construcción existente o una imagen; revise los cambios de construcción antes de confirmar cuando esté disponible la revisión experta. | [Formatos](#documents/4.1) · [Inserción](#documents/4.2) |
 | Controles y paneles | **[G]** Deslizadores, botones, casillas y campos de entrada. **[N]** **[!]** Paneles fijos o vinculados al lienzo para controles aptos en Gráficos 1. | Deslizador, Botón, Casilla de control, Casilla de Entrada, Disposición de controles | Mantenga juntos los controles al desplazarse por el dibujo. | [Paneles de controles](#presentation-and-visualization/12.6) |
 | Intercambio DXF | **[N]** **[!]** Exportación de objetos 2D admitidos, con información sobre fidelidad y aproximaciones. | Exportar geometría 2D como DXF (experimental)… | Entregue un trazado a CAD tras comprobar qué objetos se pueden representar. | [Exportación DXF](#dxf-export) |
 | Herramientas de usuario y Classic | **[G]** Las herramientas personalizadas se pueden guardar en dibujos `.ggb`. **[A]** La gestión de herramientas incorpora opciones persistentes y acceso fijo desde la barra. **[N]** **[!]** La biblioteca instalada y la sesión separada de diagnóstico Classic tienen su propia disponibilidad. | Herramientas de usuario, Abrir sesión de diagnóstico Classic | Reutilice una herramienta o compruebe una construcción antigua dentro de los límites de compatibilidad. | [Herramientas de usuario](#user-tools-and-automation) · [Classic](#classic-compatibility-and-diagnostics) |
@@ -113,6 +113,10 @@ Las vistas **Hoja de Cálculo**, **Cálculo Simbólico (CAS)** y **Propiedades d
 objeto** están disponibles e inicialmente cerradas. Un documento o una
 preferencia guardados pueden abrir otra disposición. **Vista → Restaurar
 distribución de Construcción → Construcción CeDG** recupera la del producto.
+
+**[A]** **[!]** Para una imagen del portapapeles, use **Archivo → Insertar → Imagen desde el portapapeles…**.
+Elija su capa y su posición de construcción antes de confirmar; consulte
+[Comandos de documento](#documents/4.2).
 
 ![GeoCeDG Desktop muestra las barras de herramientas, Álgebra, Gráficos, el Protocolo de construcción y la Entrada algebraica.](images/interface-desktop.png)
 
@@ -247,7 +251,7 @@ Use la barra de menús para encontrar herramientas por tarea. Las herramientas d
 
 | Menú | Acciones disponibles |
 |---|---|
-| **[A]** **Archivo** | **[G]** Nuevo archivo y Cerrar. **[G]** Abrir reciente…. **[A]** Abrir…, Guardar y Guardar como… con la política de documento nativo. **[A]** Vista previa de impresión…, Vista gráfica como imagen…, PSTricks…, PGF/TikZ… y Asymptote… usan el área de exportación de GeoCeDG. **[N]** **[!]** Exportar geometría 2D como DXF (experimental)…. **[N]** Definir área de exportación…, Mostrar área de exportación, Borrar área de exportación, Definir área de exportación ISO A… y Usar el marco ISO A seleccionado. **[A]** Usar Export_1 y Export_2 activa explícitamente el recorte entre los dos puntos. **[A]** **[!]** **Insertar** reúne la inserción certificada, la revisión experta y la transferencia de estilos (sección 4.2). **[N]** **[!]** Abrir sesión de diagnóstico Classic. |
+| **[A]** **Archivo** | **[G]** Nuevo archivo y Cerrar. **[G]** Abrir reciente…. **[A]** Abrir…, Guardar y Guardar como… con la política de documento nativo. **[A]** Vista previa de impresión…, Vista gráfica como imagen…, PSTricks…, PGF/TikZ… y Asymptote… usan el área de exportación de GeoCeDG. **[N]** **[!]** Exportar geometría 2D como DXF (experimental)…. **[N]** Definir área de exportación…, Mostrar área de exportación, Borrar área de exportación, Definir área de exportación ISO A… y Usar el marco ISO A seleccionado. **[A]** Usar Export_1 y Export_2 activa explícitamente el recorte entre los dos puntos. **[A]** **[!]** **Insertar** reúne la inserción certificada, la revisión experta, las imágenes del portapapeles y la transferencia de estilos (sección 4.2). **[N]** **[!]** Abrir sesión de diagnóstico Classic. |
 | **[G]** **Editar** | **[G]** Deshacer, Rehacer, Mueve, Gira en torno a un punto, Seleccionar objetos, Limitar/liberar punto y Borrar. **[N]** Capa de trabajo elige la capa de los objetos nuevos de la sesión. Consulte [Menús, preferencias y atajos](#command-and-workflow-reference/16.6). |
 | **[A]** **Vista** | **[G]** **Views** activa o desactiva Álgebra, Graphics2 (segunda vista gráfica), Hoja de Cálculo, Cálculo Simbólico (CAS) y Propiedades del objeto. **[A]** **Visibilidad y estilo** incluye la orientación y la disposición de controles. **[G]** Mostrar/ocultar objeto, Mostrar/ocultar etiqueta y Copiar estilo visual. **[N]** **[!]** Mostrar indicación de orientación se aplica a resultados admitidos. **[A]** **Navegación** incluye Zoom por rectángulo, Acercar por factor, Alejar por factor y Configurar zoom de navegación…. **[G]** Desplaza Vista Gráfica, Aproximar, Alejar, Vista estándar y Mostrar todos los objetos. **[A]** **Inspección de la construcción** incluye el Protocolo de construcción con altura de filas adaptativa. **[G]** Mostrar barra de navegación de la construcción. **[N]** Inspeccionar definición… abre la definición sin cambiar el modo de Álgebra. **[A]** **Restaurar distribución de Construcción** restaura el espacio de Construcción CeDG. |
 | **[A]** **Construcción** | Los grupos de abajo incluyen las curvas semánticas y las cotas de ingeniería. |
@@ -454,12 +458,15 @@ formato nuevo.
 
 **[A]** **[!]** Insertar archivo comprueba los objetos admitidos y realiza la inserción en una sola operación.
 
+**[A]** **[!]** Imagen desde el portapapeles inserta imágenes nativas tras elegir la capa y la posición de construcción.
+
 | Acción | Dónde |
 |---|---|
 | Nuevo archivo | Archivo |
 | Abrir… | Archivo |
 | Abrir reciente… | Archivo |
 | Insertar archivo… | Archivo → Insertar |
+| Imagen desde el portapapeles… | Archivo → Insertar |
 | Aplicar estilos… | Archivo → Insertar |
 | Guardar | Archivo |
 | Guardar como… | Archivo |
@@ -520,6 +527,38 @@ presentación y guarde una copia. Puede intentar insertar esa copia. Se
 aplicarán las comprobaciones habituales. Los objetos excluidos, los guiones y
 la compatibilidad de herramientas sin determinar tienen diagnósticos propios.
 
+**Imagen desde el portapapeles…** está en **Archivo → Insertar**. Copie una
+imagen, abra la acción y elija su capa y su posición. El diálogo selecciona
+inicialmente la capa de trabajo; puede elegir otra, incluida una capa oculta.
+La capa elegida se aplica a la imagen y a sus dos nuevos puntos de esquina.
+No cambia la capa de trabajo ni muestra una capa oculta.
+
+Elija **Después del paso actual de construcción** para colocar la imagen antes
+de los pasos posteriores, o **Al final de la construcción** para añadirla
+después de toda la construcción. GeoCeDG lee el portapapeles con el lector
+nativo de Desktop sólo después de confirmar. Cancelar o cerrar el diálogo
+conserva el dibujo sin adquirir el contenido del portapapeles.
+
+Tras una inserción correcta, un **Deshacer** retira juntas las imágenes
+insertadas y sus nuevas esquinas; **Rehacer** las recupera. Guarde el dibujo
+como `.cedg` para conservar las imágenes y sus recursos al reabrirlo.
+
+Esta compilación de diagnóstico sigue **rechazada técnicamente**: se ha
+comprobado la inserción normal, pero algunas recuperaciones tras un fallo
+siguen siendo defectuosas y pueden activar el aislamiento.
+
+Si una inserción falla, GeoCeDG intenta restaurar el dibujo y su historial.
+Si GeoCeDG informa de una recuperación verificada con **reinicio de sesión**,
+el dibujo se ha reconstruido. Vuelva a seleccionar los objetos y a establecer
+las referencias recordadas por las herramientas. Si la recuperación no puede
+verificarse, se aplican las reglas de aislamiento descritas arriba.
+
+Esta operación rechaza dibujos con listeners JavaScript registrados por
+objeto o con predeterminados de creación cuyo paso de animación está vinculado
+a un objeto vivo de la construcción. Los listeners globales y los guiones
+ordinarios de objetos siguen permitidos. El rechazo explica el contexto no
+admitido.
+
 **[N]** **[!]** **Insertar con revisión experta…** está disponible en **Archivo → Insertar**.
 Admite construcciones pasivas 2D que superen las comprobaciones de integridad.
 El programa prueba la inserción sobre una copia del dibujo actual, incluidos
@@ -530,7 +569,7 @@ que el informe identifique. Una revisión bloqueada indica la
 condición que impide insertar. Cancelar deja el dibujo como estaba. Una
 inserción correcta ocupa un paso de Deshacer. Revise el dibujo y elija
 **Guardar como…** para conservar una copia separada. Ambas vías de
-inserción rechazan un origen con paneles de controles. La revisión experta
+inserción de documentos rechazan un origen con paneles de controles. La revisión experta
 también rechaza un dibujo receptor con paneles (sección 12.6).
 
 ![Dos documentos alimentan un ensayo en una copia. Confirmar incorpora sus objetos al dibujo actual. Cancelar conserva el dibujo actual.](images/insertion-review-flow.png)
@@ -1185,6 +1224,38 @@ Locus V2 conserva la madurez `experimental` y es exclusivo de GeoCeDG. Admite lo
 generadores, dominios explícitos y objetivos documentados. **No** es un `Path`
 genérico: no se implican operaciones que esperen un objeto camino arbitrario.
 
+### 6.8 Certificación de composiciones
+
+GeoCeDG puede demostrar componentes continuas de una construcción compuesta,
+incluidas ciertas curvas que consumen una longitud en una rotación. La prueba
+reutiliza las operaciones de la construcción, no una lista de modelos
+reconocidos. Entre las formas admitidas están la aritmética escalar, seno,
+coseno y raíz en sus dominios válidos, coordenadas y distancias de puntos,
+rotación de un punto fijo alrededor de un centro fijo por un ángulo dependiente
+y circunferencias de radio dependiente positivo. La intersección de un rayo y
+una circunferencia con el mismo centro exige además dirección no degenerada y
+selección admisible de la raíz positiva.
+
+La certificación de esa rotación describe la geometría matemática. GeoCeDG
+comprueba por separado que su realización numérica y sus consumidores siguen
+siendo admisibles; un denominador nulo o una raíz no establecida no se salvan
+por el aspecto del dibujo. Las operaciones o premisas sin prueba conservan un
+estado explícito sin establecer.
+
+En el caso admitido de una longitud sobre un arco abierto de una vuelta, el
+origen debe ser su extremo incluido y el recorrido
+`"forward","strict","zero-length"`. El inicio y el límite final conservan
+dos lados distintos aunque compartan dirección canónica. Evaluar ese límite
+no convierte el extremo excluido en un punto seleccionable ni habilita
+`"full-cycle"` sobre la componente abierta. Otros orígenes y políticas
+requieren sus propias pruebas.
+
+Un reinicio de longitud puede producir un salto geométrico, cancelarse mediante
+una relación demostrada o conservar límites sin resolver. Un corte declarado
+organiza el recorrido y no demuestra por sí mismo un salto. La certificación
+de componentes tampoco implica que cualquier intersección entre curvas pueda
+materializarse: siguen las condiciones de la sección 8.7.
+
 ---
 
 <!-- geocedg-guide-section: spline-v2 -->
@@ -1669,6 +1740,12 @@ evidencia disponible. Un número admisible muestra su garantía en el modo
 nuevos creados expresamente son objetos ordinarios por defecto. Al reabrir
 archivos antiguos, los resultados ricos existentes conservan su tipo y sus
 consumidores guardados, como `Length(M)`, siguen usándolos.
+
+La garantía del número y la certificación geométrica del locus son distintas.
+Una curva puede tener componentes y límites certificados mientras su longitud
+se muestra como **Estimada**. Esa estimación no se usa por sí sola para
+certificar una curva que dependa de ella: GeoCeDG necesita cotas independientes
+y las premisas de la composición. Consulte también la sección 6.8.
 
 En **Construcción → Medidas y validación**, elija **Longitud semántica total
 del lugar geométrico (experimental)** y seleccione la curva. Para **Longitud
@@ -2635,9 +2712,13 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 - Los ejes predefinidos no pueden ser el objetivo de una intersección semántica
   ni el espejo de una reflexión semántica; construya la recta explícitamente
   (sección 10.4).
-- De los puntos definidos por expresiones, solo las traslaciones de la
-  sección 8.7 tienen modelo certificado; un lugar trazado a través de cualquier
-  otra expresión permanece solo como resultado rico en las intersecciones de pares.
+- La certificación de composiciones de la sección 6.8 tiene precondiciones y
+  presupuestos; no es una certificación universal de cualquier `LocusV2`.
+  Un resultado métrico numérico admisible puede existir aunque la composición
+  que lo consume todavía no tenga prueba suficiente.
+- En la ruta de materialización de intersecciones de pares, los puntos definidos
+  por expresiones conservan los límites de la sección 8.7. La ampliación de
+  certificación de componentes no elimina las guardas de ese consumidor.
 
 **Exportación**
 
@@ -2749,6 +2830,7 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | **[N]** Área de exportación ISO A | Archivo → Definir área de exportación ISO A… | — | estado de sesión | calculada una vez a la escala de dibujo y la unidad de la sesión |
 | **[A]** Abrir un documento | Archivo → Abrir… | — | — | `.cedg` nativo, `.ggb` entrada de compatibilidad |
 | **[A]** **[!]** Insertar un documento | Archivo → Insertar → Insertar archivo… | — | — | solo objetos admitidos, todo o nada; un paso de Deshacer |
+| **[A]** **[!]** Insertar imágenes del portapapeles | Archivo → Insertar → Imagen desde el portapapeles… | — | imágenes y nuevos puntos de esquina | elija capa y paso actual o final; un Deshacer/Rehacer; límites y reinicio de sesión en la sección 4.2 |
 | **[A]** Aplicar los estilos de un documento | Archivo → Insertar → Aplicar estilos… | — | — | solo seis estilos de objeto; un paso de Deshacer |
 | **[A]** Guardar un documento | Archivo → Guardar / Guardar como… | — | — | guarde el trabajo nativo como `.cedg` |
 | **[N]** Inspeccionar una definición | menú contextual → Inspeccionar definición… | — | — | solo lectura; no cambia el modo de presentación de Álgebra |

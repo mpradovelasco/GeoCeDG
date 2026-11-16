@@ -2,12 +2,13 @@
 
 | Field | Value |
 |---|---|
-| Version | `1.4` (`certified-construction-program/v1`, `/v2` and `/v3`; §12 only under `constructive-authority/v1`) |
+| Version | `1.5` (`certified-construction-program/v1`, `/v2` and `/v3`; §12 only under `constructive-authority/v1`; §13 composition proof and versioned variable-rotation authority) |
 | Phase | `PRE-G9B-R2-E0/E1`; amended by `PRE-G9B-R3-X1` (§2, §3, §5.1, §5.2, §8, §9), by `PRE-G9B-CU2` (§10) and by `PRE-G9B-CU3` (§11, and the constructive authority amendment of §12) |
 | Decision | [ADR 0028](../../../docs/adr/0028-semantic-endpoint-admissibility-and-certified-semantic-pair-materialization.md), including its `PRE-G9B-R3-X1` amendment; [ADR 0038](../../../docs/adr/0038-locus-v2-hybrid-existence-certification-and-certified-closure.md) for class v3 (§10), accepted as architecture on 2026-10-21; [ADR 0039](../../../docs/adr/0039-locus-v2-structural-points-and-certified-contact-evidence.md) for exact evaluation (§11), accepted as architecture on 2026-10-24; [ADR 0040](../../../docs/adr/0040-constructive-geometric-authority-and-relation-integrity.md) for the constructive authority amendment (§12), accepted as architecture on 2026-10-25 |
 | v1.2 status | **PRE-G9B-CU2 AMENDMENT (§10, WITH §10.10 FROM AUTHOR DECISION V-CON-6 OF 2026-10-22 AND THE EDITORIAL PRECISION OF §10.3 FROM AUTHOR DECISION C-8 OF 2026-10-23) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
 | v1.3 status | **PRE-G9B-CU3 AMENDMENT (§11, WITH THE AUTHORITY OF THE TARGET IN §11.3 AND THE CONFORMANCE CONDITIONS OF EXACT EVALUATION IN §11.4) — DESIGN AUTHOR APPROVED (2026-10-24); IMPLEMENTATION AUTHORIZED SUBJECT TO GATE G-M3, NOT YET APPROVED AS PRODUCT** |
 | v1.4 status | **CONSTRUCTIVE AUTHORITY AMENDMENT (§12, TEXTS AUT-4 AND AUT-7) — AUTHOR APPROVED AS CONTRACT (2026-10-25); IMPLEMENTATION AUTHORIZED IN INCREMENTS E1 TO E4, NOT YET APPROVED AS PRODUCT** ([approval record](../../../docs/validation/pre_g9b_cu3_constructive_authority_approval_record.md)) |
+| v1.5 status | **GEOCEDG 1.2.0 COMPOSITION AMENDMENT (§13) — VARIABLE-ROTATION AUTHORITY AUTHOR APPROVED (2026-11-16); IMPLEMENTATION AND TECHNICAL VALIDATION IN PROGRESS, PRODUCT ACCEPTANCE PENDING** ([decision](../../../docs/architecture/geocedg-1.2.0-variable-rotation-authority-proposal.md)) |
 | Consumer | [pair materialization](../curves/spline-v2-pair-materialization.md) §10 |
 | Parents | [Locus V2 semantics](locus-v2-semantics.md), [existence and components](locus-v2-existence-components.md), [public surface](locus-v2-public-surface.md) |
 
@@ -657,3 +658,115 @@ A relation whose evidence needs a non-constructible boundary object is decided s
 constructive identity certificate (`locus-v2-constructive-authority.md` §8). Exact evaluation with
 non-constructible substitutes gives at most `SUBSTITUTE_GENERIC` evidence (§7.1 of that contract),
 which is `RELAXED`.
+
+## 13. GeoCeDG 1.2.0 composition proof
+
+The 1.2.0 mandate and the author's requirement to certify the oblique-cone
+development enable `composition-proof/v1` within the class-v3 capture and box
+model. This extends the vocabulary of a proof. It creates no persistent
+association, changes no native command and supplies no numerical estimate as
+geometric authority. The [design and validation scope](../../../docs/architecture/geocedg-1.2.0-compositional-certification.md)
+records its implementation and remaining gates; technical implementation is
+not author acceptance of a candidate.
+
+### 13.1 Typed operations and provenance
+
+The additional scalar operations are negation, addition, subtraction,
+multiplication, division, sine, cosine and square root; point operations expose
+Cartesian coordinates, construct a Cartesian point or compute point distance.
+A rotation may read a scalar angle operand, and a circle may read a scalar
+radius operand. Operand kinds and arity are checked before a program is used.
+Existing constant rotations and circles keep their captured operations and
+signatures. Unsupported expressions remain explicit refusals.
+
+Each new operation is anchored in a durable object of the evaluator's own
+slice and a structural expression role. Distinct subexpressions of one
+producer retain distinct role paths. Capture assigns no new identity to an
+anonymous expression. Without an established durable anchor the composition
+proof is refused. A dependent angle whose native angle style transforms its
+raw expression is outside this vocabulary unless its style is `UNBOUNDED`.
+
+### 13.2 Native branches and validity
+
+The exact-real formula rule of §2 includes the branch predicates of the
+native scalar operation. In particular:
+
+- scalar cosine uses the native zero branch when its magnitude is below
+  `Kernel.STANDARD_PRECISION` (`1e-8`);
+- scalar sine uses the same branch only for argument magnitude greater than
+  `0.1`;
+- a box wholly inside a zero branch has value and derivatives zero; a box
+  wholly outside uses the enclosed analytic function; crossing a zero-branch
+  threshold is unresolved and never a continuity certificate;
+- division requires an enclosed nonzero divisor, square root requires its
+  domain to be established, and a dynamic circle radius must be positively
+  separated from the native degeneration threshold. Failure to prove a
+  premise remains unresolved with a typed cause.
+
+These guards apply before downstream incidence, selection or metric use. An
+analytic cosine that is nonzero cannot make a reciprocal valid when the
+native scalar cosine selects zero. A numerical sample cannot decide a box
+that crosses a native branch.
+
+The author approved `composition-rotation-geometry/v1` on 2026-11-16, as
+specified in the [authority decision](../../../docs/architecture/geocedg-1.2.0-variable-rotation-authority-proposal.md).
+For the newly captured `ROTATE_BY_ANGLE` only, the semantic operation is the
+mathematical rotation `C + R(theta)(P-C)`, with exact sine and cosine. The native
+`MyMath.cos` zero branch below `1e-16` is a bounded realization error. The
+program signature records this authority. It applies to new certificates of
+new and historical documents; it changes neither their XML, identities or
+native calculated values, nor the coefficients/signatures of constant
+`ROTATE` and `ROTATE_ABOUT`. It does not adopt the document-wide constructive
+authority automatically.
+
+The geometric pass has exact derivatives. A separate value-only native pass
+has no mean-value tightening from those derivatives. Its guards retain the
+literal homogeneous products, normalization, degeneration, incidence and root
+selection. The initial angle-independent native rule requires a fixed source
+and fixed centre, finite intermediate bounds, a separated direction, and
+explicit captured aliases of any shared centre. A 64-cell interval phase cover
+may prove the existing native line-circle predicates for a positive radial ray
+root, including exclusion of the opposite root beyond the limited-path
+tolerance. It is a proof cover, not a sampled validity test.
+
+A metric's true integral enclosure does not enclose its estimated native
+value. The latter may be treated only as finite-if-admitted: the current rich
+result must be scalar-admissible, every point replay must recompute it, and
+only negation, division by a finite constant of magnitude at least one, or an
+angle-independent native guard may consume it without an actual value
+enclosure. Failed evaluation, budget or admission remains typed invalid and
+is never replaced by stale geometry. Angle-sensitive consumers that cannot
+prove their native predicates stay unresolved. No uniform precision of an
+estimated angle, or continuity of native floating values, follows from the
+ideal certificate.
+
+### 13.3 Metric proof inputs and composition
+
+A metric input terminates value traversal in the consuming proof program.
+Its endpoint construction remains an explicit dependency of the real DAG and
+of the source proof, but is not an additional independent metric variable of
+the consuming image. Only nodes reached by this value traversal contribute
+predicates or structural metric events to that image.
+
+An eligible metric input may supply revision-local outward enclosures of its
+value and regular first derivative under
+`metric-function-box-evidence/v1`. The source is a certified component and a
+bounded proof partition of its enclosed speed, not the public metric value or
+its estimated error. Bounds preserve orientation, origin, side and component
+provenance. Positive-width boxes ending at a structural event use their
+interior one-sided closure; an isolated event point keeps its ordinary
+same-position value. No derivative at the jump is asserted.
+
+The rules compose over every admitted construction with those premises.
+They identify neither document names nor object labels. Existence evidence,
+continuity within a component, separation of its lateral images, numerical
+length guarantee and rendering remain distinct results. If a composed event
+has no demonstrated geometric resolution, the existing typed unresolved
+state is preserved.
+
+Previously admitted particular identity certificates retain their own policy
+and admission guards and take precedence over the general captured program.
+In particular, making a circle-length/own-radius rotation capturable must not
+displace its exact periodic-cancellation certificate with a disjoint-image
+test, which cannot prove equality of the two limits. An independent divisor
+with the same current numerical value supplies no such identity.

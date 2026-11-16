@@ -80,9 +80,18 @@ final class InheritedLineCircleBand2D {
 		double a2;
 		double a4;
 		double a5;
+		/** Optional bound of the variable matrix entry; NaN keeps the captured value. */
+		double matrixA2MagnitudeUpper = Double.NaN;
 		SplineOutwardInterval2D radiusSquared;
 		/** Captured half axis {@code h0} that the inherited incidence test reads. */
 		double halfAxis;
+		/** Optional positive lower bound of the live half axis over this box. */
+		double halfAxisLower = Double.NaN;
+		/**
+		 * Optional pointwise bound of |h0(t)^2 - representedRadiusSquared(t)|.
+		 * Domain variation of the radius is not a representation error.
+		 */
+		double radiusRepresentationError = Double.NaN;
 		/** Start of a ray or segment, {@code null} for a line; whether it is the driver. */
 		SplineOutwardInterval2D startX;
 		SplineOutwardInterval2D startY;
@@ -94,6 +103,10 @@ final class InheritedLineCircleBand2D {
 		 */
 		double pathLow;
 		double endLow;
+		/** Require the positive ray root to stay strictly beyond the native tolerance. */
+		boolean requireStrictPositiveRay;
+		/** Output only: valid after keepsOutput succeeds, reset at the next invocation. */
+		double computedCoordinateMagnitudeUpper;
 		/**
 		 * Whether the two enclosures of each value of the box intersect; disjoint enclosures
 		 * mean that one of them is unsound, and the box stays in the band (PRE-G9B-CU2, review
@@ -126,6 +139,7 @@ final class InheritedLineCircleBand2D {
 	 *         at every binary64 driver point of the box; {@code false} puts it in the band
 	 */
 	static boolean keepsOutput(Box box) {
+		box.computedCoordinateMagnitudeUpper = 0;
 		if (!box.consistent) {
 			return false;
 		}
@@ -142,6 +156,7 @@ final class InheritedLineCircleBand2D {
 		}
 		for (int exponent : exponents) {
 			if (!live.keepsOutput(exponent)) {
+				box.computedCoordinateMagnitudeUpper = 0;
 				return false;
 			}
 		}
@@ -204,7 +219,11 @@ final class InheritedLineCircleBand2D {
 
 		boolean bounded() {
 			return direction > 0 && box.norm.lower > normError && box.radiusSquared.lower > 0
-					&& Double.isFinite(cHigh) && Double.isFinite(distanceError);
+					&& Double.isFinite(cHigh) && Double.isFinite(distanceError)
+					&& optionalNonnegative(box.matrixA2MagnitudeUpper)
+					&& optionalNonnegative(box.radiusRepresentationError)
+					&& (Double.isNaN(box.halfAxisLower)
+							|| box.halfAxisLower > 0 && Double.isFinite(box.halfAxisLower));
 		}
 
 		boolean keepsOutput(int exponent) {
@@ -228,7 +247,9 @@ final class InheritedLineCircleBand2D {
 			// d = p.S.v + a.v and w = evaluate(A, p), term by term, and their roundings.
 			double dTerms = up((axis.point + 2 * centre) * xHigh);
 			double dError = up(gamma(3) * dTerms);
-			double wTerms = up(Math.abs(box.a2) + 2 * centre * axis.point
+			double a2Magnitude = Double.isNaN(box.matrixA2MagnitudeUpper) ? Math.abs(box.a2)
+					: Math.max(Math.abs(box.a2), box.matrixA2MagnitudeUpper);
+			double wTerms = up(a2Magnitude + 2 * centre * axis.point
 					+ axis.point * axis.point);
 			double wError = up(gamma(4) * wTerms);
 			double wHigh = Math.min(wTerms, axis.wHigh);
@@ -307,7 +328,17 @@ final class InheritedLineCircleBand2D {
 					+ 2 * UNIT * (coordinates + STANDARD_PRECISION)))) {
 				return false;
 			}
-			return incident(slope, coordinates, coordinateError, coordinateRounding, radius);
+			if (!incident(slope, coordinates, coordinateError, coordinateRounding, radius)) {
+				return false;
+			}
+			// rootError bounds both q/u and w/q, so this contains either computed root.
+			double computedMagnitude = up(coordinates + coordinateError);
+			if (!Double.isFinite(computedMagnitude)) {
+				return false;
+			}
+			box.computedCoordinateMagnitudeUpper = Math.max(
+					box.computedCoordinateMagnitudeUpper, computedMagnitude);
+			return true;
 		}
 
 		/**
@@ -377,13 +408,16 @@ final class InheritedLineCircleBand2D {
 		private boolean incident(double slope, double coordinates, double coordinateError,
 				double coordinateRounding, double radius) {
 			double square = box.halfAxis * box.halfAxis;
-			double squareLow = Math.nextDown(square);
+			double squareLow = Math.nextDown(Double.isNaN(box.halfAxisLower) ? square
+					: box.halfAxisLower * box.halfAxisLower);
 			if (!(squareLow > 0)) {
 				return false;
 			}
-			double representation = Math.nextUp(Math.max(
+			double representation = Double.isNaN(box.radiusRepresentationError)
+					? Math.nextUp(Math.max(
 					Math.nextUp(square) - box.radiusSquared.lower,
-					box.radiusSquared.upper - squareLow));
+					box.radiusSquared.upper - Math.nextDown(square)))
+					: box.radiusRepresentationError;
 			double residual = up(2 * slope + 2 * radius * Math.sqrt(2) * coordinateRounding
 					+ 2 * coordinateError * coordinateError);
 			double circle = up((residual + representation) / squareLow * (1 + gamma(7))
@@ -439,6 +473,14 @@ final class InheritedLineCircleBand2D {
 			double reach = up(coordinates + Math.sqrt(2) * start);
 			double error = up((shift + UNIT * reach) / direction * (1 + UNIT)
 					+ reach * (Math.sqrt(2) * directionError / normLow + UNIT / direction));
+			if (box.requireStrictPositiveRay) {
+				// The same error bound applies to the negative radial root. With the
+				// caller's proved symmetry, it must remain outside even the tolerance.
+				double margin = Math.nextDown(box.pathLow - MIN_PRECISION);
+				double endMargin = Math.nextDown(box.endLow + MIN_PRECISION);
+				return margin > 0 && error < down(Math.min(margin, endMargin))
+						* (1 - 0x1.0p-20);
+			}
 			return error < (Math.min(box.pathLow, box.endLow) + MIN_PRECISION)
 					* (1 - 0x1.0p-20);
 		}
@@ -576,6 +618,10 @@ final class InheritedLineCircleBand2D {
 
 	private static double gamma(int count) {
 		return count * UNIT / (1 - count * UNIT);
+	}
+
+	private static boolean optionalNonnegative(double value) {
+		return Double.isNaN(value) || value >= 0 && Double.isFinite(value);
 	}
 
 	/** @return a nonnegative bound raised by the slack of its binary64 evaluation */

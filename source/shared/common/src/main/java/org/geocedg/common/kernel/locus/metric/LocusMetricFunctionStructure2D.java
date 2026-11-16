@@ -311,7 +311,27 @@ public final class LocusMetricFunctionStructure2D {
 					"open-source-policy-without-structure|" + evidence);
 		}
 		ContinuousComponent component = source.getComponentContaining(origin);
-		if (component == null || component.isArc() && component.isFullLength()) {
+		if (component != null && component.isArc() && component.isFullLength()) {
+			if (direction != TraversalDirection.FORWARD || origin != component.getStart()
+					|| !component.getLowerBoundary().isBinaryEndIncluded()
+					|| component.getUpperBoundary().isBinaryEndIncluded()
+					|| !component.getLowerBoundary().supportsOneSidedLimit()
+					|| !component.getUpperBoundary().supportsOneSidedLimit()
+					|| source.getCompleteness()
+							!= LocusExistenceStructure2D.Completeness.COMPLETE
+					|| !(lengthBound > 0) || !Double.isFinite(lengthBound)) {
+				return notEstablished(LocusCoverageCause2D.NOT_CERTIFIED,
+						"open-full-arc-premises-not-established|" + evidence);
+			}
+			return certified(List.of(new Piece(domain, State.DEFINED, null, false)),
+					List.of(new OriginWrap(origin, direction, samePosition,
+							chord > 0 && chord <= lengthBound ? chord : Double.NaN,
+							lengthBound, jumpReference)),
+					evidence + "|open-full-arc-origin-start|source-start="
+							+ component.getLowerBoundary().getSignature() + "|source-end="
+							+ component.getUpperBoundary().getSignature());
+		}
+		if (component == null) {
 			return notEstablished(LocusCoverageCause2D.UPSTREAM_NOT_ESTABLISHED,
 					"origin-outside-an-open-certified-component|" + evidence);
 		}

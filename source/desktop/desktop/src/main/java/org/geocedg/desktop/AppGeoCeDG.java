@@ -77,6 +77,9 @@ import org.geogebra.common.main.AppConfig;
 import org.geogebra.common.main.MyError.Errors;
 import org.geogebra.common.main.OptionType;
 import org.geogebra.common.main.settings.FontSettings;
+import org.geogebra.common.plugin.Event;
+import org.geogebra.common.plugin.EventDispatcher;
+import org.geogebra.common.plugin.ScriptManager;
 import org.geogebra.common.util.AsyncOperation;
 import org.geogebra.common.util.FileExtensions;
 import org.geogebra.common.util.debug.Log;
@@ -100,6 +103,7 @@ import org.geogebra.desktop.main.GeoGebraPortablePreferences;
 import org.geogebra.desktop.main.GeoGebraPreferencesD;
 import org.geogebra.desktop.main.GlobalKeyDispatcherD;
 import org.geogebra.desktop.main.undo.UndoManagerD;
+import org.geogebra.desktop.plugin.ScriptManagerD;
 import org.geogebra.desktop.util.CopyPasteD;
 import org.geogebra.editor.share.util.KeyCodes;
 
@@ -185,6 +189,9 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	/** PRE-G9B-R6-plus-F3-R1: the application window that was active before this helper */
 	private GeoGebraFrame activeWindowBeforeHelper;
 	private GeoCeDGDocumentInsertion documentInsertion;
+	private GeoCeDGClipboardImageInsertion clipboardImageInsertion;
+	// No initializer: the inherited App constructor can create the script manager.
+	private volatile ClipboardLibraryScope clipboardLibraryRecovery;
 	private GeoCeDGStyleApplication styleApplication;
 	private GeoCeDGInsertionIsolation insertionIsolation;
 	private GeoCeDGInsertionSourceChooser insertionSourceChooser;
@@ -1649,6 +1656,200 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		return documentInsertion;
 	}
 
+	GeoCeDGClipboardImageInsertion getClipboardImageInsertion() {
+		if (clipboardImageInsertion == null) {
+			clipboardImageInsertion = new GeoCeDGClipboardImageInsertion(this);
+		}
+		return clipboardImageInsertion;
+	}
+
+	/** Product-owned manager; native behavior remains outside the narrow recovery scope. */
+	@Override
+	public ScriptManager newScriptManager() {
+		return new ClipboardScripts(this);
+	}
+
+	enum ClipboardCallbackState { OBJECT_LISTENERS, FOREIGN_MANAGER }
+
+	/** Does not initialize ScriptManager or its lazy per-object maps. */
+	ClipboardCallbackState clipboardImageCallbackState() {
+		if (!hasScriptManager()) {
+			return null;
+		}
+		if (!(getScriptManager() instanceof ClipboardScripts scripts)) {
+			return ClipboardCallbackState.FOREIGN_MANAGER;
+		}
+		return scripts.hasObjectListeners() ? ClipboardCallbackState.OBJECT_LISTENERS : null;
+	}
+
+	private static final class ClipboardScripts extends ScriptManagerD {
+		ClipboardScripts(AppGeoCeDG app) {
+			super(app);
+		}
+
+		boolean hasObjectListeners() {
+			return (updateListenerMap != null && !updateListenerMap.isEmpty())
+					|| (clickListenerMap != null && !clickListenerMap.isEmpty());
+		}
+
+		@Override public void setGlobalScript() {
+			if (!((AppGeoCeDG) app).preservesClipboardLibrary(this)) { super.setGlobalScript(); }
+		}
+
+		@Override public void clearGlobalObjects() {
+			if (!((AppGeoCeDG) app).preservesClipboardLibrary(this)) { super.clearGlobalObjects(); }
+		}
+	}
+
+	/**
+	 * R13: only the direct, same-document IMAGE recovery reader owns this scope.
+	 * The native private Rhino scope is neither inspected nor copied: suppressing
+	 * its two replacement/clearing methods retains its exact reference or lazy null.
+	 */
+	ClipboardLibraryScope beginClipboardLibraryRecovery(Construction expected, String documentId) {
+		if (!SwingUtilities.isEventDispatchThread()) {
+			throw new IllegalStateException("Clipboard library recovery requires EDT");
+		}
+		if (expected != getKernel().getConstruction() || documentId == null
+				|| !documentId.equals(getUniqueId())) {
+			throw new IllegalStateException("CLIPBOARD_LIBRARY_OWNER_CHANGED");
+		}
+		ScriptManager manager = hasScriptManager() ? getScriptManager() : null;
+		if (manager != null && !(manager instanceof ClipboardScripts)) {
+			throw new IllegalStateException("CLIPBOARD_LIBRARY_MANAGER_CHANGED");
+		}
+		ClipboardLibraryScope parent = clipboardLibraryRecovery;
+		if (parent != null) { parent.requireCurrentOwner(); }
+		ClipboardLibraryScope scope = new ClipboardLibraryScope(this, expected, documentId, manager, parent);
+		clipboardLibraryRecovery = scope;
+		return scope;
+	}
+
+	private boolean preservesClipboardLibrary(ClipboardScripts manager) {
+		ClipboardLibraryScope scope = clipboardLibraryRecovery;
+		if (scope == null) { return false; }
+		scope.requireCurrentOwner();
+		if (!hasScriptManager() || getScriptManager() != manager) {
+			throw new IllegalStateException("CLIPBOARD_LIBRARY_MANAGER_CHANGED");
+		}
+		return true;
+	}
+
+	static final class ClipboardLibraryScope implements AutoCloseable {
+		private final AppGeoCeDG owner;
+		private final Construction construction;
+		private final String documentId;
+		private final ScriptManager previousManager;
+		private final ClipboardLibraryScope parent;
+		private boolean closed;
+
+		private ClipboardLibraryScope(AppGeoCeDG owner, Construction construction, String documentId,
+				ScriptManager previousManager, ClipboardLibraryScope parent) {
+			this.owner = owner; this.construction = construction; this.documentId = documentId;
+			this.previousManager = previousManager; this.parent = parent;
+		}
+
+		private void requireCurrentOwner() {
+			if (!SwingUtilities.isEventDispatchThread()) {
+				throw new IllegalStateException("Clipboard library recovery requires EDT");
+			}
+			if (owner.getKernel().getConstruction() != construction
+					|| !documentId.equals(owner.getUniqueId())) {
+				throw new IllegalStateException("CLIPBOARD_LIBRARY_OWNER_CHANGED");
+			}
+			ScriptManager current = owner.hasScriptManager() ? owner.getScriptManager() : null;
+			if ((current != null && !(current instanceof ClipboardScripts))
+					|| (previousManager != null && current != previousManager)) {
+				throw new IllegalStateException("CLIPBOARD_LIBRARY_MANAGER_CHANGED");
+			}
+		}
+
+		@Override public void close() {
+			if (closed) { return; }
+			if (!SwingUtilities.isEventDispatchThread()) {
+				throw new IllegalStateException("Clipboard library recovery requires EDT");
+			}
+			if (owner.clipboardLibraryRecovery != this) {
+				throw new IllegalStateException("Clipboard library scopes must close in LIFO order");
+			}
+			try { requireCurrentOwner(); }
+			finally { owner.clipboardLibraryRecovery = parent; closed = true; }
+		}
+	}
+
+	/** Native defaults outside the lexical image transaction, including host startup. */
+	@Override
+	protected EventDispatcher newEventDispatcher() {
+		return new ClipboardEvents(this);
+	}
+
+	ClipboardEventScope silenceClipboardEvents() {
+		if (!(getEventDispatcher() instanceof ClipboardEvents events)) {
+			throw new IllegalStateException("The document has no owned clipboard event scope");
+		}
+		return events.silence();
+	}
+
+	/** The native readers may enable listeners internally; depth still forbids dispatch. */
+	private static final class ClipboardEvents extends EventDispatcher {
+		private volatile int silenceDepth;
+		private boolean previousEnabled;
+
+		ClipboardEvents(AppGeoCeDG app) {
+			super(app); // No access to fields initialized after the inherited App constructor.
+		}
+
+		ClipboardEventScope silence() {
+			if (silenceDepth++ == 0) {
+				previousEnabled = listenersEnabled;
+				// Native ScriptManager.reset distinguishes Undo from a new document
+				// through this flag; suppressing dispatch alone would lose listeners.
+				listenersEnabled = false;
+			}
+			return new ClipboardEventScope(this);
+		}
+
+		@Override
+		public void enableListeners() {
+			if (silenceDepth == 0) {
+				super.enableListeners();
+			}
+		}
+
+		@Override
+		public void dispatchEvent(Event event) {
+			if (silenceDepth == 0) {
+				super.dispatchEvent(event);
+			}
+		}
+
+		void release() {
+			if (silenceDepth <= 0) {
+				throw new IllegalStateException("Clipboard event scope is not active");
+			}
+			if (--silenceDepth == 0) {
+				listenersEnabled = previousEnabled;
+			}
+		}
+	}
+
+	static final class ClipboardEventScope implements AutoCloseable {
+		private final ClipboardEvents owner;
+		private boolean closed;
+
+		private ClipboardEventScope(ClipboardEvents owner) {
+			this.owner = owner;
+		}
+
+		@Override
+		public void close() {
+			if (!closed) {
+				closed = true;
+				owner.release();
+			}
+		}
+	}
+
 	private static boolean expertInsertionRequested(CommandLineArguments args) {
 		boolean enabledByDefault = GeoCeDGProfile.isFeatureEnabledByDefault(
 				GeoCeDGExpertReview.FEATURE_ID);
@@ -1737,6 +1938,15 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		} else {
 			JOptionPane.showMessageDialog(getMainComponent(), text,
 					layerText("Insert.Title"), JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+	/** File -> Insert -> Image from clipboard; the chooser runs before native acquisition. */
+	void insertClipboardImageAction() {
+		GeoCeDGDocumentInsertion.Result result = getClipboardImageInsertion().insert();
+		if (result != null && result.getMessage() != null && result.getOutcome()
+				!= GeoCeDGDocumentInsertion.Outcome.SERIOUS_RECOVERY_FAILURE) {
+			showInsertionMessage(result.getMessage());
 		}
 	}
 

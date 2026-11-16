@@ -28,6 +28,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.RepresentationRol
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricBoxEvidence2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
@@ -389,7 +390,8 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 					+ ": no class-v3 program (" + programV3Refusal + ")");
 		}
 		if (boxModelV3 == null) {
-			boxModelV3 = new ConstructionBoxModel2D(programV3.get());
+			boxModelV3 = new ConstructionBoxModel2D(programV3.get(),
+					this::getMetricFunctionBoxEvidence, this::isNativeMetricInputAdmissible);
 		}
 		double[] enclosure = HybridExistenceCertifier2D.encloseRootImage(boxModelV3,
 				getOperationIdentitiesV3(), source, parameterLower, parameterUpper,
@@ -565,6 +567,23 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		return metricStructuresV3;
 	}
 
+	/** Proof bounds of an eligible metric input, independently of its numeric estimate. */
+	public synchronized LocusMetricBoxEvidence2D getMetricFunctionBoxEvidence(int node,
+			double lower, double upper) {
+		AlgoLocusBetweenMetricV2 metric = programV3MetricSources.get(node);
+		return metric == null ? null : metric.getFunctionBoxEvidence(lower, upper);
+	}
+
+	/**
+	 * Current native realization premise only. The result's value and estimated error
+	 * are deliberately not exposed to the geometric proof. Every point replay recomputes
+	 * the rich query and scalar; a failed admission remains a typed invalid evaluation.
+	 */
+	public synchronized boolean isNativeMetricInputAdmissible(int node) {
+		AlgoLocusBetweenMetricV2 metric = programV3MetricSources.get(node);
+		return metric != null && metric.getResult().isScalarAdmissible();
+	}
+
 	/**
 	 * Steps from the generator point of a locus support to the traced point, for the minimal
 	 * certified composition ({@code locus-v2-certified-construction-model.md} section 10.10,
@@ -622,6 +641,20 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		programV3Refusal = outcome.getRefusal();
 		programV3MetricSources = outcome.getMetricSources();
 		programV3Origins = outcome.getOrigins();
+		if (outcome.getProgram().isPresent()) {
+			List<CertifiedConstructionProgram2D.Step> steps =
+					outcome.getProgram().get().getSteps();
+			SpatialIdentityRegistry registry = isolatedConstruction.getSpatialIdentityRegistry();
+			for (int index = 0; index < steps.size(); index++) {
+				if (steps.get(index).getOperation().isCompositionProof()
+						&& (programV3Origins.get(index).getAnchor() == null
+								|| registry.getPersistentGeoId(
+										programV3Origins.get(index).getAnchor()) == null)) {
+					programV3Refusal = "composition-operation-origin-not-established";
+					return Optional.empty();
+				}
+			}
+		}
 		return outcome.getProgram();
 	}
 

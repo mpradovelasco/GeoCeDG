@@ -41,7 +41,7 @@ class G9U1ProfileCompilerTest {
 		assertEquals(2, profile.getInt("schema_version"));
 		assertEquals(11, profile.getJSONObject("taxonomy").getJSONArray("broad_families").length());
 		assertEquals(18, profile.getJSONArray("clusters").length());
-		assertEquals(136, GeoCeDGProfile.getActions().size());
+		assertEquals(137, GeoCeDGProfile.getActions().size());
 		assertEquals(GeoCeDGProfile.getToolbarDefinition(),
 				GeoCeDGProfile.compileProfile(profile.toString()));
 	}
@@ -210,7 +210,7 @@ class G9U1ProfileCompilerTest {
 				assertTrue(ids.add(id), id);
 			}
 		}
-		assertEquals(136, ids.size());
+		assertEquals(137, ids.size());
 		assertEquals(List.of("edit-selection", "construction-lists",
 				"construction-relations", "construction-lines-vectors",
 				"construction-polygons",
@@ -382,7 +382,7 @@ class G9U1ProfileCompilerTest {
 	void validV2DoesNotUseFallback() {
 		var selected = GeoCeDGProfile.loadDefinition(GeoCeDGProfile.getCatalog().toString(), "");
 		assertFalse(selected.legacyFallback);
-		assertEquals(136, selected.actionCount());
+		assertEquals(137, selected.actionCount());
 	}
 
 	@Test

@@ -12,16 +12,21 @@ import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
+import org.geocedg.common.kernel.locus.intersection.RouteSourceFacts2D;
 import org.geocedg.common.kernel.locus.metric.BetweenPositionsMetricQuery;
 import org.geocedg.common.kernel.locus.metric.LocusMetricCapabilityHierarchy2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricBoxEvidence2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricComponentBuildException;
 import org.geocedg.common.kernel.locus.metric.LocusMetricEngine2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricIndexMode;
 import org.geocedg.common.kernel.locus.metric.LocusMetricOwnerLease2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPolicy2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricQuery2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPositionBinder2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricResult2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricResults2D;
@@ -32,6 +37,9 @@ import org.geocedg.common.kernel.locus.metric.MetricPositionBinding2D;
 import org.geocedg.common.kernel.locus.metric.PolicyV2LocusMetricCapability2D;
 import org.geocedg.common.kernel.locus.metric.PublicLocusMetricTraversalPolicy2D;
 import org.geocedg.common.kernel.locus.metric.TotalLocusMetricQuery;
+import org.geocedg.common.kernel.locus.metric.OpenBoundaryPolicy;
+import org.geocedg.common.kernel.locus.metric.SamePositionPolicy;
+import org.geocedg.common.kernel.locus.metric.TraversalDirection;
 import org.geocedg.common.kernel.locus.metric.TraversalOutcome;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geogebra.common.kernel.Construction;
@@ -144,9 +152,7 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 			return;
 		}
 		try {
-			PublicLocusMetricTraversalPolicy2D traversalPolicy =
-					oppositeSamePosition ? currentTraversalPolicy().withOppositeSamePosition()
-							: currentTraversalPolicy();
+			PublicLocusMetricTraversalPolicy2D traversalPolicy = currentTraversalPolicy();
 			EndpointResolution startResolution = resolveEndpoint(start,
 					retainedStartFamily, retainedStartOccurrenceKey);
 			EndpointResolution targetResolution = resolveEndpoint(target,
@@ -169,10 +175,15 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 						"An endpoint has no current semantic address");
 				return;
 			}
-			BetweenPositionsMetricQuery query = new BetweenPositionsMetricQuery(
-					startBinding, targetBinding, traversalPolicy.getDirection(),
-					traversalPolicy.getBoundaryPolicy(),
-					traversalPolicy.getSamePositionPolicy(), policy);
+			boolean openLimit = isOpenFullArcLimit(traversalPolicy, startBinding, targetBinding);
+			if (oppositeSamePosition && !openLimit) {
+				traversalPolicy = traversalPolicy.withOppositeSamePosition();
+			}
+			LocusMetricQuery2D query = openLimit
+					? new TotalLocusMetricQuery(source.getLocusIdentity(), revision, policy)
+					: new BetweenPositionsMetricQuery(startBinding, targetBinding,
+							traversalPolicy.getDirection(), traversalPolicy.getBoundaryPolicy(),
+							traversalPolicy.getSamePositionPolicy(), policy);
 			ownerLease.getOwner().invalidateObsoleteRevision(revision);
 			result.publishMetricResult(revision, engine.compute(query, definition,
 					capabilities, ownerLease.getOwner(),
@@ -194,6 +205,44 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 					"Between-position metric failed: "
 							+ exception.getClass().getSimpleName());
 		}
+	}
+
+	/** Only an explicitly requested excluded-end limit may total an open full-turn arc. */
+	private boolean isOpenFullArcLimit(PublicLocusMetricTraversalPolicy2D traversal,
+			MetricPositionBinding2D first, MetricPositionBinding2D second) {
+		if (!oppositeSamePosition || traversal.getDirection() != TraversalDirection.FORWARD
+				|| traversal.getBoundaryPolicy() != OpenBoundaryPolicy.STRICT
+				|| traversal.getSamePositionPolicy() != SamePositionPolicy.ZERO_LENGTH
+				|| !(source.getParentAlgorithm() instanceof AlgoDependentPointLocusV2 locus)) {
+			return false;
+		}
+		AlgoElement origin = start.getParentAlgorithm();
+		if (locus.getInput(0) != target || origin == null || !isExplicitOriginOfSource(origin)
+				|| dependsOnDriver(origin, locus.getInput(1).toGeoElement())) { return false; }
+		var a = first.getSemanticPosition();
+		var b = second.getSemanticPosition();
+		if (!a.getLocusIdentity().equals(b.getLocusIdentity())
+				|| !a.getBranchKey().equals(b.getBranchKey())
+				|| !a.getProviderVersion().equals(b.getProviderVersion())
+				|| a.getProviderCanonicalParameter() != b.getProviderCanonicalParameter()
+				|| a.getPeriodicLift() != b.getPeriodicLift()
+				|| !first.getResolvedValidComponentKey().equals(second.getResolvedValidComponentKey())) {
+			return false;
+		}
+		HybridExistenceCertifier2D.Result certificate = locus.getHybridExistenceCertificate();
+		if (certificate == null) { return false; }
+		var structure = certificate.getStructure();
+		if (structure.getCompleteness() != LocusExistenceStructure2D.Completeness.COMPLETE
+				|| structure.getContinuousValidComponents().size() != 1
+				|| !structure.getPointComponents().isEmpty()) { return false; }
+		var component = structure.getContinuousValidComponents().get(0);
+		return component.getNature().certifies() && component.isArc() && component.isFullLength()
+				&& !component.isClosedPeriodic()
+				&& a.getProviderCanonicalParameter() == component.getStart()
+				&& component.getLowerBoundary().isBinaryEndIncluded()
+				&& !component.getUpperBoundary().isBinaryEndIncluded()
+				&& component.getLowerBoundary().supportsOneSidedLimit()
+				&& component.getUpperBoundary().supportsOneSidedLimit();
 	}
 
 	private PublicLocusMetricTraversalPolicy2D currentTraversalPolicy() {
@@ -294,7 +343,14 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 				+ Double.doubleToLongBits(parameter == 0 ? 0 : parameter);
 		if (structureCertificate != certificate || !key.equals(structureKey)) {
 			double[] facts = locus.getRouteSourceFacts(parameter);
-			functionStructure = LocusMetricFunctionStructure2D.derive(
+			var component = certificate.getStructure().getComponentContaining(parameter);
+			boolean full = certificate.getStructure().isClosedPeriodic()
+					|| component != null && component.isArc() && component.isFullLength();
+			functionStructure = full && locus.getRouteSourceFactsFailure(parameter)
+					== LocusCoverageCause2D.BUDGET_EXHAUSTED
+					? LocusMetricFunctionStructure2D.notEstablished(
+							LocusCoverageCause2D.BUDGET_EXHAUSTED, "source-speed-cover-budget")
+					: LocusMetricFunctionStructure2D.derive(
 					certificate.getStructure(), parameter, traversal.getDirection(),
 					traversal.getBoundaryPolicy(), traversal.getSamePositionPolicy(), facts[0],
 					facts[1], "LocusLength(" + source.getLocusIdentity() + ")@revision-"
@@ -303,6 +359,124 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 			structureKey = key;
 		}
 		return functionStructure;
+	}
+
+	/**
+	 * Rigorous value and first-derivative bounds on one regular box of the current metric
+	 * function. Positive-width boxes use the one-sided closure of their interior at a
+	 * structural event; an isolated point keeps its ordinary same-position value.
+	 * Derivative bounds refer to the regular interior/one-sided pieces, never assert a
+	 * classical derivative at a restart, and never read the computed numeric result.
+	 */
+	public LocusMetricBoxEvidence2D getFunctionBoxEvidence(double lower, double upper) {
+		if (!Double.isFinite(lower) || !Double.isFinite(upper) || lower > upper
+				|| !source.isDefined() || !start.isDefined() || !target.isDefined()) {
+			return null;
+		}
+		LocusMetricFunctionStructure2D structure = getFunctionStructure();
+		if (!structure.isCertified()
+				|| !(source.getParentAlgorithm() instanceof AlgoDependentPointLocusV2 locus)) {
+			return null;
+		}
+		AlgoElement originParent = start.getParentAlgorithm();
+		LocusSemanticAddress2D address = originParent instanceof AlgoSemanticLocusPoint2D semantic
+				? semantic.getCurrentSemanticAddress()
+				: originParent instanceof AlgoProvenLocusEndpoint2D proven ? proven.getAddress() : null;
+		if (address == null) { return null; }
+		double origin = address.getCanonicalParameter();
+		RouteSourceFacts2D.Index index = locus.getRouteSourceIndex(origin);
+		if (index == null || !index.isCertified()) { return null; }
+		var certificate = locus.getHybridExistenceCertificate();
+		LocusInterval2D domain = certificate.getStructure().getCanonicalDomain();
+		PublicLocusMetricTraversalPolicy2D traversal;
+		try { traversal = currentTraversalPolicy(); }
+		catch (IllegalArgumentException invalid) { return null; }
+		boolean seam = lower < upper && lower >= Math.PI && upper <= Math.nextUp(Math.PI)
+				&& domain.getLower() == -Math.PI && domain.getUpper() == Math.PI;
+		if (!seam && !regularBox(structure, domain, lower, upper)) { return null; }
+		double[] speed = index.speedBounds(lower, upper);
+		if (speed == null) { return null; }
+		double[] a, b;
+		String evidence = LocusMetricBoxEvidence2D.VERSION + "|revision="
+				+ source.getSemanticRevision() + "|component=" + index.getComponent().getEvidenceKey()
+				+ "|source-proof=" + RouteSourceFacts2D.VERSION
+				+ "|origin=" + Double.toHexString(origin) + "|" + traversal.getDirection();
+		if (seam) {
+			if (!regularBox(structure, domain, Math.nextDown(domain.getUpper()),
+					domain.getUpper())
+					|| structure.pieceContaining(domain.getLower()) == null
+					|| structure.pieceContaining(domain.getLower()).getState()
+							!= LocusMetricFunctionStructure2D.State.DEFINED) { return null; }
+			a = routeBounds(index, origin, domain.getUpper(), false, false, traversal);
+			if (a == null) { return null; }
+			double correction = index.getSeamUpperBound();
+			a = new double[] {Math.max(0, Math.nextDown(a[0] - correction)),
+					Math.nextUp(a[1] + correction)};
+			b = a;
+			evidence += "|box-interior-closure|circle-seam:below|gap-upper-only";
+			for (var event : structure.getEvents()) {
+				if (event.getDriverParameter() == domain.getLower()) {
+					evidence += "|ORIGIN_WRAP:" + Double.toHexString(domain.getLower()) + ":below";
+				}
+			}
+		} else {
+			boolean point = lower == upper;
+			a = routeBounds(index, origin, lower, point, true, traversal);
+			b = routeBounds(index, origin, upper, point, false, traversal);
+			if (a == null || b == null) { return null; }
+			evidence += point ? "|point-ordinary-value|derivative-regular-sides-only"
+					: "|box-interior-closure";
+			for (var event : structure.getEvents()) {
+				if (event.getDriverParameter() == lower) {
+					evidence += "|ORIGIN_WRAP:" + Double.toHexString(lower) + ":above";
+				}
+				if (event.getDriverParameter() == upper && lower < upper) {
+					evidence += "|ORIGIN_WRAP:" + Double.toHexString(upper) + ":below";
+				}
+			}
+		}
+		boolean forward = traversal.getDirection() == TraversalDirection.FORWARD;
+		if (!Double.isFinite(a[0]) || !Double.isFinite(a[1])
+				|| !Double.isFinite(b[0]) || !Double.isFinite(b[1])) { return null; }
+		return LocusMetricBoxEvidence2D.enclosed(Math.min(a[0], b[0]), Math.max(a[1], b[1]),
+				forward ? speed[0] : -speed[1], forward ? speed[1] : -speed[0], evidence);
+	}
+
+	private static boolean regularBox(LocusMetricFunctionStructure2D structure,
+			LocusInterval2D domain, double lower, double upper) {
+		if (lower < domain.getLower() || upper > domain.getUpper()
+				|| lower == upper && !domain.contains(lower, 0)) { return false; }
+		for (var event : structure.getEvents()) {
+			if (lower < event.getDriverParameter() && event.getDriverParameter() < upper) {
+				return false;
+			}
+		}
+		if (lower == upper) {
+			var piece = structure.pieceContaining(lower);
+			return piece != null
+					&& piece.getState() == LocusMetricFunctionStructure2D.State.DEFINED;
+		}
+		// A one-ulp-wide interval may have no representable interior midpoint.
+		// Its interior closure can still lie wholly within one defined piece.
+		for (var piece : structure.getPieces()) {
+			if (piece.getState() == LocusMetricFunctionStructure2D.State.DEFINED
+					&& piece.getInterval().getLower() <= lower
+					&& upper <= piece.getInterval().getUpper()) { return true; }
+		}
+		return false;
+	}
+
+	private static double[] routeBounds(RouteSourceFacts2D.Index index, double origin,
+			double target, boolean point, boolean lowerSide,
+			PublicLocusMetricTraversalPolicy2D traversal) {
+		boolean forward = traversal.getDirection() == TraversalDirection.FORWARD;
+		if (target == origin) {
+			boolean full = point ? traversal.getSamePositionPolicy() == SamePositionPolicy.FULL_CYCLE
+					: lowerSide != forward;
+			return full ? index.totalBounds() : new double[] {0, 0};
+		}
+		return forward ? index.integral(origin, target, target < origin)
+				: index.integral(target, origin, target > origin);
 	}
 
 	private boolean isExplicitOriginOfSource(AlgoElement origin) {

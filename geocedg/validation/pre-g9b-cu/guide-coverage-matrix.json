@@ -2168,6 +2168,26 @@
       "classification_group": "certified-insertion"
     },
     {
+      "id": "action:document.insert-clipboard-image",
+      "kind": "action",
+      "source": "apps/geocedg/application-profile.yml:2215",
+      "label_en": "Image from clipboard…",
+      "coverage": "COVERED",
+      "anchors": {
+        "en": [
+          "documents/4.2",
+          "command-and-workflow-reference/16.1"
+        ],
+        "es": [
+          "documents/4.2",
+          "command-and-workflow-reference/16.1"
+        ]
+      },
+      "notes": "The cited workflow specifies native acquisition after confirmation, layer and construction position, Cancel, one Undo/Redo after successful insertion, saved resources, verified-recovery session reset, contextual limits and known defective recovery paths in this technically rejected diagnostic build. Coverage describes documentation, not a runtime acceptance receipt.",
+      "label_es": "Imagen desde el portapapeles…",
+      "classification_group": "clipboard-image-insertion"
+    },
+    {
       "id": "action:document.insert-expert",
       "kind": "action",
       "source": "apps/geocedg/application-profile.yml:2250",
@@ -3021,17 +3041,19 @@
         "en": [
           "locus-v2/6.5",
           "locus-v2/6.6",
+          "locus-v2/6.8",
           "command-and-workflow-reference/16.1",
           "command-and-workflow-reference/16.2"
         ],
         "es": [
           "locus-v2/6.5",
           "locus-v2/6.6",
+          "locus-v2/6.8",
           "command-and-workflow-reference/16.1",
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "Covers the original creation routes, numeric domains and declared driver cuts, including half-open limits and the distinction from unresolved composition events.",
+      "notes": "Covers creation routes, numeric domains, declared cuts and reusable composition certification. Distinguishes ideal variable-rotation geometry from guarded native realization, certified interiors from unresolved lateral events, and component certification from curve-pair materialization.",
       "classification_group": "locus-v2-command"
     },
     {
@@ -3067,6 +3089,7 @@
           "lengths-and-measurements/9.2",
           "lengths-and-measurements/9.3",
           "lengths-and-measurements/9.4",
+          "locus-v2/6.8",
           "command-and-workflow-reference/16.2",
           "command-and-workflow-reference/16.3"
         ],
@@ -3075,11 +3098,12 @@
           "lengths-and-measurements/9.2",
           "lengths-and-measurements/9.3",
           "lengths-and-measurements/9.4",
+          "locus-v2/6.8",
           "command-and-workflow-reference/16.2",
           "command-and-workflow-reference/16.3"
         ]
       },
-      "notes": "Covers scalar admissibility, formula use, Algebra guarantees, the result inspector, endpoint assistance routes and preservation of historical rich results on reopening.",
+      "notes": "Covers scalar admissibility, formula use, Algebra guarantees, the rich inspector, endpoint assistance and historical rich-result compatibility. Explicitly separates an Estimated public value from geometric certificates derived from independent source bounds.",
       "classification_group": "locuslength-command"
     },
     {
@@ -3092,15 +3116,17 @@
         "en": [
           "lengths-and-measurements/9.2",
           "lengths-and-measurements/9.3",
+          "locus-v2/6.8",
           "command-and-workflow-reference/16.2"
         ],
         "es": [
           "lengths-and-measurements/9.2",
           "lengths-and-measurements/9.3",
+          "locus-v2/6.8",
           "command-and-workflow-reference/16.2"
         ]
       },
-      "notes": "All optional arguments, literal values, defaults, periodic rules and same-position policies have reproducible examples.",
+      "notes": "Optional arguments, literals, defaults, periodic and same-position policies have examples. Composition certification on an open full turn is scoped to its included origin with forward/strict/zero-length; evaluating an excluded limit does not authorize a public full-cycle query on an open component.",
       "classification_group": "locuslength-command"
     },
     {
@@ -6167,7 +6193,7 @@
     }
   ],
   "totals": {
-    "COVERED": 282,
+    "COVERED": 283,
     "PARTIAL": 0,
     "MISSING": 0,
     "EXCLUDED_WITH_REASON": 12
@@ -6264,8 +6290,19 @@
           "!"
         ],
         "text": {
-          "en": "**Insert** brings together certified insertion, expert review and style transfer (section 4.2)",
-          "es": "**Insertar** reúne la inserción certificada, la revisión experta y la transferencia de estilos (sección 4.2)"
+          "en": "**Insert** brings together certified insertion, expert review, clipboard images and style transfer (section 4.2)",
+          "es": "**Insertar** reúne la inserción certificada, la revisión experta, las imágenes del portapapeles y la transferencia de estilos (sección 4.2)"
+        }
+      },
+      "clipboard-image-insertion": {
+        "anchor": "documents/4.2",
+        "marks": [
+          "A",
+          "!"
+        ],
+        "text": {
+          "en": "Image from clipboard inserts native images after choosing a layer and a construction position.",
+          "es": "Imagen desde el portapapeles inserta imágenes nativas tras elegir la capa y la posición de construcción."
         }
       },
       "edit-menu": {

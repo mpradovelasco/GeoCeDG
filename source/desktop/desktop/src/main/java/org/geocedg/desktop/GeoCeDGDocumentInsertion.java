@@ -11,12 +11,17 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.HexFormat;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -35,6 +41,7 @@ import javax.swing.SwingUtilities;
 
 import org.geocedg.common.document.controls.ControlLayout.Panel;
 import org.geocedg.common.document.controls.ControlLayoutException;
+import org.geocedg.common.kernel.locus.NativeTransactionalState2D;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.kernel.units.DocumentUnitSystem;
@@ -42,18 +49,23 @@ import org.geocedg.common.kernel.units.MixedAngleInsertionProof;
 import org.geocedg.common.kernel.units.UnitState;
 import org.geocedg.desktop.GeoCeDGAngularSourceArchive.Finding;
 import org.geocedg.desktop.GeoCeDGAngularSourceArchive.Refusal;
+import org.geogebra.common.io.MyXMLio;
 import org.geogebra.common.io.XMLParseException;
+import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.jre.io.MyXMLioJre;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.LayerView;
 import org.geogebra.common.kernel.Macro;
 import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoMacro;
+import org.geogebra.common.kernel.algos.ConstructionElement;
 import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoBoolean;
 import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoImage;
 import org.geogebra.common.kernel.geos.GeoList;
 import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.GeoPoint;
@@ -191,6 +203,7 @@ final class GeoCeDGDocumentInsertion {
 	private final AppGeoCeDG app;
 	private Faults faults = NO_FAULTS;
 	private boolean awaitingAngularConfirmation;
+	private boolean clipboardImageActive;
 	private ExpertReview activeExpertReview;
 
 	record AngularSample(String label, String original, String adapted) {
@@ -213,6 +226,551 @@ final class GeoCeDGDocumentInsertion {
 
 	void setFaults(Faults faults) {
 		this.faults = faults == null ? NO_FAULTS : faults;
+	}
+
+	String clipboardImageRefusal() {
+		if (clipboardImageActive || awaitingAngularConfirmation || activeExpertReview != null) {
+			return text("ClipboardImage.Busy");
+		}
+		if (app.isInsertionIsolated()) { return text("Insert.Isolation.Refused"); }
+		if (!app.getKernel().isUndoActive()
+				|| !(app.getUndoManager() instanceof GeoCeDGUndoManager)) {
+			return text("Insert.Reject.UndoUnavailable");
+		}
+		if (app.getKernel().getAnimationManager().isRunning()) {
+			return text("ClipboardImage.Busy");
+		}
+		var callbacks = app.clipboardImageCallbackState();
+		if (callbacks != null) {
+			return clipboardCallbackRefusal(callbacks);
+		}
+		if (GeoCeDGUndoManager.LazyDefaults.unsupportedImageStep(
+				app.getKernel().getConstruction()) != null) {
+			return text("ClipboardImage.DynamicDefaults");
+		}
+		return null;
+	}
+
+	/** A separate image operation: no IMAGE admission or file/unit-source fiction. */
+	Result insertClipboardImage(GeoCeDGClipboardImageInsertion.Request request,
+			GeoCeDGClipboardImageInsertion.Choice choice,
+			GeoCeDGClipboardImageInsertion.NativeLoader loader) {
+		if (!SwingUtilities.isEventDispatchThread()) {
+			throw new IllegalStateException("Clipboard image insertion requires EDT");
+		}
+		String refusal = clipboardImageRefusal();
+		if (refusal != null) { return clipboardRejected(refusal, null); }
+		if (!request.isCurrent()) { return clipboardRejected(text("ClipboardImage.Changed"), null); }
+		Construction construction = app.getKernel().getConstruction();
+		var host = NativeTransactionalState2D.unsupportedReason(construction);
+		if (host != null) {
+			return clipboardRejected(text("ClipboardImage.UnsupportedHost"),
+					new IllegalStateException(host.name()));
+		}
+		clipboardImageActive = true;
+		try (var events = app.silenceClipboardEvents()) {
+			ClipboardTransaction transaction;
+			try {
+				GeoCeDGUndoManager undo = (GeoCeDGUndoManager) construction.getUndoManager();
+				ClipboardState before = new ClipboardState();
+				Construction.NativeUndoSnapshot checkpoint = construction.captureNativeUndoSnapshot();
+				Barrier barrier = barrier(undo, UUID.randomUUID().toString(), request::isCurrent, null, true);
+				transaction = new ClipboardTransaction(undo, barrier, before, checkpoint);
+			} catch (BarrierRejection failure) {
+				return clipboardRejected(text(failure.getMessage()), failure);
+			} catch (Exception failure) {
+				return clipboardRejected(text("ClipboardImage.UnsupportedHost"), failure);
+			}
+			// The transaction owns every outcome once the barrier has detached history.
+			return transaction.run(request, choice, loader);
+		} finally {
+			clipboardImageActive = false;
+		}
+	}
+
+	Result clipboardRejected(String reason, Throwable failure) {
+		var callbacks = app.clipboardImageCallbackState();
+		if (callbacks != null) {
+			IllegalStateException unsupported = new IllegalStateException(callbacks.name());
+			if (failure != null) { unsupported.addSuppressed(failure); }
+			failure = unsupported;
+			reason = clipboardCallbackRefusal(callbacks);
+		} else {
+			String defaults = GeoCeDGUndoManager.LazyDefaults.unsupportedImageStep(
+					app.getKernel().getConstruction());
+			if (defaults != null) {
+				IllegalStateException unsupported = new IllegalStateException(defaults);
+				if (failure != null) { unsupported.addSuppressed(failure); }
+				failure = unsupported;
+				reason = text("ClipboardImage.DynamicDefaults");
+			}
+		}
+		return new Result(Outcome.REJECTED_BEFORE_MUTATION,
+				text("ClipboardImage.Rejected", reason), List.of(), failure);
+	}
+
+	private String clipboardCallbackRefusal(AppGeoCeDG.ClipboardCallbackState state) {
+		return text(switch (state) {
+		case OBJECT_LISTENERS -> "ClipboardImage.ObjectListeners";
+		case FOREIGN_MANAGER -> "ClipboardImage.UnknownCallbacks";
+		});
+	}
+
+	/** Exact host/session observations, separate from the native image cache. */
+	private final class ClipboardState {
+		final Certificate certificate = Certificate.of(app);
+		final Construction construction = app.getKernel().getConstruction();
+		final List<ConstructionElement> sequence = new ArrayList<>();
+		final Map<ConstructionElement, String> definitions = new IdentityHashMap<>();
+		final Set<GeoElement> geos = identitySet(app);
+		final Set<GeoImage> images = Collections.newSetFromMap(new IdentityHashMap<>());
+		final Map<String, String> resources;
+		final GeoCeDGUndoManager.LazyDefaults defaults;
+		final int step = construction.getStep();
+		final int workingLayer = app.getLayerWorkspace().getWorkingLayer();
+		final int maxLayer = app.getMaxLayerUsed();
+		final org.geocedg.common.kernel.layers.HiddenLayerSet hidden =
+				app.getLayerWorkspace().getHiddenLayerSet();
+		final int activeView = app.getActiveEuclidianView().getViewID();
+		final int mode = app.getMode();
+		final List<GeoElement> selection = List.copyOf(app.getSelectionManager().getSelectedGeos());
+		final List<GeoElement> justCreated = List.copyOf(app.getActiveEuclidianView()
+				.getEuclidianController().getJustCreatedGeos());
+		final boolean scriptsBlocked = app.isBlockUpdateScripts();
+		final String tube = app.getTubeId();
+		final String libraryJavaScript = app.getKernel().getLibraryJavaScript();
+
+		ClipboardState() throws IOException {
+			defaults = GeoCeDGUndoManager.LazyDefaults.capture(construction);
+			images.addAll(app.images);
+			for (int i = 0; i < construction.steps(); i++) {
+				ConstructionElement element = construction.getConstructionElement(i);
+				sequence.add(element);
+				definitions.put(element, elementXml(element));
+			}
+			resources = clipboardResources();
+		}
+
+		void restoreSession(boolean sameInstances) {
+			app.setUniqueId(certificate.uuid);
+			app.setTubeId(tube);
+			app.setCurrentFile(certificate.file);
+			if (!hidden.equals(app.getLayerWorkspace().getHiddenLayerSet())) {
+				app.getLayerWorkspace().commitOpenedDocument(hidden);
+			}
+			app.getLayerWorkspace().setWorkingLayer(workingLayer);
+			app.restoreMaxLayerUsed(maxLayer);
+			if (app.getActiveEuclidianView().getViewID() != activeView) { app.setActiveView(activeView); }
+			if (sameInstances && app.getMode() != mode) { app.setMode(mode); }
+			app.getSelectionManager().clearSelectedGeos(false, false);
+			var controller = app.getActiveEuclidianView().getEuclidianController();
+			controller.clearJustCreatedGeos();
+			if (sameInstances) {
+				for (GeoElement geo : selection) { app.getSelectionManager().addSelectedGeo(geo, false, false); }
+				controller.memorizeJustCreatedGeos(new ArrayList<>(justCreated));
+			}
+			construction.setStep(step);
+			app.setBlockUpdateScripts(scriptsBlocked);
+			if (certificate.saved) { app.setSaved(); } else { app.setUnsaved(); }
+			app.updateSelection(false);
+		}
+
+		void requireRecovered() throws IOException {
+			Certificate after = Certificate.of(app);
+			List<String> differences = certificate.serializableDifferences(after);
+			if (!differences.isEmpty() || construction.getStep() != step
+					|| app.getMaxLayerUsed() != maxLayer
+					|| app.getLayerWorkspace().getWorkingLayer() != workingLayer
+					|| !hidden.equals(app.getLayerWorkspace().getHiddenLayerSet())
+					|| !Objects.equals(libraryJavaScript, app.getKernel().getLibraryJavaScript())
+					|| !resources.equals(clipboardResources())) {
+				throw new IOException("Clipboard image recovery certificate: " + differences);
+			}
+			GeoElement defaultImage = construction.getConstructionDefaults()
+					.getDefaultGeo(ConstructionDefaults.DEFAULT_IMAGE);
+			for (GeoImage image : app.images) {
+				if (!images.contains(image) && !image.isLabelSet() && image != defaultImage) {
+					throw new IOException("An unlabelled image remains after clipboard recovery");
+				}
+			}
+		}
+	}
+
+	private static String elementXml(ConstructionElement element) {
+		XMLStringBuilder xml = new XMLStringBuilder();
+		element.getXML(true, xml);
+		return Certificate.normalize(xml.toString());
+	}
+
+	/** Resources of this live native document, without applying the I2 source pilot. */
+	private Map<String, String> clipboardResources() throws IOException {
+		ByteArrayOutputStream output = new ByteArrayOutputStream();
+		app.getXMLio().writeGeoGebraFile(output, false);
+		byte[] archive = output.toByteArray();
+		try {
+			// Verifies the complete native archive and UUID through the existing
+			// disposable-kernel preflight; do not run that preflight twice.
+			GeoCeDGRecoverySnapshot.verify(archive, app, app.getUniqueId());
+		} catch (GeoCeDGRecoverySnapshot.SnapshotException invalid) {
+			throw new IOException("Clipboard native resource archive failed verification", invalid);
+		}
+		Set<String> names = new HashSet<>();
+		Map<String, String> resources = new LinkedHashMap<>();
+		byte[] buffer = new byte[8192];
+		try (ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(archive))) {
+			for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+				String name = entry.getName();
+				if (!names.add(name)) { throw new IOException("Duplicate native ZIP member " + name); }
+				MessageDigest digest;
+				try { digest = MessageDigest.getInstance("SHA-256"); }
+				catch (NoSuchAlgorithmException unavailable) {
+					throw new IOException("SHA-256 is unavailable", unavailable);
+				}
+				CRC32 crc = new CRC32();
+				long expanded = 0;
+				for (int read = zip.read(buffer); read != -1; read = zip.read(buffer)) {
+					if (Long.MAX_VALUE - expanded < read) {
+						throw new IOException("Native ZIP member size overflow");
+					}
+					expanded += read;
+					crc.update(buffer, 0, read);
+					digest.update(buffer, 0, read);
+				}
+				// ZipInputStream also validates CRC while draining. Check metadata
+				// after the data descriptor has populated an initially unknown size.
+				if ((entry.getSize() >= 0 && entry.getSize() != expanded)
+						|| (entry.getCrc() >= 0 && entry.getCrc() != crc.getValue())) {
+					throw new IOException("Native ZIP member CRC/size mismatch at " + name);
+				}
+				// false above suppresses only the derived thumbnail. If the native
+				// writer still emits its reserved name, it is a referenced resource
+				// of this construction or a macro and its bytes must be preserved.
+				if (!MyXMLio.XML_FILE.equals(name)) {
+					resources.put(name, HexFormat.of().formatHex(digest.digest()));
+				}
+				zip.closeEntry();
+			}
+		}
+		return Map.copyOf(resources);
+	}
+
+	private static final class ClipboardAttemptFailure extends RuntimeException {
+		ClipboardAttemptFailure(Throwable cause) { super(cause); }
+	}
+
+	/** Image-specific journal. NativeAtomic supplies MEMORY rollback, not image admission. */
+	private final class ClipboardTransaction {
+		private final GeoCeDGUndoManager undo;
+		private final Barrier barrier;
+		private final ClipboardState before;
+		private final Construction.NativeUndoSnapshot checkpoint;
+		private Throwable failure;
+		private ClipboardAttemptFailure attemptedFailure;
+		private boolean nativeRecovered;
+		private boolean reconstructionObserved;
+		private boolean removalUncertified;
+		private boolean terminal;
+		private UndoCommand own;
+		private int reloadAttempts;
+		private boolean archiveDefaults;
+		private final Set<UndoCommand> temporaryStates = Collections.newSetFromMap(new IdentityHashMap<>());
+
+		ClipboardTransaction(GeoCeDGUndoManager undo, Barrier barrier, ClipboardState before,
+				Construction.NativeUndoSnapshot checkpoint) {
+			this.undo = undo; this.barrier = barrier; this.before = before; this.checkpoint = checkpoint;
+		}
+
+		Result run(GeoCeDGClipboardImageInsertion.Request request,
+				GeoCeDGClipboardImageInsertion.Choice choice,
+				GeoCeDGClipboardImageInsertion.NativeLoader loader) {
+			try {
+				request.close(); // Accepted; its own adds/layers/stores cannot invalidate the choice.
+				before.construction.runAtomicConstructionMutation(() -> {
+					try {
+						app.setBlockUpdateScripts(true);
+						if (choice.position() == GeoCeDGClipboardImageInsertion.Position.APPEND) {
+							before.construction.setStep(before.construction.steps() - 1);
+						}
+						if (!loader.load(app)) { throw new IOException(text("ClipboardImage.BadClipboard")); }
+						faults.afterCommit();
+						verifyImages(choice);
+						app.setBlockUpdateScripts(before.scriptsBlocked);
+						faults.beforeOwnStore();
+						verifyImages(choice);
+						String expected = before.construction.getCurrentUndoXML(true).toString();
+						undo.storeUndoInfo();
+						if (!awaitQuiescence(undo)) { throw new IOException("Clipboard Undo store did not finish"); }
+						List<UndoCommand> temporary = undo.getCommands();
+						if (temporary.size() != 2 || temporary.get(0) != barrier.baseline) {
+							throw new IOException("Unexpected clipboard Undo history");
+						}
+						own = temporary.get(1);
+						if (!expected.equals(publicUndo(own))
+								|| !expected.equals(before.construction.getCurrentUndoXML(true).toString())) {
+							throw new IOException("Clipboard Undo state differs from the live result");
+						}
+					} catch (Exception | Error problem) {
+						try { faults.duringRemoval(); }
+						catch (Exception | Error cleanup) { removalUncertified = true; problem.addSuppressed(cleanup); }
+						try { removeCreatedImagesAndCorners(); }
+						catch (RuntimeException | Error cleanup) { removalUncertified = true; problem.addSuppressed(cleanup); }
+						attemptedFailure = new ClipboardAttemptFailure(problem);
+						throw attemptedFailure;
+					}
+				});
+				app.setBlockUpdateScripts(before.scriptsBlocked);
+				List<UndoCommand> result = new ArrayList<>(barrier.held.getPrefix());
+				if (result.isEmpty() || !(result.get(result.size() - 1).getAppState() instanceof FileAppState)
+						|| !publicUndo(barrier.baseline).equals(publicUndo(result.get(result.size() - 1)))) {
+					result.add(barrier.baseline);
+				}
+				result.add(own);
+				app.setUnsaved();
+				faults.beforeAttach();
+				verifyImages(choice);
+				if (!publicUndo(own).equals(before.construction.getCurrentUndoXML(true).toString())) {
+					throw new IOException("Clipboard result changed before history publication");
+				}
+				attach(result, result.size(), true);
+				terminal = true;
+				releaseUnused(result, barrier.held.getRedo());
+				barrier.snapshot.release();
+				return new Result(Outcome.INSERTED, null, List.of(), null);
+			} catch (Exception | Error problem) {
+				failure = problem;
+				nativeRecovered = problem == attemptedFailure;
+				// NativeAtomic replays the snapshot even if the original drawing has
+				// no labelled objects; vacuous instance equality is not a K1-S proof.
+				reconstructionObserved = attemptedFailure != null;
+				return recover();
+			} finally {
+				app.setBlockUpdateScripts(before.scriptsBlocked);
+				try { app.setDefaultCursor(); } catch (RuntimeException problem) { Log.debug(problem); }
+				if (!terminal) {
+					barrier.snapshot.retainForIsolation();
+					terminal = true;
+					app.getInsertionIsolation().enter(barrier.snapshot, text("ClipboardImage.Title"), barrier.held);
+				}
+			}
+		}
+
+		private String publicUndo(UndoCommand command) throws IOException {
+			return undo.publicUndoXml(command, undoXml(command));
+		}
+
+		private void verifyImages(GeoCeDGClipboardImageInsertion.Choice choice) throws IOException {
+			before.defaults.restoreConstruction();
+			List<GeoElement> created = createdSince(app, before.geos);
+			List<GeoImage> images = new ArrayList<>();
+			for (GeoImage image : app.images) { if (!before.images.contains(image)) { images.add(image); } }
+			if (images.isEmpty() || created.size() != images.size() * 3
+					|| before.construction.steps() != before.sequence.size() + created.size()) {
+				throw new IOException("Clipboard image payload is incomplete");
+			}
+			int start = choice.position() == GeoCeDGClipboardImageInsertion.Position.APPEND
+					? before.sequence.size() : before.step + 1;
+			Set<GeoElement> payload = Collections.newSetFromMap(new IdentityHashMap<>());
+			for (int offset = 0; offset < created.size(); offset += 3) {
+				ConstructionElement first = before.construction.getConstructionElement(start + offset);
+				ConstructionElement second = before.construction.getConstructionElement(start + offset + 1);
+				ConstructionElement last = before.construction.getConstructionElement(start + offset + 2);
+				if (!(first instanceof GeoPoint a) || a.getClass() != GeoPoint.class
+						|| !(second instanceof GeoPoint b) || b.getClass() != GeoPoint.class
+						|| !(last instanceof GeoImage image) || image.getClass() != GeoImage.class
+						|| !images.contains(image) || !a.isDefined() || !b.isDefined() || !image.isDefined()
+						|| !created.contains(a) || !created.contains(b) || !created.contains(image)
+						|| image.getStartPoints()[0] != a || image.getStartPoints()[1] != b
+						|| image.getStartPoints()[2] != null || image.getStartPoints()[3] != null
+						|| image.getFillImage() == null || !image.getFillImage().hasNonNullImplementation()
+						|| image.getFillImage().getWidth() <= 0 || image.getFillImage().getHeight() <= 0) {
+					throw new IOException("Clipboard image corners, order or resource are invalid");
+				}
+				payload.add(a); payload.add(b); payload.add(image);
+				a.setLayer(choice.layer()); b.setLayer(choice.layer()); image.setLayer(choice.layer());
+			}
+			if (payload.size() != created.size()) { throw new IOException("Repeated clipboard image payload"); }
+			for (int i = 0; i < before.sequence.size(); i++) {
+				ConstructionElement previous = before.sequence.get(i);
+				int index = i < start ? i : i + created.size();
+				if (before.construction.getConstructionElement(index) != previous
+						|| !before.definitions.get(previous).equals(elementXml(previous))) {
+					throw new IOException("Clipboard insertion changed an existing construction element");
+				}
+			}
+			if (app.getLayerWorkspace().getWorkingLayer() != before.workingLayer
+					|| !before.hidden.equals(app.getLayerWorkspace().getHiddenLayerSet())
+					|| !Objects.equals(app.getUniqueId(), before.certificate.uuid)
+					|| !Objects.equals(app.getCurrentFile(), before.certificate.file)) {
+				throw new IOException("Clipboard insertion changed the document context");
+			}
+			Map<String, String> resources = clipboardResources();
+			for (var entry : before.resources.entrySet()) {
+				if (!Objects.equals(entry.getValue(), resources.get(entry.getKey()))) {
+					throw new IOException("Clipboard insertion changed an existing resource");
+				}
+			}
+		}
+
+		/** Called before NativeAtomic reload; never remove stale instances after reconstruction. */
+		private void removeCreatedImagesAndCorners() {
+			for (GeoImage image : new ArrayList<>(app.images)) {
+				if (!before.images.contains(image) && image.getConstruction() == before.construction) { image.remove(); }
+			}
+			List<GeoElement> created = createdSince(app, before.geos);
+			Collections.reverse(created);
+			for (GeoElement geo : created) {
+				if (geo.isLabelSet() && app.getKernel().lookupLabel(geo.getLabelSimple()) == geo) { geo.remove(); }
+			}
+		}
+
+		private Result recover() {
+			boolean certified = false;
+			boolean sameInstances = false;
+			try {
+				if (!nativeRecovered || removalUncertified) { reload(); }
+				closePendingStores();
+				sameInstances = !reconstructionObserved
+						&& before.certificate.sameInstances(Certificate.of(app));
+				before.restoreSession(sameInstances);
+				faults.beforeCertificate();
+				restoreDefaults();
+				before.requireRecovered();
+				certified = true;
+			} catch (Exception | Error problem) {
+				failure.addSuppressed(problem);
+				try {
+					reload(); closePendingStores();
+					sameInstances = !reconstructionObserved
+							&& before.certificate.sameInstances(Certificate.of(app));
+					before.restoreSession(sameInstances);
+					faults.beforeCertificate(); restoreDefaults(); before.requireRecovered();
+					certified = true;
+				} catch (Exception | Error last) { failure.addSuppressed(last); }
+			}
+			if (!certified) { return serious(); }
+			try {
+				attach(barrier.held.getCommands(), barrier.held.getCursor(), false);
+				String mismatch = barrier.history.mismatch(undo, barrier.held);
+				if (mismatch != null) { throw new IOException("Clipboard history recovery: " + mismatch); }
+				terminal = true;
+				releaseUnused(barrier.held.getCommands(), List.of());
+				barrier.snapshot.release();
+				List<String> resets = sameInstances ? List.of() : List.of("Insert.Reset.Instances",
+						"Insert.Reset.Selection", "Insert.Reset.ReferenceMemory");
+				return new Result(sameInstances ? Outcome.FAILED_RECOVERY_CERTIFIED
+						: Outcome.FAILED_RECOVERY_CERTIFIED_SESSION_RESET,
+						sameInstances ? text("ClipboardImage.Restored")
+								: text("Insert.Failed.Reloaded", text("ClipboardImage.Title"),
+										text("ClipboardImage.BadClipboard"), ""), resets, failure);
+			} catch (Exception | Error problem) { failure.addSuppressed(problem); return serious(); }
+		}
+
+		private void reload() throws Exception {
+			Exception last = new IOException("Clipboard recovery exhausted its two guarded reloads");
+			while (reloadAttempts < 2) {
+				int attempt = ++reloadAttempts;
+				try {
+					faults.beforeReload(attempt);
+					boolean loading = before.construction.isFileLoading();
+					try {
+						before.construction.setFileLoading(true);
+						reconstructionObserved = true;
+						if (checkpoint != null) {
+							before.construction.restoreNativeUndoSnapshot(checkpoint.template(), () -> {
+								try { app.getXMLio().processConstructionSnapshot(checkpoint.xml().toString(), false); }
+								catch (XMLParseException problem) { throw new IllegalStateException(problem); }
+							});
+						} else {
+							archiveDefaults = true;
+							try (var library = app.beginClipboardLibraryRecovery(
+									before.construction, before.certificate.uuid)) {
+								Throwable readingFailure = null;
+								try (InputStream input = new ByteArrayInputStream(barrier.snapshot.getArchive())) {
+									((MyXMLioJre) app.getXMLio()).readNativeZipFromInputStream(input);
+								} catch (Exception | Error problem) {
+									readingFailure = problem;
+									throw problem;
+								} finally {
+									try {
+										if (!Objects.equals(before.libraryJavaScript,
+												app.getKernel().getLibraryJavaScript())) {
+											// The native reader normalizes line endings. Restore the
+											// captured raw string while evaluation is still suppressed.
+											app.getKernel().setLibraryJavaScript(before.libraryJavaScript);
+										}
+										if (!Objects.equals(before.libraryJavaScript,
+												app.getKernel().getLibraryJavaScript())) {
+											throw new IOException("CLIPBOARD_LIBRARY_RESTITUTION_FAILED");
+										}
+									} catch (Exception | Error cleanup) {
+										if (readingFailure == null) { throw cleanup; }
+										readingFailure.addSuppressed(cleanup);
+									}
+								}
+							}
+						}
+					} catch (Exception | Error problem) {
+						try { restoreDefaults(); }
+						catch (Exception | Error cleanup) { problem.addSuppressed(cleanup); }
+						throw problem;
+					} finally { before.construction.setFileLoading(loading); }
+					restoreDefaults();
+					return;
+				} catch (Exception problem) { last = problem; }
+			}
+			throw last;
+		}
+
+		private void restoreDefaults() throws IOException {
+			if (archiveDefaults) { before.defaults.restoreArchive(); }
+			else { before.defaults.restoreConstruction(); }
+		}
+
+		private void closePendingStores() throws IOException {
+			if (!awaitQuiescence(undo)) {
+				synchronized (undo) {
+					temporaryStates.addAll(undo.getCommands());
+					try (PreparedUndoBaseline closing = undo.prepareUndoBaseline()) {
+						undo.commitUndoBaseline(closing);
+					}
+					temporaryStates.addAll(undo.getCommands());
+				}
+			}
+			if (!undo.isQuiescent() || undo.isDegraded()) { throw new IOException("Clipboard history is not quiescent"); }
+		}
+
+		private void attach(List<UndoCommand> commands, int cursor, boolean publishing) throws IOException {
+			if (!publishing) { closePendingStores(); }
+			synchronized (undo) {
+				if (publishing && (!undo.isQuiescent() || undo.isDegraded()
+						|| !undo.getCommands().equals(List.of(barrier.baseline, own)))) {
+					throw new IOException("Clipboard history changed before publication");
+				}
+				temporaryStates.addAll(undo.getCommands());
+				RuntimeException refresh = undo.attach(commands, cursor);
+				if (refresh != null) { Log.debug(refresh); }
+			}
+		}
+
+		private void releaseUnused(List<UndoCommand> retained, List<UndoCommand> discarded) {
+			Set<UndoCommand> candidates = Collections.newSetFromMap(new IdentityHashMap<>());
+			candidates.addAll(discarded);
+			candidates.addAll(temporaryStates);
+			candidates.add(barrier.baseline);
+			if (own != null) { candidates.add(own); }
+			for (UndoCommand command : candidates) {
+				if (!retained.contains(command)) {
+					try { command.delete(); } catch (RuntimeException | Error problem) { Log.debug(problem); }
+				}
+			}
+		}
+
+		private Result serious() {
+			barrier.snapshot.retainForIsolation(); terminal = true;
+			app.getInsertionIsolation().enter(barrier.snapshot, text("ClipboardImage.Title"), barrier.held);
+			return new Result(Outcome.SERIOUS_RECOVERY_FAILURE,
+					text("Insert.Serious", text("ClipboardImage.Title")), List.of(), failure);
+		}
 	}
 
 	/** Opens the one live review for this document. Invalidations start before capture. */
@@ -879,6 +1437,49 @@ final class GeoCeDGDocumentInsertion {
 		}
 	}
 
+	/**
+	 * IMAGE-only structural check of the original Undo baseline. Private MEMORY
+	 * XML is projected only by its existing owned companion; the command itself
+	 * remains unchanged and is the authority used for every later native replay.
+	 */
+	boolean preflightClipboardUndo(GeoCeDGUndoManager owner, UndoCommand original, byte[] archive) {
+		if (owner != app.getKernel().getConstruction().getUndoManager()
+				|| original == null || !(original.getAppState() instanceof FileAppState)
+				|| owner.getCommands().stream().noneMatch(command -> command == original)) {
+			return false;
+		}
+		try {
+			byte[] xml;
+			try (ZipInputStream zip = new ZipInputStream(new ByteArrayInputStream(archive))) {
+				ZipEntry entry = zip.getNextEntry();
+				if (entry == null || !MyXMLio.XML_FILE.equals(entry.getName()) || entry.isDirectory()) {
+					return false;
+				}
+				ByteArrayOutputStream contents = new ByteArrayOutputStream();
+				byte[] buffer = new byte[8192];
+				CRC32 crc = new CRC32();
+				long expanded = 0;
+				for (int count = zip.read(buffer); count != -1; count = zip.read(buffer)) {
+					if (Long.MAX_VALUE - expanded < count) { return false; }
+					expanded += count;
+					crc.update(buffer, 0, count);
+					contents.write(buffer, 0, count);
+				}
+				if (entry.getSize() != expanded || entry.getCrc() != crc.getValue()) { return false; }
+				xml = contents.toByteArray();
+				zip.closeEntry();
+				if (zip.getNextEntry() != null) { return false; }
+			}
+			String raw = StandardCharsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(xml)).toString();
+			String publicXml = owner.publicUndoXml(original, raw);
+			ByteArrayOutputStream projection = new ByteArrayOutputStream();
+			MyXMLioJre.writeZipped(projection, new StringBuilder(publicXml));
+			return preflight(projection.toByteArray());
+		} catch (Exception invalid) {
+			return false;
+		}
+	}
+
 	private Result rejected(String name, String key, String argument) {
 		return new Result(Outcome.REJECTED_BEFORE_MUTATION,
 				text("Insert.Rejected", name, refusalText(key, argument)),
@@ -1068,6 +1669,12 @@ final class GeoCeDGDocumentInsertion {
 	private Barrier barrier(GeoCeDGUndoManager undo, String operationId, BooleanSupplier freshness,
 			BooleanSupplier sourceFreshness)
 			throws BarrierRejection {
+		return barrier(undo, operationId, freshness, sourceFreshness, false);
+	}
+
+	private Barrier barrier(GeoCeDGUndoManager undo, String operationId, BooleanSupplier freshness,
+			BooleanSupplier sourceFreshness, boolean clipboard)
+			throws BarrierRejection {
 		long deadline = System.nanoTime() + STORE_WAIT_MS * 1_000_000L;
 		while (true) {
 			synchronized (undo) {
@@ -1075,7 +1682,7 @@ final class GeoCeDGDocumentInsertion {
 					throw new BarrierRejection("Insert.Reject.HistoryBusy");
 				}
 				if (undo.isQuiescent()) {
-					return barrierBlock(undo, operationId, freshness, sourceFreshness);
+					return barrierBlock(undo, operationId, freshness, sourceFreshness, clipboard);
 				}
 			}
 			if (System.nanoTime() > deadline) {
@@ -1087,7 +1694,7 @@ final class GeoCeDGDocumentInsertion {
 
 	/** Runs inside the monitor of the undo manager. */
 	private Barrier barrierBlock(GeoCeDGUndoManager undo, String operationId, BooleanSupplier freshness,
-			BooleanSupplier sourceFreshness)
+			BooleanSupplier sourceFreshness, boolean clipboard)
 			throws BarrierRejection {
 		GeoCeDGRecoverySnapshot snapshot;
 		try {
@@ -1117,7 +1724,8 @@ final class GeoCeDGDocumentInsertion {
 			baseline = temporary.get(0);
 			byte[] baselineArchive = Files.readAllBytes(
 					((FileAppState) baseline.getAppState()).getFile().toPath());
-			if (!preflight(baselineArchive)) {
+			if (!(clipboard ? preflightClipboardUndo(undo, baseline, baselineArchive)
+					: preflight(baselineArchive))) {
 				throw new IOException("barrier baseline failed the preflight");
 			}
 			if (sourceFreshness != null && !sourceStillCurrent(sourceFreshness)) {

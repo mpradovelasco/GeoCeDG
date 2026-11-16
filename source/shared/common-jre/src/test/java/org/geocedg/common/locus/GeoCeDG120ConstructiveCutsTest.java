@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -20,6 +21,7 @@ import org.geocedg.common.kernel.locus.LocusBoundary2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusEvidenceNature2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.intersection.LocusSemanticIntersectionToken2D;
 import org.geocedg.common.kernel.spatial.identity.GeoIdentityRecord;
@@ -128,18 +130,7 @@ class GeoCeDG120ConstructiveCutsTest extends G9U0PublicSurfaceTestBase {
 		add("lengthAngle=m/2");
 		add("T=Rotate((1,0),lengthAngle)");
 		GeoLocusV2 image = add("W=LocusV2(T,E)");
-		var structure = topology(image);
-		assertFalse(structure.isClosedPeriodic());
-		assertEquals(LocusExistenceStructure2D.Completeness.NOT_ESTABLISHED,
-				structure.getCompleteness());
-		assertEquals(LocusCoverageCause2D.COMPOSED_EVENT_CONTINUITY_NOT_ESTABLISHED,
-				structure.getCoverageAt(0).getCause());
-		var samples = image.getExploratoryEvidence(structure.getBranchKey());
-		assertNotNull(samples);
-		assertTrue(samples.getValidRuns().stream().anyMatch(run -> run.getUpper() < 0));
-		assertTrue(samples.getValidRuns().stream().anyMatch(run -> run.getLower() > 0));
-		assertTrue(samples.getValidRuns().stream().noneMatch(run ->
-				run.getLower() < 0 && run.getUpper() >= 0));
+		assertRegularArcWithUnresolvedWrap(image);
 	}
 
 	@Test
@@ -165,9 +156,54 @@ class GeoCeDG120ConstructiveCutsTest extends G9U0PublicSurfaceTestBase {
 		add("otherAngle=m/unrelatedRadius");
 		add("Z=Rotate(A,otherAngle,O)");
 		GeoLocusV2 unrelated = add("V=LocusV2(Z,E)");
-		assertFalse(topology(unrelated).isClosedPeriodic());
-		assertEquals(LocusCoverageCause2D.COMPOSED_EVENT_CONTINUITY_NOT_ESTABLISHED,
-				topology(unrelated).getCoverageAt(0).getCause());
+		assertRegularArcWithUnresolvedWrap(unrelated);
+		assertFalse(topology(unrelated).getSemanticSignature()
+				.contains("circle-length-over-own-radius-periodicity/v1"),
+				"An equal-valued independent divisor is not the defining radius input");
+	}
+
+	private static void assertRegularArcWithUnresolvedWrap(GeoLocusV2 image) {
+		var structure = topology(image);
+		assertFalse(structure.isClosedPeriodic());
+		assertEquals(LocusExistenceStructure2D.Completeness.NOT_ESTABLISHED,
+				structure.getCompleteness());
+		assertEquals(1, structure.getContinuousValidComponents().size(),
+				structure.getSemanticSignature());
+		var arc = structure.getContinuousValidComponents().get(0);
+		assertTrue(arc.isArc());
+		assertTrue(arc.isFullLength());
+		assertFalse(arc.isClosedPeriodic());
+		assertEquals(LocusExistenceStructure2D.Maximality.LOCAL_CERTIFIED_SUBINTERVAL,
+				arc.getMaximality());
+		assertTrue(arc.getNature().certifies(), "Regular interiors now have a proof");
+		assertEquals(0, arc.getStart());
+		assertEquals(0, arc.getEnd());
+		var start = arc.getLowerBoundary();
+		var end = arc.getUpperBoundary();
+		for (var boundary : List.of(start, end)) {
+			assertEquals(LocusBoundary2D.Kind.UNRESOLVED_BAND_EDGE, boundary.getKind());
+			assertEquals(LocusEvidenceNature2D.NONE, boundary.getNature());
+			assertEquals("ORIGIN_WRAP", boundary.getSource().getPredicate());
+			assertFalse(boundary.getSource().getOrigin().isEmpty());
+		}
+		assertEquals(start.getSource().getOrigin(), end.getSource().getOrigin());
+		assertEquals("start", start.getSource().getSide());
+		assertEquals("end", end.getSource().getSide());
+		assertNotEquals(start.getSource(), end.getSource());
+		assertTrue(start.isIncluded());
+		assertFalse(end.isIncluded());
+		for (double parameter : new double[] {-0.25, 0.25}) {
+			assertEquals(LocusExistenceStructure2D.CoverageState.CERTIFIED_EXISTS,
+					structure.getCoverageAt(parameter).getState());
+			assertSame(arc, structure.getComponentContaining(parameter),
+					"Both regular sides persist without identifying their lateral ends");
+		}
+		// Exploration is derived evidence and need not resample already proved interiors.
+		var samples = image.getExploratoryEvidence(structure.getBranchKey());
+		if (samples != null) {
+			assertTrue(samples.getValidRuns().stream().noneMatch(run ->
+					run.getLower() < 0 && run.getUpper() >= 0));
+		}
 	}
 
 	@Test

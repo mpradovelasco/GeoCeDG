@@ -2212,6 +2212,24 @@
       "notes": "PRE-G9B-R6-plus-F3 restricted native insertion R (P1, P3, P4, P6, P7): one .cedg/.ggb source, admission and strict dry run before any change, L1 renaming, M1 macros, operation-scoped buffer with D1 provenance, one undo step, document identity kept; complete insertion or certified recovery."
     },
     {
+      "id": "document.insert-clipboard-image",
+      "kind": "document-action",
+      "target": {
+        "symbol": "geocedg.document.insert-clipboard-image"
+      },
+      "maturity": "stable",
+      "feature_requirements": [],
+      "selection_contract_ref": "geocedg.clipboard-image-insertion",
+      "effect_profile_id": "document-lifecycle",
+      "localization_ref": "geocedg.document.InsertClipboardImage",
+      "icon_ref": "upstream.mode.Image",
+      "availability_profile_id": "document-product",
+      "command_surface_profile_id": "document-action",
+      "planning_disposition": "must",
+      "implementation_state": "new-frontend",
+      "notes": "Choose a layer and insertion position before the single native Desktop clipboard-image load; all image/corner objects are one undoable transaction. Insert File admission is unchanged."
+    },
+    {
       "id": "document.apply-styles",
       "kind": "document-action",
       "target": {
@@ -3182,6 +3200,7 @@
         "diagnostic.open-classic",
         "document.insert-file",
         "document.insert-expert",
+        "document.insert-clipboard-image",
         "document.apply-styles",
         "document.save",
         "document.save-as",
@@ -3573,7 +3592,7 @@
     {
       "id": "file-insert",
       "name_key": "Group.File.Insert",
-      "action_ids": ["document.insert-file", "document.insert-expert", "document.apply-styles"],
+      "action_ids": ["document.insert-file", "document.insert-expert", "document.insert-clipboard-image", "document.apply-styles"],
       "toolbar_action_ids": []
     },
     {
@@ -3986,6 +4005,21 @@
     "Group.File.Open": {"en": "Open", "es": "Abrir"},
     "Group.File.Insert": {"en": "Insert", "es": "Insertar"},
     "Insert.Title": {"en": "Insert", "es": "Insertar"},
+    "ClipboardImage.Title": {"en": "Image from clipboard", "es": "Imagen desde el portapapeles"},
+    "ClipboardImage.Layer": {"en": "Layer", "es": "Capa"},
+    "ClipboardImage.Hidden": {"en": "%0 (hidden)", "es": "%0 (oculta)"},
+    "ClipboardImage.AfterStep": {"en": "After current construction step (%0)", "es": "Después del paso actual de construcción (%0)"},
+    "ClipboardImage.Append": {"en": "At the end of the construction", "es": "Al final de la construcción"},
+    "ClipboardImage.InvalidChoice": {"en": "Choose an available layer and insertion position.", "es": "Elige una capa y una posición de inserción disponibles."},
+    "ClipboardImage.Changed": {"en": "The document or current step changed while the dialog was open. Open the dialog again.", "es": "El documento o el paso actual cambiaron mientras el diálogo estaba abierto. Abre de nuevo el diálogo."},
+    "ClipboardImage.Busy": {"en": "Another document operation is still in progress.", "es": "Otra operación del documento sigue en curso."},
+    "ClipboardImage.UnsupportedHost": {"en": "The current document cannot be restored exactly for this insertion.", "es": "El documento actual no puede restaurarse con exactitud para esta inserción."},
+    "ClipboardImage.ObjectListeners": {"en": "This drawing has JavaScript listeners registered for individual objects. Native Undo cannot preserve those bindings for this insertion.", "es": "El dibujo tiene listeners JavaScript registrados por objeto. Deshacer nativo no puede conservar esos vínculos para esta inserción."},
+    "ClipboardImage.UnknownCallbacks": {"en": "The JavaScript listener state of this drawing cannot be checked for this insertion.", "es": "No puede comprobarse el estado de los listeners JavaScript de este dibujo para esta inserción."},
+    "ClipboardImage.DynamicDefaults": {"en": "The creation defaults contain an animation step linked to a construction object or an unsupported owner. This insertion cannot preserve that binding.", "es": "Los valores de creación contienen un paso de animación ligado a un objeto de la construcción o a un propietario no admitido. Esta inserción no puede conservar ese vínculo."},
+    "ClipboardImage.BadClipboard": {"en": "The clipboard did not provide a complete image construction.", "es": "El portapapeles no proporcionó una construcción de imagen completa."},
+    "ClipboardImage.Rejected": {"en": "The image was not inserted: %0", "es": "No se insertó la imagen: %0"},
+    "ClipboardImage.Restored": {"en": "The image was not inserted. The drawing is unchanged.", "es": "No se insertó la imagen. El dibujo no ha cambiado."},
     "Insert.Chooser.Filter": {"en": "GeoCeDG documents (.cedg, .ggb)", "es": "Documentos GeoCeDG (.cedg, .ggb)"},
     "Insert.Chooser.InsertTitle": {"en": "Insert File", "es": "Insertar archivo"},
     "Insert.Expert.Title": {"en": "Expert insertion", "es": "Inserción experta"},
@@ -5584,6 +5618,26 @@
     "Workspace.Scripting": {
       "en": "Use the Scripting tab in the existing Properties dialog.",
       "es": "Usa la pestaña Guiones del diálogo de Propiedades."
+    },
+    "geocedg.document.InsertClipboardImage.name": {
+      "en": "Image from clipboard…",
+      "es": "Imagen desde el portapapeles…"
+    },
+    "geocedg.document.InsertClipboardImage.short_help": {
+      "en": "Insert clipboard images in a chosen layer and construction position.",
+      "es": "Inserta imágenes del portapapeles en la capa y la posición de construcción elegidas."
+    },
+    "geocedg.document.InsertClipboardImage.long_help": {
+      "en": "Choose the layer and whether images follow the current construction step or are appended. The native clipboard reader runs after confirmation. One Undo removes all inserted images and their new corners; choosing a hidden layer keeps it hidden and does not change the working layer. Drawings with JavaScript listeners registered for individual objects are refused because native Undo cannot preserve those bindings. Global listeners and ordinary object scripts remain supported.",
+      "es": "Elige la capa y si las imágenes se insertan después del paso actual o al final. El lector nativo del portapapeles se ejecuta tras confirmar. Un Deshacer retira todas las imágenes insertadas y sus nuevas esquinas; elegir una capa oculta la conserva oculta y no cambia la capa de trabajo. Los dibujos con listeners JavaScript registrados por objeto se rechazan porque Deshacer nativo no puede conservar esos vínculos. Los listeners globales y los scripts ordinarios de objetos siguen admitidos."
+    },
+    "geocedg.document.InsertClipboardImage.status": {
+      "en": "Ready: Image from clipboard…",
+      "es": "Disponible: Imagen desde el portapapeles…"
+    },
+    "geocedg.document.InsertClipboardImage.error": {
+      "en": "Cannot insert a clipboard image in the current context.",
+      "es": "No se puede insertar una imagen del portapapeles en el contexto actual."
     },
     "geocedg.document.InsertFile.name": {
       "en": "Insert File…",

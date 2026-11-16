@@ -1927,11 +1927,18 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 
 	/** Installs trusted memory only after the active snapshot explicitly bound this output. */
 	public void installNativeRollbackState(NativeRollbackPointState state) {
-		if (!cons.isNativeRollbackStateAuthorized(this, state) || !state.sourceMatches(this)) {
-			throw new IllegalStateException("Native rollback state has no current snapshot binding");
+		boolean authorized = cons.isNativeRollbackStateAuthorized(this, state);
+		boolean sourceMatches = state != null && state.sourceMatches(this);
+		if (!authorized || !sourceMatches && !kernel.getLoadingMode()) {
+			throw nativeRollbackFailure("Native rollback state has no current snapshot binding",
+					state, authorized, sourceMatches);
 		}
 		nativeRollbackPointLoadState = state;
-		state.apply(this);
+		// XML may temporarily canonicalize a source line's -0.0 coefficient to +0.0.
+		// Its normal DAG must restore the exact source before this payload is applied.
+		if (sourceMatches) {
+			state.apply(this);
+		}
 	}
 
 	/** @return whether this normal compute was satisfied by its active rollback input */
@@ -1940,9 +1947,15 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 		if (state == null) {
 			return false;
 		}
-		if (!cons.isNativeRollbackStateAuthorized(this, state) || !state.sourceMatches(this)) {
+		boolean authorized = cons.isNativeRollbackStateAuthorized(this, state);
+		boolean sourceMatches = state.sourceMatches(this);
+		if (!authorized || !sourceMatches) {
+			if (authorized && kernel.getLoadingMode()) {
+				return false;
+			}
 			nativeRollbackPointLoadState = null;
-			throw new IllegalStateException("Native rollback source changed during restoration");
+			throw nativeRollbackFailure("Native rollback source changed during restoration",
+					state, authorized, sourceMatches);
 		}
 		state.apply(this);
 		if (!kernel.getLoadingMode()) {
@@ -1950,6 +1963,24 @@ public class GeoPoint extends GeoPointVector implements VectorValue, PathOrPoint
 			cons.nativeRollbackStateConsumed(this, state);
 		}
 		return true;
+	}
+
+	private IllegalStateException nativeRollbackFailure(String prefix,
+			NativeRollbackPointState state, boolean authorized, boolean sourceMatches) {
+		GeoElement source = path == null ? null : path.toGeoElement();
+		AlgoElement parent = getParentAlgorithm();
+		return new IllegalStateException(prefix + "; code="
+				+ (!authorized ? "UNAUTHORIZED_BINDING" : "SOURCE_STATE_MISMATCH")
+				+ "; point=" + getLabelSimple() + "; pointType=" + getClass().getSimpleName()
+				+ "; parent=" + (parent == null ? "null" : parent.getClass().getSimpleName())
+				+ "; parentInputs=" + (parent == null ? -1 : parent.getInputLength())
+				+ "; samePath=" + (parent instanceof AlgoPointOnPath nativeParent
+						&& nativeParent.getPath() == path)
+				+ "; authorized=" + authorized + "; sourceMatches=" + sourceMatches
+				+ "; path=" + (source == null ? "null" : source.getLabelSimple())
+				+ "; pathType=" + (source == null ? "null" : source.getClass().getSimpleName())
+				+ "; source=" + (state == null ? "NO_PAYLOAD"
+						: state.sourceState.describeMismatch(source)));
 	}
 
 	/** Immutable trusted-memory payload; it never supplies a durable identity. */

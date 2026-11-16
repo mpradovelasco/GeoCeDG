@@ -72,7 +72,7 @@ revision `9b93256b7df401ff056c37b502d82df4d72b1522`.
 | Construction steps, memory and orientation | **[A]** The inherited protocol adapts row height. Parallel and Perpendicular can each remember a reference during the session. **[N]** **[!]** Supported results can show a direction cue. | Construction protocol, Parallel Line, Perpendicular Line, Show orientation cue | Review a construction step or repeat a family of aligned lines. | [Construction protocol](#interface-and-workflow/3.8) · [Lines and reference memory](#basic-geometry/5.2) |
 | Document units, dimensions and sheets | **[N]** Set a unit for the drawing, add engineering dimensions and define an ISO A border. | Document units…, `AlignedDimension`, `LinearDimension`, `IsoABorder` | Prepare a scaled sheet with readable dimensions. | [Units](#documents/4.6) · [Dimensions](#lengths-and-measurements/9.5) · [ISO A sheets](#documents/4.7) |
 | Presentation and layers | **[A]** The inherited object styles and numeric layers gain presentation controls and a working layer. | Preferences, Working Layer, layer visibility | Group construction objects by layer and hide auxiliary work while checking the drawing. | [Presentation](#presentation-and-visualization) · [Working layer](#presentation-and-visualization/12.5) |
-| Native documents and insertion | **[N]** Use the native `.cedg` document. **[A]** **[!]** Insert File checks the construction before adding it. **[N]** **[!]** Expert review runs a trial on a copy. | Save as…, Insert File…, Insert with expert review… | Bring an existing construction into a drawing and review the changes before confirming when expert review is available. | [Document formats](#documents/4.1) · [Insertion](#documents/4.2) |
+| Native documents and insertion | **[N]** Use the native `.cedg` document. **[A]** **[!]** Insert File checks the construction before adding it. **[N]** **[!]** Expert review runs a trial on a copy. **[A]** **[!]** Clipboard images let you choose a layer and a construction position. | Save as…, Insert File…, Insert with expert review…, Image from clipboard… | Bring an existing construction or image into a drawing; review construction changes before confirming when expert review is available. | [Document formats](#documents/4.1) · [Insertion](#documents/4.2) |
 | Controls and panels | **[G]** Sliders, buttons, check boxes and input boxes. **[N]** **[!]** Fixed or canvas-anchored panels for eligible controls in Graphics 1. | Slider, Button, Check Box, Input Box, Control layout | Keep controls together when you move around the drawing. | [Control panels](#presentation-and-visualization/12.6) |
 | DXF exchange | **[N]** **[!]** Export supported 2D objects, with fidelity and approximation information. | Export 2D geometry as DXF (experimental)… | Hand off linework to CAD after checking what the export can represent. | [DXF export](#dxf-export) |
 | User tools and Classic | **[G]** Custom tools can be stored in `.ggb` drawings. **[A]** Tool management adds persistent choices and toolbar pins. **[N]** **[!]** The installed library and the separate Classic diagnostic session have their own availability. | User tools, Open Classic diagnostic session | Reuse a tool or check an older construction within the compatibility limits. | [User tools](#user-tools-and-automation) · [Classic](#classic-compatibility-and-diagnostics) |
@@ -110,6 +110,10 @@ The **Spreadsheet**, **CAS** and **Object Properties** views are available
 and initially closed. A saved document or preference can supply a different
 layout. **View → Restore Construction layout → CeDG Construction** restores
 the product layout.
+
+**[A]** **[!]** For a clipboard image, use **File → Insert → Image from clipboard…**.
+Choose its layer and construction position before confirming; see
+[Document commands](#documents/4.2).
 
 ![GeoCeDG Desktop shows the toolbars, Algebra, Graphics, Construction Protocol and Algebra Input.](images/interface-desktop.png)
 
@@ -240,7 +244,7 @@ Use the menu bar to find tools by task. The individual Construction tools are li
 
 | Menu | What you can do |
 |---|---|
-| **[A]** **File** | **[G]** New file and Close. **[G]** Open recent…. **[A]** Open…, Save and Save as… with the native document policy. **[A]** Print preview…, Graphics View as Picture…, PSTricks…, PGF/TikZ… and Asymptote… use the GeoCeDG export area. **[N]** **[!]** Export 2D geometry as DXF (experimental)…. **[N]** Define export area…, Show export area, Clear export area, Define ISO A export area… and Use selected ISO A border. **[A]** Use Export_1 and Export_2 activates the two-point crop explicitly. **[A]** **[!]** **Insert** brings together certified insertion, expert review and style transfer (section 4.2). **[N]** **[!]** Open Classic diagnostic session. |
+| **[A]** **File** | **[G]** New file and Close. **[G]** Open recent…. **[A]** Open…, Save and Save as… with the native document policy. **[A]** Print preview…, Graphics View as Picture…, PSTricks…, PGF/TikZ… and Asymptote… use the GeoCeDG export area. **[N]** **[!]** Export 2D geometry as DXF (experimental)…. **[N]** Define export area…, Show export area, Clear export area, Define ISO A export area… and Use selected ISO A border. **[A]** Use Export_1 and Export_2 activates the two-point crop explicitly. **[A]** **[!]** **Insert** brings together certified insertion, expert review, clipboard images and style transfer (section 4.2). **[N]** **[!]** Open Classic diagnostic session. |
 | **[G]** **Edit** | **[G]** Undo, Redo, Move, Move around Point, Select Objects, Attach / Detach Point and Delete. **[N]** Working Layer selects the layer for new objects in the current session. See [Menus, preferences and shortcuts](#command-and-workflow-reference/16.6). |
 | **[A]** **View** | **[G]** **Views** toggles Algebra, Graphics 2, Spreadsheet, CAS and Object Properties. **[A]** **Visibility and style** includes orientation and control layout. **[G]** Show / Hide Object, Show / Hide Label and Copy Visual Style. **[N]** **[!]** Show orientation cue applies to eligible results. **[A]** **Navigation** includes Zoom to rectangle, Zoom Factor In, Zoom Factor Out and Configure navigation zoom…. **[G]** Move Graphics View, Zoom In, Zoom Out, Standard view and Show all objects. **[A]** **Construction inspection** includes the Construction protocol with adaptive row height. **[G]** Show construction navigation bar. **[N]** Inspect definition… opens the definition without changing Algebra display mode. **[A]** **Restore Construction layout** restores the CeDG Construction workspace. |
 | **[A]** **Construction** | The groups below include the semantic curves and engineering dimensions. |
@@ -437,12 +441,15 @@ GeoCeDG does not introduce a new archive format.
 
 **[A]** **[!]** Insert File checks supported objects and commits the insertion as one operation.
 
+**[A]** **[!]** Image from clipboard inserts native images after choosing a layer and a construction position.
+
 | Action | Where |
 |---|---|
 | New file | File |
 | Open… | File |
 | Open recent… | File |
 | Insert File… | File → Insert |
+| Image from clipboard… | File → Insert |
 | Apply Styles… | File → Insert |
 | Save | File |
 | Save as… | File |
@@ -502,6 +509,37 @@ presentation, and save a copy. You can then try inserting that copy. The usual
 insertion checks still apply. Excluded objects, scripts and unresolved tool
 compatibility have separate diagnostics.
 
+**Image from clipboard…** is in **File → Insert**. Copy an image, open the
+action and choose its layer and position. The dialog initially selects the
+working layer; you can choose another, including a hidden layer. The chosen
+layer applies to the image and its two new corner points. It does not change
+the working layer or show a hidden layer.
+
+Choose **After current construction step** to place the image before the
+later steps, or **At the end of the construction** to append it after the whole
+construction. GeoCeDG reads the clipboard with the native Desktop loader only
+after you confirm. Cancel or close the dialog to leave the drawing unchanged
+without acquiring clipboard contents.
+
+After a successful insertion, one **Undo** removes the inserted images and
+their new corners together; **Redo** restores them. Save the drawing as `.cedg`
+to keep the images and their resources when reopening it.
+
+This diagnostic build remains **technically rejected**: normal insertion has
+been checked, but some failure-recovery paths remain defective and can enter
+isolation.
+
+If an insertion fails, GeoCeDG attempts to restore the drawing and its history.
+If GeoCeDG reports a verified recovery with a **session reset**, the drawing
+has been rebuilt. Reselect objects and restore any references remembered by
+the tools. If recovery cannot be verified, the isolation rules described above
+apply.
+
+This operation refuses drawings with JavaScript listeners registered for
+individual objects or creation defaults whose animation step is linked to a
+live construction object. Global listeners and ordinary object scripts remain
+permitted. A refusal explains the unsupported context.
+
 **[N]** **[!]** **Insert with expert review…** is available in **File → Insert**. It accepts
 passive 2D constructions that pass the integrity checks. It tries the
 insertion on a copy of the current drawing, including unsaved work. Review
@@ -510,7 +548,7 @@ the preview shows the actual trial drawing. You can accept changes to layers,
 views, presentation or valid geometry identified in the report. A
 blocked review explains which condition prevents insertion. Cancel leaves the
 drawing as it was. A successful insertion is one Undo step. Review the drawing
-and choose **Save as…** to keep a separate copy. Both insertion routes reject
+and choose **Save as…** to keep a separate copy. Both document insertion routes reject
 a source with control panels. Expert review also rejects a receiving
 drawing with panels (section 12.6).
 
@@ -1122,6 +1160,37 @@ Locus V2 keeps the maturity `experimental` and is GeoCeDG-only. It supports the
 documented generators, explicit domains and targets. It is **not** a generic
 `Path`: operations that expect an arbitrary path object are not implied.
 
+### 6.8 Certifying compositions
+
+GeoCeDG can prove continuous components of a composed construction, including
+certain curves that consume a length in a rotation. The proof reuses the
+construction's operations, rather than a list of recognized models. Admitted
+forms include scalar arithmetic, sine, cosine and square root in their valid
+domains, point coordinates and distances, rotation of a fixed point around a
+fixed centre by a dependent angle, and circles with a positive dependent
+radius. A ray intersecting a circle with the same centre also requires a
+nondegenerate direction and an admissible selection of the positive root.
+
+The rotation certificate describes mathematical geometry. GeoCeDG separately
+checks that its numerical realization and consumers remain admissible; a zero
+divisor or an unestablished root cannot be rescued by the appearance of the
+drawing. Operations or premises without proof keep an explicit unestablished
+state.
+
+For the admitted length on an open arc of one full turn, the origin must be its
+included end and the traversal must be
+`"forward","strict","zero-length"`. The start and final limit retain two
+distinct sides even when they share a canonical direction. Evaluating that
+limit does not turn the excluded end into a selectable point or enable
+`"full-cycle"` on the open component. Other origins and policies require
+their own proofs.
+
+A length reset may produce a geometric jump, cancel through a proved relation,
+or retain unresolved limits. A declared cut organizes the traversal and does
+not by itself prove a jump. Certifying components also does not imply that
+every curve intersection can be materialized: the conditions in section 8.7
+still apply.
+
 ---
 
 <!-- geocedg-guide-section: spline-v2 -->
@@ -1585,6 +1654,12 @@ An admissible number in Algebra's **Value** mode shows its guarantee, such
 as **Estimated** or **Certified**. New explicitly created results are ordinary
 objects by default. When reopening older files, existing rich results keep
 their type and existing consumers such as `Length(M)` continue to use them.
+
+The number's guarantee and the locus's geometric certificate are separate.
+A curve can have certified components and limits while its length is shown as
+**Estimated**. That estimate alone does not certify a curve that depends on it:
+GeoCeDG needs independent bounds and the composition's premises. See also
+section 6.8.
 
 In **Construction → Metrics and validation**, choose **Total semantic locus
 length (experimental)** and select the curve. For **Partial semantic locus
@@ -2506,9 +2581,12 @@ These are the limitations that affect what you can do in the application today.
 - The built-in axes cannot be the target of a semantic intersection or the
   mirror of a semantic reflection; construct the line explicitly
   (section 10.4).
-- Only the translations of section 8.7 among expression-defined points have a
-  certified model; a locus traced through any other expression stays rich-only
-  for pair intersections.
+- Composition certification in section 6.8 has preconditions and budgets; it
+  does not certify every `LocusV2`. An admissible numeric metric result may
+  exist while its consuming composition still lacks sufficient proof.
+- In the curve-pair intersection materialization route, expression-defined
+  points keep the limits in section 8.7. Extending component certification
+  does not remove that consumer's guards.
 
 **Export**
 
@@ -2616,6 +2694,7 @@ These are the limitations that affect what you can do in the application today.
 | **[N]** ISO A export area | File → Define ISO A export area… | — | session state | computed once at the session drawing scale and unit |
 | **[A]** Open a document | File → Open… | — | — | `.cedg` native, `.ggb` compatibility input |
 | **[A]** **[!]** Insert a document | File → Insert → Insert File… | — | — | supported objects only, all or nothing; one Undo step |
+| **[A]** **[!]** Insert clipboard images | File → Insert → Image from clipboard… | — | images and new corner points | choose layer and current step or end; one Undo/Redo; limits and session reset in section 4.2 |
 | **[A]** Apply the styles of a document | File → Insert → Apply Styles… | — | — | six object styles only; one Undo step |
 | **[A]** Save a document | File → Save / Save as… | — | — | save native work as `.cedg` |
 | **[N]** Inspect a definition | context menu → Inspect definition… | — | — | read-only; does not change Algebra display mode |

@@ -2963,6 +2963,30 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	}
 
 	/**
+	 * GeoCeDG R10: restore only the owning MEMORY session's captured primitives.
+	 * The ordinary setter keeps its notifications; the existing normal DAG is the
+	 * sole propagation for this authenticated pre-DAG restoration.
+	 * @param cache immutable captured cache, valid only during its guarded application
+	 */
+	public final void restoreNativeViewCache(
+			org.geocedg.common.kernel.locus.NativeTransactionalState2D.NativeViewCache cache) {
+		if (cache == null || !cons.isNativeViewCacheAuthorized(cache)
+				|| cache.view() < 1 || cache.view() > 2) {
+			throw new IllegalStateException("Native view cache is not owned by the active MEMORY session");
+		}
+		int index = cache.view() - 1;
+		// The captured view already had all six cache slots. Never create a
+		// cache/view during private restoration or invoke ordinary prolongation.
+		if (index >= xmin.length || index >= xmax.length || index >= ymin.length
+				|| index >= ymax.length || index >= xscale.length || index >= yscale.length) {
+			throw new IllegalStateException("Captured native view cache capacity is no longer present");
+		}
+		xmin[index] = cache.xmin(); xmax[index] = cache.xmax();
+		ymin[index] = cache.ymin(); ymax[index] = cache.ymax();
+		xscale[index] = cache.xs(); yscale[index] = cache.ys();
+	}
+
+	/**
 	 * Extend arrays with EV bounds
 	 * 
 	 * @param length

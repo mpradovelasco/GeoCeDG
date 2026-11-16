@@ -33,6 +33,7 @@ import org.geogebra.common.kernel.algos.AlgoCirclePointRadius;
 import org.geogebra.common.kernel.algos.AlgoCircleTwoPoints;
 import org.geogebra.common.kernel.algos.AlgoDependentNumber;
 import org.geogebra.common.kernel.algos.AlgoDependentPoint;
+import org.geogebra.common.kernel.algos.AlgoDistancePoints;
 import org.geogebra.common.kernel.algos.AlgoDilate;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersect;
@@ -91,6 +92,7 @@ final class CertifiedConstructionCapture2D {
 	static final String STEP_LIMIT = "step-limit-exceeded";
 	/** Refusal of a shape outside the requested class. */
 	static final String OUTSIDE_CLASS = "outside-class";
+	static final String ANGLE_STYLE = "dependent-angle-style-not-unbounded";
 	/**
 	 * Refusal of a driver-independent value that a metric query computed: class v3 admits
 	 * a metric only through its structural certificate, never through its value
@@ -115,10 +117,14 @@ final class CertifiedConstructionCapture2D {
 	/** Captured geos whose steps are being built, innermost first, and their scopes. */
 	private final Deque<GeoElement> anchorGeos = new ArrayDeque<>();
 	private final Deque<Scope> anchorScopes = new ArrayDeque<>();
+	/** Role of each entered producer in its enclosing producer's expression. */
+	private final Deque<String> anchorExpressionPaths = new ArrayDeque<>();
 	/** Anchor of the next step instead of the captured geo: the rich length of an input. */
 	private GeoElement pendingAnchor;
 	/** Structural origin of each step, in program order. */
 	private final List<StepOrigin> origins = new ArrayList<>();
+	/** Structural role inside the current producer's new inline scalar expression. */
+	private String expressionPath = "";
 
 	private CertifiedConstructionCapture2D(GeoElement state, boolean classV3) {
 		this.state = state;
@@ -353,6 +359,9 @@ final class CertifiedConstructionCapture2D {
 		int index;
 		anchorGeos.push(geo);
 		anchorScopes.push(scope);
+		String enclosingExpression = expressionPath;
+		anchorExpressionPaths.push(enclosingExpression);
+		expressionPath = "";
 		try {
 			if (classV3 && parent.getClass() == AlgoMacro.class) {
 				index = expand((AlgoMacro) parent, geo, scope);
@@ -367,8 +376,10 @@ final class CertifiedConstructionCapture2D {
 				index = add(step(parent, scope));
 			}
 		} finally {
+			expressionPath = enclosingExpression;
 			anchorGeos.pop();
 			anchorScopes.pop();
+			anchorExpressionPaths.pop();
 		}
 		scope.nodes.put(geo, index);
 		return index;
@@ -393,6 +404,9 @@ final class CertifiedConstructionCapture2D {
 	private StepOrigin origin(Step step) {
 		GeoElement anchor = pendingAnchor;
 		pendingAnchor = null;
+		if (anchor == null && step.getOperation().isCompositionProof()) {
+			return compositionOrigin(step);
+		}
 		List<String> inner = new ArrayList<>();
 		if (anchor == null) {
 			Iterator<GeoElement> geos = anchorGeos.iterator();
@@ -410,7 +424,119 @@ final class CertifiedConstructionCapture2D {
 		for (int index = inner.size() - 1; index >= 0; index--) {
 			path.append(inner.get(index));
 		}
+		path.append(expressionPath);
 		return new StepOrigin(anchor, path.toString(), step.getOperation().name());
+	}
+
+	/** Anonymous scalar inputs belong to the outer producer and its structural input role. */
+	private StepOrigin compositionOrigin(Step step) {
+		List<GeoElement> geos = new ArrayList<>(anchorGeos);
+		List<Scope> scopes = new ArrayList<>(anchorScopes);
+		List<String> roles = new ArrayList<>(anchorExpressionPaths);
+		List<String> inner = new ArrayList<>();
+		String path = expressionPath;
+		StepOrigin diagnosticFallback = null;
+		boolean established = true;
+		for (int index = 0; index < geos.size(); index++) {
+			GeoElement geo = geos.get(index);
+			Scope scope = scopes.get(index);
+			if (scope == top) {
+				if (geo.getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(geo) != null) {
+					if (!established) {
+						throw new Refusal("composition-origin-role-not-established");
+					}
+					return new StepOrigin(geo, compositionPath(inner, path), step.getOperation().name());
+				}
+				if (diagnosticFallback == null && geo.isLabelSet()) {
+					// Direct capture tests may have no registry at all. The evaluator's
+					// publication guard still refuses this diagnostic-only origin.
+					diagnosticFallback = new StepOrigin(geo, compositionPath(inner, path),
+							step.getOperation().name());
+				}
+			}
+			if (scope != top) {
+				inner.add("-m" + geo.getConstructionIndex());
+			}
+			if (index + 1 < geos.size()) {
+				String role = roles.get(index);
+				Scope outerScope = scopes.get(index + 1);
+				GeoElement outer = geos.get(index + 1);
+				if (role.isEmpty() && !(scope.parent == outerScope
+						&& scope.instance == outer.getParentAlgorithm())) {
+					role = producerInputRole(outer, outerScope, geo, scope);
+				}
+				established &= role != null;
+				if (role != null) { path = role + path; }
+			}
+		}
+		if (diagnosticFallback != null) { return diagnosticFallback; }
+		throw new Refusal("composition-origin-not-established");
+	}
+
+	private static String compositionPath(List<String> inner, String path) {
+		StringBuilder result = new StringBuilder();
+		for (int index = inner.size() - 1; index >= 0; index--) { result.append(inner.get(index)); }
+		return result.append(path).toString();
+	}
+
+	/**
+	 * A producer without its own durable ID is named by its typed operand in the
+	 * durable outer producer, never by a label or a construction-order position.
+	 */
+	private String producerInputRole(GeoElement outer, Scope outerScope,
+			GeoElement input, Scope inputScope) {
+		AlgoElement producer = outer.getParentAlgorithm();
+		if (producer == null) { return null; }
+		GeoElement actual = inputScope.resolve(input);
+		if (producer.getClass() == AlgoDependentNumber.class) {
+			return expressionInputRole(((AlgoDependentNumber) producer).getExpression(),
+					outerScope, actual, 0);
+		}
+		if (producer.getClass() == AlgoDependentPoint.class) {
+			return expressionInputRole(((AlgoDependentPoint) producer).getExpression(),
+					outerScope, actual, 0);
+		}
+		for (int slot = 0; slot < producer.getInputLength(); slot++) {
+			if (outerScope.resolve(producer.getInput(slot).toGeoElement()) == actual) {
+				// The slot is the native algorithm's argument role, not object order.
+				return "-p" + producer.getClass().getSimpleName() + "-i" + slot;
+			}
+		}
+		if (producer.getClass() == AlgoLocusMetricScalarAdapter.class) {
+			AlgoElement rich = ((AlgoLocusMetricScalarAdapter) producer)
+					.getRichInput().getParentAlgorithm();
+			for (int slot = 0; rich != null && slot < rich.getInputLength(); slot++) {
+				if (outerScope.resolve(rich.getInput(slot).toGeoElement()) == actual) {
+					return "-pMetricAuthority-i" + slot;
+				}
+			}
+		}
+		return null;
+	}
+
+	private String expressionInputRole(ExpressionValue expression, Scope scope,
+			GeoElement actual, int depth) {
+		if (depth > CertifiedConstructionProgram2D.MAXIMUM_STEPS_V3) { return null; }
+		ExpressionValue value = unwrap(expression);
+		if (value instanceof GeoElement) {
+			return scope.resolve((GeoElement) value) == actual ? "" : null;
+		}
+		if (value instanceof ExpressionNode) {
+			ExpressionNode node = (ExpressionNode) value;
+			String left = expressionInputRole(node.getLeft(), scope, actual, depth + 1);
+			if (left != null) { return "-e" + node.getOperation().name() + "L" + left; }
+			String right = node.getRight() == null ? null
+					: expressionInputRole(node.getRight(), scope, actual, depth + 1);
+			return right == null ? null : "-e" + node.getOperation().name() + "R" + right;
+		}
+		if (value instanceof MyVecNode) {
+			MyVecNode tuple = (MyVecNode) value;
+			String x = expressionInputRole(tuple.getX(), scope, actual, depth + 1);
+			if (x != null) { return "-eX" + x; }
+			String y = expressionInputRole(tuple.getY(), scope, actual, depth + 1);
+			return y == null ? null : "-eY" + y;
+		}
+		return null;
 	}
 
 	private Step step(AlgoElement parent, Scope scope) {
@@ -477,6 +603,11 @@ final class CertifiedConstructionCapture2D {
 			if (radius instanceof GeoSegment) {
 				throw new Refusal();
 			}
+			if (scope.dependent(radius)) {
+				return new Step(Operation.CIRCLE_DYNAMIC_RADIUS,
+						List.of(pointAt(circle.getCenter().toGeoElement(), scope, "Center"),
+								scalarAt(radius, scope, "Radius")));
+			}
 			double value = number(radius, scope);
 			// GeoQuadricND.setSphereNDMatrix: a circle needs r >= STANDARD_PRECISION.
 			if (!(value >= Kernel.STANDARD_PRECISION)) {
@@ -515,7 +646,29 @@ final class CertifiedConstructionCapture2D {
 							point(vector.getQ().toGeoElement(), scope)));
 		}
 		if (type == AlgoDependentNumber.class) {
-			return dotProduct((AlgoDependentNumber) parent, scope);
+			AlgoDependentNumber number = (AlgoDependentNumber) parent;
+			if (number.getNumber().toGeoElement() instanceof GeoAngle angle
+					&& angle.getAngleStyle() != GeoAngle.AngleStyle.UNBOUNDED) {
+				// Bounded angle styles fold the expression before consumers read its value.
+				throw new Refusal(ANGLE_STYLE);
+			}
+			return scalarStep(number.getExpression(), scope);
+		}
+		if (type == AlgoDistancePoints.class) {
+			return new Step(Operation.POINT_DISTANCE, List.of(
+					pointAt(parent.getInput(0).toGeoElement(), scope, "Point0"),
+					pointAt(parent.getInput(1).toGeoElement(), scope, "Point1")));
+		}
+		if ((type == AlgoRotatePoint.class || type == AlgoRotate.class)
+				&& (scope.dependent(parent.getInput(1).toGeoElement())
+						|| parent.getInputLength() == 3
+								&& scope.dependent(parent.getInput(2).toGeoElement()))) {
+			return new Step(Operation.ROTATE_BY_ANGLE, List.of(
+					pointAt(parent.getInput(0).toGeoElement(), scope, "Source"),
+					scalarAt(parent.getInput(1).toGeoElement(), scope, "Angle"),
+					parent.getInputLength() == 3
+							? pointAt(parent.getInput(2).toGeoElement(), scope, "Center")
+							: Operand.point(0, 0, 1, 0, 0)));
 		}
 		if (type == AlgoLocusMetricScalarAdapter.class && scope == top) {
 			return metricInput((AlgoLocusMetricScalarAdapter) parent);
@@ -648,6 +801,10 @@ final class CertifiedConstructionCapture2D {
 			if (!classV3) {
 				throw refusal;
 			}
+		}
+		ExpressionValue value = unwrap(expression.getExpression());
+		if (value instanceof MyVecNode) {
+			return coordinatePoint((MyVecNode) value, scope);
 		}
 		ExpressionNode node = binary(expression.getExpression());
 		org.geogebra.common.plugin.Operation operation = node.getOperation();
@@ -802,16 +959,21 @@ final class CertifiedConstructionCapture2D {
 	private static boolean isScalar(ExpressionValue value) {
 		return value instanceof MyDouble
 				|| value instanceof GeoElement && (value.getClass() == GeoNumeric.class
-						|| value.getClass() == GeoAngle.class);
+						|| value.getClass() == GeoAngle.class)
+				|| value instanceof ExpressionNode && value.evaluatesToNumber(false);
 	}
 
 	/**
-	 * Class v3: a number geo, a numeric literal, or a driver-independent subexpression,
-	 * captured by its value.
+	 * Class v3: a number geo, numeric literal, or supported scalar expression. Maximal
+	 * driver-independent expressions retain their previous constant-value contract.
 	 */
 	private Operand scalarExpression(ExpressionValue value, Scope scope) {
+		value = unwrap(value);
 		if (value instanceof GeoElement) {
 			GeoElement geo = (GeoElement) value;
+			if (!isScalar(geo)) {
+				throw new Refusal();
+			}
 			if (scope.dependent(geo)) {
 				return Operand.node(node(geo, scope));
 			}
@@ -828,22 +990,127 @@ final class CertifiedConstructionCapture2D {
 			}
 			return Operand.scalar(((NumberValue) result).getDouble());
 		}
+		if (value instanceof ExpressionNode) {
+			return Operand.node(add(scalarStep(value, scope)));
+		}
 		return Operand.scalar(literalNumber(value));
 	}
 
-	/** Class v3: {@code u * v} of two vectors, their dot product. */
-	private Step dotProduct(AlgoDependentNumber number, Scope scope) {
-		ExpressionNode product = binary(number.getExpression());
-		if (product.getOperation() != org.geogebra.common.plugin.Operation.MULTIPLY) {
+	/** A role is local to its expression producer, never an index in the captured program. */
+	private Operand scalarAt(ExpressionValue value, Scope scope, String role) {
+		String previous = expressionPath;
+		expressionPath = previous + "-e" + role;
+		try {
+			return scalarExpression(value, scope);
+		} finally {
+			expressionPath = previous;
+		}
+	}
+
+	private Operand pointAt(GeoElement point, Scope scope, String role) {
+		String previous = expressionPath;
+		expressionPath = previous + "-e" + role;
+		try {
+			return point(point, scope);
+		} finally {
+			expressionPath = previous;
+		}
+	}
+
+	private Step coordinatePoint(MyVecNode tuple, Scope scope) {
+		if (tuple.hasPolarCoords() || tuple.getToStringMode() != Kernel.COORD_CARTESIAN) {
 			throw new Refusal();
 		}
-		ExpressionValue left = unwrap(product.getLeft());
-		ExpressionValue right = unwrap(product.getRight());
-		if (isScalar(left) || isScalar(right)) {
+		return new Step(Operation.POINT_COORDINATES, List.of(
+				scalarAt(tuple.getX(), scope, "X"), scalarAt(tuple.getY(), scope, "Y")));
+	}
+
+	private Operand expressionPointOperand(ExpressionValue expression, Scope scope) {
+		ExpressionValue value = unwrap(expression);
+		if (value instanceof GeoElement) {
+			GeoElement resolved = scope.resolve((GeoElement) value);
+			if (resolved.getClass() != GeoPoint.class) {
+				throw new Refusal();
+			}
+			return point((GeoElement) value, scope);
+		}
+		if (value instanceof MyVecNode) {
+			if (!dependsOnDriver(value, scope)) {
+				requireNoMetricValue(value, scope);
+				scope.refreshConstants();
+				GeoVec2D coordinates = ((MyVecNode) value).getVector();
+				if (((MyVecNode) value).hasPolarCoords()
+						|| !Double.isFinite(coordinates.getX())
+						|| !Double.isFinite(coordinates.getY())) {
+					throw new Refusal();
+				}
+				return Operand.point(coordinates.getX(), coordinates.getY(), 1,
+						coordinates.getX(), coordinates.getY());
+			}
+			return Operand.node(add(coordinatePoint((MyVecNode) value, scope)));
+		}
+		throw new Refusal();
+	}
+
+	/** Supported compositional scalar syntax; validity of division and roots stays typed. */
+	private Step scalarStep(ExpressionValue value, Scope scope) {
+		ExpressionNode expression = binary(value);
+		ExpressionValue left = unwrap(expression.getLeft());
+		ExpressionValue right = expression.getRight() == null ? null
+				: unwrap(expression.getRight());
+		Operation operation;
+		switch (expression.getOperation()) {
+		case PLUS:
+			operation = Operation.SCALAR_ADD;
+			break;
+		case MINUS:
+			if (right == null) {
+				return new Step(Operation.SCALAR_NEGATE,
+						List.of(scalarAt(left, scope, "L")));
+			}
+			operation = Operation.SCALAR_SUBTRACT;
+			break;
+		case MULTIPLY:
+			if (!isScalar(left) && !isScalar(right)) {
+				return new Step(Operation.DOT,
+						List.of(vectorExpression(left, scope), vectorExpression(right, scope)));
+			}
+			if (left instanceof MyDouble && ((MyDouble) left).getDouble() == -1) {
+				return new Step(Operation.SCALAR_NEGATE,
+						List.of(scalarAt(right, scope, "R")));
+			}
+			if (right instanceof MyDouble && ((MyDouble) right).getDouble() == -1) {
+				return new Step(Operation.SCALAR_NEGATE,
+						List.of(scalarAt(left, scope, "L")));
+			}
+			operation = Operation.SCALAR_MULTIPLY;
+			break;
+		case DIVIDE:
+			operation = Operation.SCALAR_DIVIDE;
+			break;
+		case SIN:
+		case COS:
+		case SQRT:
+		case SQRT_SHORT:
+			operation = expression.getOperation() == org.geogebra.common.plugin.Operation.SIN
+					? Operation.SCALAR_SIN
+					: expression.getOperation() == org.geogebra.common.plugin.Operation.COS
+							? Operation.SCALAR_COS : Operation.SCALAR_SQRT;
+			return new Step(operation, List.of(scalarAt(left, scope, "L")));
+		case XCOORD:
+		case YCOORD:
+			return new Step(expression.getOperation()
+					== org.geogebra.common.plugin.Operation.XCOORD
+							? Operation.POINT_X : Operation.POINT_Y,
+					List.of(expressionPointOperand(left, scope)));
+		default:
 			throw new Refusal();
 		}
-		return new Step(Operation.DOT, List.of(vectorExpression(left, scope),
-				vectorExpression(right, scope)));
+		if (!isScalar(left) || !isScalar(right)) {
+			throw new Refusal();
+		}
+		return new Step(operation,
+				List.of(scalarAt(left, scope, "L"), scalarAt(right, scope, "R")));
 	}
 
 	/**
@@ -998,12 +1265,18 @@ final class CertifiedConstructionCapture2D {
 	}
 
 	private Operand point(GeoElement geo, Scope scope) {
+		GeoElement actual = scope.actualInput(geo);
+		if (actual != null) { return point(actual, scope.parent); }
 		if (scope.dependent(geo)) {
 			return pointNode(geo, scope);
 		}
+		Operand known = scope.pointConstants.get(geo);
+		if (known != null) { return known; }
 		GeoPoint constant = finitePoint(geo, scope);
-		return Operand.point(constant.getX(), constant.getY(), constant.getZ(),
+		Operand captured = Operand.point(constant.getX(), constant.getY(), constant.getZ(),
 				constant.getInhomX(), constant.getInhomY());
+		scope.pointConstants.put(geo, captured);
+		return captured;
 	}
 
 	private Operand pointNode(GeoElement geo, Scope scope) {
@@ -1134,6 +1407,8 @@ final class CertifiedConstructionCapture2D {
 		private final AlgoMacro instance;
 		private final Scope parent;
 		private final Map<GeoElement, Integer> nodes = new IdentityHashMap<>();
+		/** Ephemeral source aliasing; the immutable program retains only Operand instances. */
+		private final Map<GeoElement, Operand> pointConstants = new IdentityHashMap<>();
 		private final Map<AlgoElement, Integer> intersections = new IdentityHashMap<>();
 		private final Map<GeoElement, Boolean> dependence = new IdentityHashMap<>();
 		private final Map<GeoElement, Boolean> metric = new IdentityHashMap<>();
@@ -1278,7 +1553,7 @@ final class CertifiedConstructionCapture2D {
 			return anchor;
 		}
 
-		/** @return construction indices inside expanded macros, as {@code -m<k>} tokens */
+		/** @return macro indices and structural roles of newly admitted inline expressions */
 		String getMacroPath() {
 			return macroPath;
 		}

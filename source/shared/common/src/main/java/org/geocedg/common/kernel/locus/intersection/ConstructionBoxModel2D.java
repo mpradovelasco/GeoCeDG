@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BinaryOperator;
+import java.util.function.IntPredicate;
 
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Driver;
@@ -23,6 +24,7 @@ import org.geocedg.common.kernel.locus.ConstructionValidityPredicate2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
+import org.geocedg.common.kernel.locus.metric.LocusMetricBoxEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxOutcome2D.Decision;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxOutcome2D.PredicateEvaluation;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxOutcome2D.Unresolved;
@@ -85,6 +87,8 @@ public final class ConstructionBoxModel2D {
 	 * total steps reach from it: defined and continuous, its value never enclosed.
 	 */
 	private static final Object METRIC_DEFINED = new Object();
+	/** Conditional native realization: no value or error enclosure is asserted. */
+	private static final Object FINITE_NATIVE_METRIC = new Object();
 	/** A value assumed valid whose enclosure is unbounded on the box. */
 	private static final Object ASSUMED_OPAQUE = new Object();
 	/**
@@ -97,6 +101,10 @@ public final class ConstructionBoxModel2D {
 	static volatile boolean withholdLimitFormValue;
 
 	private final CertifiedConstructionProgram2D program;
+	private final MetricEnclosureProvider metricEnclosures;
+	private final IntPredicate nativeMetricAdmission;
+	private final boolean hasVariableRotation;
+	private final boolean[] valueLive;
 	private final NodeKind[] kinds;
 	private final String[] lineClass;
 	private final boolean[] zeroVector;
@@ -107,7 +115,24 @@ public final class ConstructionBoxModel2D {
 
 	/** @param program captured program of any class */
 	public ConstructionBoxModel2D(CertifiedConstructionProgram2D program) {
-		this(program, program.getSteps());
+		this(program, program.getSteps(), null);
+	}
+
+	/** A revision-local proof service; it supplies no estimated metric values. */
+	@FunctionalInterface
+	public interface MetricEnclosureProvider {
+		LocusMetricBoxEvidence2D enclose(int node, double lower, double upper);
+	}
+
+	public ConstructionBoxModel2D(CertifiedConstructionProgram2D program,
+			MetricEnclosureProvider metricEnclosures) {
+		this(program, program.getSteps(), metricEnclosures, node -> false);
+	}
+
+	/** Native admission is checked separately; its metric value is never proof input. */
+	public ConstructionBoxModel2D(CertifiedConstructionProgram2D program,
+			MetricEnclosureProvider metricEnclosures, IntPredicate nativeMetricAdmission) {
+		this(program, program.getSteps(), metricEnclosures, nativeMetricAdmission);
 	}
 
 	/**
@@ -116,7 +141,24 @@ public final class ConstructionBoxModel2D {
 	 */
 	private ConstructionBoxModel2D(CertifiedConstructionProgram2D program,
 			List<Step> steps) {
+		this(program, steps, null);
+	}
+
+	private ConstructionBoxModel2D(CertifiedConstructionProgram2D program,
+			List<Step> steps, MetricEnclosureProvider metricEnclosures) {
+		this(program, steps, metricEnclosures, node -> false);
+	}
+
+	private ConstructionBoxModel2D(CertifiedConstructionProgram2D program,
+			List<Step> steps, MetricEnclosureProvider metricEnclosures,
+			IntPredicate nativeMetricAdmission) {
 		this.program = program;
+		this.metricEnclosures = metricEnclosures;
+		this.nativeMetricAdmission = nativeMetricAdmission;
+		hasVariableRotation = steps.stream()
+				.anyMatch(step -> step.getOperation() == Operation.ROTATE_BY_ANGLE);
+		valueLive = new boolean[steps.size() + 1];
+		markValueLive(steps.size(), steps);
 		kinds = new NodeKind[steps.size() + 1];
 		kinds[0] = NodeKind.POINT;
 		for (int index = 0; index < steps.size(); index++) {
@@ -192,10 +234,37 @@ public final class ConstructionBoxModel2D {
 				total[node] = true;
 				break;
 			case DOT:
+			case SCALAR_NEGATE:
+			case SCALAR_ADD:
+			case SCALAR_SUBTRACT:
+			case SCALAR_MULTIPLY:
+			case POINT_X:
+			case POINT_Y:
 				total[node] = true;
+				break;
+			case POINT_COORDINATES:
+				unitPoint[node] = true;
+				total[node] = true;
+				break;
+			case ROTATE_BY_ANGLE:
+				unitPoint[node] = unitPoint(operands.get(0));
 				break;
 			default:
 				break;
+			}
+		}
+	}
+
+	/** Metric endpoints are proof dependencies, not extra scalar variables of the image. */
+	private void markValueLive(int node, List<Step> steps) {
+		if (valueLive[node]) { return; }
+		valueLive[node] = true;
+		if (node == 0 || steps.get(node - 1).getOperation() == Operation.METRIC_INPUT) {
+			return;
+		}
+		for (Operand operand : steps.get(node - 1).getOperands()) {
+			if (operand.getKind() == OperandKind.NODE) {
+				markValueLive(operand.getNode(), steps);
 			}
 		}
 	}
@@ -210,8 +279,11 @@ public final class ConstructionBoxModel2D {
 				instanceof ReconstructibleLocusEvaluator2D)) {
 			return null;
 		}
-		return ((ReconstructibleLocusEvaluator2D) definition.getEvaluatorCapability())
-				.captureCertifiedProgramV3().map(ConstructionBoxModel2D::new).orElse(null);
+		ReconstructibleLocusEvaluator2D evaluator =
+				(ReconstructibleLocusEvaluator2D) definition.getEvaluatorCapability();
+		return evaluator.captureCertifiedProgramV3().map(program -> new ConstructionBoxModel2D(
+				program, evaluator::getMetricFunctionBoxEvidence,
+				evaluator::isNativeMetricInputAdmissible)).orElse(null);
 	}
 
 	/** @return the captured program */
@@ -226,7 +298,7 @@ public final class ConstructionBoxModel2D {
 	 */
 	public boolean isStructurallyTotal() {
 		for (int node = 1; node < total.length; node++) {
-			if (!total[node]) {
+			if (valueLive[node] && !total[node]) {
 				return false;
 			}
 		}
@@ -336,7 +408,8 @@ public final class ConstructionBoxModel2D {
 		List<Integer> nodes = new ArrayList<>();
 		List<Step> steps = program.getSteps();
 		for (int index = 0; index < steps.size(); index++) {
-			if (steps.get(index).getOperation() == Operation.METRIC_INPUT) {
+			if (valueLive[index + 1]
+					&& steps.get(index).getOperation() == Operation.METRIC_INPUT) {
 				nodes.add(index + 1);
 			}
 		}
@@ -648,6 +721,7 @@ public final class ConstructionBoxModel2D {
 		private final Target capture;
 		private final List<Target> assumed;
 		private final boolean centered;
+		private final boolean nativeValues;
 		private final List<PredicateEvaluation> evaluations = new ArrayList<>();
 		private final List<String> selection = new ArrayList<>();
 		private Object[] nodes;
@@ -662,6 +736,8 @@ public final class ConstructionBoxModel2D {
 		private Set<Integer> definedMetrics = Set.of();
 		/** Given enclosures of metric input values, or {@code null}. */
 		private Map<Integer, double[]> metricValues;
+		private SplineOutwardInterval2D parameterBox;
+		private final Map<Integer, RotationGeometry> rotations = new java.util.HashMap<>();
 
 		Run(boolean periodic, Mode mode, Target capture, List<Target> assumed) {
 			this(periodic, mode, capture, assumed, false);
@@ -669,11 +745,17 @@ public final class ConstructionBoxModel2D {
 
 		Run(boolean periodic, Mode mode, Target capture, List<Target> assumed,
 				boolean centered) {
+			this(periodic, mode, capture, assumed, centered, false);
+		}
+
+		Run(boolean periodic, Mode mode, Target capture, List<Target> assumed,
+				boolean centered, boolean nativeValues) {
 			this.periodic = periodic;
 			this.mode = mode;
 			this.capture = capture;
 			this.assumed = assumed;
 			this.centered = centered;
+			this.nativeValues = nativeValues;
 		}
 
 		/**
@@ -700,6 +782,18 @@ public final class ConstructionBoxModel2D {
 		}
 
 		ConstructionBoxOutcome2D evaluate(SplineOutwardInterval2D box) {
+			parameterBox = box;
+			if (!nativeValues && hasVariableRotation) {
+				// This value-only pass never applies the ideal derivative's mean-value form
+				// to the numerical realization. An estimate is opaque, even if admissible.
+				Run nativeRun = new Run(periodic, Mode.VALUE_ONLY, null, List.of(), false, true);
+				ConstructionBoxOutcome2D admission = nativeRun.evaluate(box);
+				if (admission.kind != ConstructionBoxOutcome2D.Kind.VALID) {
+					return ConstructionBoxOutcome2D.unresolved(Unresolved.TOLERANCE,
+							admission.step, null, STEP_PREDICATE,
+							"Native composition guard: " + admission.detail, evaluations);
+				}
+			}
 			LocusInterval2D domain = program.getDomain();
 			double reach = periodic && program.getDriver() == Driver.CIRCLE
 					? domain.getUpper() - domain.getLower() : 0;
@@ -726,6 +820,19 @@ public final class ConstructionBoxModel2D {
 			for (int index = 0; index < steps.size(); index++) {
 				node = index + 1;
 				Step step = steps.get(index);
+				if (!valueLive[node]) {
+					nodes[node] = UNKNOWN;
+					continue;
+				}
+				if (nativeValues && readsFiniteNative(step)) {
+					try {
+						nodes[node] = finiteNativeStep(step);
+					} catch (ArithmeticException | Stop failure) {
+						return ConstructionBoxOutcome2D.unresolved(Unresolved.TOLERANCE, node,
+								null, STEP_PREDICATE, String.valueOf(failure.getMessage()), evaluations);
+					}
+					continue;
+				}
 				Object opaque = readsOpaque(step);
 				if (opaque == UNKNOWN) {
 					nodes[node] = UNKNOWN;
@@ -794,8 +901,32 @@ public final class ConstructionBoxModel2D {
 					String.join(",", selection), evaluations);
 		}
 
+		private boolean readsFiniteNative(Step step) {
+			return step.getOperands().stream().anyMatch(operand -> operand.getKind() == OperandKind.NODE
+					&& nodes[operand.getNode()] == FINITE_NATIVE_METRIC);
+		}
+
+		private Object finiteNativeStep(Step step) {
+			List<Operand> operands = step.getOperands();
+			if (step.getOperation() == Operation.SCALAR_NEGATE) { return FINITE_NATIVE_METRIC; }
+			if (step.getOperation() == Operation.SCALAR_DIVIDE
+					&& operands.get(0).getKind() == OperandKind.NODE
+					&& nodes[operands.get(0).getNode()] == FINITE_NATIVE_METRIC
+					&& operands.get(1).getKind() == OperandKind.SCALAR
+					&& Math.abs(operands.get(1).getValue(0)) >= 1) {
+				return FINITE_NATIVE_METRIC;
+			}
+			if (step.getOperation() == Operation.ROTATE_BY_ANGLE
+					&& operands.get(1).getKind() == OperandKind.NODE
+					&& nodes[operands.get(1).getNode()] == FINITE_NATIVE_METRIC) {
+				return variableRotation(step, null);
+			}
+			throw new ArithmeticException("No native value enclosure for this metric consumer");
+		}
+
 		/** @return {@code null}, {@link #UNKNOWN} or the opaque marker the step reads */
 		private Object readsOpaque(Step step) {
+			if (step.getOperation() == Operation.METRIC_INPUT) { return null; }
 			Object found = null;
 			for (Operand operand : step.getOperands()) {
 				if (operand.getKind() != OperandKind.NODE) {
@@ -873,6 +1004,19 @@ public final class ConstructionBoxModel2D {
 			case SEGMENT:
 				requireDistinct(operands);
 				PointJet start = point(operands.get(0));
+				RotationGeometry radial = step.getOperation() == Operation.RAY
+						&& operands.get(1).getKind() == OperandKind.NODE
+						? rotations.get(operands.get(1).getNode()) : null;
+				if (radial != null && operands.get(0).hasSameCapturedSource(radial.center)) {
+					Jet dx = radial.directionX, dy = radial.directionY;
+					LineJet result = new LineJet(dy.negate(), dx,
+							start.inhomX.multiply(dy).subtract(start.inhomY.multiply(dx)),
+							new Bound(true, start.inhomX, start.inhomY));
+					result.radial = radial;
+					record(ConstructionValidityPredicate2D.DIRECTION, STEP_PREDICATE,
+							radial.normSquared, Decision.TRUE);
+					return result;
+				}
 				return join(start, point(operands.get(1)),
 						new Bound(step.getOperation() == Operation.RAY, start.inhomX,
 								start.inhomY));
@@ -890,7 +1034,10 @@ public final class ConstructionBoxModel2D {
 			case CIRCLE_RADIUS:
 				PointJet center = point(operands.get(0));
 				Jet radius = Jet.constant(step.getParameter(0));
-				return new CircleJet(center.inhomX, center.inhomY, radius.multiply(radius));
+				CircleJet constantCircle = new CircleJet(center.inhomX, center.inhomY, radius.multiply(radius));
+				constantCircle.centerSource = operands.get(0);
+				constantCircle.radius = radius;
+				return constantCircle;
 			case CIRCLE_THROUGH:
 				return circleThrough(operands);
 			case LINE_CIRCLE:
@@ -915,6 +1062,47 @@ public final class ConstructionBoxModel2D {
 				VectorJet left = vector(operands.get(0));
 				VectorJet right = vector(operands.get(1));
 				return left.x.multiply(right.x).add(left.y.multiply(right.y));
+			case SCALAR_NEGATE:
+				return scalar(operands.get(0)).negate();
+			case SCALAR_ADD:
+				return scalar(operands.get(0)).add(scalar(operands.get(1)));
+			case SCALAR_SUBTRACT:
+				return scalar(operands.get(0)).subtract(scalar(operands.get(1)));
+			case SCALAR_MULTIPLY:
+				return scalar(operands.get(0)).multiply(scalar(operands.get(1)));
+			case SCALAR_DIVIDE:
+				return scalar(operands.get(0)).divide(scalar(operands.get(1)));
+			case SCALAR_SIN:
+				return snappedTrig(scalar(operands.get(0)), true, EPSILON, true);
+			case SCALAR_COS:
+				return snappedTrig(scalar(operands.get(0)), false, EPSILON, false);
+			case SCALAR_SQRT:
+				return scalarRoot(scalar(operands.get(0)));
+			case POINT_X:
+				return point(operands.get(0)).inhomX;
+			case POINT_Y:
+				return point(operands.get(0)).inhomY;
+			case POINT_COORDINATES:
+				return PointJet.unit(scalar(operands.get(0)), scalar(operands.get(1)));
+			case POINT_DISTANCE:
+				PointJet distanceFrom = point(operands.get(0));
+				PointJet distanceTo = point(operands.get(1));
+				return scalarRoot(distanceFrom.inhomX.subtract(distanceTo.inhomX).square()
+						.add(distanceFrom.inhomY.subtract(distanceTo.inhomY).square()));
+			case ROTATE_BY_ANGLE:
+				return variableRotation(step, scalar(operands.get(1)));
+			case CIRCLE_DYNAMIC_RADIUS:
+				PointJet dynamicCenter = point(operands.get(0));
+				Jet dynamicRadius = scalar(operands.get(1));
+				if (!(tight(dynamicRadius).lower >= 2 * EPSILON)) {
+					throw new Stop(Unresolved.TOLERANCE, ConstructionValidityPredicate2D.RADIUS,
+							STEP_PREDICATE, "The variable radius is not certified above the native threshold");
+				}
+				CircleJet dynamicCircle = new CircleJet(dynamicCenter.inhomX, dynamicCenter.inhomY,
+						dynamicRadius.square());
+				dynamicCircle.centerSource = operands.get(0);
+				dynamicCircle.radius = dynamicRadius;
+				return dynamicCircle;
 			case POINT_PLUS_VECTOR:
 				PointJet base = point(operands.get(0));
 				VectorJet offset = vector(operands.get(1));
@@ -923,15 +1111,97 @@ public final class ConstructionBoxModel2D {
 						: PointJet.unit(base.inhomX.subtract(offset.x),
 								base.inhomY.subtract(offset.y));
 			case METRIC_INPUT:
+				if (nativeValues) {
+					return nativeMetricAdmission.test(node) ? FINITE_NATIVE_METRIC : METRIC_OPAQUE;
+				}
 				if (metricValues != null && metricValues.containsKey(node)) {
 					double[] bounds = metricValues.get(node);
 					return new Jet(new SplineOutwardInterval2D(bounds[0], bounds[1]), null,
 							null);
 				}
+				if (metricEnclosures != null) {
+					LocusMetricBoxEvidence2D proof = metricEnclosures.enclose(node,
+							parameterBox.lower, parameterBox.upper);
+					if (proof != null) {
+						return new Jet(new SplineOutwardInterval2D(proof.getLower(), proof.getUpper()),
+								mode == Mode.VALUE_ONLY ? null : new SplineOutwardInterval2D(
+										proof.getDerivativeLower(), proof.getDerivativeUpper()), null);
+					}
+				}
 				return definedMetrics.contains(node) ? METRIC_DEFINED : METRIC_OPAQUE;
 			default:
 				return transform(step, point(operands.get(0)));
 			}
+		}
+
+		/** Author-approved ideal geometry, paired with a separate value-only native guard. */
+		private PointJet variableRotation(Step step, Jet angle) {
+			List<Operand> operands = step.getOperands();
+			Operand source = operands.get(0), center = operands.get(2);
+			if (source.getKind() != OperandKind.POINT || center.getKind() != OperandKind.POINT) {
+				throw new ArithmeticException("Native variable-rotation guard requires fixed source and centre");
+			}
+			var nativeProof = NativeVariableRotationGuard2D.enclose(source.getValue(0),
+					source.getValue(1), source.getValue(2), center.getValue(3), center.getValue(4));
+			if (nativeProof == null) {
+				throw new ArithmeticException("Native homogeneous rotation or direction is not admissible");
+			}
+			Jet dx = Jet.constant(source.getValue(0)).divide(Jet.constant(source.getValue(2)))
+					.subtract(Jet.constant(center.getValue(3)));
+			Jet dy = Jet.constant(source.getValue(1)).divide(Jet.constant(source.getValue(2)))
+					.subtract(Jet.constant(center.getValue(4)));
+			Jet norm = dx.square().add(dy.square());
+			if (!(norm.value.lower > 0)) { throw new ArithmeticException("Rotation source equals centre"); }
+			Jet directionX, directionY;
+			PointJet result;
+			if (nativeValues) {
+				// No closeness of estimated and semantic angles is assumed. These values
+				// enclose the realization for every finite admitted native angle.
+				directionX = new Jet(new SplineOutwardInterval2D(nativeProof.getNativeXLower(),
+						nativeProof.getNativeXUpper()).subtract(SplineOutwardInterval2D.point(center.getValue(3))), null, null);
+				directionY = new Jet(new SplineOutwardInterval2D(nativeProof.getNativeYLower(),
+						nativeProof.getNativeYUpper()).subtract(SplineOutwardInterval2D.point(center.getValue(4))), null, null);
+				result = PointJet.unit(new Jet(new SplineOutwardInterval2D(nativeProof.getNativeXLower(),
+						nativeProof.getNativeXUpper()), null, null),
+						new Jet(new SplineOutwardInterval2D(nativeProof.getNativeYLower(),
+								nativeProof.getNativeYUpper()), null, null));
+			} else {
+				Jet cosine = angle.cos(), sine = angle.sin();
+				directionX = dx.multiply(cosine).subtract(dy.multiply(sine));
+				directionY = dx.multiply(sine).add(dy.multiply(cosine));
+				result = PointJet.unit(Jet.constant(center.getValue(3)).add(directionX),
+						Jet.constant(center.getValue(4)).add(directionY));
+			}
+			rotations.put(node, new RotationGeometry(source, center, directionX, directionY, norm, nativeProof));
+			return result;
+		}
+
+		private Jet scalarRoot(Jet radicand) {
+			if (radicand.value.lower > 0) { return radicand.sqrt(); }
+			if (radicand.value.lower == 0) { return radicand.clampedSquareRoot(); }
+			throw new Stop(Unresolved.PREDICATE, null, STEP_PREDICATE,
+					"The scalar square-root domain is not certified");
+		}
+
+		/**
+		 * The native scalar functions and rotation cosine have explicit zero branches.
+		 * A uniformly selected branch has its own formula; crossing its threshold is not
+		 * a continuity proof. In particular a tiny cosine must never become a nonzero
+		 * divisor merely because the exact analytic cosine is nonzero.
+		 */
+		private Jet snappedTrig(Jet argument, boolean sine, double threshold,
+				boolean smallSineExempt) {
+			Jet analytic = sine ? argument.sin() : argument.cos();
+			boolean canSnap = !smallSineExempt || argument.value.lower < -.1
+					|| argument.value.upper > .1;
+			if (!canSnap) { return analytic; }
+			SplineOutwardInterval2D magnitude = ConstructionIntervalModel2D.abs(analytic.value);
+			if (magnitude.lower >= threshold) { return analytic; }
+			boolean alwaysSnap = !smallSineExempt || argument.value.lower > .1
+					|| argument.value.upper < -.1;
+			if (alwaysSnap && magnitude.upper < threshold) { return Jet.constant(0); }
+			throw new Stop(Unresolved.TOLERANCE, null, STEP_PREDICATE,
+					"The native trigonometric zero branch is not uniform on this box");
 		}
 
 		private void requireDistinct(List<Operand> operands) {
@@ -1167,6 +1437,11 @@ public final class ConstructionBoxModel2D {
 		private PointJet output(PairJet pair, int index) {
 			LineJet line = pair.line;
 			CircleJet circle = pair.circle;
+			if (line.radial != null && circle.radius != null
+					&& circle.centerSource != null
+					&& circle.centerSource.hasSameCapturedSource(line.radial.center)) {
+				return radialOutput(pair, index);
+			}
 			Jet norm = line.a.square().add(line.b.square());
 			Jet distance = line.a.multiply(circle.mx).add(line.b.multiply(circle.my))
 					.add(line.c);
@@ -1236,6 +1511,34 @@ public final class ConstructionBoxModel2D {
 			Jet signed = Jet.constant(sign);
 			return PointJet.unit(footX.add(signed.multiply(offsetX)),
 					footY.add(signed.multiply(offsetY)));
+		}
+
+		/** Same centre by captured source alias, positive ray root by the native selector proof. */
+		private PointJet radialOutput(PairJet pair, int index) {
+			RotationGeometry geometry = pair.line.radial;
+			if (pair.compaction ? index != 0 : pair.permutation[index] != 1) {
+				throw new Stop(Unresolved.PREDICATE, ConstructionValidityPredicate2D.RAY_PARAMETER,
+						STEP_PREDICATE, "This selected output is not the positive radial root");
+			}
+			if (nativeValues) {
+				double bound = NativeRadialRayGuard2D.enclose(geometry.source, geometry.center,
+						geometry.nativeProof, pair.circle.radius.value);
+				if (!Double.isFinite(bound)) {
+					throw new Stop(Unresolved.TOLERANCE, ConstructionValidityPredicate2D.DISCRIMINANT,
+							STEP_PREDICATE, "The native radial selector predicates are not established");
+				}
+				Jet coordinates = new Jet(new SplineOutwardInterval2D(-bound, bound), null, null);
+				return PointJet.unit(coordinates, coordinates);
+			}
+			Jet norm = geometry.normSquared.sqrt();
+			Jet radius = pair.circle.radius;
+			Jet parameter = radius.divide(norm);
+			requirePositive(ConstructionValidityPredicate2D.DISCRIMINANT, STEP_PREDICATE,
+					pair.circle.radiusSquared.multiply(geometry.normSquared));
+			record(ConstructionValidityPredicate2D.RAY_PARAMETER, 2, parameter, Decision.TRUE);
+			selection.add("n" + node + ":r1:radial-shared-centre/v1");
+			return PointJet.unit(pair.circle.mx.add(parameter.multiply(geometry.directionX)),
+					pair.circle.my.add(parameter.multiply(geometry.directionY)));
 		}
 
 		/** @return index of the membership predicate of a raw root left undecided */
@@ -1729,6 +2032,7 @@ public final class ConstructionBoxModel2D {
 		private final Jet b;
 		private final Jet c;
 		private final Bound bound;
+		private RotationGeometry radial;
 
 		private LineJet(Jet a, Jet b, Jet c, Bound bound) {
 			this.a = a;
@@ -1747,11 +2051,29 @@ public final class ConstructionBoxModel2D {
 		private final Jet mx;
 		private final Jet my;
 		private final Jet radiusSquared;
+		private Operand centerSource;
+		private Jet radius;
 
 		private CircleJet(Jet mx, Jet my, Jet radiusSquared) {
 			this.mx = mx;
 			this.my = my;
 			this.radiusSquared = radiusSquared;
+		}
+	}
+
+	/** An isometry identity and its independent native forward-error proof. */
+	private static final class RotationGeometry {
+		private final Operand source;
+		private final Operand center;
+		private final Jet directionX;
+		private final Jet directionY;
+		private final Jet normSquared;
+		private final NativeVariableRotationGuard2D.Proof nativeProof;
+		private RotationGeometry(Operand source, Operand center, Jet directionX, Jet directionY,
+				Jet normSquared, NativeVariableRotationGuard2D.Proof nativeProof) {
+			this.source = source; this.center = center;
+			this.directionX = directionX; this.directionY = directionY;
+			this.normSquared = normSquared; this.nativeProof = nativeProof;
 		}
 	}
 

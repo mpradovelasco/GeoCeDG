@@ -10,19 +10,30 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.zip.ZipInputStream;
 
 import org.geocedg.common.kernel.locus.NativeTransactionalState2D;
 import org.geocedg.common.kernel.locus.NativeTransactionalState2D.UndoTemplate;
 import org.geogebra.common.io.MyXMLio;
 import org.geogebra.common.io.XMLParseException;
+import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.arithmetic.MyDouble;
+import org.geogebra.common.kernel.arithmetic.NumberValue;
+import org.geogebra.common.kernel.geos.GeoElement;
+import org.geogebra.common.kernel.geos.GeoList;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.jre.io.MyXMLioJre;
 import org.geogebra.common.main.undo.AppState;
 import org.geogebra.common.main.undo.UndoCommand;
@@ -64,6 +75,232 @@ class GeoCeDGUndoManager extends UndoManagerD {
 	private long historyActivity;
 	// Lazily initialized: this manager may be called during application bootstrap.
 	private Map<StringBuilder, UndoTemplate> pendingNativeStates;
+
+	/**
+	 * R12: creation defaults are not part of construction-only Undo XML. Native
+	 * style copying nevertheless initializes a source prototype's null animation
+	 * step. Preserve precisely that lazy change, without changing the kernel getter
+	 * or rebinding any non-null, possibly dynamic, historical default.
+	 */
+	static final class LazyDefaults {
+		private record Prototype(GeoElement geo, NumberValue step, long bits, boolean defined) { }
+
+		private final Construction construction;
+		private final Map<Integer, Prototype> prototypes;
+		private final String classicXml;
+		private final String v2Xml;
+
+		private LazyDefaults(Construction construction) {
+			this.construction = construction;
+			prototypes = new LinkedHashMap<>();
+			Set<GeoElement> graph = liveGraph(construction);
+			for (var entry : construction.getConstructionDefaults().getDefaultGeos()) {
+				GeoElement geo = entry.getValue();
+				if (geo == null || geo.getConstruction() != construction) {
+					throw new IllegalStateException("DYNAMIC_ANIMATION_STEP");
+				}
+				NumberValue step = geo.getAnimationStepObject();
+				if (!ownedConstant(construction, step, graph)) {
+					throw new IllegalStateException("DYNAMIC_ANIMATION_STEP");
+				}
+				prototypes.put(entry.getKey(), new Prototype(geo, step,
+						step == null ? 0 : Double.doubleToRawLongBits(step.getDouble()),
+						step != null && step.isDefined()));
+			}
+			classicXml = defaultsXml(construction);
+			v2Xml = construction.getConstructionDefaults().getV2DefaultsXML();
+		}
+
+		static LazyDefaults capture(Construction construction) {
+			return new LazyDefaults(construction);
+		}
+
+		/** Pure IMAGE admission: constants never acquire a semantic remapping. */
+		static String unsupportedImageStep(Construction construction) {
+			Set<GeoElement> graph = liveGraph(construction);
+			for (var entry : construction.getConstructionDefaults().getDefaultGeos()) {
+				GeoElement geo = entry.getValue();
+				if (geo == null || geo.getConstruction() != construction
+						|| !ownedConstant(construction, geo.getAnimationStepObject(), graph)) {
+					return "DYNAMIC_ANIMATION_STEP";
+				}
+			}
+			return null;
+		}
+
+		boolean matchesCurrent() {
+			if (unsupportedImageStep(construction) != null) { return false; }
+			Map<Integer, GeoElement> current = currentPrototypes(construction);
+			if (!current.keySet().equals(prototypes.keySet())) { return false; }
+			for (var entry : prototypes.entrySet()) {
+				Prototype saved = entry.getValue();
+				GeoElement geo = current.get(entry.getKey());
+				NumberValue step = geo.getAnimationStepObject();
+				if (geo != saved.geo || step != saved.step
+						|| (step != null && !sameValue(step, saved))) { return false; }
+			}
+			return sameXml();
+		}
+
+		void restoreConstruction() throws IOException {
+			restore(false);
+		}
+
+		void restoreArchive() throws IOException {
+			restore(true);
+		}
+
+		private void restore(boolean archive) throws IOException {
+			Map<Integer, GeoElement> current = currentPrototypes(construction);
+			if (!current.keySet().equals(prototypes.keySet())) {
+				throw new IOException("DEFAULT_PROTOTYPES_CHANGED");
+			}
+			Set<GeoElement> graph = archive ? liveGraph(construction) : null;
+			// Validate every field before the first write. A full archive reader may
+			// replace prototypes, but no old GeoNumeric reference is ever installed.
+			for (var entry : prototypes.entrySet()) {
+				Prototype saved = entry.getValue();
+				GeoElement geo = current.get(entry.getKey());
+				if (geo == null || geo.getConstruction() != construction
+						|| geo.getClass() != saved.geo.getClass() || (!archive && geo != saved.geo)) {
+					throw new IOException("DEFAULT_PROTOTYPES_CHANGED");
+				}
+				NumberValue step = geo.getAnimationStepObject();
+				if (saved.step == null) {
+					boolean literalOne = archive && ownedConstant(construction, step, graph)
+							&& step != null && step.isDefined() && Double.doubleToLongBits(step.getDouble())
+									== Double.doubleToLongBits(1.0);
+					if (step != null && !lazyStep(construction, step) && !literalOne) {
+						throw new IOException("UNEXPECTED_LAZY_DEFAULT_CHANGE");
+					}
+				} else {
+					if ((!archive && step != saved.step) || step == null
+							|| (archive && !ownedConstant(construction, step, graph))
+							|| !sameValue(step, saved)) {
+						throw new IOException("UNEXPECTED_LAZY_DEFAULT_CHANGE");
+					}
+				}
+			}
+			for (var entry : prototypes.entrySet()) {
+				if (entry.getValue().step == null) {
+					current.get(entry.getKey()).setAnimationStep((NumberValue) null);
+				}
+			}
+			if (!sameXml()) { throw new IOException("DEFAULTS_SERIALIZATION_CHANGED"); }
+		}
+
+		private boolean sameXml() {
+			return classicXml.equals(defaultsXml(construction)) && Objects.equals(v2Xml,
+					construction.getConstructionDefaults().getV2DefaultsXML());
+		}
+
+		private static boolean sameValue(NumberValue step, Prototype saved) {
+			return step.isDefined() == saved.defined
+					&& Double.doubleToRawLongBits(step.getDouble()) == saved.bits;
+		}
+
+		private static String defaultsXml(Construction construction) {
+			XMLStringBuilder xml = new XMLStringBuilder();
+			construction.getConstructionDefaults().getDefaultsXML(xml);
+			return xml.toString();
+		}
+
+		private static Map<Integer, GeoElement> currentPrototypes(Construction construction) {
+			Map<Integer, GeoElement> current = new LinkedHashMap<>();
+			for (var entry : construction.getConstructionDefaults().getDefaultGeos()) {
+				current.put(entry.getKey(), entry.getValue());
+			}
+			return current;
+		}
+
+		private static boolean lazyStep(Construction construction, NumberValue step) {
+			return step != null && step.getClass() == MyDouble.class
+					&& step.wrap().getKernel() == construction.getKernel()
+					&& Double.doubleToLongBits(step.getDouble())
+							== Double.doubleToLongBits(GeoNumeric.DEFAULT_SLIDER_INCREMENT);
+		}
+
+		private static boolean ownedConstant(Construction construction, NumberValue step,
+				Set<GeoElement> graph) {
+			if (step == null) { return true; }
+			if (step.getClass() == MyDouble.class) {
+				return step.wrap().getKernel() == construction.getKernel();
+			}
+			return step.getClass() == GeoNumeric.class
+					&& ((GeoNumeric) step).getConstruction() == construction
+					&& ((GeoNumeric) step).isIndependent() && !((GeoNumeric) step).isLabelSet()
+					&& !graph.contains(step);
+		}
+
+		/** Includes the inactive suffix and unlabelled inputs/list members by identity. */
+		private static Set<GeoElement> liveGraph(Construction construction) {
+			Set<GeoElement> graph = Collections.newSetFromMap(new IdentityHashMap<>());
+			ArrayDeque<GeoElement> pending = new ArrayDeque<>(construction.getGeoSetConstructionOrder());
+			for (int i = 0; i < construction.steps(); i++) {
+				var element = construction.getConstructionElement(i);
+				for (var output : element.getGeoElements()) {
+					if (output != null) { pending.add(output.toGeoElement()); }
+				}
+				if (element instanceof AlgoElement algo) {
+					for (GeoElement input : algo.getInput()) {
+						if (input != null) { pending.add(input); }
+					}
+				}
+			}
+			while (!pending.isEmpty()) {
+				GeoElement geo = pending.remove();
+				if (!graph.add(geo)) { continue; }
+				if (geo instanceof GeoList list) {
+					for (int i = 0; i < list.size(); i++) {
+						if (list.get(i) != null) { pending.add(list.get(i)); }
+					}
+				}
+				AlgoElement parent = geo.getParentAlgorithm();
+				if (parent != null) {
+					for (GeoElement input : parent.getInput()) {
+						if (input != null) { pending.add(input); }
+					}
+				}
+			}
+			return graph;
+		}
+
+		/** Separate narrow replay scope; non-null historical defaults are untouched. */
+		static LazyNulls captureLazyNulls(Construction construction) {
+			Map<Integer, GeoElement> nulls = new LinkedHashMap<>();
+			for (var entry : construction.getConstructionDefaults().getDefaultGeos()) {
+				GeoElement geo = entry.getValue();
+				if (geo.getConstruction() == construction && geo.getAnimationStepObject() == null) {
+					nulls.put(entry.getKey(), geo);
+				}
+			}
+			return new LazyNulls(construction, nulls);
+		}
+
+		static final class LazyNulls implements AutoCloseable {
+			private final Construction construction;
+			private final Map<Integer, GeoElement> nulls;
+
+			LazyNulls(Construction construction, Map<Integer, GeoElement> nulls) {
+				this.construction = construction;
+				this.nulls = nulls;
+			}
+
+			@Override public void close() throws IOException {
+				for (var entry : nulls.entrySet()) {
+					GeoElement geo = entry.getValue();
+					if (construction.getConstructionDefaults().getDefaultGeo(entry.getKey()) != geo) {
+						throw new IOException("DEFAULT_PROTOTYPES_CHANGED");
+					}
+					NumberValue step = geo.getAnimationStepObject();
+					if (step != null && !lazyStep(construction, step)) {
+						throw new IOException("UNEXPECTED_LAZY_DEFAULT_CHANGE");
+					}
+				}
+				for (GeoElement geo : nulls.values()) { geo.setAnimationStep((NumberValue) null); }
+			}
+		}
+	}
 
 	/**
 	 * @param cons construction whose history this manager owns
@@ -135,6 +372,13 @@ class GeoCeDGUndoManager extends UndoManagerD {
 
 	@Override
 	protected void readUndoState(FileAppState state, InputStream input)
+			throws IOException, XMLParseException {
+		try (var defaults = LazyDefaults.captureLazyNulls(construction)) {
+			readUndoStateWithDefaults(state, input);
+		}
+	}
+
+	private void readUndoStateWithDefaults(FileAppState state, InputStream input)
 			throws IOException, XMLParseException {
 		if (!(state instanceof NativeFileAppState nativeState)) {
 			super.readUndoState(state, input);

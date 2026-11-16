@@ -183,6 +183,16 @@ public abstract class AlgoIntersectND extends AlgoIntersectAbstract {
 				&& didSetIntersectionPointArray[index];
 	}
 
+	/** GeoCeDG R9: immutable-data companion of the private MEMORY restore. */
+	protected final boolean[] copyNativeLoadedIntersectionFlags() {
+		return didSetIntersectionPointArray == null ? null : didSetIntersectionPointArray.clone();
+	}
+
+	/** Used only by the subclass-owned, authenticated one-use MEMORY payload. */
+	protected final void restoreNativeLoadedIntersectionFlags(boolean[] flags) {
+		didSetIntersectionPointArray = flags == null ? null : flags.clone();
+	}
+
 	@Override
 	public String toString(StringTemplate tpl) {
 		// Michael Borcherds 2008-03-30

@@ -28,6 +28,7 @@ import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
 import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
@@ -96,7 +97,11 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private HybridExistenceCertifier2D.Result baseCertificate;
 	private List<LocusTraversalCut2D> certifiedCuts;
 	private ReconstructibleLocusEvaluator2D routeFactsEvaluator;
-	private double routeLengthBound = Double.NaN;
+	private HybridExistenceCertifier2D.Result routeFactsCertificate;
+	private long routeFactsRevision = -1;
+	private ConstructionBoxModel2D routeFactsModel;
+	private final Map<ContinuousComponent, RouteSourceFacts2D.Index> routeFactsIndices =
+			new IdentityHashMap<>();
 	private String certifiedSelection;
 	private List<LocusLineage2D> certificateLineage = List.of();
 
@@ -453,16 +458,18 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 						"selected-root-continuity-not-established", sampler, policy,
 						instrumentation);
 			}
+			// A newly capturable program must not displace an already admitted identity
+			// certificate: disjoint-box reasoning cannot establish equal periodic limits.
+			Optional<LocusExistenceStructure2D> periodicRotation =
+					AuthorityPolicy.of(cons).isConstructive()
+							? Optional.empty() : current.captureClosedMetricRotation();
+			if (periodicRotation.isPresent()) {
+				return HybridExistenceCertifier2D.particular(periodicRotation.get(), null,
+						policy, instrumentation);
+			}
 			Optional<CertifiedConstructionProgram2D> program =
 					current.captureCertifiedProgramV3();
 			if (!program.isPresent()) {
-				Optional<LocusExistenceStructure2D> periodicRotation =
-						AuthorityPolicy.of(cons).isConstructive()
-								? Optional.empty() : current.captureClosedMetricRotation();
-				if (periodicRotation.isPresent()) {
-					return HybridExistenceCertifier2D.particular(periodicRotation.get(), null,
-							policy, instrumentation);
-				}
 				String refusal = current.getProgramV3Refusal();
 				return HybridExistenceCertifier2D.notEstablished(domain, periodic, key,
 						"unsettled-selection".equals(refusal)
@@ -473,7 +480,9 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 								current.getPotentialCompositionEvents());
 			}
 			return HybridExistenceCertifier2D.certify(
-					new ConstructionBoxModel2D(program.get()), current.getMetricStructuresV3(),
+					new ConstructionBoxModel2D(program.get(), current::getMetricFunctionBoxEvidence,
+							current::isNativeMetricInputAdmissible),
+					current.getMetricStructuresV3(),
 					current.getOperationIdentitiesV3(), domain, periodic, key, sampler, policy,
 					instrumentation);
 		}
@@ -582,29 +591,56 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	/**
 	 * Rigorous facts of this locus as the source of an oriented length ({@code
 	 * locus-v2-metrics.md} section 26), from the class-v3 program of the current revision:
-	 * a lower bound of a chord from the origin, and the upper bound of the length of a
-	 * closed periodic certificate, computed once per revision. Neither reads a metric value.
+	 * a lower bound of a chord from the origin, and an upper bound of the length of its
+	 * certified component. The proof partition is shared by the revision's consumers.
 	 *
 	 * @param origin canonical address of the origin of the route
 	 * @return {@code {chord, lengthBound}}, each {@code NaN} when not certified
 	 */
 	public double[] getRouteSourceFacts(double origin) {
-		HybridExistenceCertifier2D.Result published = getHybridExistenceCertificate();
-		ReconstructibleLocusEvaluator2D current = certifiedEvaluator;
-		Optional<CertifiedConstructionProgram2D> program = current == null
-				? Optional.empty() : current.captureCertifiedProgramV3();
-		if (published == null || !program.isPresent()
-				|| !published.getStructure().isClosedPeriodic()) {
+		RouteSourceFacts2D.Index index = getRouteSourceIndex(origin);
+		if (index == null || !index.isCertified()) {
 			return new double[] {Double.NaN, Double.NaN};
 		}
-		ConstructionBoxModel2D model = new ConstructionBoxModel2D(program.get());
 		LocusInterval2D domain = descriptor.getDeclaredDomain();
-		if (routeFactsEvaluator != current) {
-			routeLengthBound = RouteSourceFacts2D.lengthUpperBound(model, domain);
+		return new double[] {RouteSourceFacts2D.chordLowerBound(routeFactsModel, domain,
+				index.getComponent(), origin), index.totalBounds()[1]};
+	}
+
+	/** The same revision/component proof index supports value and derivative boxes. */
+	public RouteSourceFacts2D.Index getRouteSourceIndex(double origin) {
+		HybridExistenceCertifier2D.Result published = getHybridExistenceCertificate();
+		ReconstructibleLocusEvaluator2D current = certifiedEvaluator;
+		long revision = getLocus().getSemanticRevision();
+		if (routeFactsEvaluator != current || routeFactsCertificate != published
+				|| routeFactsRevision != revision) {
+			routeFactsIndices.clear();
+			routeFactsModel = null;
 			routeFactsEvaluator = current;
+			routeFactsCertificate = published;
+			routeFactsRevision = revision;
 		}
-		return new double[] {RouteSourceFacts2D.chordLowerBound(model, domain, origin),
-			routeLengthBound};
+		if (published == null || current == null) { return null; }
+		ContinuousComponent component = published.getStructure().getComponentContaining(origin);
+		if (component == null || !component.getNature().certifies()) { return null; }
+		RouteSourceFacts2D.Index existing = routeFactsIndices.get(component);
+		if (existing != null) { return existing; }
+		if (routeFactsModel == null) {
+			Optional<CertifiedConstructionProgram2D> program = current.captureCertifiedProgramV3();
+			if (!program.isPresent()) { return null; }
+			routeFactsModel = new ConstructionBoxModel2D(program.get(),
+					current::getMetricFunctionBoxEvidence, current::isNativeMetricInputAdmissible);
+		}
+		RouteSourceFacts2D.Index built = RouteSourceFacts2D.buildIndex(routeFactsModel,
+				descriptor.getDeclaredDomain(), component);
+		routeFactsIndices.put(component, built);
+		return built;
+	}
+
+	/** Exhaustion remains a typed unresolved cause, never a geometric rejection. */
+	public LocusCoverageCause2D getRouteSourceFactsFailure(double origin) {
+		RouteSourceFacts2D.Index index = getRouteSourceIndex(origin);
+		return index == null ? LocusCoverageCause2D.NOT_CERTIFIED : index.getFailureCause();
 	}
 
 	private boolean dependsOnSelectedIntersectionRoot() {

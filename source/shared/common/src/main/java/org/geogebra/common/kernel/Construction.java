@@ -48,6 +48,8 @@ import org.geocedg.common.kernel.locus.NativeSourceFidelity2D;
 import org.geocedg.common.kernel.locus.NativeTransactionalState2D;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.kernel.geos.GeoPoint.NativeRollbackPointState;
+import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
+import org.geogebra.common.kernel.algos.AlgoIntersectLineConic.NativeRollbackSelectionState;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
@@ -1476,6 +1478,9 @@ public class Construction {
 		// collect notifyUpdate calls using xAxis as dummy geo
 		updateConstructionRunning = true;
 		try {
+			if (nativeMeasurement != null) {
+				nativeMeasurement.restoreViewsBeforeDag();
+			}
 			// update all independent GeoElements
 			int size = ceList.size();
 			for (int i = 0; i < size; ++i) {
@@ -2948,6 +2953,16 @@ public class Construction {
 				|| nativeRollbackLoadPurpose == LoadPurpose.NATIVE_OR_UNDO_RESTORE);
 	}
 
+	/** R10: authentication of the current MEMORY view restoration session, never FILE. */
+	public boolean isNativeViewSessionAuthorized(NativeTransactionalState2D session) {
+		return hasActiveNativeRestorePurpose() && nativeRollbackRestore == session;
+	}
+
+	/** Only the active one-use primitive payload may store the existing view caches. */
+	public boolean isNativeViewCacheAuthorized(NativeTransactionalState2D.NativeViewCache cache) {
+		return hasActiveNativeRestorePurpose() && nativeRollbackRestore.authorizesViewCache(cache);
+	}
+
 	/** Binds the existing durable element attribute before native coords are processed. */
 	public boolean bindNativeRollbackDurable(GeoPoint point, String id) {
 		return hasActiveNativeRestorePurpose()
@@ -2966,6 +2981,21 @@ public class Construction {
 	public boolean isNativeRollbackStateAuthorized(GeoPoint point, NativeRollbackPointState state) {
 		return hasActiveNativeRestorePurpose()
 				&& nativeRollbackRestore.authorizes(point, state);
+	}
+
+	/** R9: narrowly typed selector payload, owned by the active MEMORY restore. */
+	public boolean isNativeRollbackSelectionStateAuthorized(AlgoIntersectLineConic algorithm,
+			NativeRollbackSelectionState state) {
+		return hasActiveNativeRestorePurpose()
+				&& nativeRollbackRestore.authorizesSelection(algorithm, state);
+	}
+
+	public void nativeRollbackSelectionStateConsumed(AlgoIntersectLineConic algorithm,
+			NativeRollbackSelectionState state) {
+		if (!isNativeRollbackSelectionStateAuthorized(algorithm, state)) {
+			throw new IllegalStateException("Native selector outside its active session");
+		}
+		nativeRollbackRestore.consumedSelection(algorithm, state);
 	}
 
 	/** Marks a memory input consumed by the ordinary native algorithm, not a separate evaluator. */
@@ -2990,7 +3020,11 @@ public class Construction {
 		spatialSemanticRuntime.beginRollbackRestore();
 		setNextSpatialIdentityLoadPurpose(LoadPurpose.ROLLBACK_RESTORE);
 		boolean restored = false;
+		boolean previousFileLoading = isFileLoading();
 		try {
+			// A local snapshot reconstructs persisted command identities, including
+			// historical rich metrics, rather than authoring new public results.
+			setFileLoading(true);
 			if (nativeRollbackRestore != null) {
 				nativeRollbackRestore.beginRestore();
 				nativeRollbackLoadPurpose = LoadPurpose.ROLLBACK_RESTORE;
@@ -3009,6 +3043,7 @@ public class Construction {
 					"Spatial redefine rollback could not restore the construction",
 					failure);
 		} finally {
+			setFileLoading(previousFileLoading);
 			nativeRollbackLoadPurpose = null;
 			clearNextSpatialIdentityLoadPurpose();
 			spatialSemanticRuntime.finishRollbackRestore(restored);

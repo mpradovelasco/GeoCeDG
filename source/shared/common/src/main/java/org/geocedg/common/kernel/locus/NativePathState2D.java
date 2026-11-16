@@ -94,8 +94,44 @@ public final class NativePathState2D {
 	/** @return whether the current defining geometry/domain has exactly these bits */
 	public boolean matches(GeoElement source) {
 		NativePathState2D current = capture(source);
+		return sameState(current);
+	}
+
+	private boolean sameState(NativePathState2D current) {
 		return current != null && type == current.type && defined == current.defined
 				&& closed == current.closed && Arrays.equals(values, current.values);
+	}
+
+	/** Pure failure detail of the same exact comparator; it never supplies admission. */
+	public String describeMismatch(GeoElement source) {
+		NativePathState2D current = capture(source);
+		if (sameState(current)) { return "MATCH"; }
+		if (current == null) {
+			return "UNSUPPORTED_SOURCE expectedType=" + type.getSimpleName()
+					+ " actualType=" + (source == null ? "null" : source.getClass().getSimpleName());
+		}
+		StringBuilder details = new StringBuilder("SOURCE_STATE_MISMATCH expectedType=")
+				.append(type.getSimpleName()).append(" actualType=")
+				.append(current.type.getSimpleName()).append(" defined=")
+				.append(defined).append('/').append(current.defined).append(" closed=")
+				.append(closed).append('/').append(current.closed).append(" slots=")
+				.append(values.length).append('/').append(current.values.length);
+		int differences = 0;
+		for (int index = 0; index < Math.min(values.length, current.values.length); index++) {
+			if (values[index] != current.values[index]) {
+				if (differences < 8) {
+					details.append(" bits[").append(index).append("]=0x")
+							.append(Long.toHexString(values[index])).append("/0x")
+							.append(Long.toHexString(current.values[index]))
+							.append(" value=")
+							.append(Double.toHexString(Double.longBitsToDouble(values[index])))
+							.append('/')
+							.append(Double.toHexString(Double.longBitsToDouble(current.values[index])));
+				}
+				differences++;
+			}
+		}
+		return details.append(" differingSlots=").append(differences).toString();
 	}
 
 	/** @return whether the captured native source is defined */

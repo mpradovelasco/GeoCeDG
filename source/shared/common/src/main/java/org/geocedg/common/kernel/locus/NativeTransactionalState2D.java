@@ -23,7 +23,10 @@ import org.geocedg.common.kernel.spatial.identity.SpatialIdentityId;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.algos.AlgoMacro;
+import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
+import org.geogebra.common.kernel.algos.AlgoIntersectLineConic.NativeRollbackSelectionState;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.geos.GeoConic;
@@ -51,7 +54,8 @@ public final class NativeTransactionalState2D {
 	/** Host-node count is the collected closure size, separate from source exploration. */
 	public record HostAssessment(UnsupportedReason reason, int hostNodes,
 			NativeSourceFidelity2D.Metrics sourceMetrics) { }
-	private record Inspection(HostAssessment assessment, List<GeoElement> closure) { }
+	private record Inspection(HostAssessment assessment, List<GeoElement> closure,
+			Map<AlgoIntersectLineConic, NativeRollbackSelectionState> selections) { }
 
 	public static final String BINDING_TAG = "nativeRollbackBinding";
 	private static final Pattern BINDING = Pattern.compile("\\t<" + BINDING_TAG
@@ -68,6 +72,10 @@ public final class NativeTransactionalState2D {
 	private final int hostNodes;
 	private final NativeSourceFidelity2D.Metrics sourceMetrics;
 	private final List<AxisVisibility> axisVisibility;
+	private final List<NativeViewState> viewStates;
+	private NativeViewCache applyingViewCache;
+	private boolean viewsRestored;
+	private boolean restoringViews;
 	private String ordinaryXml;
 	private String capturedPrivateXml;
 	private byte[] ordinaryDigest;
@@ -89,6 +97,7 @@ public final class NativeTransactionalState2D {
 		hostNodes = inspection.assessment.hostNodes();
 		sourceMetrics = inspection.assessment.sourceMetrics();
 		axisVisibility = unsupported == null ? captureAxes(construction) : List.of();
+		viewStates = unsupported == null ? captureViews(construction) : List.of();
 		registryIds = ids(construction);
 		reservations = construction.getSpatialIdentityRegistry().getReservedIdentityCount();
 		if (unsupported == null) {
@@ -102,25 +111,25 @@ public final class NativeTransactionalState2D {
 				if (state == null) {
 					continue;
 				}
-				PersistentGeoId id = construction.getSpatialIdentityRegistry()
-						.getPersistentGeoId(point);
-				String key = null;
-				if (id == null) {
-					do {
-						key = tokens.nextToken();
-					} while (privateKeys.containsKey(key));
-				}
-				Entry entry = new Entry(id, key, state);
-				entries.add(entry);
-				serializationPoints.put(point, entry);
-				if (id == null) {
-					privateKeys.put(key, entry);
-				} else {
-					durable.put(id.toExternalForm(), entry);
-				}
+				captureEntry(point, state, null, tokens);
 			}
+			inspection.selections.forEach((algorithm, state) ->
+					captureEntry(algorithm.getIntersectionPoints()[0], null, state, tokens));
 		}
 		nativeCaptureNanos = System.nanoTime() - started;
+	}
+
+	private void captureEntry(GeoPoint point, NativeRollbackPointState state,
+			NativeRollbackSelectionState selection, DefaultSpatialTokenSource tokens) {
+		PersistentGeoId id = owner.getSpatialIdentityRegistry().getPersistentGeoId(point);
+		String key = null;
+		if (id == null) {
+			do { key = tokens.nextToken(); } while (privateKeys.containsKey(key));
+		}
+		Entry entry = new Entry(id, key, state, selection);
+		entries.add(entry); serializationPoints.put(point, entry);
+		if (id == null) { privateKeys.put(key, entry); }
+		else { durable.put(id.toExternalForm(), entry); }
 	}
 
 	/** Captures without assigning IDs or changing the construction or random state. */
@@ -160,11 +169,12 @@ public final class NativeTransactionalState2D {
 		if (!(construction.getApplication().getConfig() instanceof AppConfigGeoCeDG)
 				|| construction.getKernel().isMacroKernel()) {
 			return new Inspection(new HostAssessment(UnsupportedReason.UNSUPPORTED_NATIVE_PROFILE,
-					0, sourcePass.metrics()), List.of());
+					0, sourcePass.metrics()), List.of(), Map.of());
 		}
 		List<GeoElement> closure = closure(construction);
 		UnsupportedReason reason = inspectClosure(closure, sourcePass);
-		return new Inspection(new HostAssessment(reason, closure.size(), sourcePass.metrics()), closure);
+		return new Inspection(new HostAssessment(reason, closure.size(), sourcePass.metrics()), closure,
+				sourcePass.memorySelections());
 	}
 
 	private static UnsupportedReason inspectClosure(List<GeoElement> closure,
@@ -260,6 +270,243 @@ public final class NativeTransactionalState2D {
 			return new AxisVisibility(number, view.getShowAxis(0), view.getShowAxis(1),
 					view.getSettings().getShowAxis(0), view.getSettings().getShowAxis(1));
 		}
+	}
+
+	/** Private MEMORY failure; never a new unsupported-history permission. */
+	public enum NativeViewFailure {
+		INACTIVE_SESSION, VIEW_ABSENT, VIEW_DIMENSIONS_CHANGED, UNSUPPORTED_VIEW_CLASS,
+		VIEW_STATE_CHANGED, VIEW_CACHE_ABSENT
+	}
+
+	public static final class NativeViewRestoreException extends IllegalStateException {
+		private final NativeViewFailure reason;
+		private NativeViewRestoreException(NativeViewFailure reason, int view) {
+			this(reason, view, "");
+		}
+		private NativeViewRestoreException(NativeViewFailure reason, int view, String detail) {
+			super("Native view MEMORY restore: " + reason + "; view=" + view + detail);
+			this.reason = reason;
+		}
+		public NativeViewFailure reason() { return reason; }
+	}
+
+	private record ViewCoordinates(double x, double y, double xs, double ys) {
+		static ViewCoordinates live(EuclidianView view) {
+			return new ViewCoordinates(view.getXZero(), view.getYZero(),
+					view.getXscale(), view.getYscale());
+		}
+		static ViewCoordinates settings(EuclidianView view) {
+			var settings = view.getSettings();
+			return new ViewCoordinates(settings.getXZero(), settings.getYZero(),
+					settings.getXscale(), settings.getYscale());
+		}
+		boolean admissible() {
+			return Double.isFinite(x) && Double.isFinite(y) && Double.isFinite(xs)
+					&& Double.isFinite(ys) && xs >= Kernel.MAX_DOUBLE_PRECISION
+					&& ys >= Kernel.MAX_DOUBLE_PRECISION && xs <= Kernel.INV_MAX_DOUBLE_PRECISION
+					&& ys <= Kernel.INV_MAX_DOUBLE_PRECISION;
+		}
+	}
+
+	private record ViewBounds(double xmin, double xmax, double ymin, double ymax) {
+		static ViewBounds live(EuclidianView view) {
+			return new ViewBounds(view.getXmin(), view.getXmax(), view.getYmin(), view.getYmax());
+		}
+		static ViewBounds objects(EuclidianView view) {
+			return new ViewBounds(view.getXminObject().getDouble(), view.getXmaxObject().getDouble(),
+					view.getYminObject().getDouble(), view.getYmaxObject().getDouble());
+		}
+		boolean admissible() {
+			return Double.isFinite(xmin) && Double.isFinite(xmax) && Double.isFinite(ymin)
+					&& Double.isFinite(ymax) && xmin < xmax && ymin < ymax;
+		}
+	}
+
+	/** Immutable primitives only; constructor is private and session identity authenticates use. */
+	public static final class NativeViewCache {
+		private final int view;
+		private final double xmin, xmax, ymin, ymax, xs, ys;
+		private NativeViewCache(int number, Kernel kernel) {
+			view = number;
+			int index = number - 1;
+			xmin = kernel.getXmin(index); xmax = kernel.getXmax(index);
+			ymin = kernel.getYmin(index); ymax = kernel.getYmax(index);
+			xs = kernel.getXscale(index); ys = kernel.getYscale(index);
+		}
+		public int view() { return view; }
+		public double xmin() { return xmin; }
+		public double xmax() { return xmax; }
+		public double ymin() { return ymin; }
+		public double ymax() { return ymax; }
+		public double xs() { return xs; }
+		public double ys() { return ys; }
+		private boolean admissible() {
+			return new ViewBounds(xmin, xmax, ymin, ymax).admissible()
+					&& Double.isFinite(xs) && xs > 0 && Double.isFinite(ys) && ys > 0;
+		}
+		private boolean matches(Kernel kernel) {
+			int index = view - 1;
+			return same(xmin, kernel.getXmin(index)) && same(xmax, kernel.getXmax(index))
+					&& same(ymin, kernel.getYmin(index)) && same(ymax, kernel.getYmax(index))
+					&& same(xs, kernel.getXscale(index)) && same(ys, kernel.getYscale(index));
+		}
+		private boolean present(Kernel kernel) {
+			int index = view - 1;
+			try {
+				kernel.getXmin(index); kernel.getXmax(index);
+				kernel.getYmin(index); kernel.getYmax(index);
+				kernel.getXscale(index); kernel.getYscale(index);
+				return true;
+			} catch (IndexOutOfBoundsException absent) {
+				return false;
+			}
+		}
+	}
+
+	private static boolean same(double expected, double actual) {
+		return Double.doubleToLongBits(expected) == Double.doubleToLongBits(actual);
+	}
+
+	private record NativeViewState(int version, int view, int width, int height,
+			int settingsWidth, int settingsHeight, int visibleFromX, int visibleUntilY,
+			ViewCoordinates live, ViewCoordinates settings, ViewBounds bounds,
+			ViewBounds objects, NativeViewCache cache, boolean admitted) {
+		static NativeViewState capture(int number, EuclidianView view, Construction owner) {
+			boolean free = freeLinearView(view, owner);
+			var live = ViewCoordinates.live(view);
+			var settings = ViewCoordinates.settings(view);
+			var bounds = ViewBounds.live(view);
+			var objects = free ? ViewBounds.objects(view) : null;
+			var cache = new NativeViewCache(number, owner.getKernel());
+			boolean admitted = free && !view.isUpdatingBounds() && view.getWidth() > 0
+					&& view.getHeight() > 0 && live.admissible() && settings.admissible()
+					&& bounds.admissible() && objects.admissible() && cache.admissible();
+			var options = view.getSettings();
+			return new NativeViewState(1, number, view.getWidth(), view.getHeight(),
+					options.getWidth(), options.getHeight(), options.getVisibleFromX(),
+					options.getVisibleUntilY(), live, settings, bounds, objects, cache, admitted);
+		}
+		private void validate(EuclidianView target, Construction owner) {
+			if (target == null || target.getSettings() == null) {
+				throw new NativeViewRestoreException(NativeViewFailure.VIEW_ABSENT, view);
+			}
+			var options = target.getSettings();
+			if (version != 1 || width != target.getWidth() || height != target.getHeight()
+					|| visibleFromX != options.getVisibleFromX()
+					|| (long) settingsHeight - visibleUntilY
+							!= (long) options.getHeight() - options.getVisibleUntilY()) {
+				// XML writes live size as a file hint. The sentinel-backed visible
+				// Y getter follows that hint; preserve the actual writer inset instead.
+				throw new NativeViewRestoreException(NativeViewFailure.VIEW_DIMENSIONS_CHANGED, view,
+						"; capturedVersion=" + version + " supportedVersion=1"
+						+ "; expectedLive=" + width + "x" + height
+						+ " actualLive=" + target.getWidth() + "x" + target.getHeight()
+						+ "; expectedSettings=" + settingsWidth + "x" + settingsHeight
+						+ " actualSettings=" + options.getWidth() + "x" + options.getHeight()
+						+ "; expectedVisible=" + visibleFromX + "," + visibleUntilY
+						+ " actualVisible=" + options.getVisibleFromX() + "," + options.getVisibleUntilY()
+						+ "; expectedInsetY=" + ((long) settingsHeight - visibleUntilY)
+						+ " actualInsetY=" + ((long) options.getHeight() - options.getVisibleUntilY()));
+			}
+			if (!cache.present(owner.getKernel())) {
+				throw new NativeViewRestoreException(NativeViewFailure.VIEW_CACHE_ABSENT, view);
+			}
+			if (admitted ? !freeLinearView(target, owner) || target.isUpdatingBounds()
+					: !live.equals(ViewCoordinates.live(target))
+							|| !settings.equals(ViewCoordinates.settings(target))
+							|| !bounds.equals(ViewBounds.live(target)) || !cache.matches(owner.getKernel())) {
+				throw new NativeViewRestoreException(NativeViewFailure.UNSUPPORTED_VIEW_CLASS, view);
+			}
+		}
+		private void apply(EuclidianView target, NativeTransactionalState2D session) {
+			if (!admitted) { return; }
+			boolean previous = target.isUpdatingBounds();
+			boolean previousLoading = session.owner.getKernel().getLoadingMode();
+			try {
+				target.setUpdatingBounds(true);
+				// This is private restoration, never a user coordinate-system edit.
+				session.owner.getKernel().setLoadingMode(true);
+				target.getSettings().setCoordSystem(settings.x, settings.y, settings.xs, settings.ys, false);
+				target.setCoordSystem(live.x, live.y, live.xs, live.ys, false);
+				// Native zoom may intentionally retain cached extents separately from
+				// the coordinate tuple. Restore captured primitives, never derive them.
+				target.setXmin(bounds.xmin); target.setXmax(bounds.xmax);
+				target.setYmin(bounds.ymin); target.setYmax(bounds.ymax);
+				target.getXminObject().setValue(objects.xmin); target.getXmaxObject().setValue(objects.xmax);
+				target.getYminObject().setValue(objects.ymin); target.getYmaxObject().setValue(objects.ymax);
+				session.applyingViewCache = cache;
+				try { session.owner.getKernel().restoreNativeViewCache(cache); }
+				finally { session.applyingViewCache = null; }
+			} finally {
+				session.owner.getKernel().setLoadingMode(previousLoading);
+				target.setUpdatingBounds(previous);
+			}
+		}
+		private void verify(EuclidianView target, Construction owner) {
+			validate(target, owner);
+			if (!live.equals(ViewCoordinates.live(target))
+					|| !settings.equals(ViewCoordinates.settings(target))
+					|| !bounds.equals(ViewBounds.live(target)) || !cache.matches(owner.getKernel())
+					|| admitted && !objects.equals(ViewBounds.objects(target))) {
+				throw new NativeViewRestoreException(NativeViewFailure.VIEW_STATE_CHANGED, view);
+			}
+		}
+	}
+
+	private static boolean freeBound(GeoNumeric numeric, Construction owner) {
+		return numeric != null && numeric.getClass() == GeoNumeric.class
+				&& numeric.getConstruction() == owner && numeric.isIndependent()
+				&& !numeric.isLabelSet() && numeric.isDefined();
+	}
+
+	private static boolean freeLinearView(EuclidianView view, Construction owner) {
+		return !view.getLogAxis(0) && !view.getLogAxis(1) && !view.isLockedAxesRatio()
+				&& freeBound(view.getXminObject(), owner) && freeBound(view.getXmaxObject(), owner)
+				&& freeBound(view.getYminObject(), owner) && freeBound(view.getYmaxObject(), owner);
+	}
+
+	private static EuclidianView existingView(Construction owner, int number) {
+		var app = owner.getApplication();
+		return number == 1 ? app.getEuclidianView1()
+				: number == 2 && app.hasEuclidianView2EitherShowingOrNot(1)
+						? app.getEuclidianView2(1) : null;
+	}
+
+	private static List<NativeViewState> captureViews(Construction construction) {
+		List<NativeViewState> result = new ArrayList<>();
+		for (int number = 1; number <= 2; number++) {
+			EuclidianView view = existingView(construction, number);
+			if (view != null && view.getSettings() != null) {
+				result.add(NativeViewState.capture(number, view, construction));
+			}
+		}
+		return List.copyOf(result);
+	}
+
+	/** Restores only authenticated presentation primitives before the one normal DAG. */
+	public void restoreViewsBeforeDag() {
+		if (!restoring || finished || viewsRestored || restoringViews || dagCalls != 0
+				|| !owner.isNativeViewSessionAuthorized(this)) {
+			throw new NativeViewRestoreException(NativeViewFailure.INACTIVE_SESSION, 0);
+		}
+		restoringViews = true;
+		try {
+			for (NativeViewState state : viewStates) {
+				state.validate(existingView(owner, state.view), owner);
+			}
+			for (NativeViewState state : viewStates) {
+				state.apply(existingView(owner, state.view), this);
+			}
+			viewsRestored = true;
+		} finally {
+			restoringViews = false;
+		}
+	}
+
+	/** Only the current primitive payload during its one guarded application may store caches. */
+	public boolean authorizesViewCache(NativeViewCache cache) {
+		return restoring && !finished && restoringViews && !viewsRestored
+				&& cache != null && applyingViewCache == cache;
 	}
 
 	private static List<AxisVisibility> captureAxes(Construction construction) {
@@ -385,13 +632,36 @@ public final class NativeTransactionalState2D {
 		}
 		entry.point = point;
 		reconstructed.put(point, entry);
-		point.installNativeRollbackState(entry.state);
+		if (entry.state != null) { point.installNativeRollbackState(entry.state); }
+		else {
+			if (point.getParentAlgorithm() == null
+					|| point.getParentAlgorithm().getClass() != AlgoIntersectLineConic.class
+					|| point.getParentAlgorithm().getOutput(0) != point) {
+				throw new IllegalStateException("Native selector binding has an incompatible producer/role");
+			}
+			((AlgoIntersectLineConic) point.getParentAlgorithm())
+					.installNativeRollbackSelectionState(entry.selection);
+		}
 	}
 
 	/** @return whether the live rollback session explicitly owns this payload/output pair */
 	public boolean authorizes(GeoPoint point, NativeRollbackPointState state) {
 		Entry entry = reconstructed.get(point);
-		return restoring && !finished && entry != null && entry.state == state;
+		return restoring && !finished && state != null && entry != null && entry.state == state;
+	}
+
+	/** An authenticated typed output role binds the selector, never labels or old objects. */
+	public boolean authorizesSelection(AlgoIntersectLineConic algorithm, NativeRollbackSelectionState state) {
+		Entry entry = reconstructed.get(algorithm.getIntersectionPoints()[0]);
+		return restoring && !finished && state != null && entry != null && entry.selection == state;
+	}
+
+	public void consumedSelection(AlgoIntersectLineConic algorithm, NativeRollbackSelectionState state) {
+		Entry entry = reconstructed.get(algorithm.getIntersectionPoints()[0]);
+		if (!authorizesSelection(algorithm, state) || entry.consumed) {
+			throw new IllegalStateException("Native selector was not consumed exactly once");
+		}
+		entry.consumed = true;
 	}
 
 	/** Records the existing normal DAG's first post-load consumption. */
@@ -406,8 +676,14 @@ public final class NativeTransactionalState2D {
 	/** Verifies after the normal XML/update lifecycle; does not run a second DAG pass. */
 	public void finishRestore() {
 		long started = System.nanoTime();
+		if (!viewsRestored) {
+			throw new NativeViewRestoreException(NativeViewFailure.INACTIVE_SESSION, 0);
+		}
+		for (NativeViewState state : viewStates) {
+			state.verify(existingView(owner, state.view), owner);
+		}
 		for (Entry entry : entries) {
-			if (entry.point == null || !entry.consumed || !entry.state.matches(entry.point)
+			if (entry.point == null || !entry.consumed || !entry.matches()
 					|| entry.id != null && owner.getSpatialIdentityRegistry().getGeo(entry.id) != entry.point) {
 				throw new IllegalStateException("Native rollback input, correspondence or DAG restoration failed");
 			}
@@ -457,12 +733,13 @@ public final class NativeTransactionalState2D {
 		hostNodes = template.hostNodes;
 		sourceMetrics = template.sourceMetrics;
 		axisVisibility = template.axisVisibility;
+		viewStates = template.viewStates;
 		registryIds = template.registryIds;
 		reservations = template.reservations;
 		ordinaryDigest = template.ordinaryDigest;
 		listenersToo = template.listenersToo;
 		for (Captured input : template.inputs) {
-			Entry entry = new Entry(input.id, input.key, input.state);
+			Entry entry = new Entry(input.id, input.key, input.state, input.selection);
 			entries.add(entry);
 			if (entry.id == null) { privateKeys.put(entry.key, entry); }
 			else { durable.put(entry.id.toExternalForm(), entry); }
@@ -476,7 +753,8 @@ public final class NativeTransactionalState2D {
 		}
 	}
 
-	private record Captured(PersistentGeoId id, String key, NativeRollbackPointState state) { }
+	private record Captured(PersistentGeoId id, String key, NativeRollbackPointState state,
+			NativeRollbackSelectionState selection) { }
 
 	/** Immutable, owner-bound input template. Every legitimate history load gets a fresh session. */
 	public static final class UndoTemplate {
@@ -486,6 +764,7 @@ public final class NativeTransactionalState2D {
 		private final int reservations;
 		private final boolean listenersToo;
 		private final List<AxisVisibility> axisVisibility;
+		private final List<NativeViewState> viewStates;
 		private final byte[] ordinaryDigest;
 		private final byte[] privateDigest;
 		private final int hostNodes;
@@ -493,11 +772,12 @@ public final class NativeTransactionalState2D {
 
 		private UndoTemplate(NativeTransactionalState2D capture, String xml) {
 			owner = capture.owner;
-			inputs = capture.entries.stream().map(entry -> new Captured(entry.id, entry.key, entry.state)).toList();
+			inputs = capture.entries.stream().map(entry -> new Captured(entry.id, entry.key, entry.state, entry.selection)).toList();
 			registryIds = Set.copyOf(capture.registryIds);
 			reservations = capture.reservations;
 			listenersToo = capture.listenersToo;
 			axisVisibility = capture.axisVisibility;
+			viewStates = capture.viewStates;
 			ordinaryDigest = digest(capture.ordinaryXml.getBytes(StandardCharsets.UTF_8));
 			privateDigest = digest(xml.getBytes(StandardCharsets.UTF_8));
 			hostNodes = capture.hostNodes;
@@ -567,12 +847,20 @@ public final class NativeTransactionalState2D {
 		private final PersistentGeoId id;
 		private final String key;
 		private final NativeRollbackPointState state;
+		private final NativeRollbackSelectionState selection;
 		private GeoPoint point;
 		private boolean consumed;
 		private int serializationVisits;
 
-		private Entry(PersistentGeoId id, String key, NativeRollbackPointState state) {
-			this.id = id; this.key = key; this.state = state;
+		private Entry(PersistentGeoId id, String key, NativeRollbackPointState state,
+				NativeRollbackSelectionState selection) {
+			this.id = id; this.key = key; this.state = state; this.selection = selection;
+		}
+
+		private boolean matches() {
+			return state != null ? state.matches(point)
+					: point.getParentAlgorithm() instanceof AlgoIntersectLineConic
+							&& selection.matches((AlgoIntersectLineConic) point.getParentAlgorithm());
 		}
 	}
 

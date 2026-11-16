@@ -9,6 +9,12 @@ import org.geogebra.common.kernel.StringTemplate;
 import org.geogebra.common.kernel.MacroKernel;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoPointOnPath;
+import org.geogebra.common.kernel.algos.AlgoOrthoLinePointLine;
+import org.geogebra.common.kernel.algos.AlgoLinePointLine;
+import org.geogebra.common.kernel.algos.AlgoIntersectLines;
+import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
+import org.geogebra.common.kernel.algos.AlgoIntersectLineConic.NativeRollbackSelectionState;
+import org.geogebra.common.kernel.algos.AlgoUnitVectorLine;
 import org.geogebra.common.kernel.algos.AlgoCirclePointRadius;
 import org.geogebra.common.kernel.algos.AlgoCircleTwoPoints;
 import org.geogebra.common.kernel.algos.AlgoCircleThreePoints;
@@ -40,12 +46,14 @@ import org.geogebra.common.kernel.algos.AlgoSemicircle;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.ExpressionValue;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
+import org.geogebra.common.kernel.arithmetic.MinusOne;
 import org.geogebra.common.kernel.arithmetic.MySpecialDouble;
 import org.geogebra.common.kernel.arithmetic.MyVecNode;
 import org.geogebra.common.kernel.arithmetic.MyList;
 import org.geogebra.common.kernel.arithmetic.Equation;
 import org.geogebra.common.kernel.arithmetic.FunctionVariable;
 import org.geogebra.common.kernel.geos.GeoConic;
+import org.geogebra.common.kernel.geos.GeoAngle;
 import org.geogebra.common.kernel.geos.GeoConicPart;
 import org.geogebra.common.kernel.geos.GeoAxis;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -71,6 +79,10 @@ public final class NativeSourceFidelity2D {
 			AlgoRotatePoint.class, AlgoTranslate.class, AlgoDilate.class, AlgoMirror.class,
 			AlgoConicPartCircle.class, AlgoConicPartCircumcircle.class,
 			AlgoConicPartConicParameters.class, AlgoConicPartConicPoints.class, AlgoSemicircle.class);
+	// R9: these additions certify trusted MEMORY only, never the FILE codec.
+	private static final Set<Class<?>> MEMORY_ALGORITHMS = Set.of(
+			AlgoOrthoLinePointLine.class, AlgoLinePointLine.class, AlgoUnitVectorLine.class,
+			AlgoIntersectLines.class, AlgoIntersectLineConic.class);
 	private static final Set<String> OPERATIONS = Set.of("NO_OPERATION", "PLUS", "MINUS",
 			"MULTIPLY", "DIVIDE", "POWER", "NEGATE", "SIN", "COS", "TAN", "EXP", "LOG",
 			"SQRT", "ABS", "SGN", "ARCSIN", "ARCCOS", "ARCTAN", "SINH", "COSH", "TANH");
@@ -102,6 +114,13 @@ public final class NativeSourceFidelity2D {
 	public record Assessment(Outcome outcome, Metrics metrics) { }
 
 	private final Map<ExpressionValue, Memo> memo = new IdentityHashMap<>();
+	private final Map<AlgoIntersectLineConic, NativeRollbackSelectionState> memorySelections =
+			new IdentityHashMap<>();
+
+	/** Positive, pass-owned selector witnesses; no second unbudgeted closure walk. */
+	Map<AlgoIntersectLineConic, NativeRollbackSelectionState> memorySelections() {
+		return Map.copyOf(memorySelections);
+	}
 	private final Set<ExpressionValue> explored =
 			java.util.Collections.newSetFromMap(new IdentityHashMap<>());
 	private final boolean typedMemory;
@@ -235,8 +254,18 @@ public final class NativeSourceFidelity2D {
 		boolean expressionProcedure = parent == null
 				|| parent.getClass().getSimpleName().startsWith("AlgoDependent");
 		if (!(VALUES.contains(value.getClass())
-				|| typedMemory && value.getClass() == GeoConicPart.class)) {
+				|| typedMemory && (value.getClass() == GeoConicPart.class
+						|| value.getClass() == GeoAngle.class))) {
 			return Outcome.UNSUPPORTED;
+		}
+		if (value.getClass() == GeoAngle.class
+				&& !serializable(((GeoAngle) value).getRawAngle())) {
+			return Outcome.UNSUPPORTED;
+		}
+		NativeRollbackSelectionState selection = null;
+		if (typedMemory && parent != null && parent.getClass() == AlgoIntersectLineConic.class) {
+			selection = ((AlgoIntersectLineConic) parent).captureNativeRollbackSelectionState();
+			if (selection == null) { return Outcome.UNSUPPORTED; }
 		}
 		if (expressionProcedure && value.getDefinition() != null) {
 			Outcome limit = edge();
@@ -258,7 +287,8 @@ public final class NativeSourceFidelity2D {
 			}
 		} else if (parent != null && !(parent.getClass() == AlgoPointOnPath.class
 				&& parent.getInputLength() == 2)
-				&& !ALGORITHMS.contains(parent.getClass())) {
+				&& !ALGORITHMS.contains(parent.getClass())
+				&& !(typedMemory && MEMORY_ALGORITHMS.contains(parent.getClass()))) {
 			return Outcome.UNSUPPORTED;
 		}
 		if (parent == null && !independent(value)) {
@@ -280,6 +310,9 @@ public final class NativeSourceFidelity2D {
 				Outcome item = geo(list.get(index), depth + 1);
 				if (item != Outcome.SUPPORTED) { return item; }
 			}
+		}
+		if (selection != null) {
+			memorySelections.put((AlgoIntersectLineConic) parent, selection);
 		}
 		return Outcome.SUPPORTED;
 	}
@@ -361,6 +394,13 @@ public final class NativeSourceFidelity2D {
 	private Outcome exploreExpression(ExpressionValue node, int depth) {
 		if (node.getClass() == FunctionVariable.class) {
 			return Outcome.SUPPORTED;
+		}
+		if (typedMemory && node.getClass() == MinusOne.class) {
+			// The parser's exact unary-negation coefficient; not a permission for
+			// other numeric subclasses, altered instances or angular literals.
+			MyDouble literal = (MyDouble) node;
+			return literal.getAngleDim() == 0 && same(literal.getDouble(), -1.0)
+					? Outcome.SUPPORTED : Outcome.UNSUPPORTED;
 		}
 		if (node.getClass() == MyDouble.class || node.getClass() == MySpecialDouble.class) {
 			MyDouble literal = (MyDouble) node;

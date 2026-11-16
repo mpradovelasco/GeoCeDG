@@ -17,6 +17,9 @@
 package org.geogebra.common.kernel.algos;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.geocedg.common.kernel.locus.NativePathState2D;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -91,6 +94,136 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 	protected int specialCasePointOnCircleIndex = 0; // index of point on line
 														// and conic
 	private GeoPointND existingIntersection = null;
+	// GeoCeDG R9: private MEMORY companion, never a public FILE field.
+	private NativeRollbackSelectionState nativeRollbackSelection;
+
+	/** Captures the bounded full-line/full-conic selector, without mutation. */
+	public NativeRollbackSelectionState captureNativeRollbackSelectionState() {
+		if (getClass() != AlgoIntersectLineConic.class || g.getClass() != GeoLine.class
+				|| c.getClass() != GeoConic.class || isDefinedAsTangent || isLimitedPathSituation
+				|| possibleSpecialCase || existingIntersection != null || firstIntersection
+				|| isPermutationNeeded || !g.isDefined() || !c.isDefined()
+				|| P == null || P.length != 2 || !P[0].isFinite() || !P[1].isFinite()
+				|| P[0].isEqual(P[1]) || permutation == null || permutation.length != 2
+				|| permutation[0] < 0 || permutation[0] > 1 || permutation[1] != 1 - permutation[0]
+				|| !P[0].isLabelSet() || !isInConstructionList()
+				|| !(c.getType() == GeoConicNDConstants.CONIC_CIRCLE
+						|| c.getType() == GeoConicNDConstants.CONIC_ELLIPSE
+						|| c.getType() == GeoConicNDConstants.CONIC_PARABOLA
+						|| c.getType() == GeoConicNDConstants.CONIC_HYPERBOLA)) {
+			return null;
+		}
+		return new NativeRollbackSelectionState(this);
+	}
+
+	/** An active snapshot must authenticate this exact reconstructed producer first. */
+	public void installNativeRollbackSelectionState(NativeRollbackSelectionState state) {
+		if (state == null || !cons.isNativeRollbackSelectionStateAuthorized(this, state)) {
+			throw new IllegalStateException("Native selector has no current snapshot binding");
+		}
+		nativeRollbackSelection = state;
+		// Later XML commands may build a native path from these outputs before
+		// the final DAG. Supply its authenticated inputs without another compute.
+		// Keep the payload pending for XML overwrites and its one normal consumption.
+		if (state.sourcesMatch(this)) {
+			state.apply(this);
+		}
+	}
+
+	private boolean restorePendingNativeRollbackSelection() {
+		NativeRollbackSelectionState state = nativeRollbackSelection;
+		if (state == null) { return false; }
+		if (!cons.isNativeRollbackSelectionStateAuthorized(this, state)) {
+			nativeRollbackSelection = null;
+			throw new IllegalStateException("Native selector outside its restore session");
+		}
+		if (!state.sourcesMatch(this)) {
+			if (kernel.getLoadingMode()) { return false; }
+			nativeRollbackSelection = null;
+			throw new IllegalStateException("Native selector source changed during restoration");
+		}
+		state.apply(this);
+		if (!kernel.getLoadingMode()) {
+			nativeRollbackSelection = null;
+			cons.nativeRollbackSelectionStateConsumed(this, state);
+		}
+		return true;
+	}
+
+	/** Versioned immutable trusted-memory data; no retained geometry or construction. */
+	public static final class NativeRollbackSelectionState {
+		public static final int VERSION = 1;
+		private final NativePathState2D line;
+		private final NativePathState2D conic;
+		private final PointCoordinates[] output, roots, previous;
+		private final int[] permutation, age;
+		private final boolean[] onPath, alive, loaded;
+		private final boolean first, pending;
+
+		private NativeRollbackSelectionState(AlgoIntersectLineConic algorithm) {
+			line = NativePathState2D.capture(algorithm.g);
+			conic = NativePathState2D.capture(algorithm.c);
+			output = points(algorithm.P); roots = points(algorithm.Q);
+			previous = points(algorithm.D);
+			permutation = algorithm.permutation.clone(); age = algorithm.age.clone();
+			onPath = algorithm.isQonPath.clone(); alive = algorithm.isPalive.clone();
+			loaded = algorithm.copyNativeLoadedIntersectionFlags();
+			first = algorithm.firstIntersection; pending = algorithm.isPermutationNeeded;
+		}
+
+		private static PointCoordinates[] points(GeoPoint[] points) {
+			PointCoordinates[] result = new PointCoordinates[points.length];
+			for (int index = 0; index < points.length; index++) {
+				GeoPoint point = points[index];
+				result[index] = new PointCoordinates(point.x, point.y, point.z,
+						point.inhomX, point.inhomY);
+			}
+			return result;
+		}
+
+		private boolean sourcesMatch(AlgoIntersectLineConic algorithm) {
+			return algorithm.getClass() == AlgoIntersectLineConic.class
+					&& algorithm.g.getClass() == GeoLine.class && algorithm.c.getClass() == GeoConic.class
+					&& !algorithm.isDefinedAsTangent && !algorithm.isLimitedPathSituation
+					&& !algorithm.possibleSpecialCase && algorithm.existingIntersection == null
+					&& line.matches(algorithm.g) && conic.matches(algorithm.c);
+		}
+
+		private void apply(AlgoIntersectLineConic algorithm) {
+			apply(output, algorithm.P); apply(roots, algorithm.Q); apply(previous, algorithm.D);
+			algorithm.permutation = permutation.clone(); algorithm.age = age.clone();
+			algorithm.isQonPath = onPath.clone(); algorithm.isPalive = alive.clone();
+			algorithm.restoreNativeLoadedIntersectionFlags(loaded);
+			algorithm.firstIntersection = first; algorithm.isPermutationNeeded = pending;
+		}
+
+		private static void apply(PointCoordinates[] state, GeoPoint[] target) {
+			if (target == null || state.length != target.length) {
+				throw new IllegalStateException("Native selector output cardinality changed");
+			}
+			for (int index = 0; index < target.length; index++) {
+				PointCoordinates point = state[index];
+				target[index].setCoords(point.x, point.y, point.z);
+				if (!point.equals(points(new GeoPoint[] { target[index] })[0])) {
+					throw new IllegalStateException("Native selector coordinate caches changed");
+				}
+			}
+		}
+
+		/** Exact active state and source check after the one normal restoration DAG. */
+		public boolean matches(AlgoIntersectLineConic algorithm) {
+			return sourcesMatch(algorithm) && Arrays.equals(output, points(algorithm.P))
+					&& Arrays.equals(roots, points(algorithm.Q))
+					&& Arrays.equals(previous, points(algorithm.D))
+					&& Arrays.equals(permutation, algorithm.permutation)
+					&& Arrays.equals(age, algorithm.age) && Arrays.equals(onPath, algorithm.isQonPath)
+					&& Arrays.equals(alive, algorithm.isPalive)
+					&& Arrays.equals(loaded, algorithm.copyNativeLoadedIntersectionFlags())
+					&& first == algorithm.firstIntersection && pending == algorithm.isPermutationNeeded;
+		}
+
+		private record PointCoordinates(double x, double y, double z, double inhomX, double inhomY) { }
+	}
 
 	// not initializing this is important for performance
 	private static double[] xyz = new double[3];
@@ -285,6 +418,7 @@ public class AlgoIntersectLineConic extends AlgoIntersect implements
 	// calc intersections of conic c and line g
 	@Override
 	public void compute() {
+		if (restorePendingNativeRollbackSelection()) { return; }
 
 		/*
 		 * no probabilistic checking anymore, see #1044

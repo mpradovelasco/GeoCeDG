@@ -8,7 +8,9 @@ package org.geocedg.common.kernel.locus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -31,6 +33,8 @@ public final class CertifiedConstructionProgram2D {
 	 * PRE-G9B-CU2).
 	 */
 	public static final String VERSION_V3 = "certified-construction-program/v3";
+	/** Author-approved authority of the new variable-angle geometric primitive. */
+	public static final String VARIABLE_ROTATION_AUTHORITY = "composition-rotation-geometry/v1";
 	/** Upper bound on captured steps of classes v1 and v2. */
 	public static final int MAXIMUM_STEPS = 64;
 	/**
@@ -107,6 +111,24 @@ public final class CertifiedConstructionProgram2D {
 		SCALE(NodeKind.VECTOR, 0, 3),
 		/** Class v3: dot product of two vectors. */
 		DOT(NodeKind.SCALAR, 0, 3),
+		/** Composition-proof/v1: typed scalar arithmetic, with no sampled value. */
+		SCALAR_NEGATE(NodeKind.SCALAR, 0, 3),
+		SCALAR_ADD(NodeKind.SCALAR, 0, 3),
+		SCALAR_SUBTRACT(NodeKind.SCALAR, 0, 3),
+		SCALAR_MULTIPLY(NodeKind.SCALAR, 0, 3),
+		SCALAR_DIVIDE(NodeKind.SCALAR, 0, 3),
+		SCALAR_SIN(NodeKind.SCALAR, 0, 3),
+		SCALAR_COS(NodeKind.SCALAR, 0, 3),
+		SCALAR_SQRT(NodeKind.SCALAR, 0, 3),
+		/** Composition-proof/v1: distance and Cartesian point coordinates. */
+		POINT_DISTANCE(NodeKind.SCALAR, 0, 3),
+		POINT_X(NodeKind.SCALAR, 0, 3),
+		POINT_Y(NodeKind.SCALAR, 0, 3),
+		POINT_COORDINATES(NodeKind.POINT, 0, 3),
+		/** Point, scalar angle, centre; the angle remains a typed operand. */
+		ROTATE_BY_ANGLE(NodeKind.POINT, 0, 3),
+		/** Centre and scalar radius, whose validity is established by its consumer. */
+		CIRCLE_DYNAMIC_RADIUS(NodeKind.CIRCLE, 0, 3),
 		/** Class v3: point plus or minus a vector, a unit point; parameter sign. */
 		POINT_PLUS_VECTOR(NodeKind.POINT, 1, 3),
 		/**
@@ -133,6 +155,29 @@ public final class CertifiedConstructionProgram2D {
 		/** @return whether the operation belongs to class v2 only */
 		public boolean isClassV2() {
 			return classVersion == 2;
+		}
+
+		/** @return whether this operation belongs to composition-proof/v1 */
+		public boolean isCompositionProof() {
+			switch (this) {
+			case SCALAR_NEGATE:
+			case SCALAR_ADD:
+			case SCALAR_SUBTRACT:
+			case SCALAR_MULTIPLY:
+			case SCALAR_DIVIDE:
+			case SCALAR_SIN:
+			case SCALAR_COS:
+			case SCALAR_SQRT:
+			case POINT_DISTANCE:
+			case POINT_X:
+			case POINT_Y:
+			case POINT_COORDINATES:
+			case ROTATE_BY_ANGLE:
+			case CIRCLE_DYNAMIC_RADIUS:
+				return true;
+			default:
+				return false;
+			}
 		}
 
 		/** @return kind of the operation's output node */
@@ -236,6 +281,15 @@ public final class CertifiedConstructionProgram2D {
 
 		public int getNode() {
 			return node;
+		}
+
+		/**
+		 * Source alias within one captured program, never geometric equality or a
+		 * durable object ID. Constants alias only when capture reused the same source.
+		 */
+		public boolean hasSameCapturedSource(Operand other) {
+			return other != null && (kind == OperandKind.NODE && other.kind == OperandKind.NODE
+					&& node == other.node || kind == OperandKind.POINT && this == other);
 		}
 
 		/** @return captured constant component */
@@ -393,11 +447,24 @@ public final class CertifiedConstructionProgram2D {
 	public String getSignature() {
 		StringBuilder signature = new StringBuilder(version).append("|driver=")
 				.append(driver.name()).append(hex(driverConstants));
+		if (steps.stream().anyMatch(step -> step.operation == Operation.ROTATE_BY_ANGLE)) {
+			signature.append('|').append(VARIABLE_ROTATION_AUTHORITY);
+		}
+		Map<Operand, Integer> pointAliases = steps.stream()
+				.anyMatch(step -> step.operation.isCompositionProof()) ? new IdentityHashMap<>() : null;
 		for (Step step : steps) {
 			signature.append('|').append(step.operation.name()).append('(');
 			for (int index = 0; index < step.operands.size(); index++) {
-				signature.append(index == 0 ? "" : ",")
-						.append(step.operands.get(index).signature());
+				Operand operand = step.operands.get(index);
+				signature.append(index == 0 ? "" : ",").append(operand.signature());
+				if (pointAliases != null && operand.kind == OperandKind.POINT) {
+					Integer alias = pointAliases.get(operand);
+					if (alias == null) {
+						alias = pointAliases.size();
+						pointAliases.put(operand, alias);
+					}
+					signature.append("@p").append(alias);
+				}
 			}
 			signature.append(')').append(hex(step.parameters));
 			if (step.descriptor != null) {
@@ -444,6 +511,27 @@ public final class CertifiedConstructionProgram2D {
 		case DOT:
 			return requireOperands(operands, node, EnumSet.of(NodeKind.VECTOR),
 					EnumSet.of(NodeKind.VECTOR));
+		case SCALAR_NEGATE:
+		case SCALAR_SIN:
+		case SCALAR_COS:
+		case SCALAR_SQRT:
+			return requireOperands(operands, node, EnumSet.of(NodeKind.SCALAR));
+		case SCALAR_ADD:
+		case SCALAR_SUBTRACT:
+		case SCALAR_MULTIPLY:
+		case SCALAR_DIVIDE:
+		case POINT_COORDINATES:
+			return requireOperands(operands, node, EnumSet.of(NodeKind.SCALAR),
+					EnumSet.of(NodeKind.SCALAR));
+		case POINT_X:
+		case POINT_Y:
+			return requireOperands(operands, node, POINTS);
+		case POINT_DISTANCE:
+			return requireOperands(operands, node, POINTS, POINTS);
+		case ROTATE_BY_ANGLE:
+			return requireOperands(operands, node, POINTS, EnumSet.of(NodeKind.SCALAR), POINTS);
+		case CIRCLE_DYNAMIC_RADIUS:
+			return requireOperands(operands, node, POINTS, EnumSet.of(NodeKind.SCALAR));
 		case POINT_PLUS_VECTOR:
 			if (Math.abs(step.parameters[0]) != 1) {
 				throw new IllegalArgumentException("Malformed vector sign");

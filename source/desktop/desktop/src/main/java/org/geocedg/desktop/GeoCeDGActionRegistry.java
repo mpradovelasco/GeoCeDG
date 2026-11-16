@@ -79,7 +79,7 @@ public final class GeoCeDGActionRegistry {
 			"geocedg.document.units", "geocedg.presentation.orientation-cue",
 			"geocedg.presentation.control-layout",
 			"geocedg.document.insert-file", "geocedg.document.apply-styles",
-			"geocedg.document.insert-expert");
+			"geocedg.document.insert-expert", "geocedg.document.insert-clipboard-image");
 
 	private final AppD app;
 	private final Map<String, Action> actions = new LinkedHashMap<>();
@@ -366,6 +366,9 @@ public final class GeoCeDGActionRegistry {
 			break;
 		case "geocedg.document.insert-file":
 			((AppGeoCeDG) app).insertFileAction();
+			break;
+		case "geocedg.document.insert-clipboard-image":
+			((AppGeoCeDG) app).insertClipboardImageAction();
 			break;
 		case "geocedg.document.insert-expert":
 			((AppGeoCeDG) app).expertInsertionAction();
