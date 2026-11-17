@@ -1822,8 +1822,12 @@ undefined; ordinary recomputation restores it when admissibility returns.
 
 This bounded extension currently covers one bounded nonperiodic driver interval including both ends
 with a compatible proof-method range limitation. It does not admit arbitrary
-unresolved bands. In particular, the native zero-threshold jumps of scalar sine
-can prevent measuring the whole traversal even when sampled points look smooth.
+unresolved bands. Capture distinguishes sine/cosine written directly in a Cartesian coordinate
+from a value computed by a numeric object. The first route uses Math.sin/Math.cos
+without zero snapping; the second retains its native branches. The certifier
+must follow the actual producer's route. This focal reconciliation admits no
+real discontinuities and removes none of H10's guards; the P2 candidate remains
+pending acceptance.
 
 If the inspector offers **Construct a metric endpoint**, review the available
 routes. **Create equivalent point** requires a constructively established

@@ -75,7 +75,7 @@ class GeoCeDG120CompositionalCaptureTest extends BaseUnitTest {
 		assertTrue(operations(before).containsAll(EnumSet.of(Operation.POINT_COORDINATES,
 				Operation.POINT_X, Operation.POINT_Y, Operation.POINT_DISTANCE,
 				Operation.SCALAR_ADD, Operation.SCALAR_SUBTRACT, Operation.SCALAR_MULTIPLY,
-				Operation.SCALAR_DIVIDE, Operation.SCALAR_SIN, Operation.SCALAR_COS,
+				Operation.SCALAR_DIVIDE, Operation.SCALAR_SIN_DOUBLE, Operation.SCALAR_COS_DOUBLE,
 				Operation.SCALAR_SQRT)));
 		GeoPoint point = (GeoPoint) lookup("E");
 		point.setCoords(3, 0, 1);

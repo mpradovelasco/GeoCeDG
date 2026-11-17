@@ -107,6 +107,9 @@ final class CertifiedConstructionCapture2D {
 	 */
 	static final String DRIVER_OUTSIDE_GENERATOR = "driver-outside-generator-point";
 
+	/** Native dispatch of an inline scalar, never inherited through a numeric geo. */
+	private enum ScalarEvaluation { GENERIC, DOUBLE }
+
 	private final GeoElement state;
 	private final boolean classV3;
 	private final Scope top = new Scope(null, null);
@@ -968,6 +971,11 @@ final class CertifiedConstructionCapture2D {
 	 * driver-independent expressions retain their previous constant-value contract.
 	 */
 	private Operand scalarExpression(ExpressionValue value, Scope scope) {
+		return scalarExpression(value, scope, ScalarEvaluation.GENERIC);
+	}
+
+	private Operand scalarExpression(ExpressionValue value, Scope scope,
+			ScalarEvaluation evaluation) {
 		value = unwrap(value);
 		if (value instanceof GeoElement) {
 			GeoElement geo = (GeoElement) value;
@@ -982,26 +990,34 @@ final class CertifiedConstructionCapture2D {
 		if (value instanceof ExpressionNode && !dependsOnDriver(value, scope)) {
 			requireNoMetricValue(value, scope);
 			scope.refreshConstants();
-			ExpressionValue result = ((ExpressionNode) value)
-					.evaluate(StringTemplate.defaultTemplate);
-			if (!(result instanceof NumberValue)
-					|| !Double.isFinite(((NumberValue) result).getDouble())) {
-				throw new Refusal();
+			double constant;
+			if (evaluation == ScalarEvaluation.DOUBLE) {
+				constant = value.evaluateDouble();
+			} else {
+				ExpressionValue result = value.evaluate(StringTemplate.defaultTemplate);
+				if (!(result instanceof NumberValue)) { throw new Refusal(); }
+				constant = ((NumberValue) result).getDouble();
 			}
-			return Operand.scalar(((NumberValue) result).getDouble());
+			if (!Double.isFinite(constant)) { throw new Refusal(); }
+			return Operand.scalar(constant);
 		}
 		if (value instanceof ExpressionNode) {
-			return Operand.node(add(scalarStep(value, scope)));
+			return Operand.node(add(scalarStep(value, scope, evaluation)));
 		}
 		return Operand.scalar(literalNumber(value));
 	}
 
 	/** A role is local to its expression producer, never an index in the captured program. */
 	private Operand scalarAt(ExpressionValue value, Scope scope, String role) {
+		return scalarAt(value, scope, role, ScalarEvaluation.GENERIC);
+	}
+
+	private Operand scalarAt(ExpressionValue value, Scope scope, String role,
+			ScalarEvaluation evaluation) {
 		String previous = expressionPath;
 		expressionPath = previous + "-e" + role;
 		try {
-			return scalarExpression(value, scope);
+			return scalarExpression(value, scope, evaluation);
 		} finally {
 			expressionPath = previous;
 		}
@@ -1022,7 +1038,8 @@ final class CertifiedConstructionCapture2D {
 			throw new Refusal();
 		}
 		return new Step(Operation.POINT_COORDINATES, List.of(
-				scalarAt(tuple.getX(), scope, "X"), scalarAt(tuple.getY(), scope, "Y")));
+				scalarAt(tuple.getX(), scope, "X", ScalarEvaluation.DOUBLE),
+				scalarAt(tuple.getY(), scope, "Y", ScalarEvaluation.DOUBLE)));
 	}
 
 	private Operand expressionPointOperand(ExpressionValue expression, Scope scope) {
@@ -1054,10 +1071,17 @@ final class CertifiedConstructionCapture2D {
 
 	/** Supported compositional scalar syntax; validity of division and roots stays typed. */
 	private Step scalarStep(ExpressionValue value, Scope scope) {
+		return scalarStep(value, scope, ScalarEvaluation.GENERIC);
+	}
+
+	private Step scalarStep(ExpressionValue value, Scope scope, ScalarEvaluation evaluation) {
 		ExpressionNode expression = binary(value);
 		ExpressionValue left = unwrap(expression.getLeft());
 		ExpressionValue right = expression.getRight() == null ? null
 				: unwrap(expression.getRight());
+		if (expression.getOperation() == org.geogebra.common.plugin.Operation.SQRT_SHORT) {
+			evaluation = ScalarEvaluation.GENERIC;
+		}
 		Operation operation;
 		switch (expression.getOperation()) {
 		case PLUS:
@@ -1066,7 +1090,7 @@ final class CertifiedConstructionCapture2D {
 		case MINUS:
 			if (right == null) {
 				return new Step(Operation.SCALAR_NEGATE,
-						List.of(scalarAt(left, scope, "L")));
+						List.of(scalarAt(left, scope, "L", evaluation)));
 			}
 			operation = Operation.SCALAR_SUBTRACT;
 			break;
@@ -1077,11 +1101,11 @@ final class CertifiedConstructionCapture2D {
 			}
 			if (left instanceof MyDouble && ((MyDouble) left).getDouble() == -1) {
 				return new Step(Operation.SCALAR_NEGATE,
-						List.of(scalarAt(right, scope, "R")));
+						List.of(scalarAt(right, scope, "R", evaluation)));
 			}
 			if (right instanceof MyDouble && ((MyDouble) right).getDouble() == -1) {
 				return new Step(Operation.SCALAR_NEGATE,
-						List.of(scalarAt(left, scope, "L")));
+						List.of(scalarAt(left, scope, "L", evaluation)));
 			}
 			operation = Operation.SCALAR_MULTIPLY;
 			break;
@@ -1089,14 +1113,17 @@ final class CertifiedConstructionCapture2D {
 			operation = Operation.SCALAR_DIVIDE;
 			break;
 		case SIN:
+			operation = evaluation == ScalarEvaluation.DOUBLE
+					? Operation.SCALAR_SIN_DOUBLE : Operation.SCALAR_SIN;
+			return new Step(operation, List.of(scalarAt(left, scope, "L", evaluation)));
 		case COS:
+			operation = evaluation == ScalarEvaluation.DOUBLE
+					? Operation.SCALAR_COS_DOUBLE : Operation.SCALAR_COS;
+			return new Step(operation, List.of(scalarAt(left, scope, "L", evaluation)));
 		case SQRT:
 		case SQRT_SHORT:
-			operation = expression.getOperation() == org.geogebra.common.plugin.Operation.SIN
-					? Operation.SCALAR_SIN
-					: expression.getOperation() == org.geogebra.common.plugin.Operation.COS
-							? Operation.SCALAR_COS : Operation.SCALAR_SQRT;
-			return new Step(operation, List.of(scalarAt(left, scope, "L")));
+			return new Step(Operation.SCALAR_SQRT,
+					List.of(scalarAt(left, scope, "L", evaluation)));
 		case XCOORD:
 		case YCOORD:
 			return new Step(expression.getOperation()
@@ -1110,7 +1137,7 @@ final class CertifiedConstructionCapture2D {
 			throw new Refusal();
 		}
 		return new Step(operation,
-				List.of(scalarAt(left, scope, "L"), scalarAt(right, scope, "R")));
+				List.of(scalarAt(left, scope, "L", evaluation), scalarAt(right, scope, "R", evaluation)));
 	}
 
 	/**

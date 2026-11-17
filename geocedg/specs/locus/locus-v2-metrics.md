@@ -1529,9 +1529,13 @@ Certified nonexistence/boundaries, isolated or singular parameters, folds,
 topology/events not covered by this policy, native tolerance bands, uncertain
 selection, fidelity or upstream prerequisites, improper limits and exhausted
 budgets stay inadmissible. Evaluation/integration failure keeps its cause;
-error above requested tolerance never publishes a scalar. In particular the
-native zero thresholds of SCALAR_SIN in N03/N05/N06 contradict continuity/C4:
-a successful sampled estimate does not admit them. This decision supplies no
+error above requested tolerance never publishes a scalar. For genuine generic
+SCALAR_SIN zero thresholds, a successful sampled estimate does not establish
+continuity/C4. JUMP-CONTEXT (2026-11-18; certified-construction-model §13.4)
+corrects the earlier attribution to N03/N05/N06: their Cartesian inline sine
+uses evaluateDouble without that branch. Their admission follows their actual
+captured construction and current geometric/metric evidence, never that raw
+sampled success. A numeric-geo sine producer retains its generic zero branches. This decision supplies no
 piecewise jump-length policy and changes no scalar-trigonometry authority.
 
 The immutable rich result retains the geometric coverage as INCOMPLETE and

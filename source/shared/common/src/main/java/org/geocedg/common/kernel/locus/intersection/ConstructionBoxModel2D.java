@@ -1076,6 +1076,10 @@ public final class ConstructionBoxModel2D {
 				return snappedTrig(scalar(operands.get(0)), true, EPSILON, true);
 			case SCALAR_COS:
 				return snappedTrig(scalar(operands.get(0)), false, EPSILON, false);
+			case SCALAR_SIN_DOUBLE:
+				return analyticTrig(scalar(operands.get(0)), true, EPSILON);
+			case SCALAR_COS_DOUBLE:
+				return analyticTrig(scalar(operands.get(0)), false, EPSILON);
 			case SCALAR_SQRT:
 				return scalarRoot(scalar(operands.get(0)));
 			case POINT_X:
@@ -1191,16 +1195,7 @@ public final class ConstructionBoxModel2D {
 		 */
 		private Jet snappedTrig(Jet argument, boolean sine, double threshold,
 				boolean smallSineExempt) {
-			Jet analytic;
-			try {
-				analytic = sine ? argument.sin() : argument.cos();
-			} catch (ConstructionIntervalModel2D.TrigonometricRangeLimit limit) {
-				if (numericRangeProgram() && uniformNonzeroTrig(argument.value, sine, threshold)) {
-					throw new Stop(Unresolved.NUMERIC_PROOF_RANGE_LIMIT, null, STEP_PREDICATE,
-							"Proof range limit; uniform native branch; total smooth numeric program");
-				}
-				throw limit;
-			}
+			Jet analytic = analyticTrig(argument, sine, threshold);
 			boolean canSnap = !smallSineExempt || argument.value.lower < -.1
 					|| argument.value.upper > .1;
 			if (!canSnap) { return analytic; }
@@ -1213,12 +1208,26 @@ public final class ConstructionBoxModel2D {
 					"The native trigonometric zero branch is not uniform on this box");
 		}
 
+		/** Analytic native dispatch; retain the conservative P2 proof-range guard. */
+		private Jet analyticTrig(Jet argument, boolean sine, double threshold) {
+			try {
+				return sine ? argument.sin() : argument.cos();
+			} catch (ConstructionIntervalModel2D.TrigonometricRangeLimit limit) {
+				if (numericRangeProgram() && uniformNonzeroTrig(argument.value, sine, threshold)) {
+					throw new Stop(Unresolved.NUMERIC_PROOF_RANGE_LIMIT, null, STEP_PREDICATE,
+							"Proof range limit; uniform native branch; total smooth numeric program");
+				}
+				throw limit;
+			}
+		}
+
 		/** P2: no opaque value may conceal a later domain/selection predicate. */
 		private boolean numericRangeProgram() {
 			int trig = 0;
 			for (Step step : program.getSteps()) {
 				switch (step.getOperation()) {
 				case SCALAR_SIN: case SCALAR_COS:
+				case SCALAR_SIN_DOUBLE: case SCALAR_COS_DOUBLE:
 					trig++; break;
 				case POINT_X: case POINT_Y: case POINT_COORDINATES:
 				case SCALAR_NEGATE: case SCALAR_ADD: case SCALAR_SUBTRACT:

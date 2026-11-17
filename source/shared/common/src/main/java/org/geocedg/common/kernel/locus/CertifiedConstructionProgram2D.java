@@ -119,6 +119,9 @@ public final class CertifiedConstructionProgram2D {
 		SCALAR_DIVIDE(NodeKind.SCALAR, 0, 3),
 		SCALAR_SIN(NodeKind.SCALAR, 0, 3),
 		SCALAR_COS(NodeKind.SCALAR, 0, 3),
+		/** Native evaluateDouble operations; no MyDouble zero branch. */
+		SCALAR_SIN_DOUBLE(NodeKind.SCALAR, 0, 3),
+		SCALAR_COS_DOUBLE(NodeKind.SCALAR, 0, 3),
 		SCALAR_SQRT(NodeKind.SCALAR, 0, 3),
 		/** Composition-proof/v1: distance and Cartesian point coordinates. */
 		POINT_DISTANCE(NodeKind.SCALAR, 0, 3),
@@ -167,6 +170,8 @@ public final class CertifiedConstructionProgram2D {
 			case SCALAR_DIVIDE:
 			case SCALAR_SIN:
 			case SCALAR_COS:
+			case SCALAR_SIN_DOUBLE:
+			case SCALAR_COS_DOUBLE:
 			case SCALAR_SQRT:
 			case POINT_DISTANCE:
 			case POINT_X:
@@ -450,6 +455,10 @@ public final class CertifiedConstructionProgram2D {
 		if (steps.stream().anyMatch(step -> step.operation == Operation.ROTATE_BY_ANGLE)) {
 			signature.append('|').append(VARIABLE_ROTATION_AUTHORITY);
 		}
+		if (steps.stream().anyMatch(step -> step.operation == Operation.SCALAR_SIN_DOUBLE
+				|| step.operation == Operation.SCALAR_COS_DOUBLE)) {
+			signature.append("|native-scalar-dispatch/v1");
+		}
 		Map<Operand, Integer> pointAliases = steps.stream()
 				.anyMatch(step -> step.operation.isCompositionProof()) ? new IdentityHashMap<>() : null;
 		for (Step step : steps) {
@@ -514,6 +523,8 @@ public final class CertifiedConstructionProgram2D {
 		case SCALAR_NEGATE:
 		case SCALAR_SIN:
 		case SCALAR_COS:
+		case SCALAR_SIN_DOUBLE:
+		case SCALAR_COS_DOUBLE:
 		case SCALAR_SQRT:
 			return requireOperands(operands, node, EnumSet.of(NodeKind.SCALAR));
 		case SCALAR_ADD:

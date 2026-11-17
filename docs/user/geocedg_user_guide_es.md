@@ -1916,9 +1916,12 @@ indefinido; la recomputación ordinaria lo recupera al restablecerse la admisibi
 
 Esta extensión acotada admite actualmente una rama cerrada en sus extremos,
 acotada y no periódica, con una limitación compatible del método de prueba. No
-admite cualquier banda sin resolver. En particular, los saltos del seno escalar
-nativo en sus umbrales de cero pueden impedir medir el recorrido completo aunque
-las muestras parezcan suaves.
+admite cualquier banda sin resolver. La captura distingue el seno/coseno escrito directamente en una coordenada
+cartesiana de un valor calculado mediante un objeto numérico. La primera ruta
+usa Math.sin/Math.cos sin ajuste a cero; la segunda conserva las ramas nativas
+correspondientes. El certificador debe seguir la ruta real del productor. Esta
+conciliación focal no admite discontinuidades reales ni elimina las guardas de
+H10; el candidato P2 sigue pendiente de aceptación.
 
 Si el inspector ofrece **Construir un extremo métrico**, revise las rutas
 disponibles. **Crear punto equivalente** exige una dirección demostrada por la

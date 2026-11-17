@@ -77,19 +77,16 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 					frequency * Math.cos(frequency * x)), 0, 1, 1 << 16);
 			assertCoherentEstimate(rich, reference, "k=" + k);
 		}
-		// The product path: the same curves as public point-driven Locus V2. PRE-G9B-CU2
-		// decision H10 (locus-v2-metrics.md section 26.5): the public sine
-		// (x(P),sin(4*pi*x(P))) is outside class v3, so its total is the conditioned
-		// estimate of its declared domain, which certifies nothing; the certified parabola
-		// y = x^2, -2 <= x <= 2, is estimated on the same path.
+		// JUMP-CONTEXT: Cartesian inline sine is smooth; H10 outside-class controls
+		// remain separate from this now accurately captured construction.
 		add("s=Segment((0,0),(1,0))");
 		add("P=Point(s)");
 		add("Q=(x(P),sin(4*pi*x(P)))");
 		GeoLocusV2 sine = add("L=LocusV2(Q,P)");
 		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(L)"));
-		// P2: native zero-branch jumps contradict the estimator's continuity premise.
-		assertNoTotalWithoutExistence(metric.getMetricResult(), "native sine k=2");
-		assertEquals(8, sine.getSemanticDefinition().getBranches().get(0)
+		assertCoherentEstimate(metric.getMetricResult(), simpson(x -> Math.hypot(1,
+				4 * Math.PI * Math.cos(4 * Math.PI * x)), 0, 1, 1 << 16), "native fast sine");
+		assertEquals(1, sine.getSemanticDefinition().getBranches().get(0)
 				.getExistenceStructure().getContinuousValidComponents().size());
 		certifiedParabola("Lp", "Qp", "publicParabola");
 		GeoLocusMetricResult parabola = richResultOf(add("Mp=LocusLength(Lp)"));

@@ -69,7 +69,7 @@ class P2ConditionalNumericEstimateTest extends PreG9bR3RedefineTestBase {
  }
  @ParameterizedTest @ValueSource(ints={2,4})
  void knownNativeJumpsRemainInadmissible(int frequency) {
-  add("s=Segment((0,0),(1,0))");add("P=Point(s)");add("Q=(x(P),sin("+frequency+"*pi*x(P)))");add("L=LocusV2(Q,P)");
+  add("s=Segment((0,0),(1,0))");add("P=Point(s)");add("nativeSine=sin("+frequency+"*pi*x(P))");add("Q=(x(P),nativeSine)");add("L=LocusV2(Q,P)");
   LocusMetricResult2D r=metric("a","LocusLength(L)");assertNoTotalWithoutExistence(r,"native sine jumps");
   assertFalse(((GeoNumeric)add("b=2*a+1")).isDefined());
  }
@@ -77,7 +77,7 @@ class P2ConditionalNumericEstimateTest extends PreG9bR3RedefineTestBase {
   fixture("(x(P),sin(x(P)))");GeoNumeric scalar=add("a=LocusLength(L)");add("b=2*a+1");
   var id=getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(scalar);
   assertPartial(richResultOf(scalar).getMetricResult());
-  ((GeoNumeric)lookup("lo")).setValue(0);((GeoNumeric)lookup("hi")).setValue(4*Math.PI);getKernel().updateConstruction(false);
+  ((GeoNumeric)lookup("lo")).setValue(Double.NaN);((GeoNumeric)lookup("hi")).setValue(4*Math.PI);getKernel().updateConstruction(false);
   assertFalse(scalar.isDefined());assertFalse(lookup("b").isDefined());
   ((GeoNumeric)lookup("lo")).setValue(999.99);((GeoNumeric)lookup("hi")).setValue(1000.01);getKernel().updateConstruction(false);
   assertSame(scalar,lookup("a"));assertTrue(scalar.isDefined());
@@ -100,7 +100,7 @@ class P2ConditionalNumericEstimateTest extends PreG9bR3RedefineTestBase {
 
  @Test void undoRedoReconstructsCurrentCondition() {
   activateUndo();fixture("(x(P),sin(x(P)))");add("a=LocusLength(L)");getApp().storeUndoInfo();
-  ((GeoNumeric)lookup("lo")).setValue(0);((GeoNumeric)lookup("hi")).setValue(4*Math.PI);getKernel().updateConstruction(false);getApp().storeUndoInfo();
+  ((GeoNumeric)lookup("lo")).setValue(Double.NaN);((GeoNumeric)lookup("hi")).setValue(4*Math.PI);getKernel().updateConstruction(false);getApp().storeUndoInfo();
   assertFalse(lookup("a").isDefined());getKernel().undo();assertPartial(richResultOf(lookup("a")).getMetricResult());
   getKernel().redo();assertFalse(lookup("a").isDefined());getKernel().undo();assertTrue(lookup("a").isDefined());
  }

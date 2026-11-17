@@ -770,3 +770,41 @@ In particular, making a circle-length/own-radius rotation capturable must not
 displace its exact periodic-cancellation certificate with a disjoint-image
 test, which cannot prove equality of the two limits. An independent divisor
 with the same current numerical value supplies no such identity.
+
+
+### 13.4 Native scalar dispatch precision (JUMP-CONTEXT)
+
+`native-scalar-dispatch/v1`, author-authorized contextual reconciliation of
+2026-11-18; focal implementation BLOCKED after its single internal corrective
+iteration (SQRT_SHORT capture test failed); product acceptance pending.
+This is a precision of the actual-producer authority in §2, not an ideal-sine
+exception or a discontinuous-length policy. The generic scalar zero branches of
+§13.2 remain unchanged.
+
+A Cartesian MyVecNode coordinate is evaluated through ExpressionNode.evaluateDouble.
+Its supported inline SIN/COS call Math.sin/Math.cos without the MyDouble zero
+branch. Capture records SCALAR_SIN_DOUBLE/SCALAR_COS_DOUBLE and the interval model
+uses the corresponding analytic jet. Program signatures name this context and
+version. Capture propagates DOUBLE only along demonstrated inline native routes;
+SQRT_SHORT falls back to GENERIC. Unsupported contextual equivalence is refused.
+
+Reading a GeoNumeric/GeoAngle does not reevaluate its defining expression in the
+consumer's context: its own AlgoDependentNumber producer uses generic evaluation,
+and retains SCALAR_SIN/SCALAR_COS and their branch predicates. A maximal
+independent expression is still a captured finite binary64 datum, now evaluated
+through the actual consuming route; metric-value, identity, dependency and angle
+style exclusions remain. No native algorithm or numerical value is changed.
+
+Both dispatches retain the argument bound1000 of the interval method. The P2
+proof-range eligibility guard stays conservative (one supported trigonometric
+operation, total smooth program and uniformly nonzero native branch). No generic
+unresolved cause becomes eligible and no enclosure is invented beyond the bound.
+
+New certifications recapture the producer and its context from both historical
+and new documents, with the context in the program/cache signature. XML and object
+identities do not change. No old cached certificate or estimate is authoritative
+after its signature changes. Cartesian N03/N06 and historical sine N05 have smooth
+real formulas; their prior attribution to MyDouble threshold jumps was incorrect.
+Generic numeric-geo constructions still have those branches. Geometric evidence,
+metric guarantee and scalar availability remain independent under metrics §25/§26.
+See [the focal design](../../../docs/architecture/geocedg-1.2.0-native-scalar-context.md).

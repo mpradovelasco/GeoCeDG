@@ -73,21 +73,24 @@ import org.junit.jupiter.api.Test;
 class PreG9BCu2ConditionedEstimateTest extends G9U0PublicSurfaceTestBase {
 
 	/**
-	 * H10-1: the public sine of H10 keeps its CU1 estimate and scalar, while its existence
-	 * structure, its intersections, its addresses and the certificates that read its length
-	 * stay exactly as without the estimate.
+	 * N06 Cartesian sine now has a faithful smooth proof. Its metric does not create
+	 * that proof; the separate outside-class exp case retains H10's no-authority checks.
 	 */
 	@Test
 	void aSineOutsideClassV3IsEstimatedWithoutAnyCertifyingAuthority() {
-		// Historical N06: now capturable, with genuine native threshold jumps.
+		// N06: inline evaluateDouble sine; geometry comes from its captured model,
+		// not from the metric. Outside-class authority checks remain in the exp case.
 		add("s=Segment((0,0),(1,0))"); add("P=Point(s)");
 		add("Q=(x(P),sin(4*pi*x(P)))");
 		GeoLocusV2 sine = add("L=LocusV2(Q,P)");
 		String before = structure(sine).getSemanticSignature();
 		LocusMetricResult2D rich = richResultOf(add("M=LocusLength(L)")).getMetricResult();
-		assertNoTotalWithoutExistence(rich, "native sine discontinuities");
+		assertEquals(MetricComputationStatus.SUCCESS, rich.getComputationStatus(),
+				rich.getDiagnostics().toString());
+		assertTrue(rich.isScalarAdmissible());
+		assertEquals(Completeness.COMPLETE, structure(sine).getCompleteness());
 		assertEquals(before, structure(sine).getSemanticSignature());
-		assertFalse(((GeoNumeric) add("b=Length(L)")).isDefined());
+		assertEquals(value(rich), ((GeoNumeric) add("b=Length(L)")).getValue(), 0);
 	}
 
 	@Test
