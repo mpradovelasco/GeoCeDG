@@ -324,6 +324,7 @@ final class GeoCeDGDocumentInsertion {
 		final Map<ConstructionElement, String> definitions = new IdentityHashMap<>();
 		final Set<GeoElement> geos = identitySet(app);
 		final Set<GeoImage> images = Collections.newSetFromMap(new IdentityHashMap<>());
+		final Set<GeoImage> registryOnlyImages = Collections.newSetFromMap(new IdentityHashMap<>());
 		final Map<String, String> resources;
 		final GeoCeDGUndoManager.LazyDefaults defaults;
 		final int step = construction.getStep();
@@ -343,6 +344,10 @@ final class GeoCeDGDocumentInsertion {
 		ClipboardState() throws IOException {
 			defaults = GeoCeDGUndoManager.LazyDefaults.capture(construction);
 			images.addAll(app.images);
+			registryOnlyImages.addAll(images);
+			registryOnlyImages.removeAll(constructionImages(construction));
+			registryOnlyImages.remove(construction.getConstructionDefaults()
+					.getDefaultGeo(ConstructionDefaults.DEFAULT_IMAGE));
 			for (int i = 0; i < construction.steps(); i++) {
 				ConstructionElement element = construction.getConstructionElement(i);
 				sequence.add(element);
@@ -388,12 +393,39 @@ final class GeoCeDGDocumentInsertion {
 			}
 			GeoElement defaultImage = construction.getConstructionDefaults()
 					.getDefaultGeo(ConstructionDefaults.DEFAULT_IMAGE);
-			for (GeoImage image : app.images) {
-				if (!images.contains(image) && !image.isLabelSet() && image != defaultImage) {
-					throw new IOException("An unlabelled image remains after clipboard recovery");
-				}
+			Set<GeoImage> expected = constructionImages(construction);
+			if (defaultImage instanceof GeoImage image) { expected.add(image); }
+			expected.addAll(registryOnlyImages);
+			Set<GeoImage> registered = Collections.newSetFromMap(new IdentityHashMap<>());
+			registered.addAll(app.images);
+			if (registered.size() != app.images.size() || !expected.equals(registered)) {
+				throw new IOException("Clipboard image registry differs from the recovered generation");
 			}
 		}
+	}
+
+	/** Includes anonymous list members and every protocol step, without using labels as identity. */
+	private static Set<GeoImage> constructionImages(Construction construction) {
+		Set<GeoElement> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+		Set<GeoImage> images = Collections.newSetFromMap(new IdentityHashMap<>());
+		List<GeoElement> pending = new ArrayList<>(construction.getGeoSetConstructionOrder());
+		for (int i = 0; i < construction.steps(); i++) {
+			ConstructionElement element = construction.getConstructionElement(i);
+			for (var output : element.getGeoElements()) {
+				if (output != null) { pending.add(output.toGeoElement()); }
+			}
+			if (element instanceof AlgoElement algo) { Collections.addAll(pending, algo.getInput()); }
+		}
+		for (int i = 0; i < pending.size(); i++) {
+			GeoElement geo = pending.get(i);
+			if (geo == null || !visited.add(geo)) { continue; }
+			if (geo instanceof GeoImage image) { images.add(image); }
+			if (geo instanceof GeoList list) {
+				for (int j = 0; j < list.size(); j++) { pending.add(list.get(j)); }
+			}
+			if (geo.getParentAlgorithm() != null) { Collections.addAll(pending, geo.getParentAlgorithm().getInput()); }
+		}
+		return images;
 	}
 
 	private static String elementXml(ConstructionElement element) {
@@ -514,6 +546,8 @@ final class GeoCeDGDocumentInsertion {
 						catch (Exception | Error cleanup) { removalUncertified = true; problem.addSuppressed(cleanup); }
 						try { removeCreatedImagesAndCorners(); }
 						catch (RuntimeException | Error cleanup) { removalUncertified = true; problem.addSuppressed(cleanup); }
+						try { retireImageGeneration(false); }
+						catch (IOException | RuntimeException | Error cleanup) { removalUncertified = true; problem.addSuppressed(cleanup); }
 						attemptedFailure = new ClipboardAttemptFailure(problem);
 						throw attemptedFailure;
 					}
@@ -671,6 +705,7 @@ final class GeoCeDGDocumentInsertion {
 				int attempt = ++reloadAttempts;
 				try {
 					faults.beforeReload(attempt);
+					retireImageGeneration(checkpoint == null);
 					boolean loading = before.construction.isFileLoading();
 					try {
 						before.construction.setFileLoading(true);
@@ -719,6 +754,25 @@ final class GeoCeDGDocumentInsertion {
 				} catch (Exception problem) { last = problem; }
 			}
 			throw last;
+		}
+
+		/** Native removal is safe only before this generation's label table is replaced. */
+		private void retireImageGeneration(boolean includeDefault) throws IOException {
+			Construction construction = before.construction;
+			Set<GeoImage> generation = constructionImages(construction);
+			if (includeDefault) {
+				GeoElement prototype = construction.getConstructionDefaults()
+						.getDefaultGeo(ConstructionDefaults.DEFAULT_IMAGE);
+				if (prototype instanceof GeoImage image) { generation.add(image); }
+			}
+			for (GeoImage image : generation) {
+				if (app.images.stream().noneMatch(current -> current == image)) { continue; }
+				if (image.getConstruction() != construction || (image.isLabelSet()
+						&& app.getKernel().lookupLabel(image.getLabelSimple()) != image)) {
+					throw new IOException("Clipboard image generation is not current");
+				}
+				image.remove();
+			}
 		}
 
 		private void restoreDefaults() throws IOException {

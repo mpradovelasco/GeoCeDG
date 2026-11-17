@@ -76,6 +76,109 @@ import org.mozilla.javascript.Scriptable;
 		PreG9BR6PlusD1DocumentUnitsTest.DesktopLogger.class})
 class GeoCeDG120ClipboardImageRecoveryTest {
 	@TempDir(cleanup = CleanupMode.NEVER) Path directory;
+	private final Map<GeoImage, String> firstImageObservation = new java.util.IdentityHashMap<>();
+
+	private void saveImageRegistry(AppGeoCeDG app, String stage) throws IOException {
+		var construction = app.getKernel().getConstruction();
+		GeoElement prototype = construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults.DEFAULT_IMAGE);
+		StringBuilder rows = new StringBuilder("identity\tfirstObserved\tlabel\tcurrentOwner\tcurrentDefault\tdocumentImage\tinConstruction\tresource\tcorners\n");
+		for (GeoImage image : new ArrayList<>(app.images)) {
+			firstImageObservation.putIfAbsent(image, stage);
+			rows.append(System.identityHashCode(image)).append('\t').append(firstImageObservation.get(image))
+					.append('\t').append(image.getLabelSimple()).append('\t').append(image.getConstruction() == construction)
+					.append('\t').append(image == prototype).append('\t').append(documentImages(app).contains(image))
+					.append('\t').append(image.isInConstructionList()).append('\t').append(image.getImageFileName())
+					.append('\t').append(Arrays.stream(image.getStartPoints()).map(point -> point == null ? "null"
+							: Integer.toString(System.identityHashCode(point))).toList()).append('\n');
+		}
+		Files.writeString(directory.resolve(stage + "-registry.tsv"), rows.toString());
+		System.out.println("CLIPBOARD_CORRECTIVE_A_REGISTRY " + directory.toAbsolutePath() + " stage=" + stage);
+	}
+
+	@ParameterizedTest @ValueSource(booleans = {false, true})
+	void nativeRecoveryReconstructsBaselineImagesSharingAResourceAndInactiveSteps(boolean insideMutation) throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = fixture(); var construction = app.getKernel().getConstruction();
+			List<GeoImage> originals = nativeImages(app, 2);
+			String resource = originals.get(0).getImageFileName(); originals.get(1).setImageFileName(resource);
+			List<String> labels = originals.stream().map(GeoElement::getLabelSimple).toList();
+			var originalIds = originals.stream().map(image -> construction.getSpatialIdentityRegistry().getPersistentGeoId(image)).toList();
+			baseline(app); construction.setStep(0); State before = new State(app);
+			byte[] archive = nativeArchive(app); Files.write(directory.resolve("shared-images-before.cedg"), archive);
+			AtomicInteger attaches = new AtomicInteger();
+			app.getDocumentInsertion().setFaults(new GeoCeDGDocumentInsertion.Faults() {
+				@Override public void afterCommit() { if (insideMutation) { throw new IllegalStateException("A mutation failure with baseline images"); } }
+				@Override public void beforeAttach() { if (attaches.getAndIncrement() == 0) { throw new IllegalStateException("A late attach with baseline images"); } }
+			});
+			var result = operation(app, 7, Position.APPEND, target -> { nativeImages(target, 1); return true; }).insert();
+			saveImageRegistry(app, "shared-images-returned");
+			assertOutcome(GeoCeDGDocumentInsertion.Outcome.FAILED_RECOVERY_CERTIFIED_SESSION_RESET, result);
+			before.assertRestored(app, false); assertEquals(2, documentImages(app).size());
+			for (int i = 0; i < labels.size(); i++) {
+				String label = labels.get(i);
+				GeoImage restored = documentImages(app).stream().filter(image -> label.equals(image.getLabelSimple())).findFirst().orElseThrow();
+				assertNotSame(originals.get(i), restored); assertEquals(resource, restored.getImageFileName());
+				assertEquals(originalIds.get(i), construction.getSpatialIdentityRegistry().getPersistentGeoId(restored));
+				assertFalse(app.images.contains(originals.get(i))); assertTrue(app.images.contains(restored));
+			}
+			byte[] returned = nativeArchive(app); Files.write(directory.resolve("shared-images-returned.cedg"), returned);
+			assertLibraryResources(archive, returned, app.getKernel().getLibraryJavaScript());
+			assertEquals(0, construction.getStep()); return null;
+		});
+	}
+
+	@ParameterizedTest @ValueSource(booleans = {false, true})
+	void aRegisteredOrphanAfterReloadCannotReceiveARecoveryCertificate(boolean labelled) throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = fixture(); var construction = app.getKernel().getConstruction();
+			String sharedResource = nativeImages(app, 1).get(0).getImageFileName(); baseline(app);
+			AtomicInteger certificates = new AtomicInteger();
+			AtomicBoolean isolated = new AtomicBoolean();
+			var dialog = new PreG9BR6PlusF3RecoveryTest.Scripted();
+			dialog.exits.add(GeoCeDGInsertionIsolation.Exit.CLOSE);
+			dialog.probe = () -> { assertTrue(app.isInsertionIsolated()); isolated.set(true); };
+			app.getInsertionIsolation().setPresentation(dialog);
+			app.getDocumentInsertion().setFaults(new GeoCeDGDocumentInsertion.Faults() {
+				@Override public void beforeAttach() { throw new IllegalStateException("A require native recovery"); }
+				@Override public void beforeCertificate() {
+					certificates.incrementAndGet(); GeoImage orphan = new GeoImage(construction);
+					orphan.setImageFileName(sharedResource);
+					if (labelled) {
+						orphan.setLabel("CertificateOrphan"); construction.removeFromConstructionList(orphan);
+						construction.removeLabel(orphan); assertTrue(orphan.isLabelSet());
+					}
+					assertFalse(documentImages(app).contains(orphan)); assertTrue(app.images.contains(orphan));
+				}
+			});
+			var result = operation(app, 7, Position.APPEND, target -> { nativeImages(target, 1); return true; }).insert();
+			assertOutcome(GeoCeDGDocumentInsertion.Outcome.SERIOUS_RECOVERY_FAILURE, result);
+			java.io.StringWriter chain = new java.io.StringWriter(); result.getFailure().printStackTrace(new java.io.PrintWriter(chain));
+			Files.writeString(directory.resolve("orphan-certificate-chain.txt"), chain.toString());
+			System.out.println("CLIPBOARD_CORRECTIVE_A_ORPHAN " + directory.toAbsolutePath() + " labelled=" + labelled);
+			assertTrue(containsCauseCode(result.getFailure(), "Clipboard image registry differs from the recovered generation"), chain.toString());
+			assertEquals(2, certificates.get()); assertTrue(isolated.get()); return null;
+		});
+	}
+
+	@Test void imageGenerationRemovalToleratesACascadeIntoADependentImage() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = fixture(); GeoImage original = nativeImages(app, 1).get(0);
+			must(app, "ImageShift=(1,0)");
+			must(app, "ShiftedImage=Translate(" + original.getLabelSimple() + ",Vector(ImageShift))");
+			assertInstanceOf(GeoImage.class, app.getKernel().lookupLabel("ShiftedImage"));
+			baseline(app); State before = new State(app);
+			AtomicBoolean attached = new AtomicBoolean();
+			app.getDocumentInsertion().setFaults(new GeoCeDGDocumentInsertion.Faults() {
+				@Override public void beforeAttach() {
+					if (attached.compareAndSet(false, true)) { throw new IllegalStateException("A image cascade recovery"); }
+				}
+			});
+			var result = operation(app, 7, Position.APPEND, target -> { nativeImages(target, 1); return true; }).insert();
+			assertOutcome(GeoCeDGDocumentInsertion.Outcome.FAILED_RECOVERY_CERTIFIED_SESSION_RESET, result);
+			before.assertRestored(app, false); assertEquals(2, documentImages(app).size());
+			assertInstanceOf(GeoImage.class, app.getKernel().lookupLabel("ShiftedImage")); return null;
+		});
+	}
 
 	@ParameterizedTest @CsvSource({"double,0.1", "double,0.375", "double,-0.0", "double,NaN", "numeric,0.375", "null,0"})
 	void archiveRecoveryRestoresOnlyTheCapturedPlaneLiteral(String representation, double value) throws Exception {
@@ -556,6 +659,7 @@ class GeoCeDG120ClipboardImageRecoveryTest {
 			String raw = "function ggbOnInit() {}\nfunction readerFailureWitness() { return 13; }";
 			app.getKernel().setLibraryJavaScript(raw); assertNull(app.getKernel().getConstruction().captureNativeUndoSnapshot());
 			baseline(app); State before = new State(app); byte[] archive = nativeArchive(app); saveLibraryArchive("reader-failure-before", archive);
+			saveImageRegistry(app, "reader-before");
 			AtomicInteger loads = new AtomicInteger(), commits = new AtomicInteger(), removals = new AtomicInteger(), reloads = new AtomicInteger();
 			AtomicInteger readerThrows = new AtomicInteger(); AtomicBoolean attached = new AtomicBoolean();
 			IllegalStateException mutation = new IllegalStateException("R13 recover this mutation");
@@ -573,10 +677,11 @@ class GeoCeDG120ClipboardImageRecoveryTest {
 				return null;
 			}).when(observer).reset();
 			app.getDocumentInsertion().setFaults(new GeoCeDGDocumentInsertion.Faults() {
-				@Override public void afterCommit() { commits.incrementAndGet(); throw mutation; }
+				@Override public void afterCommit() throws Exception { commits.incrementAndGet(); saveImageRegistry(app, "reader-after-creation"); throw mutation; }
 				@Override public void duringRemoval() { removals.incrementAndGet(); throw new IllegalStateException("R13 force full reader"); }
 				@Override public void beforeReload(int attempt) throws Exception {
 					reloads.incrementAndGet();
+					saveImageRegistry(app, "reader-before-reload-" + attempt);
 					if (attempt == 1) { app.getKernel().attach(observer); attached.set(true); }
 					else {
 						try {
@@ -606,6 +711,7 @@ class GeoCeDG120ClipboardImageRecoveryTest {
 			try {
 				var result = operation(app, 7, Position.APPEND, target -> { loads.incrementAndGet(); nativeImages(target, 1); return true; }).insert();
 				byte[] returned = nativeArchive(app); saveLibraryArchive("reader-failure-returned", returned);
+				saveImageRegistry(app, "reader-returned");
 				assertOutcome(GeoCeDGDocumentInsertion.Outcome.FAILED_RECOVERY_CERTIFIED_SESSION_RESET, result);
 				assertEquals(1, loads.get()); assertEquals(1, commits.get()); assertEquals(1, removals.get()); assertEquals(2, reloads.get());
 				assertSame(readerFailure, observedReaderFailure.get()); assertTrue(readerThrows.get() >= 1);
@@ -897,10 +1003,12 @@ class GeoCeDG120ClipboardImageRecoveryTest {
 		AppGeoCeDG app = onEdt(() -> { return fixture(); });
 		onEdt(() -> {
 			baseline(app); app.getKernel().getConstruction().setStep(0); State before = new State(app);
+			saveImageRegistry(app, "attach-before");
 			AtomicBoolean attachFailed = new AtomicBoolean(); AtomicInteger commits = new AtomicInteger(), stores = new AtomicInteger(), attaches = new AtomicInteger();
 			IllegalStateException injected = new IllegalStateException("R12 exact fault " + location);
 			app.getDocumentInsertion().setFaults(new GeoCeDGDocumentInsertion.Faults() {
-				@Override public void afterCommit() { commits.incrementAndGet(); if (location == 0) { throw injected; } }
+				@Override public void afterCommit() throws Exception { commits.incrementAndGet(); saveImageRegistry(app, "attach-after-creation"); if (location == 0) { throw injected; } }
+				@Override public void beforeReload(int attempt) throws Exception { saveImageRegistry(app, "attach-before-reload-" + attempt); }
 				@Override public void beforeOwnStore() { stores.incrementAndGet(); if (location == 1) { throw injected; } }
 				@Override public void beforeAttach() {
 					attaches.incrementAndGet();
@@ -910,6 +1018,7 @@ class GeoCeDG120ClipboardImageRecoveryTest {
 				}
 			});
 			var result = operation(app, 7, Position.APPEND, target -> { nativeImages(target, 2); return true; }).insert();
+			saveImageRegistry(app, "attach-returned");
 			assertOutcome(GeoCeDGDocumentInsertion.Outcome.FAILED_RECOVERY_CERTIFIED_SESSION_RESET, result);
 			assertNotNull(result.getFailure()); assertTrue(result.getDeclaredResets().contains("Insert.Reset.Instances"));
 			assertEquals(1, commits.get()); assertEquals(location == 0 ? 0 : 1, stores.get());

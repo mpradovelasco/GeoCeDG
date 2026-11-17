@@ -79,3 +79,71 @@ Gradle or GUI. Its two oracle recommendations (new MyDouble representation and
 dynamic plane negatives) were incorporated before GREEN. The three A cases,
 global acceptance and packaging remain pending. Source hashes and process/XML
 evidence are preserved under the external continuation directory.
+
+## Unit A — retire the current image generation before reconstruction
+
+The instrumented five-scenario focus after B reproduces exactly three failures.
+The two real-reader failures leave the first reader's image default registered
+after the next reader replaces it. The late-attach failure leaves its two labelled
+images registered after the native reader clears the construction sets. The
+observed `isInConstructionList` flag on these stale instances is insufficient.
+`Construction.clearConstruction` clears its tables without calling image.remove.
+
+Retire images only while they are current, immediately before each guarded
+explicit reader attempt. Traverse the current construction outputs, inputs and
+list members by identity, including the inactive protocol suffix. For FILE
+reload also retire the current image default, which the reader reconstructs.
+Use the native lifecycle and retain the resource cache. Snapshot the generation
+before iterating and skip members already removed by a cascade. Before removing
+a labelled image require the current label-table entry to be that exact instance:
+native removeLabel otherwise removes by string. Never call remove on a retired
+instance after reconstruction.
+
+The recovery certificate compares the complete current registry by identity with
+the current document image graph, current default and precisely captured baseline
+registry-only auxiliaries. Old document images/defaults cannot be reclassified as
+those auxiliaries. Detect missing registrations, duplicates and extra registered
+instances whether labelled or anonymous. Preserve the existing exact snapshot,
+resource, script, layer, protocol and history certificates.
+
+Scope: Desktop insertion journal, its tests and this new design. No change to
+GeoImage, the kernel reader or the historical source/evidence. Validate the three
+original failures plus adjacent commit/store cases, baseline images sharing one
+resource (including an inactive protocol suffix), anonymous partial creation,
+normal image insertion, Undo/Redo and persistence. A baseline registry-only entry
+is preserved as captured state; this is not a general cache/garbage-collection
+feature. Independent design review found no blocking contradiction and explicitly
+requires the removal identity and cascade guards above.
+
+The added baseline-image adversary also demonstrates the same missing lifecycle
+at the internal NativeAtomic rollback: that reader clears tables before explicit
+recovery starts. A-registry-isolation passes the late-attach and both precise
+registry-negative cases but rejects the inside-mutation baseline-image variant.
+Retire the current document image generation inside the mutation catch, before
+NativeAtomic replays its construction-only XML; retain the defaults in that route.
+The explicit FILE route still retires its current default as well. This closes
+the demonstrated second entry to the same generation-replacement mechanism,
+without changing the kernel reader or removing stale objects after replay.
+
+### A focal evidence
+
+The intermediate records remain failed: A-diagnosis 5/2 pass/3 fail;
+A-green 69/66 pass/3 new-test oracle failures; A-closure 16/14 pass/2 fail;
+A-orphan-cause 2/0 pass/2 fail; A-registry-isolation 4/3 pass/1 fail. The
+first new shared-image oracle incorrectly used the active label table for an
+inactive suffix; the isolation oracle initially observed state after scripted
+CLOSE. The first synthetic orphan also failed a prior exact certificate
+condition (`certificate: []`), so it did not prove the registry predicate.
+The revised adversary preserves a valid shared resource and proves that exact
+registry cause. The remaining inside-mutation failure then demonstrates the
+second generation-replacement entry described above. No historical test or
+acceptance result is reclassified as passed.
+
+A-final-focal: **84/84 pass**, 0 errors/skips, inner exit 0 (Recovery 71 and
+Insertion 13). Product tests cover both replacement entries, baseline shared
+resources/inactive steps, dependent-image removal cascades, anonymous and
+labelled orphan refusals, the original exceptional cases, B, normal acquisition,
+Undo/Redo, save and reopen. Independent source/evidence review is recorded
+externally. This is one causal unit A (image-generation lifecycle and its
+certificate), not new functionality or a kernel reader change. Global gates and
+C–E remain pending.
