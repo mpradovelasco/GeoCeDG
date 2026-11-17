@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import javax.annotation.CheckForNull;
 
 import org.geogebra.common.euclidianForPlane.EuclidianViewForPlaneCompanionInterface;
+import org.geogebra.common.geogebra3D.kernel3D.ConstructionDefaults3D;
 import org.geogebra.common.geogebra3D.kernel3D.transform.MirrorableAtPlane;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
@@ -39,6 +40,7 @@ import org.geogebra.common.kernel.arithmetic.ValueType;
 import org.geogebra.common.kernel.geos.Dilateable;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoLine;
+import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.geos.Traceable;
 import org.geogebra.common.kernel.geos.Transformable;
 import org.geogebra.common.kernel.geos.Translateable;
@@ -450,6 +452,20 @@ public class GeoPlane3D extends GeoElement3D
 	 */
 	public void setCoordSys(CoordSys cs) {
 		getCoordSys().set(cs);
+	}
+
+
+	// GeoCeDG 1.2.0: native macro style copying must not materialize its host prototype.
+	@Override
+	public double getAnimationStep() {
+		if (getClass() == GeoPlane3D.class
+				&& getDefaultGeoType() == ConstructionDefaults3D.DEFAULT_PLANE3D
+				&& getAnimationStepObject() == null
+				&& getConstruction().getConstructionDefaults()
+						.getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D) == this) {
+			return GeoNumeric.DEFAULT_SLIDER_INCREMENT;
+		}
+		return super.getAnimationStep();
 	}
 
 	@Override

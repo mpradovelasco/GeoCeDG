@@ -38,6 +38,9 @@ import org.geocedg.desktop.GeoCeDGClipboardImageInsertion.Position;
 import org.geogebra.common.kernel.geos.AbsoluteScreenLocateable;
 import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.Kernel;
+import org.geogebra.common.kernel.MacroKernel;
+import org.geogebra.common.geogebra3D.kernel3D.geos.GeoPlane3D;
+import org.geogebra.common.geogebra3D.kernel3D.geos.GeoPlane3DConstant;
 import org.geogebra.common.kernel.View;
 import org.geogebra.common.geogebra3D.kernel3D.ConstructionDefaults3D;
 import org.geogebra.common.jre.io.MyXMLioJre;
@@ -177,6 +180,75 @@ class GeoCeDG120ClipboardImageRecoveryTest {
 			assertOutcome(GeoCeDGDocumentInsertion.Outcome.FAILED_RECOVERY_CERTIFIED_SESSION_RESET, result);
 			before.assertRestored(app, false); assertEquals(2, documentImages(app).size());
 			assertInstanceOf(GeoImage.class, app.getKernel().lookupLabel("ShiftedImage")); return null;
+		});
+	}
+
+
+	@ParameterizedTest @ValueSource(strings = {"lazy", "literal", "dynamic"})
+	void nativeMacroStyleCopyPreservesTheCurrentPlanePrototype(String state) throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = fixture(); var construction = app.getKernel().getConstruction();
+			GeoElement plane = construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D);
+			NumberValue raw;
+			if (state.equals("dynamic")) {
+				must(app, "PlaneRateBase=0.125"); must(app, "PlaneRate=3*PlaneRateBase");
+				raw = (GeoNumeric) app.getKernel().lookupLabel("PlaneRate");
+			} else { raw = state.equals("lazy") ? null : new MyDouble(app.getKernel(), .375); }
+			plane.setAnimationStep(raw); DefaultsSnapshot before = new DefaultsSnapshot(app);
+			var macro = new MacroKernel(app.getKernel());
+			GeoElement destination = (GeoElement) macro.getConstruction().getXOYPlane();
+			assertNotSame(plane, destination);
+			assertSame(raw, plane.getAnimationStepObject(), "Macro style copying must not materialize the host prototype");
+			if (raw == null) {
+				assertEquals(GeoNumeric.DEFAULT_SLIDER_INCREMENT, plane.getAnimationStep());
+				assertNull(plane.getAnimationStepObject());
+			}
+			assertEquals(raw == null ? GeoNumeric.DEFAULT_SLIDER_INCREMENT : raw.getDouble(), destination.getAnimationStep());
+			assertSame(macro, destination.getAnimationStepObject().wrap().getKernel());
+			before.assertConstruction(app); return null;
+		});
+	}
+
+	@ParameterizedTest @ValueSource(strings = {"ordinary", "constant", "replaced"})
+	void ordinarySubclassAndReplacedPlanesRetainNativeLazyBehavior(String state) throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = fixture(); var construction = app.getKernel().getConstruction();
+			GeoElement plane;
+			if (state.equals("replaced")) {
+				plane = construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D);
+				try (var input = new ByteArrayInputStream(nativeArchive(app))) {
+					((MyXMLioJre) app.getXMLio()).readNativeZipFromInputStream(input);
+				}
+				assertNotSame(plane, construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D));
+			} else if (state.equals("constant")) {
+				plane = new GeoPlane3DConstant(construction, GeoPlane3DConstant.XOY_PLANE);
+				plane.setDefaultGeoType(ConstructionDefaults3D.DEFAULT_PLANE3D);
+			} else {
+				plane = new GeoPlane3D(construction);
+				plane.setDefaultGeoType(ConstructionDefaults3D.DEFAULT_PLANE3D);
+			}
+			plane.setAnimationStep((NumberValue) null);
+			assertEquals(GeoNumeric.DEFAULT_SLIDER_INCREMENT, plane.getAnimationStep());
+			NumberValue materialized = plane.getAnimationStepObject(); assertNotNull(materialized);
+			assertEquals(MyDouble.class, materialized.getClass()); assertSame(app.getKernel(), materialized.wrap().getKernel());
+			return null;
+		});
+	}
+
+	@Test void archivePlaneRepairStillRejectsADeliberateNonNullNativeLookingIncrement() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = fixture(); var construction = app.getKernel().getConstruction();
+			construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D)
+					.setAnimationStep(new MyDouble(app.getKernel(), .375));
+			var snapshot = GeoCeDGUndoManager.LazyDefaults.capture(construction);
+			try (var input = new ByteArrayInputStream(nativeArchive(app))) {
+				((MyXMLioJre) app.getXMLio()).readNativeZipFromInputStream(input);
+			}
+			GeoElement plane = construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D);
+			MyDouble deliberatelyChanged = new MyDouble(app.getKernel(), GeoNumeric.DEFAULT_SLIDER_INCREMENT);
+			plane.setAnimationStep(deliberatelyChanged);
+			assertThrows(IOException.class, snapshot::restoreArchive);
+			assertSame(deliberatelyChanged, plane.getAnimationStepObject()); return null;
 		});
 	}
 

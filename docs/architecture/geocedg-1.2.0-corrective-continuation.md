@@ -296,3 +296,92 @@ before the real short-path MSI focus so embedded provenance refers to a clean
 actual commit; that focus and final acceptance are still pending at this stage.
 The lightweight fake regression is a supplemental focal script, not a new or
 relaxed verification contract. It introduces no runtime/bootstrap prerequisite.
+
+### E native focal result
+
+On clean commit ed5da1a5d30a414a5ac164feab6d85a170c8125d (tree
+cdd9894eae75b1c85eea92d02f5482f896283f40), the actual builder invoked from
+another Gradle project completes INTERNAL MSI-only with exit 0. Fresh
+installDist/export, app-image, MSI, SBOM, manifest and hash files are retained in
+artifacts/e1; the external E-msi-focal dossier preserves hashes and process logs.
+All 51 staged runtime JARs equal their installDist producers; every non-main
+component joins its resolved metadata hash. common-jre.jar agrees across build,
+installDist, component metadata and app-image. No hash is substituted.
+
+The longest app-image file path is 173 characters. The historical WiX pipe
+failure's exact native internal cause remains NOT_ESTABLISHED; success of this
+short layout is evidence for this layout, not proof of the old failure's cause.
+Independent review finds no blocker in this focal scope. This is not full
+PACKAGING, NC, installer smoke or final-candidate acceptance. At the E focal stage five units of six
+were used, including D's pending official derivation; no sixth unit was then opened.
+
+## Corrective delivery and editorial addendum
+
+The R1-R13 validation dossier, editorial handoff and author smoke remain
+historical records of S; this continuation does not rewrite their outcomes.
+The live ES/EN guides describe the same approved capabilities and now distinguish
+passed corrective focuses from pending global/author gates. Their section
+structure and coverage meanings are unchanged.
+
+For the book, this is a corrective addendum to
+[the scientific-editorial handoff](../validation/geocedg_1_2_0_editorial_handoff.md).
+No new scientific class, geometric claim, manuscript edit or editorial baseline
+promotion is introduced. B/A restore admissible captured state and image lifecycle;
+C preserves the existing view-cache values at array growth; D reconciles
+verification expectations; E selects the repository's actual build project.
+The mathematical foundations, differences from 1.1.0 and oblique-cone study
+remain those of the handoff, subject to the exact successor's final evidence.
+Its future delivery must identify commit/tree, all 24 unique G0 dispositions,
+independent reviews, required campaign receipts, INTERNAL/NC provenance,
+Windows installation/removal and native Computer Use evidence.
+
+The selective author smoke will prioritize clipboard insertion at an intermediate
+step/hidden layer and one Undo/Redo/reopen; zoom plus semantic-point drag/Undo;
+solid open s_2 across H/v_1 changes; and packaged launch/document association.
+Toolbar/flyout/capture and numeric/rich-metric presentation remain candidates
+where final Computer Use leaves visual or interaction risk. Each delivered case
+must specify initial state, operation, expected result, defect signal, actual
+automated/interactive evidence and why personal review still adds value.
+Do not replace final exact-tree gates with this source-stage plan.
+
+## Sixth unit — native materialization in B's reconstructed plane
+
+The authentic combined 1.2.0 Desktop selection stops at 172/179 pass. Seven
+new B assertions assume that the rebuilt plane's omitted animation field is
+still null; it instead holds the native lazy literal 0.1. No global campaign
+has started and the failed selection cannot enter the inventory updater.
+Temporary passive stack logging (removed byte-for-byte after diagnosis) proves
+that native archive font loading rebuilds the toolbar and validates stored user
+tools. ValidationKernel/MacroConstruction creates its constant plane, copies the
+host default's visual style and calls the host plane's lazy getAnimationStep.
+This materializes its native increment on the newly reconstructed prototype.
+
+Use the sixth and last authorized unit for this narrow B interaction. The
+initial alternative (admit null or a native-looking MyDouble 0.1 at restore)
+is rejected before productive implementation: a deliberate non-null change can
+look identical. Independent review requires retaining the B admission unchanged.
+
+Instead make getAnimationStep passive only for the current construction's exact
+GeoPlane3D prototype, type 3200, whose raw step is null. Return the identical
+native scalar without populating that source field. Identity must exclude old
+replaced prototypes; ordinary planes and subclasses delegate unchanged. Existing
+non-null literals and dynamic operands retain their existing value/identity.
+This preserves the source lazy state during native macro visual-style copying;
+it adds no global default or new recovery authority. The B helper and FILE
+writer remain byte-identical. Tests must exercise MacroKernel directly, the
+destination's unchanged visual scalar, source raw identity, ordinary/subclass/
+replaced-prototype exclusion and deliberate .375-to-.1 rejection during restore.
+Run focal consumers and independent review before resuming D. Six of six units
+are now in use; a further blocking defect must stop closeout.
+
+### Sixth-unit focal result
+
+The direct origin reproduction fails only the lazy MacroKernel case (1/7);
+ordinary/subclass/replaced, non-null literal/dynamic and deliberate-change
+controls pass. With the pure getter, U6-green-native completes 98/98 pass,
+inner exit 0, no errors/skips: 78 clipboard-recovery, 13 insertion and 7 native
+recovery consumers. B's initial assertions, snapshot helper, generic GeoElement
+and FILE writer are unchanged. The seventh new test proves that a deliberate
+non-null native-looking increment is still rejected rather than overwritten.
+Independent final focal review and D's complete derivation remain separate gates.
+No source correction beyond the sixth unit is authorized by this result.
