@@ -45,6 +45,16 @@ import org.junit.jupiter.api.io.TempDir;
 class R3PointInteractionDesktopTest {
 
 	@BeforeAll static void initialize() { G9U1SemanticPointInteractionTest.initializeDesktop(); }
+	private static String restorationTrace(AppGeoCeDG app, Throwable failure) {
+		java.io.StringWriter trace = new java.io.StringWriter();
+		failure.printStackTrace(new java.io.PrintWriter(trace));
+		System.out.println("CORRECTIVE_C_ACTIVE_VIEW id=" + app.getActiveEuclidianView().getViewID()
+				+ " width=" + app.getActiveEuclidianView().getWidth() + " height=" + app.getActiveEuclidianView().getHeight());
+		System.out.println("CORRECTIVE_C_CLASS_ORIGINS App=" + AppGeoCeDG.class.getProtectionDomain().getCodeSource()
+				+ " Construction=" + org.geogebra.common.kernel.Construction.class.getProtectionDomain().getCodeSource()
+				+ " SemanticPoint=" + AlgoSemanticLocusPoint2D.class.getProtectionDomain().getCodeSource());
+		System.out.println(trace); return trace.toString();
+	}
 	private static GeoElement eval(AppGeoCeDG app, String command) {
 		return G9U1SemanticPointInteractionTest.eval(app, command);
 	}
@@ -358,8 +368,9 @@ class R3PointInteractionDesktopTest {
 				assertEquals(route, offer.getRoute().name());
 				app.getKernel().attach(view);
 				try {
-					assertEquals("STALE_SELECTION", assertThrows(IllegalStateException.class,
-							() -> offer.commit(offer.getChoices().get(0))).getMessage());
+					IllegalStateException failure = assertThrows(IllegalStateException.class,
+							() -> offer.commit(offer.getChoices().get(0)));
+					assertEquals("STALE_SELECTION", failure.getMessage(), restorationTrace(app, failure));
 				} finally { app.getKernel().detach(view); }
 			}
 			assertTrue(entered.get()); before.assertUnchanged(app);
@@ -405,8 +416,9 @@ class R3PointInteractionDesktopTest {
 			try (var offer = new GeoCeDGNativePointPlacement(source, q, 1, .02, .1)) {
 				app.getKernel().attach(view);
 				try {
-					assertEquals("STALE_SELECTION", assertThrows(IllegalStateException.class,
-							() -> offer.commit(false)).getMessage());
+					IllegalStateException failure = assertThrows(IllegalStateException.class,
+							() -> offer.commit(false));
+					assertEquals("STALE_SELECTION", failure.getMessage(), restorationTrace(app, failure));
 				} finally { app.getKernel().detach(view); }
 			}
 			assertTrue(entered.get()); before.assertUnchanged(app);
@@ -515,6 +527,12 @@ class R3PointInteractionDesktopTest {
 			before.assertUnchanged(app);
 			var restored = (GeoPoint) app.getKernel().lookupLabel("DraggedP");
 			assertEquals(id, app.getKernel().getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(restored));
+			var restoredAlgorithm = (AlgoSemanticLocusPoint2D) restored.getParentAlgorithm();
+			System.out.println("CORRECTIVE_C_DRAG cause=" + restoredAlgorithm.getResolutionCause()
+					+ " retained=" + restoredAlgorithm.getSemanticAddress() + " current=" + restoredAlgorithm.getCurrentSemanticAddress()
+					+ " binding=" + restoredAlgorithm.getMetricPositionBinding() + " defined=" + restored.isDefined());
+			System.out.println("CORRECTIVE_C_DRAG_INPUTS sourceDefined=" + restoredAlgorithm.getInput()[0].isDefined()
+					+ " branch=" + restoredAlgorithm.getInput()[1].getXML() + " parameter=" + restoredAlgorithm.getInput()[2].getXML());
 			assertEquals(address, ((AlgoSemanticLocusPoint2D) restored.getParentAlgorithm()).getCurrentSemanticAddress());
 		});
 	}

@@ -147,3 +147,72 @@ Undo/Redo, save and reopen. Independent source/evidence review is recorded
 externally. This is one causal unit A (image-generation lifecycle and its
 certificate), not new functionality or a kernel reader change. Global gates and
 C–E remain pending.
+
+## Unit C — diagnose before selecting any productive correction
+
+Only test observability is initially changed: retain and print the complete
+exception cause/suppressed tree of each of the four publication rechecks, and
+record the dragged point's passive resolution cause, retained/current address,
+binding and defining XML. Do not recompute, initialize views or change adversaries.
+All five C production paths remain Git-identical to S after B/A.
+
+Compare the same five scenarios with 4fc using its preserved exact runtime and
+test sources read from that Git commit. Verify the frozen classpath's file/member
+hashes and report class origins; do not relabel the advanced S clone as 4fc or
+copy protected files. Diagnostic compilation/output belongs to a new external
+directory and uses the canonical neutral Gradle producer. No baseline source,
+historical classpath or original evidence is changed.
+
+No productive C patch is selected yet. An observed cause must justify its exact
+scope; a new normative permission/relaxation stops the affected part for author
+decision. C is the third unit started, with at most six overall and a possible
+split only for demonstrated independent causes. No global gate is authorized
+while these blocking interaction failures remain.
+
+### C causal reconciliation and minimal origin correction
+
+The preserved 4fc runtime passes all five original scenarios; the successor
+reproduces all five failures. The four publication traces identify
+UNSUPPORTED_VIEW_CLASS for view 1. The controller trace also links the drag's
+interrupted recovery to that same exception, followed by INVALID_SOURCE and a
+null current address. A second independent semantic cause is not established.
+
+The exact captured view is 800x600 with live/settings (400,300,100,100) and
+view bounds [-4,4] x [-3,3]. Its kernel cache is [-4,-4] x [-3,3], scales
+(100,100); the native reader restores xmax=4. The strict R10 guard correctly
+rejects that changed out-of-class cache. No new cache-repair class is proposed.
+
+Origin: `Kernel.prolongGraphicsBoundArrays` copies `xmin` into the enlarged
+`xmax` array. That line is identical in 4fc and S. Adding EV2 therefore corrupts
+the existing first view's maximum. This is a preexisting storage-growth defect;
+R10's rejection and the five broken consumer scenarios are the later integration
+regression. Fix the origin by prolonging the original xmax array instead.
+Kernel.java is the one additional productive file justified by this demonstrated
+cause. This restores the existing cache-preservation invariant, not a normative
+amendment, fallback or tolerance. The independent reviewer concurs with that
+scope. NativeTransactionalState2D and the controller's temporary trace are
+restored unchanged before the patch is verified.
+
+Validation: a direct shared-kernel regression adds view 2 and a farther slot,
+requiring exact preservation of all six prior cache values and exact new values;
+then the five original R3 scenarios, full R3 adversaries and R10 consumers.
+Keep exact R10 guards, ordinary single-DAG evaluation, FILE and identity intact.
+No bootstrap prerequisite changes. GUIDE_IMPACT: recovery bug fix only; final
+guide/status coverage follows the verified result. FINAL remains required for
+the final kernel/persistence candidate; this unit uses focal checks only.
+
+### C result
+
+C-growth-red: both direct view-growth cases fail at the xmax bits (expected 4,
+observed -4). After the one-line origin fix, C-green Desktop is 46/46 pass,
+including all 24 R3 adversaries and R10/Undo consumers. The two-task diagnostic
+used a shared XML directory, which the later Desktop task cleaned; no shared
+JUnit count is inferred from that missing output. C-shared-green separately
+retains 18/18 pass, including both direct growth cases; both producer exits are 0,
+with no errors/skips. All temporary productive-file diagnostics are removed.
+
+Independent review verifies the source pins and saved XML/logs, agrees with one
+causal C unit and unchanged R10 authority. This restores the five consumer
+regressions while fixing the inherited array-copy defect. D/E and global
+acceptance remain pending. Three of six authorized units have been used; no C
+split or extra normative authorization is necessary.

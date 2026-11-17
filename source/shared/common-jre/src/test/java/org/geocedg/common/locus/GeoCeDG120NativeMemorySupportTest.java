@@ -39,6 +39,23 @@ import org.junit.jupiter.params.provider.ValueSource;
 class GeoCeDG120NativeMemorySupportTest extends G9U0PublicSurfaceTestBase {
 	private static final List<String> INPUTS = List.of("B", "C", "H", "A2", "N", "E1");
 
+	private static long[] viewCacheBits(org.geogebra.common.kernel.Kernel kernel, int index) {
+		return java.util.stream.DoubleStream.of(kernel.getXmin(index), kernel.getXmax(index),
+				kernel.getYmin(index), kernel.getYmax(index), kernel.getXscale(index), kernel.getYscale(index))
+				.mapToLong(Double::doubleToRawLongBits).toArray();
+	}
+
+	@ParameterizedTest @ValueSource(ints = {2, 4})
+	void addingAViewPreservesEveryExistingCachePrimitive(int viewNumber) {
+		var kernel = getKernel();
+		kernel.setEuclidianViewBounds(1, -4, 4, -3, 3, 100, 101);
+		long[] first = viewCacheBits(kernel, 0);
+		kernel.setEuclidianViewBounds(viewNumber, -8, 9, -6, 7, 80, 81);
+		assertArrayEquals(first, viewCacheBits(kernel, 0), "Adding a view must preserve all six original cache values");
+		assertArrayEquals(java.util.stream.DoubleStream.of(-8, 9, -6, 7, 80, 81)
+				.mapToLong(Double::doubleToRawLongBits).toArray(), viewCacheBits(kernel, viewNumber - 1));
+	}
+
 	private GeoPoint point(String label) { return (GeoPoint) lookup(label); }
 	private AlgoIntersectLineConic selector() {
 		return (AlgoIntersectLineConic) point("J").getParentAlgorithm();

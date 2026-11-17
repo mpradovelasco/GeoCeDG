@@ -2995,7 +2995,8 @@ public class Kernel implements SpecialPointsListener, ConstructionStepper {
 	protected void prolongGraphicsBoundArrays(int length) {
 		if (length > this.xmin.length) {
 			this.xmin = prolong(this.xmin, length);
-			this.xmax = prolong(this.xmin, length);
+			// GeoCeDG 1.2.0 C: retain existing maxima when another view adds cache slots.
+			this.xmax = prolong(this.xmax, length);
 
 			this.ymin = prolong(this.ymin, length);
 			this.ymax = prolong(this.ymax, length);
