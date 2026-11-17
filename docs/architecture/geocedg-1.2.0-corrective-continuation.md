@@ -256,3 +256,43 @@ that official derivation after E focal blockers are removed, before freezing
 the final tree and starting global acceptance. No inventory/hash is fabricated
 and no failed S result is promoted. The source correction of D precedes E;
 the pending derived catalog remains a separately evidenced part of unit D.
+
+## Unit E — canonical Gradle project and short packaging paths
+
+Classification: build orchestration/provenance and environment diagnosis. Confirm
+the source-selection mechanism before changing code: run the actual builder from
+a new foreign Gradle project, with the real absolute builder/wrapper, explicit
+approved JDK25 and a new INTERNAL AppImage-only output. The old builder must not
+be treated as using its own project merely because its wrapper path is absolute.
+Retain the child command, cwd, logs and exit through the canonical child host.
+
+If confirmed, pass `--project-dir $RepositoryRoot` at all three Gradle invocation
+sites (toolchain discovery, installDist/export and reuse/export). Do not change
+the exporter, hash join, runtime inputs, package identity or contracts. Verify
+that resolved metadata, installDist and staged bytes have the same producer.
+
+Use a short initially absent directory under the existing approved repository
+artifacts boundary; do not expand that boundary or mutate S's nested checkout.
+The current root is shorter than the historical nested packaging clone. A native
+MSI-only focus will characterize WiX with unchanged pinned tools/licenses. It is
+not All/PACKAGING acceptance, public distribution or proof that MAX_PATH was the
+exact native cause of the historical pipe failure. Final INTERNAL/NC packages
+and global acceptance remain gated on all focal blockers and official D derivation.
+
+### E source-selection evidence
+
+E-project-red invokes the real absolute builder from foreign-project and records
+exit 1: Gradle reports root `geocedg-cwd-probe-host` when the requested Desktop
+export task exists only in the intended repository. This demonstrates the
+cwd-selection defect before any app-image is produced. E-invocation-red tests
+the three actual source argument arrays/native helper: 0/3 pass, all selecting
+the foreign root. With explicit project-dir at the three call sites,
+E-invocation-green is 3/3 pass, including an intended path containing spaces
+and unchanged cwd during/after invocation. The exporter, joins, hash values,
+output-boundary contract and product metadata are unchanged.
+
+Independent source review finds no blocking issue. Commit this source stage
+before the real short-path MSI focus so embedded provenance refers to a clean
+actual commit; that focus and final acceptance are still pending at this stage.
+The lightweight fake regression is a supplemental focal script, not a new or
+relaxed verification contract. It introduces no runtime/bootstrap prerequisite.

@@ -146,6 +146,7 @@ function Resolve-JavaToolchainHome {
     param([int]$LanguageVersion)
 
     $output = Invoke-Native -FilePath $GradleWrapper -ArgumentList @(
+        "--project-dir", $RepositoryRoot,
         "-q", "javaToolchains", "--no-daemon", "--console=plain"
     ) -Description "Gradle Java toolchain discovery" -Capture
 
@@ -580,6 +581,7 @@ try {
         ([string]$profile.input.install_dist).Replace("/", "\")))
     if (-not $SkipInstallDist) {
         Invoke-Native -FilePath $GradleWrapper -ArgumentList @(
+            "--project-dir", $RepositoryRoot,
             [string]$profile.input.gradle_task,
             ":desktop:desktop:exportGeoCeDGRuntimeComponents",
             "-I", $ResolvedComponentsExporter,
@@ -592,6 +594,7 @@ try {
         ) -Description "GeoCeDG Desktop installDist"
     } else {
         Invoke-Native -FilePath $GradleWrapper -ArgumentList @(
+            "--project-dir", $RepositoryRoot,
             ":desktop:desktop:exportGeoCeDGRuntimeComponents",
             "-I", $ResolvedComponentsExporter,
             "-PgeocedgRuntimeComponentsOutput=$ResolvedComponentsBuildPath",
