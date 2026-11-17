@@ -76,6 +76,14 @@ try {
         param($p)
         ($p.actions | Where-Object id -CEQ 'semantic.locus-v2.point-from-reference').id = 'semantic.locus-v2.unapproved-reference'
     } $false
+    Run-ProfileCase "missing authorized clipboard image action" {
+        param($p)
+        $p.actions = @($p.actions | Where-Object id -CNE 'document.insert-clipboard-image')
+    } $false
+    Run-ProfileCase "clipboard image does not authorize another action" {
+        param($p)
+        ($p.actions | Where-Object id -CEQ 'document.insert-clipboard-image').id = 'document.unapproved-clipboard-action'
+    } $false
     Run-ProfileCase "duplicate cluster" { param($p) $p.clusters[1].id = $p.clusters[0].id } $false
     Run-ProfileCase "duplicate family" { param($p) $p.taxonomy.broad_families[1].id = $p.taxonomy.broad_families[0].id } $false
     Run-ProfileCase "missing Spanish" { param($p) $p.product_policies.languages.offered = @("en") } $false

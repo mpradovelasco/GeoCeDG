@@ -103,11 +103,15 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
     $expertInsertionActionIds = @("document.insert-expert")
     # CU8-I adopts one experimental Desktop action for Graphics 1.
     $controlLayoutActionIds = @("presentation.control-layout")
+    # GeoCeDG 1.2.0 author-approved clipboard image action; G0 reconciles its
+    # exact ID while the single live profile owns the complete runtime record.
+    $geoCeDG120ClipboardImageActionIds = @("document.insert-clipboard-image")
     $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds + $preG9BR4ActionIds +
         $preG9BR6PlusA1ActionIds + $preG9BR6PlusBActionIds + $preG9BR6PlusD1ActionIds +
         $preG9BR6PlusE2ActionIds + $preG9BR6PlusE3ActionIds + $preG9BR6PlusF1ActionIds +
         $preG9BR6PlusF3ActionIds + $cu7M08SReferenceActionIds +
-        $expertInsertionActionIds + $controlLayoutActionIds | Sort-Object -CaseSensitive)
+        $expertInsertionActionIds + $controlLayoutActionIds +
+        $geoCeDG120ClipboardImageActionIds | Sort-Object -CaseSensitive)
     $liveIds = @($actionIds | Sort-Object -CaseSensitive)
     if (@(Compare-Object $approvedIds $liveIds -CaseSensitive).Count -ne 0) {
         throw "Live action IDs differ from the G9U1 catalog plus its approved amendments and the authorized Desktop actions."

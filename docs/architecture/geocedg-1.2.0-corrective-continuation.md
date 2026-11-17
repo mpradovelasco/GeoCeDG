@@ -216,3 +216,43 @@ causal C unit and unchanged R10 authority. This restores the five consumer
 regressions while fixing the inherited array-copy defect. D/E and global
 acceptance remain pending. Three of six authorized units have been used; no C
 split or extra normative authorization is necessary.
+
+## Unit D — reconcile authorized action and guide expectations
+
+Classification: verification/conformance and test maintenance. The live profile
+already contains 137 actions; the only difference from the executable authorized
+set is the author-approved `document.insert-clipboard-image`. Add precisely that
+ID to the existing amendment mechanism, without copying its runtime definition
+or admitting any other ID. Test missing/renamed action rejection explicitly.
+
+The approved compositional section 6.8 adds one H3 in each guide. Update only the
+stale expectations to 102 H3 / 119 outline entries, retaining H1/H2 counts,
+bilingual vectors, anchors, stable markers and content assertions. The toolbar
+test must expect 137 and explicitly find the approved clipboard action; its
+existing grammar and conservative-mode assertions remain.
+
+The derived JUnit inventory and registry pin are not hand-edited. Use the official
+updater with authenticated discovery and complete successful selection evidence.
+Do not reclassify the failed S projections or issue an acceptance receipt for S.
+Validation is the four original failing methods (and their surrounding classes),
+workspace-profile script tests, and the real workspace product leaf. Official
+derivation and global evidence are separate later steps. No geometry, FILE,
+prerequisite, runtime, profile action implementation or guide capability changes.
+
+### D focal result and remaining derivation
+
+D-desktop-focal: 56/56 pass in the four affected/conformance classes, inner exit
+0, no errors/skips. D-infrastructure-native: 43/43 pass and the real workspace
+product check satisfies both live-authority and packaged-resource contracts.
+The restricted first attempt could not create a Git MSYS namespace object
+(0xC0000022); managed escalation resolved that environment/permission failure
+without a product change.
+
+Independent review finds the exact approved-ID amendment and the retained guide
+assertions coherent. D is **FOCAL PASSED — OFFICIAL INVENTORY DERIVATION PENDING**.
+Both feature selections and broad FINAL selection counts require authentic
+successful execution evidence; discovery alone cannot certify them. Complete
+that official derivation after E focal blockers are removed, before freezing
+the final tree and starting global acceptance. No inventory/hash is fabricated
+and no failed S result is promoted. The source correction of D precedes E;
+the pending derived catalog remains a separately evidenced part of unit D.
