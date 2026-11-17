@@ -28,6 +28,8 @@ import org.geogebra.common.io.MyXMLio;
 import org.geogebra.common.io.XMLParseException;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.Construction;
+import org.geogebra.common.geogebra3D.kernel3D.ConstructionDefaults3D;
+import org.geogebra.common.geogebra3D.kernel3D.geos.GeoPlane3D;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.arithmetic.NumberValue;
@@ -156,6 +158,7 @@ class GeoCeDGUndoManager extends UndoManagerD {
 				throw new IOException("DEFAULT_PROTOTYPES_CHANGED");
 			}
 			Set<GeoElement> graph = archive ? liveGraph(construction) : null;
+			Map<Integer, MyDouble> omittedPlaneSteps = new HashMap<>();
 			// Validate every field before the first write. A full archive reader may
 			// replace prototypes, but no old GeoNumeric reference is ever installed.
 			for (var entry : prototypes.entrySet()) {
@@ -173,6 +176,17 @@ class GeoCeDGUndoManager extends UndoManagerD {
 					if (step != null && !lazyStep(construction, step) && !literalOne) {
 						throw new IOException("UNEXPECTED_LAZY_DEFAULT_CHANGE");
 					}
+				} else if (archive && step == null && geo != saved.geo
+						&& entry.getKey() == ConstructionDefaults3D.DEFAULT_PLANE3D
+						&& geo.getClass() == GeoPlane3D.class) {
+					// The plane writer omits animation XML. Only a newly reconstructed
+					// plane may recover that omitted literal from its owned MEMORY snapshot.
+					MyDouble literal = new MyDouble(construction.getKernel(),
+							Double.longBitsToDouble(saved.bits));
+					if (!sameValue(literal, saved)) {
+						throw new IOException("UNEXPECTED_LAZY_DEFAULT_CHANGE");
+					}
+					omittedPlaneSteps.put(entry.getKey(), literal);
 				} else {
 					if ((!archive && step != saved.step) || step == null
 							|| (archive && !ownedConstant(construction, step, graph))
@@ -184,6 +198,8 @@ class GeoCeDGUndoManager extends UndoManagerD {
 			for (var entry : prototypes.entrySet()) {
 				if (entry.getValue().step == null) {
 					current.get(entry.getKey()).setAnimationStep((NumberValue) null);
+				} else if (omittedPlaneSteps.containsKey(entry.getKey())) {
+					current.get(entry.getKey()).setAnimationStep(omittedPlaneSteps.get(entry.getKey()));
 				}
 			}
 			if (!sameXml()) { throw new IOException("DEFAULTS_SERIALIZATION_CHANGED"); }

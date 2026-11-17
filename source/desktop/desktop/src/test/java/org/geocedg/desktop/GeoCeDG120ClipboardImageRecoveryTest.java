@@ -39,6 +39,8 @@ import org.geogebra.common.kernel.geos.AbsoluteScreenLocateable;
 import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.View;
+import org.geogebra.common.geogebra3D.kernel3D.ConstructionDefaults3D;
+import org.geogebra.common.jre.io.MyXMLioJre;
 import org.geogebra.common.kernel.arithmetic.MyDouble;
 import org.geogebra.common.kernel.arithmetic.NumberValue;
 import org.geogebra.common.main.undo.UndoCommand;
@@ -74,6 +76,83 @@ import org.mozilla.javascript.Scriptable;
 		PreG9BR6PlusD1DocumentUnitsTest.DesktopLogger.class})
 class GeoCeDG120ClipboardImageRecoveryTest {
 	@TempDir(cleanup = CleanupMode.NEVER) Path directory;
+
+	@ParameterizedTest @CsvSource({"double,0.1", "double,0.375", "double,-0.0", "double,NaN", "numeric,0.375", "null,0"})
+	void archiveRecoveryRestoresOnlyTheCapturedPlaneLiteral(String representation, double value) throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = fixture(); var construction = app.getKernel().getConstruction();
+			GeoElement plane = construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D);
+			NumberValue literal = switch (representation) {
+			case "double" -> new MyDouble(app.getKernel(), value);
+			case "numeric" -> new GeoNumeric(construction, value);
+			case "null" -> null;
+			default -> throw new AssertionError(representation);
+			};
+			plane.setAnimationStep(literal); DefaultsSnapshot before = new DefaultsSnapshot(app);
+			var snapshot = GeoCeDGUndoManager.LazyDefaults.capture(construction);
+			byte[] archive = nativeArchive(app);
+			try (var input = new ByteArrayInputStream(archive)) {
+				((MyXMLioJre) app.getXMLio()).readNativeZipFromInputStream(input);
+			}
+			GeoElement restored = construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D);
+			assertNotSame(plane, restored); assertNull(restored.getAnimationStepObject());
+			snapshot.restoreArchive(); before.assertArchive(app);
+			if (literal != null) {
+				NumberValue raw = restored.getAnimationStepObject(); assertNotSame(literal, raw);
+				assertInstanceOf(MyDouble.class, raw);
+				assertEquals(Double.doubleToRawLongBits(value), Double.doubleToRawLongBits(raw.getDouble()));
+				assertEquals(!Double.isNaN(value), raw.isDefined()); assertSame(app.getKernel(), raw.wrap().getKernel());
+			}
+			return null;
+		});
+	}
+
+	@ParameterizedTest @ValueSource(booleans = {false, true})
+	void archivePlaneRepairRejectsUnexplainedChangesBeforeWriting(boolean otherField) throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = fixture(); var construction = app.getKernel().getConstruction();
+			construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D)
+					.setAnimationStep(new MyDouble(app.getKernel(), .375));
+			var snapshot = GeoCeDGUndoManager.LazyDefaults.capture(construction);
+			try (var input = new ByteArrayInputStream(nativeArchive(app))) {
+				((MyXMLioJre) app.getXMLio()).readNativeZipFromInputStream(input);
+			}
+			GeoElement plane = construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D);
+			GeoElement changed = otherField ? construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults.DEFAULT_IMAGE) : plane;
+			MyDouble unexpected = new MyDouble(app.getKernel(), .875); changed.setAnimationStep(unexpected);
+			assertThrows(IOException.class, snapshot::restoreArchive);
+			assertSame(unexpected, changed.getAnimationStepObject());
+			if (otherField) { assertNull(plane.getAnimationStepObject(), "No repair before all fields validate"); }
+			return null;
+		});
+	}
+
+	@Test void archivePlaneRepairCannotRepairASameInstanceMutation() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = fixture(); var construction = app.getKernel().getConstruction();
+			GeoElement plane = construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D);
+			plane.setAnimationStep(new MyDouble(app.getKernel(), .375));
+			var snapshot = GeoCeDGUndoManager.LazyDefaults.capture(construction);
+			plane.setAnimationStep((NumberValue) null);
+			assertThrows(IOException.class, snapshot::restoreArchive);
+			assertThrows(IOException.class, snapshot::restoreConstruction); assertNull(plane.getAnimationStepObject());
+			return null;
+		});
+	}
+
+	@ParameterizedTest @ValueSource(booleans = {false, true})
+	void archivePlaneRepairNeverAdmitsADynamicStep(boolean dependent) throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = fixture(); var construction = app.getKernel().getConstruction();
+			must(app, "PlaneBase=0.125"); must(app, dependent ? "PlaneRate=3*PlaneBase" : "PlaneRate=0.375");
+			GeoNumeric rate = (GeoNumeric) app.getKernel().lookupLabel("PlaneRate");
+			GeoElement plane = construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D);
+			plane.setAnimationStep(rate);
+			assertEquals("DYNAMIC_ANIMATION_STEP", GeoCeDGUndoManager.LazyDefaults.unsupportedImageStep(construction));
+			assertThrows(IllegalStateException.class, () -> GeoCeDGUndoManager.LazyDefaults.capture(construction));
+			assertSame(rate, plane.getAnimationStepObject()); return null;
+		});
+	}
 
 	private static byte[] undoArchive(UndoCommand command) throws IOException {
 		return Files.readAllBytes(assertInstanceOf(FileAppState.class, command.getAppState()).getFile().toPath());
