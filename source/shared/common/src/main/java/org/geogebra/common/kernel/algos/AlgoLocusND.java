@@ -878,7 +878,8 @@ public abstract class AlgoLocusND<T extends MyPoint> extends AlgoElement {
 		for (int i = 0; i < visibleEV.length
 				&& i < kernel.getXmaxLength(); i++) {
 			if (visibleEV[i]) {
-				changed = changed || updateScreenBorders(i);
+				// GeoCeDG P1: refresh every visible cache even after an earlier change.
+				changed = updateScreenBorders(i) || changed;
 			}
 		}
 		return changed;
