@@ -39,6 +39,7 @@ import org.geogebra.common.kernel.geos.AbsoluteScreenLocateable;
 import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.Kernel;
 import org.geogebra.common.kernel.MacroKernel;
+import org.geogebra.common.gui.dialog.options.model.AnimationStepModel;
 import org.geogebra.common.geogebra3D.kernel3D.geos.GeoPlane3D;
 import org.geogebra.common.geogebra3D.kernel3D.geos.GeoPlane3DConstant;
 import org.geogebra.common.kernel.View;
@@ -199,10 +200,6 @@ class GeoCeDG120ClipboardImageRecoveryTest {
 			GeoElement destination = (GeoElement) macro.getConstruction().getXOYPlane();
 			assertNotSame(plane, destination);
 			assertSame(raw, plane.getAnimationStepObject(), "Macro style copying must not materialize the host prototype");
-			if (raw == null) {
-				assertEquals(GeoNumeric.DEFAULT_SLIDER_INCREMENT, plane.getAnimationStep());
-				assertNull(plane.getAnimationStepObject());
-			}
 			assertEquals(raw == null ? GeoNumeric.DEFAULT_SLIDER_INCREMENT : raw.getDouble(), destination.getAnimationStep());
 			assertSame(macro, destination.getAnimationStepObject().wrap().getKernel());
 			before.assertConstruction(app); return null;
@@ -227,11 +224,31 @@ class GeoCeDG120ClipboardImageRecoveryTest {
 				plane = new GeoPlane3D(construction);
 				plane.setDefaultGeoType(ConstructionDefaults3D.DEFAULT_PLANE3D);
 			}
+			GeoPlane3D destination = new GeoPlane3D(construction);
+			plane.setAnimationStep((NumberValue) null);
+			destination.setBasicVisualStyle(plane);
+			assertNotNull(plane.getAnimationStepObject(), "Excluded sources retain native copy materialization");
+			assertEquals(GeoNumeric.DEFAULT_SLIDER_INCREMENT, destination.getAnimationStep());
 			plane.setAnimationStep((NumberValue) null);
 			assertEquals(GeoNumeric.DEFAULT_SLIDER_INCREMENT, plane.getAnimationStep());
 			NumberValue materialized = plane.getAnimationStepObject(); assertNotNull(materialized);
 			assertEquals(MyDouble.class, materialized.getClass()); assertSame(app.getKernel(), materialized.wrap().getKernel());
 			return null;
+		});
+	}
+
+
+	@Test void existingAnimationStepEditorRetainsNativeMaterializationForTheLazyPlaneDefault() throws Exception {
+		onEdt(() -> {
+			AppGeoCeDG app = fixture(); var construction = app.getKernel().getConstruction();
+			GeoElement plane = construction.getConstructionDefaults().getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D);
+			plane.setAnimationStep((NumberValue) null);
+			var model = new AnimationStepModel(app); model.setGeos(new Object[] {plane});
+			assertTrue(model.checkGeos()); assertFalse(assertDoesNotThrow(model::getText).isBlank());
+			NumberValue step = plane.getAnimationStepObject(); assertNotNull(step);
+			assertEquals(MyDouble.class, step.getClass()); assertSame(app.getKernel(), step.wrap().getKernel());
+			assertEquals(Double.doubleToRawLongBits(GeoNumeric.DEFAULT_SLIDER_INCREMENT),
+					Double.doubleToRawLongBits(step.getDouble())); return null;
 		});
 	}
 

@@ -2183,7 +2183,7 @@
           "command-and-workflow-reference/16.1"
         ]
       },
-      "notes": "The cited workflow specifies native acquisition after confirmation, layer and construction position, Cancel, one Undo/Redo after successful insertion, saved resources, verified-recovery session reset, contextual limits and known defective recovery paths in this technically rejected diagnostic build. Coverage describes documentation, not a runtime acceptance receipt.",
+      "notes": "The cited workflow specifies native acquisition after confirmation, layer and construction position, Cancel, one Undo/Redo after successful insertion, saved resources, verified-recovery session reset and contextual limits. The corrective continuation has focused insertion/recovery evidence; unresolved broad semantic failures block global verification and author smoke of the exact candidate. Coverage describes documentation, not a runtime acceptance receipt.",
       "label_es": "Imagen desde el portapapeles…",
       "classification_group": "clipboard-image-insertion"
     },

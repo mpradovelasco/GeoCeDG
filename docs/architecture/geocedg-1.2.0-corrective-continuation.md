@@ -385,3 +385,65 @@ and FILE writer are unchanged. The seventh new test proves that a deliberate
 non-null native-looking increment is still rejected rather than overwritten.
 Independent final focal review and D's complete derivation remain separate gates.
 No source correction beyond the sixth unit is authorized by this result.
+
+### U6 consumer finding and copy-only correction
+
+The prior 98/98 focus and its review are retained with their original scope;
+they do not close U6. Independent consumer review finds that the public lazy
+getter must still materialize the raw object for AnimationStepModel.getText.
+The actual model probe confirms one NPE with raw null and one passing control
+with the same increment initialized. The no-blocker conclusion for the pure
+public getter is superseded. This remains the same sixth causal unit.
+
+Restore the public getter unchanged. Route only the existing visual-style
+animation copy through a protected method in GeoElement, whose default body is
+the exact old copy call. GeoPlane3D overrides that method only when the source
+is its construction's current exact type-3200 plane prototype with raw null.
+Assign the same native scalar into the destination, without reading the source
+through the materializing getter. Other sources delegate, including old
+prototypes, subclasses and non-null operands. This preserves native property
+editing as well as passive MacroConstruction copying. B's restoration admission
+and FILE writer stay unchanged; no recovery authority is widened.
+
+The regression cohort must include the real property model, both paths of macro
+copying, excluded sources, existing recovery/Undo consumers and all 24 original
+G0 scenarios. The external probe/setup failures are diagnostic orchestration
+incidents, not evidence of product success. No seventh unit is opened.
+
+## Blocking broad Shared findings
+
+The neutral complete Shared execution on b0fcee9 records 7,821 tests:
+7,802 pass, nine assertion failures, zero errors and ten authorized omissions.
+The nine fail again in a separate same-filter focal run on that source; this
+is not an order-only observation of the full suite. They are outside the 24 G0
+cases. Their root causes are NOT_ESTABLISHED pending comparison with exact S;
+no causal attribution to images, view caches or metric policy is inferred.
+
+The failed selection cannot feed the official inventory updater. Do not adjust
+catalog counts, hashes, assertions or scientific contracts to obtain acceptance.
+PHASE, INTEGRATION, FINAL and complete INTERNAL/NC packaging remain stopped.
+All six units are in use. Complete only the same-unit U6 compatibility finding,
+its direct regression/review and read-only causal reconciliation; deliver the
+blocked state and evidence without claiming technical validation or readiness
+for author smoke. Any correction of new independent causes needs successor
+authorization. S, the thirteen historical rounds and the original model remain
+protected.
+
+### Comparison checkpoint before the final focal checks
+
+A new no-checkout clone excludes the sole protected basename with final sparse
+rules verified by Git before first checkout. It resolves exact S/tree, remains
+clean and never materializes CLAUDE.md; the historical clone is not used.
+The identical nine filters on S give eight assertion failures and one pass
+(CommandsTest.cmdPerimeter); on b0fcee9 all nine fail. Both runs use the same
+neutral producer, host and normal test toolchain. The eight failures therefore
+already exist in S; their scientific root causes remain NOT_ESTABLISHED.
+The Perimeter difference is candidate-associated, not yet attributed to C/U6.
+
+The final copy-hook source and real property consumer must now be checked with
+all original G0 test classes. Recheck the same nine Shared cases on that source;
+if Perimeter still fails, a diagnostic Kernel-only control can delimit causality.
+Do not correct these new Shared causes within this delivery. The candidate is
+blocked and the inventory/pin remain unchanged. Results of these source-stage
+checks belong in a new external corrective delivery, with exact commit/tree,
+raw logs/XML and an independent superseding review; none relabel S or b0fcee9.

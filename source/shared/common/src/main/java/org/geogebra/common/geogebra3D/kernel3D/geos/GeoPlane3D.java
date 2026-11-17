@@ -455,17 +455,18 @@ public class GeoPlane3D extends GeoElement3D
 	}
 
 
-	// GeoCeDG 1.2.0: native macro style copying must not materialize its host prototype.
+	// GeoCeDG 1.2.0: copy the native scalar without materializing the host prototype.
 	@Override
-	public double getAnimationStep() {
-		if (getClass() == GeoPlane3D.class
-				&& getDefaultGeoType() == ConstructionDefaults3D.DEFAULT_PLANE3D
-				&& getAnimationStepObject() == null
-				&& getConstruction().getConstructionDefaults()
-						.getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D) == this) {
-			return GeoNumeric.DEFAULT_SLIDER_INCREMENT;
+	protected void copyAnimationStepFrom(GeoElement geo) {
+		if (geo.getClass() == GeoPlane3D.class
+				&& geo.getDefaultGeoType() == ConstructionDefaults3D.DEFAULT_PLANE3D
+				&& geo.getAnimationStepObject() == null
+				&& geo.getConstruction().getConstructionDefaults()
+						.getDefaultGeo(ConstructionDefaults3D.DEFAULT_PLANE3D) == geo) {
+			setAnimationStep(GeoNumeric.DEFAULT_SLIDER_INCREMENT);
+		} else {
+			super.copyAnimationStepFrom(geo);
 		}
-		return super.getAnimationStep();
 	}
 
 	@Override

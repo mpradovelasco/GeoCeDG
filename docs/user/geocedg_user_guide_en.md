@@ -525,9 +525,10 @@ After a successful insertion, one **Undo** removes the inserted images and
 their new corners together; **Redo** restores them. Save the drawing as `.cedg`
 to keep the images and their resources when reopening it.
 
-This diagnostic build remains **technically rejected**: normal insertion has
-been checked, but some failure-recovery paths remain defective and can enter
-isolation.
+The 1.2.0 corrective continuation has focused insertion and recovery evidence,
+including the complete live image registry check. The broad selection retains
+unresolved semantic failures; acceptance requires resolving them and completing
+verification and author smoke of the exact candidate. Consult its delivery report.
 
 If an insertion fails, GeoCeDG attempts to restore the drawing and its history.
 If GeoCeDG reports a verified recovery with a **session reset**, the drawing

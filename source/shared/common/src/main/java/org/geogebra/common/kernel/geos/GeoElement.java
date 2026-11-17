@@ -1245,7 +1245,7 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 		setLineTypeHidden(geo.getLineTypeHidden());
 		setDecorationType(geo.getDecorationType());
 		setLineOpacity(geo.getLineOpacity());
-		setAnimationStep(geo.getAnimationStep());
+		copyAnimationStepFrom(geo);
 		setAnimationType(geo.getAnimationType());
 
 		// if layer is not zero (eg a new object has layer set to
@@ -2138,6 +2138,15 @@ public abstract class GeoElement extends ConstructionElement implements GeoEleme
 	 */
 	public void setAnimationStep(final NumberValue v) {
 		animationIncrement = v;
+	}
+
+	/**
+	 * GeoCeDG: preserve the native copy by default; special visual sources may
+	 * supply the same scalar without materializing state on the source.
+	 * @param geo source of the visual style
+	 */
+	protected void copyAnimationStepFrom(GeoElement geo) {
+		setAnimationStep(geo.getAnimationStep());
 	}
 
 	@Override

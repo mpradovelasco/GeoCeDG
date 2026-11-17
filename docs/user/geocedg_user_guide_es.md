@@ -543,9 +543,11 @@ Tras una inserción correcta, un **Deshacer** retira juntas las imágenes
 insertadas y sus nuevas esquinas; **Rehacer** las recupera. Guarde el dibujo
 como `.cedg` para conservar las imágenes y sus recursos al reabrirlo.
 
-Esta compilación de diagnóstico sigue **rechazada técnicamente**: se ha
-comprobado la inserción normal, pero algunas recuperaciones tras un fallo
-siguen siendo defectuosas y pueden activar el aislamiento.
+La continuación correctora de 1.2.0 dispone de pruebas focales de inserción
+y recuperación, incluida la comprobación del registro vivo de imágenes. La
+selección amplia mantiene fallos semánticos pendientes; la aceptación requiere
+resolverlos y completar las verificaciones y el smoke del candidato exacto.
+Consulte su informe de entrega.
 
 Si una inserción falla, GeoCeDG intenta restaurar el dibujo y su historial.
 Si GeoCeDG informa de una recuperación verificada con **reinicio de sesión**,
