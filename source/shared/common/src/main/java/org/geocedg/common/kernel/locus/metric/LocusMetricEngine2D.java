@@ -97,6 +97,21 @@ public final class LocusMetricEngine2D {
 			LocusMetricSharedOwner2D owner, LocusMetricIndexMode indexMode,
 			LocusMetricInstrumentation2D instrumentation,
 			String consumerToken) {
+
+		if (definition.getBranches().size() == 1) {
+			LocusBranch2D branch = definition.getBranches().get(0);
+			if (partialNumericAdmissible(branch)) {
+				LocusInterval2D domain = branch.getDeclaredDriverDomain();
+				CapabilityState selected = conditionedState(definition, branch, domain,
+						LocusMetricComponentKey2D.createDeclared(definition, branch, 0, domain)
+								+ "|" + LocusMetricNumericTraversal2D.VERSION,
+						query.getPolicy(), capabilities, owner, indexMode, instrumentation, consumerToken);
+				if (selected == null) { return incompleteTotal(query, definition); }
+				return aggregator.aggregateTotal(query, Collections.singletonList(
+						selected.capability.evaluateCompleteComponent(selected.state,
+								query.getPolicy(), instrumentation))).withNumericTraversal(branch);
+			}
+		}
 		// A branch that is not COMPLETE has a total only when its construction is outside
 		// class v3: the conditioned estimate of its declared pieces (section 26.5).
 		Map<String, List<LocusInterval2D>> declared = new LinkedHashMap<>();
@@ -145,6 +160,27 @@ public final class LocusMetricEngine2D {
 			}
 		}
 		return aggregator.aggregateTotal(query, contributions);
+	}
+
+	/** P2 bounded policy: no generic NOT_CERTIFIED or native tolerance admission. */
+	private static boolean partialNumericAdmissible(LocusBranch2D branch) {
+		LocusExistenceStructure2D s = branch.getExistenceStructure();
+		LocusInterval2D d = branch.getDeclaredDriverDomain();
+		if (s.getCompleteness() == Completeness.COMPLETE
+				|| s.getTopology() != DomainTopology.BOUNDED
+				|| !d.isLowerClosed() || !d.isUpperClosed()
+				|| !Double.isFinite(d.getLower()) || !Double.isFinite(d.getUpper())
+				|| s.getContinuousValidComponents().isEmpty()
+				|| !s.getPointComponents().isEmpty() || !s.getSingularParameters().isEmpty()
+				|| !s.getCertifiedFolds().isEmpty()) { return false; }
+		boolean unresolved = false;
+		for (LocusExistenceStructure2D.Coverage c : s.getCoverage()) {
+			if (c.getState() == CoverageState.UNRESOLVED
+					&& c.getCause() == LocusCoverageCause2D.NUMERIC_PROOF_METHOD_LIMIT) {
+				unresolved = true;
+			} else if (c.getState() != CoverageState.CERTIFIED_EXISTS) { return false; }
+		}
+		return unresolved;
 	}
 
 	private LocusMetricResult2D computeBetween(

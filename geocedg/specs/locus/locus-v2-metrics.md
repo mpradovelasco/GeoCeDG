@@ -1,7 +1,8 @@
 # Locus V2 metric contract
 
 - Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25, INCLUDING §25.12) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.6 AMENDMENT (§26, WITH §26.5 FROM AUTHOR DECISION H10 OF 2026-10-22) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**
-- Version: `1.6`
+- Version: `1.7`
+- P2 amendment §26.6: **SCIENTIFIC DECISION AUTHOR APPROVED (2026-11-17); bounded implementation/focal gate BLOCKED after two corrective iterations; no product acceptance**
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
 - Roadmap gate: G7 `PASS`; G7A `PASS`; G7B `PASS`
@@ -1501,6 +1502,58 @@ v3 without attributing certified existence or completeness to them.
 6. **Scalar adapter.** §25.4 applies unchanged: the scalar publishes the value when its
    estimated error does not exceed `τ`, as an estimate under the contract of §25.5, never as a
    geometric certificate.
+
+### 26.6 Partial geometric proof and complete conditional numeric traversal (P2)
+
+Version `partial-conditioned-estimate/v1`, author scientific decision of2026-11-17.
+Historical H10 (§26.5) stays unchanged. This additive mode concerns total length
+on one bounded, closed, nonperiodic declared branch. It requires at least one
+certified continuous component and unresolved coverage compatible with the
+estimator's hypotheses. The numeric traversal is the entire declared domain,
+never a subtotal of proved components. It uses estimator v2, its unchanged
+budgets, tolerances, error hypotheses and ordinary revision-scoped metric owner.
+
+The initial eligible unresolved cause is `NUMERIC_PROOF_METHOD_LIMIT`. It names
+a trigonometric interval-prover range limit, still UNRESOLVED, whose native zero
+branch is uniformly excluded and whose captured program has exactly one trig
+operation and only total smooth Cartesian/scalar operations (division only by a
+finite constant with magnitude at least1). No metric input, root, variable
+division, selected intersection or geometric validity predicate may hide behind
+the unavailable enclosure. This is no enlargement of the prover's range1000 and
+no new geometric certificate. The native-branch guard uses Lipschitz1 with an
+outward radius and downward |StrictMath.sin/cos(c)| minus radius minus4*ulp(1.0)
+above1e-8, rejecting nonfinite inputs. The margin bounds StrictMath and Math
+one-ulp realization errors. Generic NOT_CERTIFIED is not eligible.
+
+Certified nonexistence/boundaries, isolated or singular parameters, folds,
+topology/events not covered by this policy, native tolerance bands, uncertain
+selection, fidelity or upstream prerequisites, improper limits and exhausted
+budgets stay inadmissible. Evaluation/integration failure keeps its cause;
+error above requested tolerance never publishes a scalar. In particular the
+native zero thresholds of SCALAR_SIN in N03/N05/N06 contradict continuity/C4:
+a successful sampled estimate does not admit them. This decision supplies no
+piecewise jump-length policy and changes no scalar-trigonometry authority.
+
+The immutable rich result retains the geometric coverage as INCOMPLETE and
+unchanged existence structure/completeness. Typed numeric-traversal evidence
+records its version, branch, orientation, exact requested domain, source
+revision and independent numeric coverage. Only a successful entire traversal
+has numeric COMPLETE. Scalar admission may then bypass geometric COMPLETE
+exclusively with this typed evidence, matching revision, conditional role,
+RECTIFIABLE finite result and ESTIMATED_ERROR with finite error<=recorded tau.
+All other scalar guards remain. At most ESTIMATED is published, directly usable
+by ordinary formulas through the existing adapter without another integral.
+Error and its hypotheses are conditional, never an unconditional bound.
+
+Existence, continuity, intersections, addresses, closure, topology, equivalence
+and downstream certificate authority do not follow from this value (§25.5,
+§26.3). Source existence and semantic identities never change. Typed API and
+existing metric inspector expose condition, geometry, traversal, error,
+tolerance, assumptions and failure diagnostics. No result payload is persisted:
+FILE/MEMORY reconstruct through the existing rich/scalar command identities and
+versioned policies. Inadmissibility and recovery follow the DAG; the scalar's
+identity remains stable. Broader causes, branches, cuts and improper routes
+require their own demonstrated admission before support is added.
 
 ## 27. GeoCeDG 1.2.0 endpoint assistance and numeric public result
 

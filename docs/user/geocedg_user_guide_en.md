@@ -1625,7 +1625,7 @@ Spline V2 × Locus V2, Locus V2 × Spline V2 and Locus V2 × Locus V2 pairs
 therefore materialize exactly like spline pairs when both sides qualify. When a
 side has no certified model — for example a locus traced through a line–circle
 intersection, along another locus, or through any other expression, such as
-`(x(C)/2,y(C))`, `C+2u`, `C+u+u` or `C+A` with a point `A` — the pair stays
+`(x(C)/2,exp(y(C)))` — the pair stays
 rich-only, and the result's diagnostics say that a side lacks the model. A root
 at the seam where a driving circle closes on itself stays unresolved.
 
@@ -1807,6 +1807,23 @@ can be unavailable. In supported cases GeoCeDG may report a conditioned
 estimate, with its guarantee and error shown in the inspector. Keep an
 incomplete or estimated result separate from a confirmed measurement of the
 whole requested route.
+
+**P2 candidate: focused validation blocked; product acceptance pending.**
+
+In the P2 candidate, a supported partial geometric proof can also supply a
+conditional estimate of the **entire declared numeric traversal**. For example,
+when `a=LocusLength(L)` is admissible, `b=2*a+1` works directly. Inspect the
+condition, numeric traversal, unchanged geometric completeness, estimated error,
+requested tolerance and hypotheses. Numeric coverage of the requested traversal
+is distinct from geometric completeness. The estimate proves no intersections,
+semantic addresses or global continuity. Known native jumps, failed evaluation,
+unestablished limits, exhausted budgets or excessive error keep the number
+undefined; ordinary recomputation restores it when admissibility returns.
+
+This bounded extension currently covers one bounded nonperiodic driver interval including both ends
+with a compatible proof-method range limitation. It does not admit arbitrary
+unresolved bands. In particular, the native zero-threshold jumps of scalar sine
+can prevent measuring the whole traversal even when sampled points look smooth.
 
 If the inspector offers **Construct a metric endpoint**, review the available
 routes. **Create equivalent point** requires a constructively established

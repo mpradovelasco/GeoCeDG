@@ -120,7 +120,7 @@ final class PreG9bR3X1ExpressionPointPairMaterializationTest
 	@Test
 	void anUncertifiedExpressionIssuesNoPairToken() {
 		witness();
-		add("Ex=(x(C)/2,y(C))");
+		add("Ex=(x(C)/2,exp(y(C)))");
 		add("ex=LocusV2(Ex,C)");
 		GeoLocusIntersectionResult rich = add("Rx=Intersect(d,ex)");
 		assertTrue(rich.getIntersectionResult().getFiniteSolutions().isEmpty());
@@ -128,6 +128,16 @@ final class PreG9bR3X1ExpressionPointPairMaterializationTest
 		assertTrue(rich.getTokenLedgerState().startsWith("4|"), rich.getTokenLedgerState());
 		assertTrue(diagnostic(rich).contains("COVERAGE_NOT_ESTABLISHED"), diagnostic(rich));
 		assertTrue(evaluator("ex").captureCertifiedProgram().isEmpty());
+	}
+
+	@Test
+	void aCertifiedCartesianExpressionHasCurrentPairRoots() {
+		witness();
+		add("Ex=(x(C)/2,y(C))"); add("ex=LocusV2(Ex,C)");
+		GeoLocusIntersectionResult rich = add("Rx=Intersect(d,ex)");
+		assertEquals(2, rich.getIntersectionResult().getFiniteSolutions().size());
+		assertEquals(2, eligible(rich).size(), diagnostic(rich));
+		assertTrue(evaluator("ex").captureCertifiedProgramV3().isPresent());
 	}
 
 	@Test

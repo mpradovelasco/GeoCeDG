@@ -42,6 +42,8 @@ public final class ConstructionBoxOutcome2D {
 		UNLABELLED_COINCIDENT_OUTPUT,
 		/** An enclosure is not finite or a divisor enclosure contains zero. */
 		ENCLOSURE,
+		/** P2: proof-only range limit, uniform native branch and total smooth program. */
+		NUMERIC_PROOF_RANGE_LIMIT,
 		/** The value of a structural metric input is needed; it is never evidence. */
 		METRIC_VALUE,
 		/** The box is outside the driver domain. */

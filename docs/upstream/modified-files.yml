@@ -738,7 +738,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricEngine2D.java",
       "change": "added",
-      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
@@ -810,7 +810,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricResult2D.java",
       "change": "added",
-      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
@@ -966,7 +966,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/MetricRepresentationRole2D.java",
       "change": "added",
-      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added.",
+      "purpose": "Implement a focused phase G7B internal 2D total-variation metric type in the isolated GeoCeDG package; no command, XML, Path, render, legacy or 3D surface is added. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
@@ -2712,7 +2712,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGLocusV2Dialogs.java",
       "change": "added",
-      "purpose": "Provide keyboard-accessible text-first semantic-address and rich-result/token dialogs without exposing any action in Classic or the default toolbar; G9U0-R3 keeps the exact token GeoText as a hidden normal dependency and decouples compact chooser presentation from arbitrarily long token identity. G9U1: Expose a persistent rich inspector with exact-token one/selected/all materialization and bounded labels. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-CU3 increment E1: the existence grade, the contact evidence and the constructive admission of every solution.",
+      "purpose": "Provide keyboard-accessible text-first semantic-address and rich-result/token dialogs without exposing any action in Classic or the default toolbar; G9U0-R3 keeps the exact token GeoText as a hidden normal dependency and decouples compact chooser presentation from arbitrarily long token identity. G9U1: Expose a persistent rich inspector with exact-token one/selected/all materialization and bounded labels. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-CU3 increment E1: the existence grade, the contact evidence and the constructive admission of every solution. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-public-ui-exposure.md"
     },
     {
@@ -2736,19 +2736,19 @@
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: labels of the intersection diagnostics CERTIFIED_EXISTENCE_ESTABLISHED, CONSTRUCTIVE_ADMISSION_NOT_ESTABLISHED, CONTACT_EVIDENCE_CLASSIFIED and CONTRADICTED_BY_CERTIFIED_EVIDENCE. PRE-G9B-CU3 increment E1: field and value labels of the existence grade, the contact evidence and the constructive admission of a solution. PRE-G9B-CU3 increment CU3-B1: labels of the three fold-contact diagnostics.",
+      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: labels of the intersection diagnostics CERTIFIED_EXISTENCE_ESTABLISHED, CONSTRUCTIVE_ADMISSION_NOT_ESTABLISHED, CONTACT_EVIDENCE_CLASSIFIED and CONTRADICTED_BY_CERTIFIED_EVIDENCE. PRE-G9B-CU3 increment E1: field and value labels of the existence grade, the contact evidence and the constructive admission of a solution. PRE-G9B-CU3 increment CU3-B1: labels of the three fold-contact diagnostics. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: English labels of the four new intersection diagnostics. PRE-G9B-CU3 increment E1: English field and value labels of the existence grade, the contact evidence and the constructive admission. PRE-G9B-CU3 increment CU3-B1: labels of the three fold-contact diagnostics.",
+      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: English labels of the four new intersection diagnostics. PRE-G9B-CU3 increment E1: English field and value labels of the existence grade, the contact evidence and the constructive admission. PRE-G9B-CU3 increment CU3-B1: labels of the three fold-contact diagnostics. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the Spanish CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add the Spanish WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: Spanish names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the Spanish Marco ISO A tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: Spanish labels of the four new intersection diagnostics. PRE-G9B-CU3 increment E1: Spanish field and value labels of the existence grade, the contact evidence and the constructive admission. PRE-G9B-CU3 increment CU3-B1: Spanish labels of the three fold-contact diagnostics.",
+      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the Spanish CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add the Spanish WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: Spanish names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the Spanish Marco ISO A tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: Spanish labels of the four new intersection diagnostics. PRE-G9B-CU3 increment E1: Spanish field and value labels of the existence grade, the contact evidence and the constructive admission. PRE-G9B-CU3 increment CU3-B1: Spanish labels of the three fold-contact diagnostics. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2784,7 +2784,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/G9U0GeneratorSuiteTest.java",
       "change": "added",
-      "purpose": "Verify the exact G22 closed generator families, explicit domains, nested dependency behavior, cycle rejection, lifecycle continuity, and fresh-identity copying.",
+      "purpose": "Verify the exact G22 closed generator families, explicit domains, nested dependency behavior, cycle rejection, lifecycle continuity, and fresh-identity copying. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -4754,7 +4754,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructionIntervalModel2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-R2-E0/E1: outward-rounded value and derivative replay of a captured construction program for pair certification. PRE-G9B-R3-X1: evaluate the expression-point translation with the existing TRANSLATE formula on the unit reading (PX, PY, 1) of its point, adding no interval logic. Authority: docs/architecture/pre_g9b_r3_x1_certified_expression_point_design.md.",
+      "purpose": "PRE-G9B-R2-E0/E1: outward-rounded value and derivative replay of a captured construction program for pair certification. PRE-G9B-R3-X1: evaluate the expression-point translation with the existing TRANSLATE formula on the unit reading (PX, PY, 1) of its point, adding no interval logic. Authority: docs/architecture/pre_g9b_r3_x1_certified_expression_point_design.md. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
@@ -4910,13 +4910,13 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3X1ExpressionPointPairMaterializationTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R3-X1: verify certified pair roots, exact tokens, materialization, lifecycle, metrics, persistence and copy/remap for supported expression-point loci, and the rich-only boundary for unsupported ones.",
+      "purpose": "PRE-G9B-R3-X1: verify certified pair roots, exact tokens, materialization, lifecycle, metrics, persistence and copy/remap for supported expression-point loci, and the rich-only boundary for unsupported ones. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9bR3X1RedefineWitnessTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R3-X1: verify the R3 author witness redefine into supported expression-point syntax, its undo, redo and reopen, and the fail-closed unsupported redefine.",
+      "purpose": "PRE-G9B-R3-X1: verify the R3 author witness redefine into supported expression-point syntax, its undo, redo and reopen, and the fail-closed unsupported redefine. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
@@ -6650,7 +6650,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/PolicyV2LocusMetricCapability2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU1 public metric capability of policy v2: capability order, tolerance-conditioned evidence, similarity images (N1) and between-position routes on cached states (section 25).",
+      "purpose": "PRE-G9B-CU1 public metric capability of policy v2: capability order, tolerance-conditioned evidence, similarity images (N1) and between-position routes on cached states (section 25). P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
@@ -6662,7 +6662,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu1EstimatorTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU1 estimator v2: coherent estimates, adversarial curves, invariance regimes, determinism and memoized budget failures (V-MET-EST, V-ADV, V-INV, V-DET-1, V-BUD-1).",
+      "purpose": "PRE-G9B-CU1 estimator v2: coherent estimates, adversarial curves, invariance regimes, determinism and memoized budget failures (V-MET-EST, V-ADV, V-INV, V-DET-1, V-BUD-1). P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "docs/validation/pre_g9b_cu1_validation_matrix.md"
     },
     {
@@ -6734,7 +6734,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusCoverageCause2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU2 step T2: typed causes of coverage, separating certified nonexistence from computational undefinedness (section 15.5).",
+      "purpose": "PRE-G9B-CU2 step T2: typed causes of coverage, separating certified nonexistence from computational undefinedness (section 15.5). P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
     },
     {
@@ -6800,13 +6800,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructionBoxModel2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU2 step T3: typed box evaluation of certified construction programs of every class: exact validity predicates decided on the box (VALID, UNIFORMLY_INVALID or UNRESOLVED with a typed reason), outward value and first-derivative enclosures for the class-v3 operations, structural identities for the equality predicates and the conservative band of an unlabelled second output.",
+      "purpose": "PRE-G9B-CU2 step T3: typed box evaluation of certified construction programs of every class: exact validity predicates decided on the box (VALID, UNIFORMLY_INVALID or UNRESOLVED with a typed reason), outward value and first-derivative enclosures for the class-v3 operations, structural identities for the equality predicates and the conservative band of an unlabelled second output. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/ConstructionBoxOutcome2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU2 step T3: typed outcome of one box evaluation with its deciding step and predicate, the evaluated predicates and the coverage cause it justifies; only a uniformly invalid box justifies certified nonexistence.",
+      "purpose": "PRE-G9B-CU2 step T3: typed outcome of one box evaluation with its deciding step and predicate, the evaluated predicates and the coverage cause it justifies; only a uniformly invalid box justifies certified nonexistence. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-certified-construction-model.md"
     },
     {
@@ -6944,13 +6944,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/HybridExistenceCertifier2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU2 step T4: hybrid existence certifier (locus-existence/hybrid/v1) with its versioned policy: structural totality, exact certificate of first-level predicates, interval transitions and stationary points on a dyadic partition that wraps the seam, typed unresolved bands with exploratory evidence, and assembly of arcs, point components and singular parameters.",
+      "purpose": "PRE-G9B-CU2 step T4: hybrid existence certifier (locus-existence/hybrid/v1) with its versioned policy: structural totality, exact certificate of first-level predicates, interval transitions and stationary points on a dyadic partition that wraps the seam, typed unresolved bands with exploratory evidence, and assembly of arcs, point components and singular parameters. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-existence-components.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/locus/intersection/PreG9BCu2HybridCertificationTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU2 step T4: hybrid certifier on synthetic constructions (V-TOT-1, V-PER-1, V-CRIT-1 to V-CRIT-6, V-CRIT-10, V-TR-2, V-POINT-1, V-POINT-2, V-POINT-4, V-POINT-6, V-COINC-1, V-COINC-2, V-COINC-4, V-COINC-5, V-COINC-7, V-LVL-1, V-LVL-3, V-COMPL-1, V-V3-3, V-V3-4, GC-4, GC-8), with the soundness of the centred form against a 60-digit reference.",
+      "purpose": "PRE-G9B-CU2 step T4: hybrid certifier on synthetic constructions (V-TOT-1, V-PER-1, V-CRIT-1 to V-CRIT-6, V-CRIT-10, V-TR-2, V-POINT-1, V-POINT-2, V-POINT-4, V-POINT-6, V-COINC-1, V-COINC-2, V-COINC-4, V-COINC-5, V-COINC-7, V-LVL-1, V-LVL-3, V-COMPL-1, V-V3-3, V-V3-4, GC-4, GC-8), with the soundness of the centred form against a 60-digit reference. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     },
     {
@@ -7082,7 +7082,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/PreG9BCu2ConditionedEstimateTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU2, author decision H10 (option A) before step T12: the total length of a construction outside class v3 is a conditioned class-3 estimate on its declared domain (locus-v2-metrics.md section 26.5) that keeps the CU1 value, error and scalar admissibility and certifies nothing; only OPERATION_OUTSIDE_CLASS is eligible, a whole periodic period closes only under a recorded hypothesis, excluded ends and failures keep their typed status, and similarity images stay conditioned (H10-1 to H10-5).",
+      "purpose": "PRE-G9B-CU2, author decision H10 (option A) before step T12: the total length of a construction outside class v3 is a conditioned class-3 estimate on its declared domain (locus-v2-metrics.md section 26.5) that keeps the CU1 value, error and scalar admissibility and certifies nothing; only OPERATION_OUTSIDE_CLASS is eligible, a whole periodic period closes only under a recorded hypothesis, excluded ends and failures keep their typed status, and similarity images stay conditioned (H10-1 to H10-5). P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
@@ -7776,6 +7776,8 @@
     {"path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGGuideImages.java", "change": "added", "purpose": "PRE-G9B-CU9-R1: Decode bounded classpath PNGs and display them with accessible alternative text, without loading URLs.", "authority": "geocedg/specs/operations/documentation-maintenance.md"},
     {"path": "source/shared/common/src/main/java/org/geogebra/common/geogebra3D/kernel3D/geos/GeoPlane3D.java", "change": "modified", "purpose": "GeoCeDG 1.2.0 corrective U6: keep the current exact plane default raw-null during native macro visual-style copying via the dedicated copy hook, assigning the unchanged native scalar to the destination only. The public getter retains native lazy materialization; ordinary/subclass/replaced sources and non-null operands delegate unchanged. MEMORY recovery admission and FILE writer are unchanged.", "authority": "docs/architecture/geocedg-1.2.0-corrective-continuation.md"},
     {"path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/algos/AlgoLocusViewBoundsRegressionTest.java", "change": "added", "purpose": "GeoCeDG 1.2.0 P1: regress actual legacy per-view cache refresh across three visibility masks, repeated bound changes, hidden slots and no-change notification.", "authority": "docs/architecture/geocedg-1.2.0-p1-p2-continuation.md"},
-    {"path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoLocusND.java", "change": "modified", "purpose": "GeoCeDG 1.2.0 P1: refresh all visible legacy-locus view caches before accumulating the change flag; avoid boolean short-circuit skipping later bounds and connection thresholds. Preserve C xmax-copy correction, legacy Perimeter oracle, geometry, FILE and V2 authority.", "authority": "docs/architecture/geocedg-1.2.0-p1-p2-continuation.md"}
+    {"path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoLocusND.java", "change": "modified", "purpose": "GeoCeDG 1.2.0 P1: refresh all visible legacy-locus view caches before accumulating the change flag; avoid boolean short-circuit skipping later bounds and connection thresholds. Preserve C xmax-copy correction, legacy Perimeter oracle, geometry, FILE and V2 authority.", "authority": "docs/architecture/geocedg-1.2.0-p1-p2-continuation.md"},
+    {"path": "source/shared/common-jre/src/test/java/org/geocedg/common/locus/P2ConditionalNumericEstimateTest.java", "change": "added", "purpose": "P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.", "authority": "geocedg/specs/locus/locus-v2-metrics.md#266-partial-geometric-proof-and-complete-conditional-numeric-traversal-p2"},
+    {"path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricNumericTraversal2D.java", "change": "added", "purpose": "P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority.", "authority": "geocedg/specs/locus/locus-v2-metrics.md#266-partial-geometric-proof-and-complete-conditional-numeric-traversal-p2"}
   ]
 }

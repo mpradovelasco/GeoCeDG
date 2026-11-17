@@ -1191,7 +1191,16 @@ public final class ConstructionBoxModel2D {
 		 */
 		private Jet snappedTrig(Jet argument, boolean sine, double threshold,
 				boolean smallSineExempt) {
-			Jet analytic = sine ? argument.sin() : argument.cos();
+			Jet analytic;
+			try {
+				analytic = sine ? argument.sin() : argument.cos();
+			} catch (ConstructionIntervalModel2D.TrigonometricRangeLimit limit) {
+				if (numericRangeProgram() && uniformNonzeroTrig(argument.value, sine, threshold)) {
+					throw new Stop(Unresolved.NUMERIC_PROOF_RANGE_LIMIT, null, STEP_PREDICATE,
+							"Proof range limit; uniform native branch; total smooth numeric program");
+				}
+				throw limit;
+			}
 			boolean canSnap = !smallSineExempt || argument.value.lower < -.1
 					|| argument.value.upper > .1;
 			if (!canSnap) { return analytic; }
@@ -1202,6 +1211,44 @@ public final class ConstructionBoxModel2D {
 			if (alwaysSnap && magnitude.upper < threshold) { return Jet.constant(0); }
 			throw new Stop(Unresolved.TOLERANCE, null, STEP_PREDICATE,
 					"The native trigonometric zero branch is not uniform on this box");
+		}
+
+		/** P2: no opaque value may conceal a later domain/selection predicate. */
+		private boolean numericRangeProgram() {
+			int trig = 0;
+			for (Step step : program.getSteps()) {
+				switch (step.getOperation()) {
+				case SCALAR_SIN: case SCALAR_COS:
+					trig++; break;
+				case POINT_X: case POINT_Y: case POINT_COORDINATES:
+				case SCALAR_NEGATE: case SCALAR_ADD: case SCALAR_SUBTRACT:
+				case SCALAR_MULTIPLY:
+					break;
+				case SCALAR_DIVIDE:
+					Operand divisor = step.getOperands().get(1);
+					if (divisor.getKind() != OperandKind.SCALAR
+							|| !Double.isFinite(divisor.getValue(0))
+							|| Math.abs(divisor.getValue(0)) < 1) { return false; }
+					break;
+				default: return false;
+				}
+			}
+			return trig == 1;
+		}
+
+		/** Lipschitz1 guard of a numeric premise, never a geometric enclosure. */
+		private boolean uniformNonzeroTrig(SplineOutwardInterval2D box, boolean sine,
+				double threshold) {
+			double centre = box.lower + (box.upper - box.lower) / 2;
+			double radius = Math.nextUp(Math.max(Math.nextUp(centre - box.lower),
+					Math.nextUp(box.upper - centre)));
+			if (!Double.isFinite(centre) || !Double.isFinite(radius)
+					|| centre < box.lower || centre > box.upper) { return false; }
+			// StrictMath and Math each have <=1ulp error in[-1,1]. Four ulp(1)
+			// conservatively cover both; every subtraction widens downwards.
+			double value = Math.abs(sine ? StrictMath.sin(centre) : StrictMath.cos(centre));
+			double lower = Math.nextDown(Math.nextDown(value - 4 * Math.ulp(1.0)) - radius);
+			return lower > threshold;
 		}
 
 		private void requireDistinct(List<Operand> operands) {

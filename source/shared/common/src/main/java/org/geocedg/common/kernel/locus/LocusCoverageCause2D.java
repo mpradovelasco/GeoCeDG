@@ -59,6 +59,8 @@ public enum LocusCoverageCause2D {
 	COMPOSED_EVENT_CONTINUITY_NOT_ESTABLISHED(CoverageState.UNRESOLVED),
 	/** No certifier established the interval. */
 	NOT_CERTIFIED(CoverageState.UNRESOLVED),
+	/** P2: guarded proof-only range limit; no geometric fact is established. */
+	NUMERIC_PROOF_METHOD_LIMIT(CoverageState.UNRESOLVED),
 	/** A coverage assertion recorded before PRE-G9B-CU2, without a typed cause. */
 	UNTYPED(null);
 

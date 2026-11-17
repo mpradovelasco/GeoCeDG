@@ -1707,13 +1707,13 @@ que las dos curvas se cruzan en ella. Tienen modelo certificado:
 
 Por tanto, los pares Spline V2 × Locus V2, Locus V2 × Spline V2 y
 Locus V2 × Locus V2 se materializan exactamente igual que los pares de splines
-cuando ambos lados cumplen la condición. Cuando un lado carece de modelo
-certificado —por ejemplo, un lugar trazado a través de una intersección de recta
-y circunferencia, sobre otro lugar o a través de cualquier otra expresión, como
-`(x(C)/2,y(C))`, `C+2u`, `C+u+u` o `C+A` con un punto `A`— el par permanece solo
-como resultado rico, y los diagnósticos del resultado indican que un lado carece del
-modelo. Una raíz situada en la costura donde se cierra la circunferencia
-conductora permanece sin resolver.
+cuando ambos lados cumplen la condición. Cuando un lado carece de modelo certificado, por ejemplo una expresión con
+`exp(y(C))` fuera del vocabulario de prueba admitido, el par permanece como
+resultado rico y sus diagnósticos explican el modelo no disponible. Las
+expresiones cartesianas como `(x(C)/2,y(C))` pueden ahora certificarse cuando sus
+operaciones tipadas y procedencia constructiva son admisibles. La elegibilidad
+sigue siendo propia de cada raíz; ni la coincidencia visual ni una longitud
+estimada la establecen.
 
 La certificación es local: cada raíz admisible se demuestra por sí misma, mientras
 que la completitud global del resultado sigue normalmente en `NOT_ESTABLISHED`
@@ -1900,6 +1900,25 @@ si el dominio no está admitido o solo se ha establecido en parte. En los casos
 previstos GeoCeDG puede dar una estimación condicionada, con su garantía y
 error en el inspector. Distinga los resultados incompletos o estimados de una
 medición confirmada para todo el recorrido solicitado.
+
+**Candidato P2: verificación focal bloqueada; aceptación del producto pendiente.**
+
+En el candidato P2, una prueba geométrica parcial compatible también puede
+proporcionar una estimación condicionada del **recorrido numérico declarado
+completo**. Cuando `a=LocusLength(L)` es admisible, `b=2*a+1` funciona directamente.
+El inspector permite consultar la condición, el recorrido numérico, la
+completitud geométrica conservada, el error estimado, la tolerancia solicitada y
+las hipótesis. Evaluar numéricamente el recorrido completo no completa la prueba
+geométrica. La estimación no demuestra intersecciones, direcciones semánticas ni
+continuidad global. Los saltos nativos conocidos, fallos de evaluación, límites
+no establecidos, presupuestos agotados o errores excesivos mantienen el número
+indefinido; la recomputación ordinaria lo recupera al restablecerse la admisibilidad.
+
+Esta extensión acotada admite actualmente una rama cerrada en sus extremos,
+acotada y no periódica, con una limitación compatible del método de prueba. No
+admite cualquier banda sin resolver. En particular, los saltos del seno escalar
+nativo en sus umbrales de cero pueden impedir medir el recorrido completo aunque
+las muestras parezcan suaves.
 
 Si el inspector ofrece **Construir un extremo métrico**, revise las rutas
 disponibles. **Crear punto equivalente** exige una dirección demostrada por la

@@ -1782,6 +1782,7 @@ public final class HybridExistenceCertifier2D {
 				return refine(index, causeOf(outcome), true);
 			case TOLERANCE:
 			case UNLABELLED_COINCIDENT_OUTPUT:
+			case NUMERIC_PROOF_RANGE_LIMIT:
 			case ENCLOSURE:
 				return refine(index, causeOf(outcome), false);
 			default:
@@ -2324,6 +2325,8 @@ public final class HybridExistenceCertifier2D {
 			switch (outcome.unresolved) {
 			case PREDICATE:
 				return LocusCoverageCause2D.DEGENERATE_CONFIGURATION;
+			case NUMERIC_PROOF_RANGE_LIMIT:
+				return LocusCoverageCause2D.NUMERIC_PROOF_METHOD_LIMIT;
 			case TOLERANCE:
 				return LocusCoverageCause2D.INHERITED_TOLERANCE_BEHAVIOUR;
 			case UNLABELLED_COINCIDENT_OUTPUT:

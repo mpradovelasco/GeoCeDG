@@ -150,7 +150,7 @@ class PreG9bR3X1RedefineWitnessTest extends PreG9bR3RedefineTestBase {
 		final PersistentGeoId pointId = id("X");
 		final double x = point("X").getInhomX();
 		getApp().storeUndoInfo();
-		Outcome outcome = redefine("E", "Midpoint(D,(x(C)/2+1,y(C)))",
+		Outcome outcome = redefine("E", "Midpoint(D,(x(C)/2+1,exp(y(C))))",
 				PreG9bR3RedefineTestBase::retainWhenAvailable);
 		assertTrue(outcome.succeeded(), outcome.errors());
 		assertEquals(ids("C"), record("E").getDependencies());
@@ -170,6 +170,25 @@ class PreG9bR3X1RedefineWitnessTest extends PreG9bR3RedefineTestBase {
 		assertTrue(point("X").isDefined());
 		assertEquals(token, token("X"));
 		assertEquals(x, point("X").getInhomX(), 1E-12);
+	}
+
+	@Test
+	void aCertifiedCartesianRedefinitionPreservesIdentityAndUndo() {
+		activateUndo(); witness();
+		final String selected = token("X");
+		final PersistentGeoId pointId = id("X");
+		final double oldX = point("X").getInhomX();
+		getApp().storeUndoInfo();
+		Outcome result = redefine("E", "Midpoint(D,(x(C)/2+1,y(C)))",
+				PreG9bR3RedefineTestBase::retainWhenAvailable);
+		assertTrue(result.succeeded(), result.errors());
+		assertEquals(ids("C"), record("E").getDependencies());
+		assertEquals(2, eligible(rich("e")).size());
+		assertEquals(pointId, id("X")); assertEquals(selected, token("X"));
+		getKernel().undo();
+		assertTrue(point("X").isDefined());
+		assertEquals(pointId, id("X")); assertEquals(selected, token("X"));
+		assertEquals(oldX, point("X").getInhomX(), 1E-12);
 	}
 
 	/**

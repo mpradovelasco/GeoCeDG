@@ -16,6 +16,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 
 /** Rich immutable semantic metric result with orthogonal status axes. */
 public final class LocusMetricResult2D {
+	private final LocusMetricNumericTraversal2D numericTraversal;
 	private final MetricValue2D metricValue;
 	private final MetricCoverage coverage;
 	private final MetricComputationStatus computationStatus;
@@ -65,6 +66,7 @@ public final class LocusMetricResult2D {
 			MetricProvenance2D provenance,
 			List<LocusMetricContribution2D> contributions,
 			List<MetricDiagnostic2D> diagnostics) {
+		this.numericTraversal = null;
 		this.metricValue = Objects.requireNonNull(metricValue);
 		this.coverage = Objects.requireNonNull(coverage);
 		this.computationStatus = Objects.requireNonNull(computationStatus);
@@ -155,7 +157,7 @@ public final class LocusMetricResult2D {
 	 */
 	public boolean isScalarAdmissible() {
 		if (metricValue.getKind() != MetricValueKind.FINITE
-				|| coverage != MetricCoverage.COMPLETE
+				|| (coverage != MetricCoverage.COMPLETE && !hasCompleteConditionalTraversal())
 				|| computationStatus != MetricComputationStatus.SUCCESS
 				|| rectifiability != MetricRectifiability.RECTIFIABLE) {
 			return false;
@@ -183,6 +185,48 @@ public final class LocusMetricResult2D {
 		}
 		double amount = errorEvidence.getEstablishedAbsoluteAmount();
 		return !Double.isNaN(amount) && amount <= tolerance.get();
+	}
+
+	/** Current entire numeric traversal, independently of geometric coverage. */
+	public Optional<LocusMetricNumericTraversal2D> getNumericTraversal() {
+		return Optional.ofNullable(numericTraversal);
+	}
+	public boolean isConditionedEstimate() {
+		return numericTraversal != null || diagnostics.stream().anyMatch(d ->
+				d.getCode() == MetricDiagnosticCode2D.EXISTENCE_NOT_CERTIFIED);
+	}
+	private boolean hasCompleteConditionalTraversal() {
+		return numericTraversal != null
+				&& numericTraversal.getNumericCoverage() == MetricCoverage.COMPLETE
+				&& numericTraversal.getSemanticRevision() == provenance.getSemanticRevision()
+				&& representationRole == MetricRepresentationRole2D.CONDITIONAL_NUMERIC_ESTIMATE
+				&& errorEvidence.getNumericGuarantee().orElse(null) == NumericGuarantee.ESTIMATED_ERROR
+				&& errorEvidence.getRequestedTolerance().isPresent()
+				&& Double.isFinite(errorEvidence.getEstablishedAbsoluteAmount());
+	}
+	/** Package-only publication after the engine's guarded full-domain estimate. */
+	LocusMetricResult2D withNumericTraversal(org.geocedg.common.kernel.locus.LocusBranch2D branch) {
+		return new LocusMetricResult2D(this, branch);
+	}
+	private LocusMetricResult2D(LocusMetricResult2D source,
+			org.geocedg.common.kernel.locus.LocusBranch2D branch) {
+		numericTraversal = new LocusMetricNumericTraversal2D(branch, source.coverage,
+				source.provenance.getSemanticRevision());
+		metricValue = source.metricValue;
+		coverage = MetricCoverage.INCOMPLETE;
+		computationStatus = source.computationStatus;
+		rectifiability = source.rectifiability;
+		traversalOutcome = source.traversalOutcome;
+		routeEvidence = source.routeEvidence;
+		constructionFidelity = source.constructionFidelity;
+		evaluatorMethod = source.evaluatorMethod;
+		metricMethod = source.metricMethod;
+		representationRole = MetricRepresentationRole2D.CONDITIONAL_NUMERIC_ESTIMATE;
+		errorEvidence = source.errorEvidence;
+		unit = source.unit;
+		provenance = source.provenance;
+		contributions = source.contributions;
+		diagnostics = source.diagnostics;
 	}
 
 	/**

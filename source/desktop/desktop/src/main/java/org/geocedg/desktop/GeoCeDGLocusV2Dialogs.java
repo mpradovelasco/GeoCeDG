@@ -387,6 +387,18 @@ final class GeoCeDGLocusV2Dialogs {
 			appendField(text, "LocusV2.Results.Field.RelativeError",
 					formatErrorAmount(
 							value.getErrorEvidence().getRelativeEvidence()));
+			appendField(text, "LocusV2.Results.Field.Conditioned",
+					localizeBoolean(value.isConditionedEstimate()));
+			value.getNumericTraversal().ifPresent(traversal -> {
+				appendField(text, "LocusV2.Results.Field.NumericTraversal", traversal.toString());
+				appendField(text, "LocusV2.Results.Field.Geometry",
+						traversal.getGeometricExistence().getSemanticSignature());
+			});
+			appendField(text, "LocusV2.Results.Field.Hypotheses",
+					String.join("; ", value.getErrorEvidence().getAssumptions()));
+			appendField(text, "LocusV2.Results.Field.Tolerance",
+					value.getErrorEvidence().getRequestedTolerance().map(Object::toString)
+							.orElseGet(this::notApplicable));
 			appendMetricDiagnostics(text, value.getDiagnostics());
 		} else {
 			text.append(menu("LocusV2.Results.Undefined"));

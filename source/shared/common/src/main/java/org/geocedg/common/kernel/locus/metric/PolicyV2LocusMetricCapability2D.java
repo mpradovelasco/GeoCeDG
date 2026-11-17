@@ -167,9 +167,13 @@ public final class PolicyV2LocusMetricCapability2D
 		if (policy.getEstimatorPolicy() == null) {
 			throw new IllegalArgumentException("Metric policy v2 is required");
 		}
+		boolean partial = key.getResolvedValidComponentKey()
+				.endsWith("|" + LocusMetricNumericTraversal2D.VERSION);
+		String conditionContext = partial ? "partial geometric proof; full declared numeric traversal"
+				: "construction outside class v3";
 		List<String> conditions = new ArrayList<>();
 		conditions.add("existence and continuity of the curve on the declared piece "
-				+ piece + " are assumed, not certified (construction outside class v3)");
+				+ piece + " are assumed, not certified (" + conditionContext + ")");
 		if (wholePeriod) {
 			conditions.add("the curve closes at the seam of the periodic driver domain, "
 					+ "which is not certified");
@@ -177,7 +181,7 @@ public final class PolicyV2LocusMetricCapability2D
 		MetricDiagnostic2D uncertified = new MetricDiagnostic2D(
 				MetricDiagnosticCode2D.EXISTENCE_NOT_CERTIFIED,
 				"Conditioned estimate: existence and continuity of the declared piece "
-						+ piece + " are not certified (construction outside class v3)");
+						+ piece + " are not certified (" + conditionContext + ")");
 		Lineage lineage = Lineage.of(definition);
 		if (lineage.collapsed
 				|| branch.getProperties().contains(BranchProperty.COLLAPSED_IMAGE)) {

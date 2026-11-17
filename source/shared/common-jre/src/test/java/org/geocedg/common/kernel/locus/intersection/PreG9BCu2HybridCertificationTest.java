@@ -1067,7 +1067,10 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 			String context = radius + " " + structure.getSemanticSignature();
 			assertNotEquals(Completeness.COMPLETE, structure.getCompleteness(), context);
 			for (Coverage item : structure.getCoverage()) {
-				assertNotEquals(CoverageState.CERTIFIED_DOES_NOT_EXIST, item.getState(), context);
+				if (item.getState() == CoverageState.CERTIFIED_DOES_NOT_EXIST) {
+					assertTrue(item.getCause() == LocusCoverageCause2D.DEPENDENCY_CERTIFIED_NONEXISTENT
+							|| item.getCause() == LocusCoverageCause2D.PREDICATE_CERTIFIED_FALSE, context);
+				}
 				if (item.getState() == CoverageState.UNRESOLVED) {
 					assertNotNull(item.getCause(), context);
 				}
@@ -1079,8 +1082,11 @@ class PreG9BCu2HybridCertificationTest extends BaseUnitTest {
 							-Math.PI + 2 * Math.PI * index / 64, session);
 					if (!evaluation.isValid()) {
 						failed++;
-						assertFalse(evaluation.getDiagnostic().startsWith(
-								LocusDefinition2D.CERTIFIED_NONEXISTENCE), context);
+						if (evaluation.getStatus() == org.geocedg.common.kernel.locus
+								.LocusSemanticMetadata2D.EvaluationStatus.EVALUATION_FAILED) {
+							assertFalse(evaluation.getDiagnostic().startsWith(
+									LocusDefinition2D.CERTIFIED_NONEXISTENCE), context);
+						}
 					}
 				}
 			}

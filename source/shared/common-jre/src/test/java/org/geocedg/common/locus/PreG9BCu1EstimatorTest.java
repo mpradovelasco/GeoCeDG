@@ -87,9 +87,10 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 		add("Q=(x(P),sin(4*pi*x(P)))");
 		GeoLocusV2 sine = add("L=LocusV2(Q,P)");
 		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(L)"));
-		assertCoherentEstimate(metric.getMetricResult(), simpson(x -> Math.hypot(1,
-				4 * Math.PI * Math.cos(4 * Math.PI * x)), 0, 1, 1 << 16), "public k=2");
-		assertConditionedWithoutAuthority(metric.getMetricResult(), sine, "public k=2");
+		// P2: native zero-branch jumps contradict the estimator's continuity premise.
+		assertNoTotalWithoutExistence(metric.getMetricResult(), "native sine k=2");
+		assertEquals(8, sine.getSemanticDefinition().getBranches().get(0)
+				.getExistenceStructure().getContinuousValidComponents().size());
 		certifiedParabola("Lp", "Qp", "publicParabola");
 		GeoLocusMetricResult parabola = richResultOf(add("Mp=LocusLength(Lp)"));
 		assertCoherentEstimate(parabola.getMetricResult(), simpson(x -> Math.hypot(1, 2 * x),
@@ -163,8 +164,8 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 		GeoLocusV2 publicAliasing = add("L=LocusV2(Q,P)");
 		LocusMetricResult2D aliased = (richResultOf(add("M=LocusLength(L)")))
 				.getMetricResult();
-		assertNotCertified(aliased, "public aliasing");
-		assertConditionedWithoutAuthority(aliased, publicAliasing, "public aliasing");
+		// P2: a recognized operation beyond its proof-method range is not an H10 refusal.
+		assertNoTotalWithoutExistence(aliased, "public aliasing enclosure limit");
 		add("F=(x(P),floor(4*x(P)))");
 		GeoLocusV2 publicFloor = add("Lf=LocusV2(F,P)");
 		LocusMetricResult2D floored = (richResultOf(add("Mf=LocusLength(Lf)")))

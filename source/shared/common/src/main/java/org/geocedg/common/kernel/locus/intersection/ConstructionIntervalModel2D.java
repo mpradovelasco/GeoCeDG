@@ -397,11 +397,17 @@ final class ConstructionIntervalModel2D implements CertifiedIntervalCurveModel2D
 		return trigonometric(argument, true);
 	}
 
+	/** Proof-method limit, distinct from invalid arithmetic (P2 section 26.6). */
+	static final class TrigonometricRangeLimit extends ArithmeticException {
+		private static final long serialVersionUID = 1L;
+		TrigonometricRangeLimit() { super("Trigonometric argument outside the bound"); }
+	}
+
 	private static SplineOutwardInterval2D trigonometric(
 			SplineOutwardInterval2D argument, boolean sine) {
 		if (Math.abs(argument.lower) > TRIGONOMETRIC_LIMIT
 				|| Math.abs(argument.upper) > TRIGONOMETRIC_LIMIT) {
-			throw new ArithmeticException("Trigonometric argument outside the bound");
+			throw new TrigonometricRangeLimit();
 		}
 		double first = sine ? StrictMath.sin(argument.lower)
 				: StrictMath.cos(argument.lower);

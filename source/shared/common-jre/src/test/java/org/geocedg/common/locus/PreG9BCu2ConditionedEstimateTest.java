@@ -79,15 +79,28 @@ class PreG9BCu2ConditionedEstimateTest extends G9U0PublicSurfaceTestBase {
 	 */
 	@Test
 	void aSineOutsideClassV3IsEstimatedWithoutAnyCertifyingAuthority() {
+		// Historical N06: now capturable, with genuine native threshold jumps.
+		add("s=Segment((0,0),(1,0))"); add("P=Point(s)");
+		add("Q=(x(P),sin(4*pi*x(P)))");
+		GeoLocusV2 sine = add("L=LocusV2(Q,P)");
+		String before = structure(sine).getSemanticSignature();
+		LocusMetricResult2D rich = richResultOf(add("M=LocusLength(L)")).getMetricResult();
+		assertNoTotalWithoutExistence(rich, "native sine discontinuities");
+		assertEquals(before, structure(sine).getSemanticSignature());
+		assertFalse(((GeoNumeric) add("b=Length(L)")).isDefined());
+	}
+
+	@Test
+	void anOutsideClassEstimateStillHasNoCertifyingAuthority() {
 		add("s=Segment((0,0),(1,0))");
 		add("P=Point(s)");
-		add("Q=(x(P),sin(4*pi*x(P)))");
+		add("Q=(x(P),exp(x(P)))");
 		GeoLocusV2 sine = add("L=LocusV2(Q,P)");
 		final String before = structure(sine).getSemanticSignature();
 		LocusMetricResult2D rich = (richResultOf(add("M=LocusLength(L)")))
 				.getMetricResult();
 		double reference = simpson(x -> Math.hypot(1,
-				4 * Math.PI * Math.cos(4 * Math.PI * x)), 0, 1, 1 << 16);
+				Math.exp(x)), 0, 1, 1 << 16);
 		String message = rich.getComputationStatus() + " " + rich.getGuaranteeClass() + " "
 				+ rich.getDiagnostics();
 		assertEquals(MetricComputationStatus.SUCCESS, rich.getComputationStatus(), message);
@@ -251,7 +264,7 @@ class PreG9BCu2ConditionedEstimateTest extends G9U0PublicSurfaceTestBase {
 	void similarityImagesOfAConditionedEstimateStayConditioned() {
 		add("s=Segment((0,0),(1,0))");
 		add("P=Point(s)");
-		add("Q=(x(P),sin(2*pi*x(P)))");
+		add("Q=(x(P),exp(x(P)))");
 		GeoLocusV2 sine = add("L=LocusV2(Q,P)");
 		LocusMetricResult2D source = (richResultOf(add("M=LocusLength(L)")))
 				.getMetricResult();

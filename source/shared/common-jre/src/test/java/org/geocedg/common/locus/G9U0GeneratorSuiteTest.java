@@ -321,13 +321,11 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 		add("Q2=(x(P),x(P)+1)");
 		GeoLocusV2 second = add("L2=LocusV2(Q2,P)");
 		GeoPoint nested = add("P2=Point(L2,\"" + BRANCH + "\",0.3)");
-		// PRE-G9B-CU2 declared conformity: a locus on a locus support is outside class v3
-		// since step T11, so the point on it has no certified component and is undefined
-		// before the rejected redefinition as after it.
-		assertFalse(nested.isDefined());
+		// P2: the Cartesian composition is now admitted; preserve it across rejection.
+		assertTrue(nested.isDefined());
 		assertCycleRedefinitionRejected(first, "LocusV2(P2,s,D)",
 				List.of("L", "P", "Q", "s", "D", "L2", "Q2"));
-		assertFalse(requireLookup("P2").isDefined());
+		assertTrue(requireLookup("P2").isDefined());
 		assertTrue(((GeoLocusV2) requireLookup("L2")).isDefined());
 	}
 
