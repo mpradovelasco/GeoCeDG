@@ -1808,7 +1808,7 @@ estimate, with its guarantee and error shown in the inspector. Keep an
 incomplete or estimated result separate from a confirmed measurement of the
 whole requested route.
 
-**P2 candidate: focused validation blocked; product acceptance pending.**
+**P2 candidate: focused consolidation verified; global verification and product acceptance pending.**
 
 In the P2 candidate, a supported partial geometric proof can also supply a
 conditional estimate of the **entire declared numeric traversal**. For example,
@@ -1822,7 +1822,8 @@ undefined; ordinary recomputation restores it when admissibility returns.
 
 This bounded extension currently covers one bounded nonperiodic driver interval including both ends
 with a compatible proof-method range limitation. It does not admit arbitrary
-unresolved bands. Capture distinguishes sine/cosine written directly in a Cartesian coordinate
+unresolved bands or unclassified gaps, even at a single parameter or domain end.
+Capture distinguishes sine/cosine written directly in a Cartesian coordinate
 from a value computed by a numeric object. The first route uses Math.sin/Math.cos
 without zero snapping; the second retains its native branches. The certifier
 must follow the actual producer's route. This focal reconciliation admits no

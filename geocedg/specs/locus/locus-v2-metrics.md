@@ -2,7 +2,7 @@
 
 - Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25, INCLUDING §25.12) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.6 AMENDMENT (§26, WITH §26.5 FROM AUTHOR DECISION H10 OF 2026-10-22) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**
 - Version: `1.7`
-- P2 amendment §26.6: **SCIENTIFIC DECISION AUTHOR APPROVED (2026-11-17); bounded implementation/focal gate BLOCKED after two corrective iterations; no product acceptance**
+- P2 amendment §26.6: **SCIENTIFIC DECISION AUTHOR APPROVED (2026-11-17); historical initial implementation BLOCKED; final consolidation FOCAL VERIFIED (2026-11-18), global verification and product acceptance pending** ([bounded consolidation](../../../docs/architecture/geocedg-1.2.0-p2-final-consolidation.md)).
 - Approval date: 2026-08-13
 - Author-review disposition: **G7A-R1, G7A AND G7B PASS — AUTHOR APPROVED**
 - Roadmap gate: G7 `PASS`; G7A `PASS`; G7B `PASS`
@@ -1512,6 +1512,10 @@ certified continuous component and unresolved coverage compatible with the
 estimator's hypotheses. The numeric traversal is the entire declared domain,
 never a subtotal of proved components. It uses estimator v2, its unchanged
 budgets, tolerances, error hypotheses and ordinary revision-scoped metric owner.
+Eligible coverage must classify every point of the requested interval, including
+both closed ends and every join. An omitted interval or a point omitted by two
+open sides is not an eligible unresolved cause and keeps the total refused.
+This completeness of classified coverage does not establish geometric completeness.
 
 The initial eligible unresolved cause is `NUMERIC_PROOF_METHOD_LIMIT`. It names
 a trigonometric interval-prover range limit, still UNRESOLVED, whose native zero

@@ -174,13 +174,25 @@ public final class LocusMetricEngine2D {
 				|| !s.getPointComponents().isEmpty() || !s.getSingularParameters().isEmpty()
 				|| !s.getCertifiedFolds().isEmpty()) { return false; }
 		boolean unresolved = false;
+		LocusInterval2D previous = null;
 		for (LocusExistenceStructure2D.Coverage c : s.getCoverage()) {
+			LocusInterval2D interval = c.getInterval();
+			// NOT_ESTABLISHED structures may omit coverage. Every requested point
+			// must have an eligible cause before the whole-domain estimate is tried.
+			if (previous == null
+					? interval.getLower() != d.getLower() || !interval.isLowerClosed()
+					: previous.getUpper() != interval.getLower()
+							|| !previous.isUpperClosed() && !interval.isLowerClosed()) {
+				return false;
+			}
 			if (c.getState() == CoverageState.UNRESOLVED
 					&& c.getCause() == LocusCoverageCause2D.NUMERIC_PROOF_METHOD_LIMIT) {
 				unresolved = true;
 			} else if (c.getState() != CoverageState.CERTIFIED_EXISTS) { return false; }
+			previous = interval;
 		}
-		return unresolved;
+		return unresolved && previous != null
+				&& previous.getUpper() == d.getUpper() && previous.isUpperClosed();
 	}
 
 	private LocusMetricResult2D computeBetween(

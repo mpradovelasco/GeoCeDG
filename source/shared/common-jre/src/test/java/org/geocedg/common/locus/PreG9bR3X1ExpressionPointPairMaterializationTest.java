@@ -136,7 +136,10 @@ final class PreG9bR3X1ExpressionPointPairMaterializationTest
 		add("Ex=(x(C)/2,y(C))"); add("ex=LocusV2(Ex,C)");
 		GeoLocusIntersectionResult rich = add("Rx=Intersect(d,ex)");
 		assertEquals(2, rich.getIntersectionResult().getFiniteSolutions().size());
-		assertEquals(2, eligible(rich).size(), diagnostic(rich));
+		// Class-v3 existence capture does not supply D2's interval-curve model.
+		assertTrue(eligible(rich).isEmpty(), diagnostic(rich));
+		assertTrue(diagnostic(rich).contains("CAPABILITY_NOT_AVAILABLE"), diagnostic(rich));
+		assertTrue(diagnostic(rich).contains("no certified interval curve model"), diagnostic(rich));
 		assertTrue(evaluator("ex").captureCertifiedProgramV3().isPresent());
 	}
 

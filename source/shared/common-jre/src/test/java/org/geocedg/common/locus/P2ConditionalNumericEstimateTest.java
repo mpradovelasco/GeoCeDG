@@ -56,7 +56,13 @@ class P2ConditionalNumericEstimateTest extends PreG9bR3RedefineTestBase {
  @Test void similaritiesKeepEstimateAndWholeDomain() {
   fixture("(x(P),sin(x(P)))");LocusMetricResult2D base=metric("a","LocusLength(L)");
   add("T=Translate(L,(3,-2))");LocusMetricResult2D moved=metric("b","LocusLength(T)");
-  add("D=Dilate(L,2,(1,1))");LocusMetricResult2D scaled=metric("c","LocusLength(D)");
+  add("D=Dilate(L,2,(1,1))");
+  // The durable dilation factor is promoted to c; do not redefine that input.
+  GeoNumeric factor=(GeoNumeric)lookup("c");
+  var factorId=getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(factor);
+  LocusMetricResult2D scaled=metric("scaledLength","LocusLength(D)");
+  assertSame(factor,lookup("c"));assertEquals(2,factor.getValue(),0);
+  assertEquals(factorId,getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(factor));
   assertPartial(base);assertPartial(moved);assertPartial(scaled);
   assertEquals(base.getMetricValue().getFiniteValue().orElseThrow(),moved.getMetricValue().getFiniteValue().orElseThrow(),1E-12);
   assertEquals(2*base.getMetricValue().getFiniteValue().orElseThrow(),scaled.getMetricValue().getFiniteValue().orElseThrow(),1E-12);
@@ -89,12 +95,24 @@ class P2ConditionalNumericEstimateTest extends PreG9bR3RedefineTestBase {
  @Test void compatibleRedefinitionRecomputesCurrentNumericEvidence() {
   GeoLocusV2 l=fixture("(x(P),sin(x(P)))");GeoElement a=add("a=LocusLength(L)");
   var id=getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(a);
+  var locusId=getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(l);
+  LocusMetricResult2D before=richResultOf(a).getMetricResult();
   long revision=l.getSemanticRevision();
   Outcome changed=redefine("Q","(x(P),sin(x(P))+0.25)",PreG9bR3RedefineTestBase::retainWhenAvailable);
   assertTrue(changed.succeeded(),changed.errors());
   LocusMetricResult2D r=richResultOf(lookup("a")).getMetricResult();assertPartial(r);
-  assertTrue(((GeoLocusV2)lookup("L")).getSemanticRevision()>revision);
-  assertEquals(((GeoLocusV2)lookup("L")).getSemanticRevision(),r.getNumericTraversal().orElseThrow().getSemanticRevision());
+  GeoLocusV2 current=(GeoLocusV2)lookup("L");
+  // CU1: rebuilt dependents start a new runtime lineage with retained durable IDs.
+  assertTrue(current!=l || current.getSemanticRevision()>revision);
+  assertNotSame(before,r);
+  assertEquals(locusId,getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(current));
+  assertEquals(current.getSemanticRevision(),r.getNumericTraversal().orElseThrow().getSemanticRevision());
+  assertEquals(current.getSemanticRevision(),r.getProvenance().getSemanticRevision());
+  try(var session=LocusEvaluationSession2D.memoizing(8)) {
+   var value=current.getSemanticDefinition().evaluate(BRANCH,.25,session);
+   assertTrue(value.isValid(),value.getDiagnostic());
+   assertEquals(Math.sin(value.getPoint().getX())+.25,value.getPoint().getY(),1E-12);
+  }
   assertEquals(id,getConstruction().getSpatialIdentityRegistry().getPersistentGeoId(lookup("a")));
  }
 
@@ -116,7 +134,7 @@ class P2ConditionalNumericEstimateTest extends PreG9bR3RedefineTestBase {
  }
  @Test void budgetFailureAndStaleRevisionCannotPublishScalar() {
   GeoLocusV2 l=fixture("(x(P),sin(x(P)))");LocusDefinition2D d=l.getSemanticDefinition();
-  LocusMetricPolicy2D p=LocusMetricPolicy2D.cu1PublicV2().withWorkBudget(new MetricWorkBudget2D(2,1,1));
+  LocusMetricPolicy2D p=LocusMetricPolicy2D.cu1PublicV2().withWorkBudget(new MetricWorkBudget2D(3,1,1));
   LocusMetricResult2D r=compute(d,p,d.getSemanticRevision());assertFalse(r.isScalarAdmissible());
   assertEquals(MetricComputationStatus.LIMIT_NOT_ESTABLISHED,r.getComputationStatus());
   assertTrue(r.getDiagnostics().stream().anyMatch(x->x.getCode()==MetricDiagnosticCode2D.WORK_BUDGET_EXHAUSTED));
@@ -149,6 +167,83 @@ class P2ConditionalNumericEstimateTest extends PreG9bR3RedefineTestBase {
   LocusDefinition2D d=fixture("(x(P),sin(x(P)))").getSemanticDefinition();var branch=d.getBranches().get(0);
   var structure=LocusExistenceStructure2D.notEstablished(branch.getBranchKey(),branch.getDeclaredDriverDomain(),LocusExistenceStructure2D.DomainTopology.BOUNDED,LocusCoverageCause2D.NUMERIC_PROOF_METHOD_LIMIT,"p2-negative-no-component");
   assertFalse(compute(withStructure(d,structure),LocusMetricPolicy2D.cu1PublicV2(),d.getSemanticRevision()).isScalarAdmissible());
+ }
+
+ @ParameterizedTest
+ @ValueSource(strings={"interior-interval","interior-point","upper-interval","upper-point","lower-interval","lower-point"})
+ void incompleteCoverageCannotPublishWholeTraversal(String gap) {
+  GeoLocusV2 locus=fixture("(x(P),sin(x(P)))");
+  if(gap.startsWith("lower")) {
+   ((GeoNumeric)lookup("lo")).setValue(-1000.01);
+   ((GeoNumeric)lookup("hi")).setValue(-999.99);
+   getKernel().updateConstruction(false);
+  }
+  LocusDefinition2D d=locus.getSemanticDefinition();
+  assertPartial(compute(d,LocusMetricPolicy2D.cu1PublicV2(),d.getSemanticRevision()));
+  var old=d.getBranches().get(0).getExistenceStructure();
+  List<LocusExistenceStructure2D.Coverage> items=new ArrayList<>();
+  boolean changed=false;
+  for(var c:old.getCoverage()) {
+   if(changed || c.getState()!=LocusExistenceStructure2D.CoverageState.UNRESOLVED) {
+    items.add(c);continue;
+   }
+   var i=c.getInterval();double middle=i.getLower()+(i.getUpper()-i.getLower())/2;
+   if(gap.equals("interior-interval")) {
+    items.add(coverageInterval(c,new LocusInterval2D(i.getLower(),Math.nextDown(middle),i.isLowerClosed(),true)));
+    items.add(coverageInterval(c,new LocusInterval2D(Math.nextUp(middle),i.getUpper(),true,i.isUpperClosed())));
+   } else if(gap.equals("interior-point")) {
+    items.add(coverageInterval(c,new LocusInterval2D(i.getLower(),middle,i.isLowerClosed(),false)));
+    items.add(coverageInterval(c,new LocusInterval2D(middle,i.getUpper(),false,i.isUpperClosed())));
+   } else if(gap.equals("upper-interval")) {
+    items.add(coverageInterval(c,new LocusInterval2D(i.getLower(),middle,i.isLowerClosed(),true)));
+   } else if(gap.equals("lower-interval")) {
+    items.add(coverageInterval(c,new LocusInterval2D(middle,i.getUpper(),true,i.isUpperClosed())));
+   } else if(gap.equals("upper-point")) {
+    items.add(coverageInterval(c,new LocusInterval2D(i.getLower(),i.getUpper(),i.isLowerClosed(),false)));
+   } else {
+    items.add(coverageInterval(c,new LocusInterval2D(i.getLower(),i.getUpper(),false,i.isUpperClosed())));
+   }
+   changed=true;
+  }
+  assertTrue(changed);
+  LocusMetricResult2D r=compute(withCoverage(d,items),LocusMetricPolicy2D.cu1PublicV2(),d.getSemanticRevision());
+  assertEquals(MetricComputationStatus.INVALID_QUERY,r.getComputationStatus());
+  assertTrue(r.getDiagnostics().stream().anyMatch(x->x.getCode()==MetricDiagnosticCode2D.INCOMPLETE_AGGREGATE));
+  assertFalse(r.isScalarAdmissible());assertTrue(r.getNumericTraversal().isEmpty());
+ }
+
+ @ParameterizedTest @ValueSource(booleans={false,true})
+ void exhaustiveCoverageJoinKeepsConditionalEstimate(boolean leftClosed) {
+  LocusDefinition2D d=fixture("(x(P),sin(x(P)))").getSemanticDefinition();
+  List<LocusExistenceStructure2D.Coverage> items=new ArrayList<>();boolean split=false;
+  for(var c:d.getBranches().get(0).getExistenceStructure().getCoverage()) {
+   if(!split && c.getState()==LocusExistenceStructure2D.CoverageState.UNRESOLVED) {
+    var i=c.getInterval();double middle=i.getLower()+(i.getUpper()-i.getLower())/2;
+    items.add(coverageInterval(c,new LocusInterval2D(i.getLower(),middle,i.isLowerClosed(),leftClosed)));
+    items.add(coverageInterval(c,new LocusInterval2D(middle,i.getUpper(),!leftClosed,i.isUpperClosed())));
+    split=true;
+   } else items.add(c);
+  }
+  assertTrue(split);Collections.reverse(items); // Structure canonicalizes order.
+  LocusDefinition2D partitioned=withCoverage(d,items);
+  LocusMetricResult2D r=compute(partitioned,LocusMetricPolicy2D.cu1PublicV2(),d.getSemanticRevision());
+  assertPartial(r);
+  assertSame(partitioned.getBranches().get(0).getExistenceStructure(),
+    r.getNumericTraversal().orElseThrow().getGeometricExistence());
+  assertEquals(.022945823133382146,r.getMetricValue().getFiniteValue().orElseThrow(),
+    r.getErrorEvidence().getRequestedTolerance().orElseThrow());
+ }
+
+ private LocusExistenceStructure2D.Coverage coverageInterval(
+   LocusExistenceStructure2D.Coverage c,LocusInterval2D interval) {
+  return new LocusExistenceStructure2D.Coverage(interval,c.getState(),c.getCause(),c.getNature(),"p2-coverage-fixture/v1");
+ }
+
+ private LocusDefinition2D withCoverage(LocusDefinition2D d,List<LocusExistenceStructure2D.Coverage> items) {
+  var b=d.getBranches().get(0);var s=b.getExistenceStructure();
+  return withStructure(d,new LocusExistenceStructure2D(b.getBranchKey(),b.getDeclaredDriverDomain(),
+    s.getTopology(),d.getSemanticRevision(),items,s.getContinuousValidComponents(),List.of(),
+    s.getCompleteness(),"p2-coverage-fixture/v1"));
  }
  private LocusDefinition2D withStructure(LocusDefinition2D d,LocusExistenceStructure2D structure) {
   var b=d.getBranches().get(0);

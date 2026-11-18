@@ -183,7 +183,14 @@ class PreG9bR3X1RedefineWitnessTest extends PreG9bR3RedefineTestBase {
 				PreG9bR3RedefineTestBase::retainWhenAvailable);
 		assertTrue(result.succeeded(), result.errors());
 		assertEquals(ids("C"), record("E").getDependencies());
-		assertEquals(2, eligible(rich("e")).size());
+		GeoLocusIntersectionResult current = rich("e");
+		assertEquals(2, current.getIntersectionResult().getFiniteSolutions().size());
+		assertTrue(eligible(current).isEmpty());
+		String diagnostics = current.getIntersectionResult().getDiagnostics().toString();
+		assertTrue(diagnostics.contains("CAPABILITY_NOT_AVAILABLE"), diagnostics);
+		assertTrue(diagnostics.contains("no certified interval curve model"), diagnostics);
+		// No D2 model: the retained claim is dormant, with no silent retargeting.
+		assertFalse(point("X").isDefined());
 		assertEquals(pointId, id("X")); assertEquals(selected, token("X"));
 		getKernel().undo();
 		assertTrue(point("X").isDefined());

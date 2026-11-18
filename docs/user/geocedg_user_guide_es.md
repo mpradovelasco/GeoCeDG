@@ -1901,7 +1901,7 @@ previstos GeoCeDG puede dar una estimación condicionada, con su garantía y
 error en el inspector. Distinga los resultados incompletos o estimados de una
 medición confirmada para todo el recorrido solicitado.
 
-**Candidato P2: verificación focal bloqueada; aceptación del producto pendiente.**
+**Candidato P2: consolidación focal verificada; verificación global y aceptación del producto pendientes.**
 
 En el candidato P2, una prueba geométrica parcial compatible también puede
 proporcionar una estimación condicionada del **recorrido numérico declarado
@@ -1916,7 +1916,8 @@ indefinido; la recomputación ordinaria lo recupera al restablecerse la admisibi
 
 Esta extensión acotada admite actualmente una rama cerrada en sus extremos,
 acotada y no periódica, con una limitación compatible del método de prueba. No
-admite cualquier banda sin resolver. La captura distingue el seno/coseno escrito directamente en una coordenada
+admite cualquier banda sin resolver ni huecos sin clasificar, aunque afecten a
+un solo parámetro o extremo del dominio. La captura distingue el seno/coseno escrito directamente en una coordenada
 cartesiana de un valor calculado mediante un objeto numérico. La primera ruta
 usa Math.sin/Math.cos sin ajuste a cero; la segunda conserva las ramas nativas
 correspondientes. El certificador debe seguir la ruta real del productor. Esta
