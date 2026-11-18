@@ -13,6 +13,9 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D;
 import org.geocedg.common.kernel.locus.CertifiedConstructionProgram2D.Operation;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusCoverageCause2D;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationStatus;
+import org.geocedg.common.kernel.locus.ReconstructionFidelity2D.DiscrepancyKind;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.Completeness;
 import org.geocedg.common.kernel.locus.ReconstructibleLocusEvaluator2D;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
@@ -40,8 +43,11 @@ class GeoCeDG120NativeScalarContextTest extends PreG9bR3RedefineTestBase {
 	}
 
 	private CertifiedConstructionProgram2D program(GeoLocusV2 locus) {
-		return ((ReconstructibleLocusEvaluator2D) locus.getSemanticDefinition()
-				.getEvaluatorCapability()).captureCertifiedProgramV3().orElseThrow();
+		var evaluator = (ReconstructibleLocusEvaluator2D) locus.getSemanticDefinition()
+				.getEvaluatorCapability();
+		return evaluator.captureCertifiedProgramV3().orElseThrow(() -> new AssertionError(
+				"capture-refusal=" + evaluator.getProgramV3Refusal()
+						+ "; fidelity=" + evaluator.getFidelityReport()));
 	}
 
 	private double y(GeoLocusV2 locus, double parameter) {
@@ -176,7 +182,7 @@ class GeoCeDG120NativeScalarContextTest extends PreG9bR3RedefineTestBase {
 				.evaluate(.24999999, .25000001).getKind());
 	}
 
-	@Test void sqrtShortFallbackKeepsGenericEvaluationOfItsNestedSine() {
+	@Test void sqrtShortFallbackKeepsGenericEvaluationOfItsNestedSine() throws Exception {
 		driver();
 		GeoPoint source = add("Q=(x(P),sin(4*pi*x(P)))");
 		MyVecNode coordinates = (MyVecNode) source.getDefinition().unwrap();
@@ -187,10 +193,41 @@ class GeoCeDG120NativeScalarContextTest extends PreG9bR3RedefineTestBase {
 				new ExpressionNode(getKernel(), tuple), false).getPoint();
 		shortPoint.setLabel("R");
 		GeoLocusV2 fallback = add("Ls=LocusV2(R,P)");
-		var steps = program(fallback).getSteps();
-		assertTrue(steps.stream().anyMatch(step -> step.getOperation() == Operation.SCALAR_SIN));
-		assertFalse(steps.stream().anyMatch(step -> step.getOperation() == Operation.SCALAR_SIN_DOUBLE));
-		assertEquals(0, y(fallback, .25));
+		// The serializer prints sqrt(...), which reparses as SQRT, not SQRT_SHORT.
+		// Equal spelling does not establish the original producer's evaluation context.
+		String serialized = shortPoint.getDefinition()
+				.toString(org.geogebra.common.kernel.StringTemplate.xmlTemplate);
+		MyVecNode reparsed = (MyVecNode) getKernel().getParser().parseExpression(serialized).unwrap();
+		assertEquals(org.geogebra.common.plugin.Operation.SQRT_SHORT, shortRoot.getOperation());
+		assertEquals(org.geogebra.common.plugin.Operation.SQRT,
+				((ExpressionNode) reparsed.getY().unwrap()).getOperation());
+		GeoPoint driver = (GeoPoint) lookup("P");
+		assertTrue(shortPoint.isChildOf(driver));
+		driver.getPathParameter().setT(.25);
+		driver.getPath().pathChanged(driver); driver.updateCoords(); driver.updateCascade();
+		assertEquals(0, shortPoint.getInhomY());
+		var definition = fallback.getSemanticDefinition();
+		var evaluator = (ReconstructibleLocusEvaluator2D) definition.getEvaluatorCapability();
+		assertTrue(evaluator.captureCertifiedProgramV3().isEmpty());
+		assertEquals("reconstruction-fidelity-not-established", evaluator.getProgramV3Refusal());
+		assertFalse(evaluator.isReconstructionFaithful());
+		assertTrue(evaluator.getFidelityReport().getDiscrepancies().stream().anyMatch(
+				d -> d.getElement().equals("R") && d.getKind() == DiscrepancyKind.STRUCTURE));
+		assertTrue(evaluator.getFidelityReport().getUnsettledSelections().isEmpty());
+		var structure = definition.getBranches().get(0).getExistenceStructure();
+		assertEquals(Completeness.NOT_ESTABLISHED, structure.getCompleteness());
+		assertTrue(structure.getContinuousValidComponents().isEmpty());
+		assertEquals(LocusCoverageCause2D.RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED,
+				structure.getCoverage().get(0).getCause());
+		try (var session = LocusEvaluationSession2D.memoizing(64)) {
+			var refused = definition.evaluate(BRANCH, .25, session);
+			assertEquals(EvaluationStatus.EVALUATION_FAILED, refused.getStatus());
+			assertTrue(refused.getDiagnostic().contains("RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED"));
+			assertNull(refused.getPoint());
+		}
+		assertFalse(((GeoNumeric) add("shortLength=LocusLength(Ls)")).isDefined());
+		// Opcode assertions live in the separate unit IR test; no unit program bypasses
+		// the public reconstruction gate. Keep the original native numeric contrast.
 		add("Qf=(x(P),sqrt(sin(4*pi*x(P))))");
 		GeoLocusV2 fast = add("Lf=LocusV2(Qf,P)");
 		assertEquals(Math.sqrt(Math.sin(Math.PI)), y(fast, .25), 0);

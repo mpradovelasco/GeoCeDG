@@ -28,6 +28,12 @@ import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.BaseUnitTest;
 import org.geogebra.common.jre.headless.AppCommon;
 import org.geogebra.common.kernel.geos.GeoAngle;
+import org.geogebra.common.kernel.arithmetic.ExpressionNode;
+import org.geogebra.common.kernel.arithmetic.MyVecNode;
+import org.geogebra.common.kernel.algos.AlgoDependentPoint;
+import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
+import org.geocedg.common.kernel.locus.intersection.ConstructionBoxOutcome2D.Kind;
+import org.geocedg.common.kernel.locus.intersection.ConstructionBoxOutcome2D.Unresolved;
 import org.geogebra.common.kernel.geos.GeoElement;
 import org.geogebra.common.kernel.geos.GeoPoint;
 import org.junit.jupiter.api.Test;
@@ -81,6 +87,51 @@ class GeoCeDG120CompositionalCaptureTest extends BaseUnitTest {
 		point.setCoords(3, 0, 1);
 		point.updateCascade();
 		assertEquals(before.getSignature(), program("P").getSignature());
+	}
+
+	/** Local IR capture checks context; it is not a public reconstruction certificate. */
+	@Test
+	void nativeShortRootIrKeepsGenericSineAndItsDomainGuards() {
+		driver();
+		GeoPoint source = add("RootSource=(x(E),sin(4*pi*x(E)))");
+		MyVecNode coordinates = (MyVecNode) source.getDefinition().unwrap();
+		var root = new ExpressionNode(getKernel(), coordinates.getY().deepCopy(getKernel()),
+				org.geogebra.common.plugin.Operation.SQRT_SHORT, null);
+		var tuple = new MyVecNode(getKernel(), coordinates.getX().deepCopy(getKernel()), root);
+		GeoPoint shortPoint = new AlgoDependentPoint(getConstruction(),
+				new ExpressionNode(getKernel(), tuple), false).getPoint();
+		shortPoint.setLabel("ShortRoot");
+		var captured = program("ShortRoot");
+		assertTrue(operations(captured).contains(Operation.SCALAR_SIN));
+		assertFalse(operations(captured).contains(Operation.SCALAR_SIN_DOUBLE));
+		assertTrue(operations(captured).contains(Operation.SCALAR_SQRT));
+		add("FastRoot=(x(E),sqrt(sin(4*pi*x(E))))");
+		var fast = operations(program("FastRoot"));
+		assertTrue(fast.contains(Operation.SCALAR_SIN_DOUBLE));
+		assertFalse(fast.contains(Operation.SCALAR_SIN));
+		var model = new ConstructionBoxModel2D(captured);
+		// The fixture's segment is [0,4], so its driver parameter is x/4.
+		var positive = model.evaluate(1.0 / 32, 1.0 / 32);
+		assertEquals(Kind.VALID, positive.getKind());
+		assertTrue(positive.getValueLower(1) <= 1 && positive.getValueUpper(1) >= 1);
+		var zero = model.evaluate(1.0 / 16, 1.0 / 16);
+		assertEquals(Kind.VALID, zero.getKind());
+		assertEquals(0, zero.getValueLower(1));
+		assertTrue(zero.getValueUpper(1) >= 0);
+		GeoPoint state = (GeoPoint) lookup("E");
+		state.getPathParameter().setT(1.0 / 16);
+		state.getPath().pathChanged(state); state.updateCoords(); state.updateCascade();
+		assertEquals(0, shortPoint.getInhomY());
+		assertEquals(Math.sqrt(Math.sin(Math.PI)), ((GeoPoint) lookup("FastRoot")).getInhomY(), 0);
+		var negative = model.evaluate(3.0 / 32, 3.0 / 32);
+		assertEquals(Kind.UNRESOLVED, negative.getKind());
+		assertEquals(Unresolved.PREDICATE, negative.getUnresolved());
+		state.getPathParameter().setT(3.0 / 32);
+		state.getPath().pathChanged(state); state.updateCoords(); state.updateCascade();
+		assertFalse(shortPoint.isDefined());
+		var crossing = model.evaluate(1.0 / 16 - 1e-8, 1.0 / 16 + 1e-8);
+		assertEquals(Kind.UNRESOLVED, crossing.getKind());
+		assertEquals(Unresolved.TOLERANCE, crossing.getUnresolved());
 	}
 
 	@Test
