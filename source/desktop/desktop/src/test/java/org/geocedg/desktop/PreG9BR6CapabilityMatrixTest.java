@@ -17,12 +17,15 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.swing.SwingUtilities;
+
 import org.geocedg.desktop.PreG9BR6CapabilityMatrix.Exclusion;
 import org.geocedg.desktop.PreG9BR6CapabilityMatrix.Host;
 import org.geocedg.desktop.PreG9BR6CapabilityMatrix.Inventory;
 import org.geocedg.desktop.PreG9BR6CapabilityMatrix.Matrix;
 import org.geocedg.desktop.PreG9BR6CapabilityMatrix.Probe;
 import org.geocedg.desktop.PreG9BR6CapabilityMatrix.Row;
+import org.geogebra.common.util.debug.Log;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -187,6 +190,7 @@ class PreG9BR6CapabilityMatrixTest {
 		List<Row> rows = PreG9BR6CapabilityMatrix.rowsOf(matrix.rows(), method);
 		assertFalse(rows.isEmpty(), method);
 		List<String> failures = new ArrayList<>();
+		List<AssertionError> causes = new ArrayList<>();
 		for (String locale : PreG9BR6CapabilityMatrix.LOCALES) {
 			try (Host host = new Host(locale, directory)) {
 				for (Row row : rows) {
@@ -195,12 +199,29 @@ class PreG9BR6CapabilityMatrixTest {
 							PreG9BR6CapabilityMatrix.execute(host, matrix, row);
 						} catch (AssertionError failure) {
 							failures.add(failure.getMessage());
+							failure.addSuppressed(new AssertionError(failureContext(method, locale, row)));
+							causes.add(failure);
 						}
 					}
 				}
 			}
 		}
-		assertEquals(List.of(), failures);
+		try {
+			assertEquals(List.of(), failures);
+		} catch (AssertionError aggregate) {
+			causes.forEach(aggregate::addSuppressed);
+			throw aggregate;
+		}
+	}
+
+	private static String failureContext(String method, String locale, Row row) {
+		Log logger = Log.getLogger();
+		String loggerState = logger == null ? "null"
+				: logger.getClass().getName() + "/" + logger.getLogLevel();
+		return "method=" + method + "; locale=" + locale + "; row=" + row.rowId()
+				+ "; surface=" + row.surface() + "; fixture=" + row.fixtureId()
+				+ "; thread=" + Thread.currentThread().getName()
+				+ "; EDT=" + SwingUtilities.isEventDispatchThread() + "; logger=" + loggerState;
 	}
 
 	private static void executeProbes(TestInfo test, Path directory, String locale)
