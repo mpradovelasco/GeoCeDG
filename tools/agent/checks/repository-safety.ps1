@@ -18,6 +18,7 @@ $utf8 = [Text.UTF8Encoding]::new($false)
 $OutputEncoding = $utf8
 Import-Module (Join-Path $PSScriptRoot '../verification-packaging-state.psm1')
 Import-Module (Join-Path $PSScriptRoot '../verification-io.psm1')
+. (Join-Path $PSScriptRoot '../repository-generated-state.ps1')
 
 function Write-Result {
     param([string]$Path, [object]$Value)
@@ -65,16 +66,26 @@ function Resolve-PackagingSnapshotWriteRoots {
     $values = [Collections.Generic.List[string]]::new()
     foreach ($value in $WriteRoots) { $values.Add($value) }
     if (-not [string]::IsNullOrWhiteSpace($TaskOutputRoot)) {
+        Assert-VerificationLogDirectoryOutsideGeneratedState `
+            -RepositoryRoot $RepositoryRoot -LogDirectory $TaskOutputRoot
         $repository = [IO.Path]::GetFullPath($RepositoryRoot).TrimEnd('\', '/')
         $output = [IO.Path]::GetFullPath($TaskOutputRoot).TrimEnd('\', '/')
-        $relative = [IO.Path]::GetRelativePath($repository, $output).Replace('\', '/')
-        if ($relative -eq '.' -or $relative -eq '..' -or
-                $relative.StartsWith('../', [StringComparison]::Ordinal) -or
-                $relative -eq '.git' -or
-                $relative.StartsWith('.git/', [StringComparison]::Ordinal)) {
-            throw 'Packaging task output root must be a contained non-Git repository path.'
+        $comparison = if ($IsWindows) { [StringComparison]::OrdinalIgnoreCase } else {
+            [StringComparison]::Ordinal
         }
-        $values.Add($relative)
+        if ($repository.StartsWith($output + [IO.Path]::DirectorySeparatorChar, $comparison)) {
+            throw 'Packaging task output root cannot be an ancestor of the repository.'
+        }
+        if ($output.StartsWith($repository + [IO.Path]::DirectorySeparatorChar, $comparison)) {
+            $relative = [IO.Path]::GetRelativePath($repository, $output).Replace('\', '/')
+            if ($relative -ieq '.git' -or
+                    $relative.StartsWith('.git/', [StringComparison]::OrdinalIgnoreCase)) {
+                throw 'Packaging task output root cannot use Git metadata.'
+            }
+            $values.Add($relative)
+        }
+        # Disjoint external evidence is outside the snapshot; it must not widen
+        # the repository's declared write scope. Contained evidence is explicit.
     }
     return Resolve-VerificationPackagingWriteRoots -RepositoryRoot $RepositoryRoot `
         -DeclaredWriteRoots ([string[]]$values.ToArray())

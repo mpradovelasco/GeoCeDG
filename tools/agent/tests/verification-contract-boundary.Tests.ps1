@@ -917,6 +917,90 @@ Invoke-Case 'packaging repository safety detects worktree and generated-state ch
             'Packaging safety did not exclude its explicit contained task output root.'
         Remove-Item -LiteralPath $taskOutput -Recurse -Force
 
+        foreach ($externalOutput in @(
+                (Join-Path $root 'external-evidence'),
+                (Join-Path ($repo + '-sibling') 'evidence'),
+                (Join-Path $repo '../normalized-external-evidence'))) {
+            $externalBaseline = Join-Path $externalOutput 'baseline.json'
+            $externalRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+                '-SafetyResultPath', $externalBaseline,
+                '-DeclaredWriteRoots', $declaredWriteRootsArgument,
+                '-TaskOutputRoot', $externalOutput, '-ContractMode', 'PACKAGING_BASELINE')
+            $externalJson = Read-VerificationJson $externalBaseline
+            Assert-Case ($externalRun.exit_code -eq 0 -and
+                $externalJson.evidence_state -ceq 'PRESENT' -and
+                (ConvertTo-Json @($externalJson.declared_write_roots) -Compress) -ceq
+                    (ConvertTo-Json @($baselineJson.declared_write_roots) -Compress) -and
+                $externalJson.protected_state_sha256 -ceq $baselineJson.protected_state_sha256 -and
+                $externalJson.head -ceq $baselineJson.head -and
+                $externalJson.tree -ceq $baselineJson.tree) `
+                'External evidence changed repository identity, protected content or write scope.'
+            Write-FixtureText (Join-Path $externalOutput 'product.json') 'external task-owned evidence'
+            $externalSafety = Join-Path $externalOutput 'safety.json'
+            $externalCheck = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+                '-SafetyResultPath', $externalSafety, '-BaselinePath', $externalBaseline,
+                '-DeclaredWriteRoots', $declaredWriteRootsArgument,
+                '-TaskOutputRoot', $externalOutput, '-ContractMode', 'PACKAGING')
+            Assert-Case ($externalCheck.exit_code -eq 0 -and
+                (Read-VerificationJson $externalSafety).outcome -ceq 'CONTRACT_SATISFIED') `
+                'An unchanged repository with disjoint external evidence was rejected.'
+        }
+
+        foreach ($mutation in @('tracked.txt', 'foreign/ignored.txt')) {
+            Write-FixtureText (Join-Path $repo $mutation) 'protected mutation'
+            $mutationResult = Join-Path $externalOutput 'mutation.json'
+            $mutationRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+                '-SafetyResultPath', $mutationResult, '-BaselinePath', $externalBaseline,
+                '-DeclaredWriteRoots', $declaredWriteRootsArgument,
+                '-TaskOutputRoot', $externalOutput, '-ContractMode', 'PACKAGING')
+            $mutationJson = Read-VerificationJson $mutationResult
+            Assert-Case ($mutationRun.exit_code -eq 2 -and
+                @($mutationJson.subcontracts | Where-Object {
+                    $_.contract_id -ceq 'packaging.generated-state-preserved' -and
+                    $_.status -ceq 'VIOLATED'
+                }).Count -eq 1) 'External evidence hid a protected repository mutation.'
+            if ($mutation -ceq 'tracked.txt') {
+                Assert-Case (@($mutationJson.subcontracts | Where-Object {
+                    $_.contract_id -ceq 'packaging.worktree-preserved' -and $_.status -ceq 'VIOLATED'
+                }).Count -eq 1) 'External evidence hid a tracked worktree mutation.'
+                Write-FixtureText (Join-Path $repo $mutation) "clean`n"
+            } else {
+                Remove-Item -LiteralPath (Join-Path $repo $mutation) -Force
+            }
+        }
+
+        $invalidOutputs = @($repo, $root, (Join-Path $repo '.git'),
+            (Join-Path $repo '.git/child'), (Join-Path $repo 'artifacts/..'))
+        if ($IsWindows) {
+            $invalidOutputs += @((Join-Path $repo '.GIT/child'), ('\\?\' + $repo), ('\\.\' + $repo))
+        }
+        $invalidNumber = 0
+        foreach ($invalidOutput in $invalidOutputs) {
+            $invalidPath = Join-Path $root ('invalid-' + $invalidNumber++ + '.json')
+            $invalidRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+                '-SafetyResultPath', $invalidPath,
+                '-DeclaredWriteRoots', $declaredWriteRootsArgument,
+                '-TaskOutputRoot', $invalidOutput, '-ContractMode', 'PACKAGING_BASELINE')
+            Assert-Case ($invalidRun.exit_code -eq 3 -and
+                (Read-VerificationJson $invalidPath).evidence_state -ceq 'UNTRUSTED') `
+                "Unsafe packaging evidence root was admitted: $invalidOutput"
+        }
+
+        $link = Join-Path $root 'linked-output'
+        $linkType = if ($IsWindows) { 'Junction' } else { 'SymbolicLink' }
+        [void](New-Item -ItemType $linkType -Path $link -Target $repo -ErrorAction Stop)
+        $linkResult = Join-Path $root 'linked-result.json'
+        $linkRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $linkResult,
+            '-DeclaredWriteRoots', $declaredWriteRootsArgument,
+            '-TaskOutputRoot', (Join-Path $link 'missing/evidence'), '-ContractMode', 'PACKAGING_BASELINE')
+        Assert-Case ($linkRun.exit_code -eq 3 -and
+            (Read-VerificationJson $linkResult).cause -match 'linked repository/log ancestry') `
+            'Linked external evidence ancestry was admitted.'
+        Assert-Case ([IO.File]::ReadAllText((Join-Path $repo 'tracked.txt')) -ceq "clean`n") `
+            'Rejected evidence roots changed protected content.'
+        Remove-Item -LiteralPath $link -Force
+
         $missingBaselinePath = Join-Path $root 'missing-baseline-result.json'
         $missingBaseline = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
             '-SafetyResultPath', $missingBaselinePath,
