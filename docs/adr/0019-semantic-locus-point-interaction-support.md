@@ -204,3 +204,19 @@ permits the independent R2/H1 query. No other rejection or failed commit is reco
 The exact normative perimeter, H1 cumulative accounting, single-use selection, forward
 persistence (Q transient; structural component durable; visual selector ephemeral), world
 policy and L→Q Desktop contract are defined in the accepted 2026-11-02 amendment of [M08](../../geocedg/specs/locus/candidates/cu7-m08-point-placement.md#2026-11-02--accepted-m08-s-r2-implementation-amendment). This specifically supersedes the historical creation-only uniqueness sentence in Evidence model for M08-S, and extends decision 10 by the separate experimental consumer; it does not change general dragging or STRICT.
+
+## 2026-11-19 — Author-approved post-1.2.0 point-interaction maintenance amendment (A1–A3)
+
+The author's closeout decision of 2026-11-19 approves the corrective maintenance that follows
+the published 1.2.0 on commit `335755b2090871b6c36b100de17a1535f96c6016` and its amendments A1,
+A2 and A3. Their adoption, scope and precedence are defined in the dated amendment of the
+[point-interaction specification](../../geocedg/specs/locus/locus-v2-point-interaction.md#2026-11-19--author-approved-post-120-point-interaction-maintenance-amendment-a1a3);
+the [closeout record](../validation/geocedg_1_2_0_post_release_locus_v2_point_interaction_closeout_record.md)
+is the approval authority.
+
+For general dragging this extends the dragging sentence of Evidence model: a recoverable
+refusal keeps the gesture alive (A1), and a best-effort forward parametric continuation inside
+the current certified component may publish the semantic evaluation of its argument as
+`FLOATING_POINT_UNCERTIFIED` (A2). Decisions 1 to 14 are unchanged. Any unresolved crossing,
+branch change or self-intersection ambiguity still fails closed, a low residual still proves no
+unique semantic identity, and STRICT is unchanged.

@@ -446,3 +446,44 @@ permits the independent R2/H1 query. No other rejection or failed commit is reco
 The exact normative perimeter, H1 cumulative accounting, single-use selection, forward
 persistence (Q transient; structural component durable; visual selector ephemeral), world
 policy and L→Q Desktop contract are defined in the accepted 2026-11-02 amendment of [M08](candidates/cu7-m08-point-placement.md#2026-11-02--accepted-m08-s-r2-implementation-amendment). The experimental Desktop consumer is implemented; there is no new public dynamic inverse command, format or general dragging operation.
+
+## 2026-11-19 — Author-approved post-1.2.0 point-interaction maintenance amendment (A1–A3)
+
+The author's closeout decision of 2026-11-19 approves, as `PASS — AUTHOR APPROVED`, the
+corrective maintenance that follows the published 1.2.0, on commit
+`335755b2090871b6c36b100de17a1535f96c6016` (tree `c82c0857472c2eccf4ad9b8054fcdfa8d7568046`),
+and expressly approves the amendments A1, A2 and A3 as they are formulated in section 3 of the
+[maintenance document](../../../docs/architecture/geocedg-1.2.0-point-interaction-maintenance.md)
+at that commit. That section holds the exact normative text and its predicates; this dated
+amendment adopts it and adds no obligation that the approved implementation does not carry.
+The [closeout record](../../../docs/validation/geocedg_1_2_0_post_release_locus_v2_point_interaction_closeout_record.md)
+is the approval authority.
+
+- **A1, gesture recovery.** A recoverable refusal neither ends the drag nor publishes an
+  incomplete address. The next event must establish the necessary evidence again from the
+  current address.
+- **A2, local parametric continuation.** A best-effort interactive numerical correspondence by
+  the semantic evaluation `F(u)`, below the certified charts in priority, which does not require
+  the optimal orthogonal projection of the request. The best valid parameter reached may be
+  accepted when the descent stalls, under the documented admission conditions and geometric
+  barriers. Its guarantee is `FLOATING_POINT_UNCERTIFIED`.
+- **A3, cumulative creation budget.** Deterministic semantic evaluations of one creation
+  operation are reused, without restarting a budget and without carrying a permission or a
+  certification over.
+
+Precedence. For the operations that they modify, A1 to A3 prevail over section 8 of this
+specification and over the sentences of the
+[CU7 local continuation contract](../../../docs/architecture/pre_g9b_cu7_local_continuation_candidate.md)
+by which a failed new-chart event stops the gesture context. Those operations are a refused
+request during the drag of an interaction-owned point, the drag of such a point where no
+certified chart is established or its proof passes are exhausted, and the accounting of one
+creation operation. A3 keeps and completes the cumulative H1 accounting of
+[M08](candidates/cu7-m08-point-placement.md), which is otherwise unchanged.
+
+Nothing else changes. Sections 1 to 18 and the earlier dated amendment keep their historical
+states and guarantees. A drag still never leaves its branch and component and never jumps to
+another preimage by Cartesian proximity: the argument of A2 is not chosen by a search. A result
+of A2 is not evidence of unique continuation, of an argument-error bound, of a distance minimum
+or of STRICT incidence, and is never reported as such. No certified route, creation admission,
+persistence rule or intersection contract is weakened or extended, and no later phase is
+authorized.

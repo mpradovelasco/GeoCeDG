@@ -1,6 +1,11 @@
 # GeoCeDG 1.2.0 - Point interaction on Locus V2: focused maintenance
 
-Status: **CORRECTIVE CANDIDATE - NOT AUTHOR APPROVED**. `selfApproved=false`.
+Status: **PASS — AUTHOR APPROVED** by the author's closeout decision of
+2026-11-19 (section 8), which also approves the amendments A1, A2 and A3 of
+section 3. `selfApproved=false`. Sections 1 to 7 are kept as they were written
+for the candidate `335755b2090871b6c36b100de17a1535f96c6016`, whose status was
+"CORRECTIVE CANDIDATE - NOT AUTHOR APPROVED"; where they say "candidate" or
+"not approved" they describe that candidate before the decision.
 Date: 2026-11-19 (Europe/Madrid); corrective review of the same date in section 7.
 
 Baseline: published `v1.2.0`, commit `4f6a0a9e3ae25702c8c43fef287bf5881e0cb24e`.
@@ -68,6 +73,11 @@ Frontend (presentation and orchestration only):
    only authority.
 
 ## 3. Candidate normative amendment
+
+Closeout note of 2026-11-19: the author approved A1, A2 and A3 as they are
+formulated in this section at commit `335755b2090871b6c36b100de17a1535f96c6016`
+(section 8). The text below is unchanged; its statements that the amendment is
+proposed, a candidate or not approved are the state before that decision.
 
 The implementation above is authorized by the request. Its normative text is
 proposed here and is **not approved**; it extends the candidate contract of
@@ -348,3 +358,55 @@ against `afb70e25f` and passes with the corrections.
 | R3, tangents | `tangentNextToAnExcludedEndIsReadOnTheComponentsOwnSide` |
 | R2, ends | `includedStartIsReachedAsAConstrainedMinimizerAndTheExcludedEndIsNot` (passes before and after: the included start, and the refusal at the excluded end of this fixture) |
 | R3, guard | `transverseRootNextToTheExcludedEndKeepsItsOwnTangent` (passes before and after) |
+
+## 8. Author closeout decision of 2026-11-19
+
+The author reviewed the result and its technical evidence, reported a
+satisfactory manual smoke of the Desktop application on the model of this
+document, and authorized the integration of
+`335755b2090871b6c36b100de17a1535f96c6016` into `main`, executed on the same
+date by a direct fast-forward. The author then approved the closeout of this
+maintenance as **PASS — AUTHOR APPROVED**. The decision, the identities, the
+evidence, the manual smoke, the promotion and the residual limitations are in
+the [closeout record](../validation/geocedg_1_2_0_post_release_locus_v2_point_interaction_closeout_record.md),
+which is the approval authority; this section only reconciles the present
+document with it.
+
+The approval covers the corrections of creation, drag, presentation and
+intersection of points on Locus V2, with the corrections R1 to R3 of section 7
+and their related adjustments of intersections and tangents.
+
+The author expressly approved the amendments A1, A2 and A3 as formulated in
+section 3 at that commit. From this decision they are approved normative text,
+with this scope and no other:
+
+- **A1, gesture recovery.** A recoverable refusal neither ends the drag nor
+  publishes an incomplete address; the next event must establish the necessary
+  evidence again from the current address.
+- **A2, local parametric continuation.** A best-effort interactive numerical
+  correspondence by the semantic evaluation `F(u)`, which does not require the
+  optimal orthogonal projection of the cursor. The best valid parameter
+  reached may be accepted when the descent stalls, under the documented
+  admission conditions and geometric barriers. The guarantee stays
+  `FLOATING_POINT_UNCERTIFIED`.
+- **A3, cumulative creation budget.** Deterministic semantic evaluations of
+  one operation are reused, without restarting a budget and without carrying
+  a permission or a certification over.
+
+Precedence: for the operations that they modify, A1 to A3 prevail over the
+earlier text that they replace or complete, which is section 8 of
+`geocedg/specs/locus/locus-v2-point-interaction.md` and the sentences of
+`pre_g9b_cu7_local_continuation_candidate.md` by which a failed new-chart
+event stops the gesture context. They invalidate no historical contract and
+extend no other capability: R6, the certified charts, M08 with its H1
+accounting, creation, persistence and the intersection contracts keep their
+meanings and guarantees. The dated amendment that adopts them is in the
+specification named above.
+
+The approval does not authorize extending the algorithm, relaxing a geometric
+barrier, changing another contract or running a later phase. It adds no
+obligation that the approved code does not implement. The limitations of
+section 6 stay accepted as limitations or non-blocking open points, not as new
+functionality. Its last item is resolved by this closeout: the roadmap now
+registers the published 1.2.0 and this maintenance. No version, tag, release
+or package is created, and the book is not changed.

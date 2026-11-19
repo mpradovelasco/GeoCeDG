@@ -185,3 +185,17 @@ BOOTSTRAP IMPACT: NO CHANGE REQUIRED: no workstation/runtime prerequisite change
 GUIDE_IMPACT: creation and drag controls require focused user guidance.
 VERIFICATION_INFRASTRUCTURE_IMPACT: effective PHASE selection adds the new tests.
 No CU7 closure, main promotion, M08-D, M09, I2G or I3 is authorized by this record.
+
+## 2026-11-19 — Successor note: author-approved post-1.2.0 amendment A1–A3
+
+The author's closeout decision of 2026-11-19 approves the amendments A1, A2 and A3 of the
+post-1.2.0 point-interaction maintenance. Their adoption and precedence are defined in the
+dated amendment of the
+[point-interaction specification](../../geocedg/specs/locus/locus-v2-point-interaction.md#2026-11-19--author-approved-post-120-point-interaction-maintenance-amendment-a1a3).
+
+For a refused request during a drag, A1 prevails over the sentences of this document by which
+a failed new-chart continuation, a chart boundary or a request outside the chart stops the
+context until a new press: the gesture continues, and the next request needs a complete fresh
+proof anchored at the unchanged current address. A2 adds the forward parametric continuation
+below the certified charts. The chart contracts, their proofs and their no-jump derivations are
+unchanged, and the text above keeps its historical state.
