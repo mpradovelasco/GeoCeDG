@@ -40,6 +40,7 @@ public final class LocusSnapshotPlacement2D {
 		private final DocumentAuthorityRecord authority;
 		private final LocusPointInteractionResult2D result;
 		private final long semanticMisses;
+		private final LocusEvaluationSession2D.ReplayMemo replayMemo;
 		private boolean finished;
 
 		private Selection(LocusPointInteractionQuery2D query) {
@@ -54,8 +55,12 @@ public final class LocusSnapshotPlacement2D {
 					budget.getMaximumEvaluatorCompositionDepth())) {
 				result = new LocusPointInteractionResolver2D().resolveForPlacement(query, session);
 				semanticMisses = session.getTotalChargedMisses();
+				replayMemo = session.exportReplayMemo();
 			}
 		}
+
+		/** Exact-key values of this discovery, for later permissions of the same operation. */
+		LocusEvaluationSession2D.ReplayMemo getReplayMemo() { return replayMemo; }
 
 		public LocusPointInteractionResult2D getResult() {
 			return result;

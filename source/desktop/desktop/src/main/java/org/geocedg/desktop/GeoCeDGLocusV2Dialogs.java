@@ -98,8 +98,15 @@ final class GeoCeDGLocusV2Dialogs {
 	LocusPointInteractionCandidate2D chooseSemanticPreimage(
 			LocusPointInteractionResult2D result) {
 		List<PreimageChoice> choices = new ArrayList<>();
-		for (LocusPointInteractionCandidate2D candidate : result.getCandidates()) {
-			choices.add(new PreimageChoice(candidate));
+		var addresses = result.getCandidates().stream()
+				.map(LocusPointInteractionCandidate2D::getAddress).toList();
+		var registry = app.getKernel().getConstruction().getSpatialIdentityRegistry();
+		// Branch and section ordinals are presentation; the choice keeps the exact candidate.
+		List<String> labels = GeoCeDGAddressPresentation.labels(app.getLocale(),
+				addresses.isEmpty() || !(registry.getGeo(addresses.get(0).getSourceLocusId())
+						instanceof GeoLocusV2 source) ? null : source, addresses);
+		for (int index = 0; index < result.getCandidates().size(); index++) {
+			choices.add(new PreimageChoice(result.getCandidates().get(index), labels.get(index)));
 		}
 		Object choice = JOptionPane.showInputDialog(app.getMainComponent(),
 				text("point.ambiguous"), text("point.choose"), JOptionPane.QUESTION_MESSAGE,
@@ -850,16 +857,16 @@ final class GeoCeDGLocusV2Dialogs {
 
 	private static final class PreimageChoice {
 		private final LocusPointInteractionCandidate2D candidate;
+		private final String label;
 
-		private PreimageChoice(LocusPointInteractionCandidate2D candidate) {
+		private PreimageChoice(LocusPointInteractionCandidate2D candidate, String label) {
 			this.candidate = candidate;
+			this.label = label;
 		}
 
 		@Override
 		public String toString() {
-			return candidate.getAddress().getBranchKey() + " / "
-					+ candidate.getAddress().getComponentLineageKey() + " : "
-					+ candidate.getAddress().getCanonicalParameter();
+			return label;
 		}
 	}
 

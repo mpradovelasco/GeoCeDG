@@ -1381,8 +1381,8 @@ available in a bottom row even with the input bar hidden. **Cancel**,
   **Apply** saves the settings for the next selection. Increasing the limits can
   help a search finish. It cannot make an unsupported curve eligible.
 - A verified local offer may appear even when GeoCeDG cannot establish
-  global uniqueness. An offer marked **Forward address; numerical proximity
-  is uncertified** can place the point at a supported position, with no
+  global uniqueness. An offer described as **Position checked by direct
+  evaluation** can place the point at a supported position, with no
   guarantee of exact projection or minimum distance. If no position is
   offered, read the diagnostic. A refused search may leave open whether a
   mathematical solution exists.
@@ -1404,8 +1404,8 @@ in the current document. To move an unlocked point, switch to **Move** and start
 Supported Locus V2 and Spline V2 constructions keep the point on the same branch
 and component as you drag, including across a periodic seam when the continuation is
 established. The pointer can leave the stroke. At a gap, ambiguity or other
-barrier the point stays at its last valid position. Release the button and
-start a new drag to try again. A changed gesture adds one Undo step.
+barrier the point stays at its last valid position and the status bar says
+why; keep dragging to continue. A changed gesture adds one Undo step.
 Availability depends on the curve and the document. For example, an
 unsupported existing region point or undefined conic can prevent an operation
 whose failure GeoCeDG cannot safely undo.

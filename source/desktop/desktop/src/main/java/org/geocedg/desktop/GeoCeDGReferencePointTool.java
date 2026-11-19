@@ -204,7 +204,7 @@ final class GeoCeDGReferencePointTool {
 	private <T> void choose(List<T> values, Consumer<T> accept) {
 		if (values.isEmpty()) { return; }
 		if (values.size() == 1) { accept.accept(values.get(0)); return; }
-		showChoices(values, Object::toString, accept,
+		showChoices(values, values.stream().map(Object::toString).toList(), null, accept,
 				t("Choose construction object", "Elija objeto de construcción"));
 	}
 
@@ -330,21 +330,33 @@ final class GeoCeDGReferencePointTool {
 		}
 		boolean historical = selection.getRoute() == GeoCeDGReferencePlacement.Route.R1_R6;
 		boolean individual = selection.getRoute() == GeoCeDGReferencePlacement.Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION;
-		String title = historical ? "R1/R6: " + selection.getHistoricalResult().getStatus()
-				: individual ? t("Forward address; numerical proximity is uncertified",
-						"Dirección forward; proximidad numérica no certificada")
-				: t("Verified local address; global uniqueness not established",
-						"Dirección local verificada; unicidad global no establecida");
-		coverage.setText(historical ? "R1/R6: " + selection.getHistoricalResult().getSearchCoverage()
-				: individual ? t("Individual forward address; global coverage not established",
-						"Dirección forward individual; cobertura global no establecida")
-				: t("R2/H1: global coverage not established", "R2/H1: cobertura global no establecida"));
-		updateStatus(t("Confirm a semantic address", "Confirme una dirección semántica"));
-		showChoices(selection.getChoices(), choice -> {
-			var address = choice.getAddress();
-			return address.getBranchKey() + " / " + address.getComponentLineageKey()
-					+ " / u=" + address.getCanonicalParameter();
-		}, this::commit, title);
+		boolean several = selection.getChoices().size() > 1;
+		String title = several
+				? t("Several possible positions were found. Select one.",
+						"Se han encontrado varias posiciones posibles. Seleccione una.")
+				: t("Position found on the curve", "Posición encontrada sobre la curva");
+		// The route and its guarantee are diagnostic detail: kept, but not the usual label.
+		String guarantee = historical ? "R1/R6: " + selection.getHistoricalResult().getStatus()
+						+ " / " + selection.getHistoricalResult().getSearchCoverage()
+				: individual ? t("Individual forward address; numerical proximity is uncertified; "
+						+ "global coverage not established",
+						"Dirección forward individual; proximidad numérica no certificada; "
+						+ "cobertura global no establecida")
+				: t("R2/H1 verified local address; global uniqueness not established",
+						"Dirección local verificada R2/H1; unicidad global no establecida");
+		coverage.setText(historical ? t("Positions found by the search", "Posiciones halladas por la búsqueda")
+				: individual ? t("Position checked by direct evaluation", "Posición comprobada por evaluación directa")
+				: t("Position verified locally", "Posición verificada localmente"));
+		coverage.setToolTipText(guarantee);
+		updateStatus(several ? t("Select a branch and confirm", "Seleccione una rama y confirme")
+				: t("Confirm the position", "Confirme la posición"));
+		var addresses = selection.getChoices().stream()
+				.map(GeoCeDGReferencePlacement.Choice::getAddress).toList();
+		showChoices(selection.getChoices(),
+				GeoCeDGAddressPresentation.labels(app.getLocale(),
+						source instanceof GeoLocusV2 locus ? locus : null, addresses),
+				addresses.stream().map(GeoCeDGAddressPresentation::technical).toList(),
+				this::commit, title);
 	}
 
 	GeoPoint commit(GeoCeDGReferencePlacement.Choice choice) {
@@ -369,7 +381,7 @@ final class GeoCeDGReferencePointTool {
 
 	private void showNativeSelection() {
 		updateStatus(t("Confirm native point on object", "Confirme un punto nativo sobre el objeto"));
-		showChoices(List.of(nativeSelection), ignored -> source.getLabelSimple(), ignored -> {
+		showChoices(List.of(nativeSelection), List.of(source.getLabelSimple()), null, ignored -> {
 			if (app.getActiveEuclidianView() != view) { refuse("STALE_SELECTION"); return; }
 			try {
 				nativeSelection.commit(draggable);
@@ -400,7 +412,11 @@ final class GeoCeDGReferencePointTool {
 				"No se pudo establecer una selección autorizada; no se afirma unicidad métrica global");
 		case "INVALID_SOURCE" -> t("Invalid source", "Fuente inválida");
 		case "INVALID_REFERENCE" -> t("Invalid reference point", "Punto de referencia inválido");
-		case "BUDGET_EXHAUSTED" -> t("Work budget exhausted", "Presupuesto de trabajo agotado");
+		case "BUDGET_EXHAUSTED" -> t(
+				"the search for the point on this curve could not be completed within the work limit."
+						+ " Click again closer to the curve, or use Point(curve, parameter)",
+				"no se pudo completar la búsqueda del punto en esta curva dentro del límite de trabajo."
+						+ " Pulse de nuevo más cerca de la curva o use Point(curva, parámetro)");
 		case "STALE_SELECTION" -> t("Selection is stale; make a new request", "Selección caducada; realice una petición nueva");
 		case "FOREIGN_CHOICE" -> t("Choice belongs to another query", "Dirección ajena a la consulta");
 		case "CONSUMED_SELECTION" -> t("Selection already consumed", "Selección ya consumida");
@@ -425,7 +441,10 @@ final class GeoCeDGReferencePointTool {
 		clearSelection();
 		source = null;
 		app.getSelectionManager().clearSelectedGeos();
-		updateStatus(t("No point created: ", "No se creó ningún punto: ") + describeFailure(reason.split(" / ")[0]) + " [" + reason + "]");
+		// The typed code stays available for diagnosis as the tooltip; it is not the message.
+		updateStatus(t("No point created: ", "No se creó ningún punto: ")
+				+ describeFailure(reason.split(" / ")[0]));
+		if (status != null) { status.setToolTipText(status.getText() + " [" + reason + "]"); }
 	}
 
 	GeoCeDGReferencePlacement pendingSelection() { return selection; }
@@ -443,8 +462,12 @@ final class GeoCeDGReferencePointTool {
 						: source == null ? "L" : t("Q again", "Q de nuevo")));
 	}
 
-	private <T> void showChoices(List<T> values,
-			java.util.function.Function<T, String> describe, Consumer<T> accept, String title) {
+	/**
+	 * @param labels the usual short text of each value
+	 * @param details the technical text of each value, shown as its tooltip, or {@code null}
+	 */
+	private <T> void showChoices(List<T> values, List<String> labels, List<String> details,
+			Consumer<T> accept, String title) {
 		long ticket = generation;
 		JPanel content = new JPanel(new BorderLayout(4, 3));
 		JTextField heading = new JTextField(title, 24);
@@ -453,7 +476,17 @@ final class GeoCeDGReferencePointTool {
 		heading.setCaretPosition(0);
 		heading.setToolTipText(title);
 		content.add(heading, BorderLayout.NORTH);
-		JList<String> list = new JList<>(values.stream().map(describe).toArray(String[]::new));
+		JList<String> list = new JList<>(labels.toArray(String[]::new)) {
+			private static final long serialVersionUID = 1L;
+			@Override public String getToolTipText(java.awt.event.MouseEvent event) {
+				int row = locationToIndex(event.getPoint());
+				return details != null && row >= 0 && row < details.size()
+						&& getCellBounds(row, row).contains(event.getPoint()) ? details.get(row) : null;
+			}
+		};
+		if (details != null) {
+			javax.swing.ToolTipManager.sharedInstance().registerComponent(list);
+		}
 		list.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
 		list.setVisibleRowCount(Math.min(3, values.size()));
 		list.getAccessibleContext().setAccessibleName(title);

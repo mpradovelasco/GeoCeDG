@@ -94,13 +94,28 @@ public final class IndividualForwardPointCreation2D {
 
 	public static Selection query(GeoLocusV2 source, double x, double y,
 			LocusPointInteractionPolicy2D policy) {
-		return new Selection(source, null, x, y, policy);
+		return new Selection(source, null, x, y, policy, null);
 	}
 
 	public static Selection queryFromReference(GeoLocusV2 source, GeoPoint reference,
 			LocusPointInteractionPolicy2D policy) {
 		if (!validReference(source, reference)) { throw new Rejected(Failure.INVALID_REFERENCE); }
-		return new Selection(source, reference, reference.getInhomX(), reference.getInhomY(), policy);
+		return new Selection(source, reference, reference.getInhomX(), reference.getInhomY(), policy,
+				null);
+	}
+
+	/** Same query inside a creation operation whose historical discovery is replayed. */
+	static Selection query(GeoLocusV2 source, double x, double y,
+			LocusPointInteractionPolicy2D policy, LocusPointDiscoveryReplay2D replay) {
+		return new Selection(source, null, x, y, policy, replay);
+	}
+
+	/** Same reference query inside a creation operation whose discovery is replayed. */
+	static Selection queryFromReference(GeoLocusV2 source, GeoPoint reference,
+			LocusPointInteractionPolicy2D policy, LocusPointDiscoveryReplay2D replay) {
+		if (!validReference(source, reference)) { throw new Rejected(Failure.INVALID_REFERENCE); }
+		return new Selection(source, reference, reference.getInhomX(), reference.getInhomY(), policy,
+				replay);
 	}
 
 	private static boolean validReference(GeoLocusV2 source, GeoPoint reference) {
@@ -131,7 +146,7 @@ public final class IndividualForwardPointCreation2D {
 		private MetricPositionBinding2D preparedBinding;
 
 		private Selection(GeoLocusV2 source, GeoPoint reference, double x, double y,
-				LocusPointInteractionPolicy2D policy) {
+				LocusPointInteractionPolicy2D policy, LocusPointDiscoveryReplay2D replay) {
 			if (source == null) { throw new Rejected(Failure.INVALID_SOURCE); }
 			this.source = source;
 			this.reference = reference;
@@ -140,9 +155,16 @@ public final class IndividualForwardPointCreation2D {
 			registry = source.getConstruction().getSpatialIdentityRegistry();
 			authority = registry.getDocumentAuthorityRecord();
 			var budget = policy.getWorkBudget();
+			// Inside one creation operation only the evaluations it has left may be spent;
+			// its already charged discovery values are replayed, never evaluated twice.
 			session = LocusEvaluationSession2D.hardBoundedForSnapshot(
-					budget.getMaximumSemanticEvaluations(), budget.getMaximumSemanticEvaluations(),
+					budget.getMaximumSemanticEvaluations(), replay == null
+							? budget.getMaximumSemanticEvaluations()
+							: replay.remainingSemanticEvaluations(budget),
 					budget.getMaximumEvaluatorCompositionDepth());
+			if (replay != null) {
+				replay.seed(session);
+			}
 			try {
 				requireCapability();
 				var discovery = withParent(() -> new LocusPointInteractionResolver2D()

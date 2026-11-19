@@ -549,11 +549,19 @@ class GeneralPointInteractionDesktopTest {
 			JLabel notice = bar.getSegment(GeoCeDGStatusBar.POINT_INTERACTION_NOTICE_SEGMENT);
 			assertTrue(notice.isVisible()); assertFalse(notice.getText().isEmpty());
 			int firstExpiry = expiries.size() - 1;
+			String diagnostic = notice.getText();
+			// The barrier refuses each request and the gesture stays alive: the same
+			// feedback is repeated, and it never reads as a stopped drag.
+			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_DRAGGED, 0, 0);
+			assertEquals(diagnostic, notice.getText());
+			assertFalse(diagnostic.contains("release and select"), diagnostic);
+			assertEquals(firstExpiry + 1, expiries.size(), "Repeated feedback does not restart a timer");
+			// A different notice owns a new timer, which an old expiry cannot clear.
+			bar.showPointInteractionNotice("Replacement notice");
 			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_DRAGGED, 0, 0);
 			int latestExpiry = expiries.size() - 1;
-			String diagnostic = notice.getText();
-			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_DRAGGED, 0, 0);
-			assertEquals(latestExpiry + 1, expiries.size(), "Repeated feedback does not restart a timer");
+			assertTrue(latestExpiry > firstExpiry);
+			assertEquals(diagnostic, notice.getText());
 			expiries.get(firstExpiry).run();
 			assertTrue(notice.isVisible(), "An old expiry cannot clear the new notice");
 			Cu7M08SDesktopEventsTest.mouse(app, MouseEvent.MOUSE_RELEASED, 0, 0);

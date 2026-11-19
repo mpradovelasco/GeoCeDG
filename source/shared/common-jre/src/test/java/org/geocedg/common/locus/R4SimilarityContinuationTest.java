@@ -63,8 +63,14 @@ class R4SimilarityContinuationTest extends R4ContinuationTestBase {
 				new LocusPointInteractionWorkBudget2D(32768, 3, 80, 1024));
 		var result = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
 				target.getX(), target.getY(), limit, context);
-		assertEquals(LocusPointContinuation2D.Status.BUDGET_EXHAUSTED, result.getStatus());
-		assertEquals(3, result.getIntervalPasses()); assertEquals(old, address(point)); assertEquals(xml, getApp().getXML());
+		// The exhausted composition proof publishes no chart; the forward continuation of the
+		// image evaluator owns the request, inside the same component of the image.
+		assertEquals(3, result.getIntervalPasses());
+		assertTrue(result.isEstablished(), result.getDiagnostic());
+		assertEquals("LOCAL_FORWARD_PARAMETRIC_CONTINUATION", result.getMethod());
+		assertEquals(old.getComponentLineageKey(), address(point).getComponentLineageKey());
+		assertEquals(.61, address(point).getCanonicalParameter(), 1e-3);
+		assertNotEquals(xml, getApp().getXML());
 	}
 
 	@Test void nestedImagePersistsItsOriginalSemanticAddressAndContinuesAfterReopen() {

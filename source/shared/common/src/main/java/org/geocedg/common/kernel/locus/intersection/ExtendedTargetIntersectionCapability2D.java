@@ -180,12 +180,16 @@ public final class ExtendedTargetIntersectionCapability2D
 			String componentKey, LocusInterval2D component,
 			List<LocalizedRoot> roots, boolean[] invalidTargetObserved,
 			boolean[] nonIsolatedZeroRun, ResidualJetSource2D certified) {
+		// A neighbour of an excluded arc end is sampled on the component's own side: its
+		// canonical form must not round onto the parameter that the two ends share.
 		double lower = component.isLowerClosed() ? component.getLower()
-				: Math.nextUp(component.getLower());
+				: context.insideExcludedEnd(branchKey, component,
+						Math.nextUp(component.getLower()), false);
 		boolean completePeriodicSeam = hasCompletePeriodicSeam(context,
 				branchKey, component);
 		double upper = component.isUpperClosed() || completePeriodicSeam
-				? component.getUpper() : Math.nextDown(component.getUpper());
+				? component.getUpper() : context.insideExcludedEnd(branchKey, component,
+						Math.nextDown(component.getUpper()), true);
 		if (lower > upper) {
 			return;
 		}

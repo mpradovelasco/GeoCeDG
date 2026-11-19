@@ -130,9 +130,15 @@ class R3PointContinuationTest extends G9U0PublicSurfaceTestBase {
 		var gap = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
 				2, 0, policy, context);
 		assertFalse(gap.isEstablished());
-		assertTrue(context.isStopped());
 		assertEquals(last, address(point));
 		assertEquals(before, getApp().getXML());
+		// A refused request ends nothing: the gesture continues from the unchanged address.
+		assertFalse(context.isStopped());
+		var nearby = at(source, last.getCanonicalParameter() + .01);
+		var resumed = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
+				nearby.getX(), nearby.getY(), policy, context);
+		assertTrue(resumed.isEstablished(), resumed.getDiagnostic());
+		assertEquals(initial.getComponentLineageKey(), address(point).getComponentLineageKey());
 	}
 
 	@Test

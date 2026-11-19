@@ -61,8 +61,9 @@ public final class M08SnapshotPlacement2D {
 			semanticMisses = owner.session.getTotalChargedMisses();
 			discoveryMisses = owner.discoveryMisses;
 			intervalPasses = owner.intervalPasses.clone();
-			semanticLimit = owner.query.getPolicy().getWorkBudget().getMaximumSemanticEvaluations();
-			intervalLimit = owner.query.getPolicy().getWorkBudget().getMaximumSubdivisions();
+			semanticLimit = owner.semanticLimit;
+			intervalLimit = owner.query.getPolicy().getWorkBudget().getMaximumSubdivisions()
+					- owner.spentSubdivisions;
 			publications = owner.publications;
 		}
 
@@ -203,7 +204,25 @@ public final class M08SnapshotPlacement2D {
 	public static Selection query(GeoLocusV2 source, double x, double y,
 			LocusPointInteractionPolicy2D policy) {
 		requireSourceBinding(source);
-		return new Selection(new LocusPointInteractionQuery2D(source, x, y, policy), null);
+		return new Selection(new LocusPointInteractionQuery2D(source, x, y, policy), null, null);
+	}
+
+	/** Same query inside a creation operation whose historical discovery is replayed. */
+	static Selection query(GeoLocusV2 source, double x, double y,
+			LocusPointInteractionPolicy2D policy, LocusPointDiscoveryReplay2D replay) {
+		requireSourceBinding(source);
+		return new Selection(new LocusPointInteractionQuery2D(source, x, y, policy), null, replay);
+	}
+
+	/** Same reference query inside a creation operation whose discovery is replayed. */
+	static Selection queryFromReference(GeoLocusV2 source, GeoPoint reference,
+			LocusPointInteractionPolicy2D policy, LocusPointDiscoveryReplay2D replay) {
+		requireSourceBinding(source);
+		if (!validReference(source, reference)) {
+			throw new Rejected(Failure.INVALID_REFERENCE);
+		}
+		return new Selection(new LocusPointInteractionQuery2D(source, reference.getInhomX(),
+				reference.getInhomY(), policy), reference, replay);
 	}
 
 	/** Reads a real existing Q transiently, without making it participate durably. */
@@ -214,7 +233,7 @@ public final class M08SnapshotPlacement2D {
 			throw new Rejected(Failure.INVALID_REFERENCE);
 		}
 		return new Selection(new LocusPointInteractionQuery2D(source, reference.getInhomX(),
-				reference.getInhomY(), policy), reference);
+				reference.getInhomY(), policy), reference, null);
 	}
 
 	private static void requireSourceBinding(GeoLocusV2 source) {
@@ -246,6 +265,8 @@ public final class M08SnapshotPlacement2D {
 		private final LocusEvaluationSession2D session;
 		private final long serviceScope = LocusEvaluationSession2D.newSliceScope();
 		private final long[] intervalPasses = new long[Work.values().length];
+		private final long spentSubdivisions;
+		private final long semanticLimit;
 		private long discoveryMisses;
 		private long publications;
 		private boolean finished;
@@ -253,18 +274,27 @@ public final class M08SnapshotPlacement2D {
 		private Choice initialBindingReady;
 		private MetricPositionBinding2D preparedBinding;
 
-		private Selection(LocusPointInteractionQuery2D query, GeoPoint reference) {
+		private Selection(LocusPointInteractionQuery2D query, GeoPoint reference,
+				LocusPointDiscoveryReplay2D replay) {
 			this.query = query;
 			this.reference = reference;
+			spentSubdivisions = replay == null ? 0 : replay.getSpentSubdivisions();
 			source = query.getSource();
 			definition = source.getSemanticDefinition();
 			registry = source.getConstruction().getSpatialIdentityRegistry();
 			sourceId = source.getPersistentLocusId();
 			authority = registry.getDocumentAuthorityRecord();
 			var budget = query.getPolicy().getWorkBudget();
+			// Inside one creation operation only the evaluations it has left may be spent;
+			// its already charged discovery values are replayed, never evaluated twice.
+			semanticLimit = replay == null ? budget.getMaximumSemanticEvaluations()
+					: replay.remainingSemanticEvaluations(budget);
 			session = LocusEvaluationSession2D.hardBoundedForSnapshot(
-					budget.getMaximumSemanticEvaluations(), budget.getMaximumSemanticEvaluations(),
+					budget.getMaximumSemanticEvaluations(), semanticLimit,
 					budget.getMaximumEvaluatorCompositionDepth());
+			if (replay != null) {
+				replay.seed(session);
+			}
 			var discovery = withServiceParent(() -> new LocusPointInteractionResolver2D()
 					.discoverForSnapshot(query, session));
 			discoveryMisses = session.getTotalChargedMisses();
@@ -364,7 +394,7 @@ public final class M08SnapshotPlacement2D {
 		}
 
 		private void chargeIntervalPass(Work kind) {
-			long total = 0;
+			long total = spentSubdivisions;
 			for (long count : intervalPasses) {
 				total += count;
 			}

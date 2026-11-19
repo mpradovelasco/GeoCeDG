@@ -490,6 +490,11 @@ public final class LocusV2PublicOperations {
 				requestGuard.run();
 			}
 			context.recordPublished(point, result);
+		} else if (result.isRecoverableRefusal()) {
+			// Nothing was published and the current address is unchanged: a barrier, an
+			// ill-conditioned request or an exhausted work limit refuses this request only.
+			// The next request of the gesture must establish a complete fresh proof.
+			context.restartAfterRefusal();
 		} else if (result.getHistoricalResult() == null) {
 			context.stop();
 		}

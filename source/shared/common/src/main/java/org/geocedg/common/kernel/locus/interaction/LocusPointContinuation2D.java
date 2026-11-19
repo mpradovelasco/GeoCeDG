@@ -59,6 +59,13 @@ public final class LocusPointContinuation2D {
 		public boolean isStopped() { return stopped; }
 		public void stop() { stopped = true; }
 
+		/**
+		 * Keeps the gesture after a request that published nothing. The retained chart
+		 * choice is dropped, so the next request needs a complete fresh proof anchored at
+		 * the unchanged current address, exactly as a new gesture on the same point would.
+		 */
+		public void restartAfterRefusal() { chartState = null; }
+
 		/** Advances only after the exact selected address was published by the host. */
 		public void recordPublished(GeoPoint currentPoint, Result result) {
 			if (!matches(currentPoint, result.preparedSource, result.originatingAddress)
@@ -101,6 +108,7 @@ public final class LocusPointContinuation2D {
 		private long resolutionNanos;
 		private long dagPropagationNanos;
 		private long[] continuationWork = new long[6];
+		private int forwardEvaluations;
 		private UnsupportedReason nativeHostReason;
 
 		private Result(Status status, LocusSemanticAddress2D address, String method,
@@ -134,6 +142,16 @@ public final class LocusPointContinuation2D {
 		public long getContinuationIntervalEvaluations() { return continuationWork[3]; }
 		public long getContinuationCorrespondenceChecks() { return continuationWork[4]; }
 		public long getContinuationSimilarityApplications() { return continuationWork[5]; }
+		/** Root semantic evaluations requested by the forward parametric continuation. */
+		public int getForwardContinuationEvaluations() { return forwardEvaluations; }
+		/**
+		 * @return whether a later request of the same gesture may be established: nothing
+		 *         was published and the source, authority and host state are unchanged
+		 */
+		public boolean isRecoverableRefusal() {
+			return status == Status.NO_CONTINUATION_ESTABLISHED || status == Status.FORWARD_REJECTED
+					|| status == Status.BUDGET_EXHAUSTED || status == Status.COMPONENT_NOT_ESTABLISHED;
+		}
 		public LocusPointInteractionResult2D getHistoricalResult() { return historical; }
 		/** Local lifted-parameter bound, including both representatives' interval errors. */
 		public double getMaximumParameterChange() { return maximumParameterChange; }
@@ -308,19 +326,47 @@ public final class LocusPointContinuation2D {
 				budget.getMaximumEvaluatorCompositionDepth())) {
 			try {
 				LocalContinuationEvidence2D.Proposal[] proposal = {null};
-				LocusEvaluationSession2D.runWithNestedServiceParent(session,
-						LocusEvaluationSession2D.newSliceScope(), () -> proposal[0] =
-								LocalContinuationEvidence2D.establish(definition, current,
-										component.getComponent(), x, y, policy,
-										context == null ? null : context.chartState, measuredWork));
+				try {
+					LocusEvaluationSession2D.runWithNestedServiceParent(session,
+							LocusEvaluationSession2D.newSliceScope(), () -> proposal[0] =
+									LocalContinuationEvidence2D.establish(definition, current,
+											component.getComponent(), x, y, policy,
+											context == null ? null : context.chartState, measuredWork));
+				} catch (ProofBudgetExceeded proofPasses) {
+					// Exhausted chart-proof passes leave the semantic session available:
+					// the independent forward continuation below owns its own bounded work.
+					proposal[0] = null;
+				}
 				if (session.isWorkLimitExhausted()) {
 					throw new ProofBudgetExceeded();
 				}
-				if (proposal[0] == null) {
-					return new Result(Status.NO_CONTINUATION_ESTABLISHED, null, "",
-							session.getTotalChargedMisses(), passes[0], null).workMetrics(work);
+				double parameter;
+				long lift;
+				String method;
+				int forwardEvaluations = 0;
+				if (proposal[0] != null) {
+					parameter = proposal[0].getParameter();
+					lift = proposal[0].getLift();
+					method = proposal[0].getMethod();
+				} else {
+					// No certified chart: continue the same argument parametrically inside its
+					// component. A refusal is a barrier or an explicit work limit, never a jump.
+					var forward = LocalForwardParametricContinuation2D.advance(definition, current,
+							component.getComponent(), x, y, policy, session);
+					if (!forward.isEstablished()) {
+						Result refusal = new Result(forward.getRefusal()
+								== LocalForwardParametricContinuation2D.Refusal.BUDGET
+										? Status.BUDGET_EXHAUSTED : Status.NO_CONTINUATION_ESTABLISHED,
+								null, "", session.getTotalChargedMisses(), passes[0], null)
+								.workMetrics(work);
+						refusal.forwardEvaluations = forward.getEvaluations();
+						return refusal;
+					}
+					parameter = forward.getParameter();
+					lift = forward.getLift();
+					method = LocalForwardParametricContinuation2D.METHOD;
+					forwardEvaluations = forward.getEvaluations();
 				}
-				double parameter = proposal[0].getParameter();
 				if (!component.getComponent().contains(parameter, 0)
 						|| Double.doubleToLongBits(parameter) != Double.doubleToLongBits(
 								definition.getProvider().canonicalize(parameter))) {
@@ -329,11 +375,11 @@ public final class LocusPointContinuation2D {
 				}
 				SeamSide seam = !definition.getProvider().isPeriodic() ? SeamSide.NOT_PERIODIC
 						: parameter == definition.getProvider().getDeclaredDomain().getLower()
-								? proposal[0].getLift() == 0 ? SeamSide.LOWER_APPROACH
+								? lift == 0 ? SeamSide.LOWER_APPROACH
 										: SeamSide.UPPER_APPROACH : SeamSide.INTERIOR;
 				LocusSemanticAddress2D address = new LocusSemanticAddress2D(current.getSourceLocusId(),
 						current.getProviderVersion(), current.getBranchKey(), component.getLineageKey(),
-						parameter, proposal[0].getLift(), seam);
+						parameter, lift, seam);
 				var binding = new LocusMetricPositionBinder2D().bind(address.toMetricPosition(),
 						definition, session);
 				var point = binding.getEvaluatedPoint().orElse(null);
@@ -344,12 +390,15 @@ public final class LocusPointContinuation2D {
 						&& point != null && Math.hypot(point.getX() - x, point.getY() - y)
 								<= policy.getMaximumWorldDistance();
 				Result result = new Result(accepted ? Status.CONTINUATION_ESTABLISHED : Status.FORWARD_REJECTED,
-						accepted ? address : null, proposal[0].getMethod(),
+						accepted ? address : null, method,
 						session.getTotalChargedMisses(), passes[0], null)
 						.prepared(source, definition, current, accepted ? binding : null, context);
-				result.chartState = proposal[0].getGestureState();
-				result.maximumParameterChange = proposal[0].getMaximumParameterChange();
-				result.parameterError = proposal[0].getParameterError();
+				result.forwardEvaluations = forwardEvaluations;
+				if (proposal[0] != null) {
+					result.chartState = proposal[0].getGestureState();
+					result.maximumParameterChange = proposal[0].getMaximumParameterChange();
+					result.parameterError = proposal[0].getParameterError();
+				}
 				return result.workMetrics(work);
 			} catch (ProofBudgetExceeded | LocusEvaluationSession2D.EvaluationWorkLimitException exception) {
 				return new Result(Status.BUDGET_EXHAUSTED, null, "",

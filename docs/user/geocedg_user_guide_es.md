@@ -1453,8 +1453,8 @@ un punto.
   los límites puede permitir que termine una búsqueda. No hace admisible
   una curva fuera del alcance de la herramienta.
 - Puede aparecer una posición local verificada aunque GeoCeDG no pueda
-  establecer que es única en toda la curva. Una oferta marcada **Dirección
-  forward; proximidad numérica no certificada** permite colocar el punto en
+  establecer que es única en toda la curva. Una oferta descrita como **Posición
+  comprobada por evaluación directa** permite colocar el punto en
   una posición admitida, sin garantizar una proyección exacta ni la distancia
   mínima. Si no hay oferta, consulte el diagnóstico. El rechazo de una
   consulta puede dejar abierta la existencia de una solución matemática.
@@ -1477,8 +1477,8 @@ cambie a **Mueve** e inicie otro gesto. Las construcciones Locus V2 y Spline V2
 admitidas conservan la misma rama y el mismo tramo durante el arrastre,
 incluso al pasar por la unión de un recorrido periódico cuando la continuidad
 está establecida. El puntero puede separarse del trazo. Ante un hueco, una
-ambigüedad u otra barrera, el punto se queda en su última posición válida.
-Suelte el botón e inicie otro arrastre para volver a intentarlo. Un gesto
+ambigüedad u otra barrera, el punto se queda en su última posición válida y la
+barra de estado indica el motivo; siga arrastrando para continuar. Un gesto
 que cambia el punto añade un paso de Deshacer. La disponibilidad depende de
 la curva y del documento. Por ejemplo, un punto en una región no admitida
 o una cónica indefinida pueden impedir una operación cuyo fallo GeoCeDG

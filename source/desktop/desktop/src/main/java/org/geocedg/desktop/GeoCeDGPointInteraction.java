@@ -130,21 +130,26 @@ final class GeoCeDGPointInteraction {
 		boolean spanish = "es".equals(app.getLocale().getLanguage());
 		lastMoveDiagnostic = switch (movement.getStatus()) {
 		case FIXED_POINT -> spanish ? "El punto está bloqueado" : "The point is fixed";
-		case CONTINUATION_STOPPED -> spanish ? "Arrastre detenido; suelte y vuelva a seleccionar el punto"
-				: "Drag stopped; release and select the point again";
-		case BUDGET_EXHAUSTED -> spanish ? "Se alcanzó el presupuesto de continuación"
-				: "Continuation work budget reached";
+		// Only a changed source, authority or host state ends the gesture. A barrier or a
+		// work limit refuses one request and the same gesture continues with the next one.
+		case CONTINUATION_STOPPED -> spanish
+				? "El arrastre ha terminado porque la curva o el documento han cambiado; suelte y vuelva a seleccionar el punto"
+				: "The drag ended because the curve or the document changed; release and select the point again";
+		case BUDGET_EXHAUSTED -> spanish
+				? "No se pudo calcular la nueva posición dentro del límite de trabajo; acerque el puntero a la curva"
+				: "The new position could not be computed within the work limit; move the pointer closer to the curve";
 		case UNSUPPORTED_HOST_STATE -> "SOURCE_FIDELITY_RESOURCE_EXHAUSTED".equals(movement.getDiagnostic())
 				? spanish ? "Se alcanzó el presupuesto para verificar la restauración nativa; documento sin cambios"
 						: "Native restoration verification work budget reached; document unchanged"
 				: spanish
 				? "El estado actual del documento no permite una restauración exacta"
 				: "Current document state does not permit exact restoration";
-		case INVALID_SOURCE, AUTHORITY_NOT_ESTABLISHED, COMPONENT_NOT_ESTABLISHED -> spanish
-				? "La fuente o su componente no permiten continuar este movimiento"
-				: "The source or component cannot establish this continuation";
-		default -> spanish ? "Barrera de continuación; se conserva la última posición válida"
-				: "Continuation barrier; last valid position retained";
+		case INVALID_SOURCE, AUTHORITY_NOT_ESTABLISHED -> spanish
+				? "La curva de origen ya no permite mover este punto"
+				: "The source curve no longer allows this point to move";
+		default -> spanish
+				? "El punto no puede continuar por aquí (extremo, singularidad o posición ambigua); se conserva la última posición válida"
+				: "The point cannot continue this way (end, singularity or ambiguous position); the last valid position is kept";
 		};
 		return movement.isEstablished();
 	}

@@ -110,12 +110,41 @@ class R4PointContinuationChainTest extends R4ContinuationTestBase {
 				new LocusPointInteractionWorkBudget2D(32768, 100, 80, 1024));
 		var result = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
 				Math.cos(1.91), Math.sin(1.91), limited, context);
-		assertEquals(LocusPointContinuation2D.Status.BUDGET_EXHAUSTED, result.getStatus());
+		// The exhausted chart proof spends exactly its passes and publishes none of its
+		// internal charts. The independent forward continuation then owns the request:
+		// a converged projection inside the same component, with no argument-error claim.
 		assertEquals(100, result.getIntervalPasses());
 		assertTrue(result.getContinuationSubdivisions() > 0);
+		assertTrue(result.isEstablished(), result.getDiagnostic());
+		assertEquals("LOCAL_FORWARD_PARAMETRIC_CONTINUATION", result.getMethod());
+		assertTrue(Double.isNaN(result.getMaximumParameterChange()));
+		assertTrue(Double.isNaN(result.getParameterError()));
+		assertTrue(result.getForwardContinuationEvaluations() > 0
+				&& result.getForwardContinuationEvaluations()
+						<= limited.getWorkBudget().getMaximumRefinementIterations());
+		assertEquals(old.getComponentLineageKey(), address(point).getComponentLineageKey());
+		assertEquals(1.91, lifted(point), 1e-3);
+		assertNotEquals(xml, getApp().getXML());
+		assertNotSame(snapshot, getConstruction().getLastNativeTransactionMetrics());
+	}
+
+	@Test void exhaustedSemanticBudgetStillRefusesWithoutMutation() {
+		GeoLocusV2 source = meetCircle(); GeoPoint point = offered(source, .1, "P");
+		var context = LocusV2PublicOperations.beginInteractiveSemanticPointDrag(point);
+		move(point, context, Math.cos(.11), Math.sin(.11));
+		var old = address(point); String xml = getApp().getXML();
+		var snapshot = getConstruction().getLastNativeTransactionMetrics();
+		// Neither a chart nor the forward continuation fits one refinement iteration.
+		var limited = new LocusPointInteractionPolicy2D(.5, 1E-10, 1E-12,
+				new LocusPointInteractionWorkBudget2D(32768, 100, 1, 1024));
+		var result = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
+				Math.cos(1.91), Math.sin(1.91), limited, context);
+		assertEquals(LocusPointContinuation2D.Status.BUDGET_EXHAUSTED, result.getStatus());
 		assertEquals(old, address(point)); assertEquals(xml, getApp().getXML());
 		assertSame(snapshot, getConstruction().getLastNativeTransactionMetrics());
 		assertEquals(0, result.getDagPropagationNanos());
+		assertFalse(context.isStopped());
+		move(point, context, Math.cos(.12), Math.sin(.12));
 	}
 
 	@Test void uncertifiableFinalProjectionAfterCertifiedPrefixesLeavesPointAndDagUntouched() {
@@ -128,7 +157,11 @@ class R4PointContinuationChainTest extends R4ContinuationTestBase {
 		assertFalse(result.isEstablished()); assertTrue(result.getContinuationCharts() > 0);
 		assertEquals(old, address(point)); assertEquals(xml, getApp().getXML());
 		assertSame(snapshot, getConstruction().getLastNativeTransactionMetrics());
-		assertEquals(0, result.getDagPropagationNanos()); assertTrue(context.isStopped());
+		assertEquals(0, result.getDagPropagationNanos());
+		// The barrier refuses that request only; the same gesture then needs a fresh proof.
+		assertFalse(context.isStopped());
+		move(point, context, Math.cos(.12), Math.sin(.12));
+		assertEquals(.12, lifted(point), 3e-11);
 	}
 
 	@Test void publicationFreshnessFailureAfterWholeChainHasNoPartialAddressOrSnapshot() {

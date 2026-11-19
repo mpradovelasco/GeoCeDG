@@ -173,33 +173,34 @@ public final class LocusPointCreation2D {
 				failure = historicalResult.getReason().name();
 				return;
 			}
-			var remaining = remainingPolicy(policy);
-			if (remaining == null) {
+			var replay = spentWork(policy);
+			if (replay == null) {
 				failure = Failure.BUDGET_EXHAUSTED.name();
 				return;
 			}
 			if (historicalResult.getReason()
 					== LocusPointInteractionResult2D.Reason.LOCAL_EVIDENCE_INSUFFICIENT) {
-				queryForward(remaining);
+				queryForward(policy, replay);
 				return;
 			}
-			local = reference == null ? M08SnapshotPlacement2D.query(source, x, y, remaining)
-					: M08SnapshotPlacement2D.queryFromReference(source, reference, remaining);
+			local = reference == null ? M08SnapshotPlacement2D.query(source, x, y, policy, replay)
+					: M08SnapshotPlacement2D.queryFromReference(source, reference, policy, replay);
 			if (local.getResult().getPermission()
 					!= M08SnapshotPlacement2D.Permission.EXPLICIT_LOCAL_SELECTION_REQUIRED) {
-				failure = local.getResult().getFailure().name() + " / "
-						+ local.getResult().getLocalFailure();
+				var localFailure = local.getResult().getLocalFailure();
+				failure = local.getResult().getFailure().name()
+						+ (localFailure == null ? "" : " / " + localFailure);
 				local.close();
 				if (local.getResult().getFailure() == M08SnapshotPlacement2D.Failure.BUDGET_EXHAUSTED) {
 					return;
 				}
 				// Independent permission and proof, never an upgraded historical result.
-				remaining = remainingPolicy(policy);
-				if (remaining == null) {
+				replay = spentWork(policy);
+				if (replay == null) {
 					failure = Failure.BUDGET_EXHAUSTED.name();
 					return;
 				}
-				queryForward(remaining);
+				queryForward(policy, replay);
 				return;
 			}
 			if (!current()) {
@@ -212,10 +213,12 @@ public final class LocusPointCreation2D {
 					.map(candidate -> new Choice(this, null, candidate)).toList();
 		}
 
-		private void queryForward(LocusPointInteractionPolicy2D remaining) {
+		private void queryForward(LocusPointInteractionPolicy2D policy,
+				LocusPointDiscoveryReplay2D replay) {
 			forward = reference == null
-					? IndividualForwardPointCreation2D.query(source, x, y, remaining)
-					: IndividualForwardPointCreation2D.queryFromReference(source, reference, remaining);
+					? IndividualForwardPointCreation2D.query(source, x, y, policy, replay)
+					: IndividualForwardPointCreation2D.queryFromReference(source, reference, policy,
+							replay);
 			if (forward.getPermission() == IndividualForwardPointCreation2D.Permission
 					.EXPLICIT_FORWARD_SELECTION_REQUIRED && current()) {
 				route = Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION;
@@ -228,28 +231,27 @@ public final class LocusPointCreation2D {
 			}
 		}
 
-		/** Debit completed attempts; a different permission never restarts the operation budget. */
-		private LocusPointInteractionPolicy2D remainingPolicy(LocusPointInteractionPolicy2D policy) {
+		/**
+		 * Debits completed attempts; a different permission never restarts the operation
+		 * budget. The historical discovery of this operation is the same deterministic search
+		 * for every permission, so its exact-key values are replayed and it is debited once:
+		 * each later permission spends only its own proofs and forward confirmations.
+		 */
+		private LocusPointDiscoveryReplay2D spentWork(LocusPointInteractionPolicy2D policy) {
 			var work = historicalResult.getInstrumentation();
 			long semantic = historical.getSemanticMisses();
 			long subdivisions = work.getSubdivisions();
 			long candidates = work.getRetainedCandidates();
 			if (local != null) {
 				semantic += local.getWorkSnapshot().getSemanticMisses();
-				subdivisions += local.getResult().getHistoricalResult().getInstrumentation()
-						.getSubdivisions() + local.getWorkSnapshot().getIntervalPasses();
-				candidates += local.getResult().getHistoricalResult().getInstrumentation()
-						.getRetainedCandidates();
+				subdivisions += local.getWorkSnapshot().getIntervalPasses();
 			}
 			var budget = policy.getWorkBudget();
 			long evaluationsLeft = budget.getMaximumSemanticEvaluations() - semantic;
 			long subdivisionsLeft = budget.getMaximumSubdivisions() - subdivisions;
 			long candidatesLeft = budget.getMaximumCandidates() - candidates;
 			if (evaluationsLeft < 1 || subdivisionsLeft < 2 || candidatesLeft < 1) { return null; }
-			return new LocusPointInteractionPolicy2D(policy.getMaximumWorldDistance(),
-					policy.getEqualDistanceTolerance(), policy.getParameterTolerance(),
-					new LocusPointInteractionWorkBudget2D((int) evaluationsLeft, (int) subdivisionsLeft,
-							budget.getMaximumRefinementIterations(), (int) candidatesLeft));
+			return new LocusPointDiscoveryReplay2D(historical.getReplayMemo(), semantic, subdivisions);
 		}
 
 		public long getSemanticMisses() {

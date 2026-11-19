@@ -13,6 +13,7 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusParameterPartition2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
@@ -81,6 +82,53 @@ public final class IntersectionCapabilityContext2D {
 	public LocusEvaluation2D evaluate(String branchKey, double parameter) {
 		instrumentation.recordSemanticEvaluation();
 		return definition.evaluate(branchKey, parameter, evaluationSession);
+	}
+
+	/**
+	 * Moves a sampling parameter next to an excluded end of the lifted interval of an arc
+	 * component onto that component's own side of the end.
+	 *
+	 * <p>An excluded end of an arc shares its canonical parameter with the other end, and
+	 * the periodic canonicalization of the provider can round the lifted neighbour of the
+	 * excluded end onto that shared parameter. Its evaluation would then be the image of
+	 * the other end of the component, which is not a point of this neighbourhood and must
+	 * never be read as a sample, a bracket end or a root of it
+	 * ({@code locus-v2-existence-components.md} section 15.3). The parameter is stepped
+	 * inward until its canonical form has the arc coordinate of its lifted position.</p>
+	 *
+	 * @param componentExtent lifted interval of a certified component of the branch
+	 * @param parameter the lifted parameter next to the excluded end
+	 * @param upperEnd whether the excluded end is the upper end of the lifted interval
+	 * @return the nearest lifted parameter evaluated on the component's own side; the
+	 *         given parameter for an interval, a closed periodic arc or an unknown extent
+	 */
+	public double insideExcludedEnd(String branchKey, LocusInterval2D componentExtent,
+			double parameter, boolean upperEnd) {
+		LocusBranch2D branch = definition.getBranch(branchKey);
+		if (branch == null || !definition.getProvider().isPeriodic()) {
+			return parameter;
+		}
+		for (LocusExistenceStructure2D.ContinuousComponent component
+				: branch.getExistenceStructure().getContinuousValidComponents()) {
+			if (!component.getInterval().equals(componentExtent)) {
+				continue;
+			}
+			if (!component.isArc() || component.isClosedPeriodic()) {
+				return parameter;
+			}
+			double candidate = parameter;
+			for (int step = 0; step < 64; step++) {
+				double coordinate = component.getArcCoordinate(
+						definition.getProvider().canonicalize(candidate));
+				if (!Double.isNaN(coordinate) && Math.abs(coordinate
+						- (candidate - componentExtent.getLower())) <= component.getLength() / 2) {
+					return candidate;
+				}
+				candidate = upperEnd ? Math.nextDown(candidate) : Math.nextUp(candidate);
+			}
+			return parameter;
+		}
+		return parameter;
 	}
 
 	/**

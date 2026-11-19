@@ -88,10 +88,14 @@ public final class EvaluatorOnlyIntersectionCapability2D
 	private static void isolateComponent(IntersectionCapabilityContext2D context,
 			LocusBranch2D branch, String componentKey, LocusInterval2D interval,
 			List<IntersectionCandidate2D> candidates) {
+		// A neighbour of an excluded arc end is sampled on the component's own side: its
+		// canonical form must not round onto the parameter that the two ends share.
 		double lower = interval.isLowerClosed() ? interval.getLower()
-				: Math.nextUp(interval.getLower());
+				: context.insideExcludedEnd(branch.getBranchKey(), interval,
+						Math.nextUp(interval.getLower()), false);
 		double upper = interval.isUpperClosed() ? interval.getUpper()
-				: Math.nextDown(interval.getUpper());
+				: context.insideExcludedEnd(branch.getBranchKey(), interval,
+						Math.nextDown(interval.getUpper()), true);
 		if (lower > upper) {
 			return;
 		}

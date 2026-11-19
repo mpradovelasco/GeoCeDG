@@ -126,6 +126,48 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 		return core.exhausted;
 	}
 
+	/**
+	 * Exact-key values already computed and charged by one operation, for a later session
+	 * of the same operation. A key carries the locus identity and semantic revision, so a
+	 * value can only answer the identical deterministic evaluation; it is never a
+	 * neighbouring, interpolated or cross-revision result.
+	 */
+	public static final class ReplayMemo {
+		private final Map<LocusSemanticKey2D, LocusEvaluation2D> values;
+
+		private ReplayMemo(Map<LocusSemanticKey2D, LocusEvaluation2D> values) {
+			this.values = values;
+		}
+
+		/** @return number of retained exact-key values */
+		public int size() {
+			return values.size();
+		}
+	}
+
+	/** @return an immutable copy of this session's own memoized exact-key values */
+	public ReplayMemo exportReplayMemo() {
+		return new ReplayMemo(Collections.unmodifiableMap(new LinkedHashMap<>(cache)));
+	}
+
+	/**
+	 * Makes values already charged by an earlier session of the same operation available
+	 * as cache hits. The limits and counters of this session are unchanged: only work that
+	 * is actually repeated is not charged twice.
+	 */
+	public void seedReplayMemo(ReplayMemo memo) {
+		Objects.requireNonNull(memo);
+		if (closed || !memoizationEnabled || ownActiveDepth != 0) {
+			throw new IllegalStateException("Only an idle memoizing session accepts a replay memo");
+		}
+		for (Map.Entry<LocusSemanticKey2D, LocusEvaluation2D> entry : memo.values.entrySet()) {
+			if (cache.size() >= maximumEntries) {
+				break;
+			}
+			cache.putIfAbsent(entry.getKey(), entry.getValue());
+		}
+	}
+
 	/** @return a reference session with memoization disabled */
 	public static LocusEvaluationSession2D reference() {
 		return new LocusEvaluationSession2D(false, 1);

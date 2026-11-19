@@ -317,10 +317,13 @@ class GeneralPointContinuationTest extends G9U0PublicSurfaceTestBase {
 				0, 1, policy, context(point));
 		assertFalse(barrier.isEstablished());
 		assertEquals(before, getApp().getXML());
-		assertEquals(LocusPointContinuation2D.Status.CONTINUATION_STOPPED,
-				LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
-						sameImage.getX(), sameImage.getY(), policy, context(point)).getStatus());
-		assertEquals(before, getApp().getXML());
+		// The fold refuses that request only. The same gesture continues from the unchanged
+		// address: a request at the current image is established on the same preimage.
+		assertFalse(context(point).isStopped());
+		var resumed = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
+				sameImage.getX(), sameImage.getY(), policy, context(point));
+		assertTrue(resumed.isEstablished(), resumed.getDiagnostic());
+		assertEquals(0.2, resumed.getAddress().getCanonicalParameter(), 1E-10);
 	}
 
 	@Test
@@ -491,7 +494,11 @@ class GeneralPointContinuationTest extends G9U0PublicSurfaceTestBase {
 				LocusPointInteractionWorkBudget2D.initial());
 		var result = LocusV2PublicOperations.moveGeneralInteractiveSemanticPoint(point,
 				3 * Math.cos(1E-10), 3 * Math.sin(1E-10), policy, context(point));
-		assertFalse(result.isEstablished());
+		// No chart meets the declared argument tolerance, so no certified argument is
+		// published. The forward continuation claims no argument-error bound, and a request
+		// below its interactive resolution moves nothing.
+		assertFalse(result.hasChanged());
+		assertTrue(Double.isNaN(result.getParameterError()));
 		assertEquals(before, getApp().getXML());
 	}
 
