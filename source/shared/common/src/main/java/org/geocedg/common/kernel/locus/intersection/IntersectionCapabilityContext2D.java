@@ -8,9 +8,11 @@ package org.geocedg.common.kernel.locus.intersection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalDouble;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
@@ -93,42 +95,82 @@ public final class IntersectionCapabilityContext2D {
 	 * excluded end onto that shared parameter. Its evaluation would then be the image of
 	 * the other end of the component, which is not a point of this neighbourhood and must
 	 * never be read as a sample, a bracket end or a root of it
-	 * ({@code locus-v2-existence-components.md} section 15.3). The parameter is stepped
+	 * ({@code locus-v2-existence-components.md} section 15.3). The parameter is moved
 	 * inward until its canonical form has the arc coordinate of its lifted position.</p>
+	 *
+	 * <p>No contract bounds how far the canonicalization rounds: the rounding has the
+	 * magnitude of the canonical domain, not of the parameter. When no parameter on the
+	 * component's own side is found, none is returned: the given parameter is never handed
+	 * back as a sample whose side is not established.</p>
 	 *
 	 * @param componentExtent lifted interval of a certified component of the branch
 	 * @param parameter the lifted parameter next to the excluded end
 	 * @param upperEnd whether the excluded end is the upper end of the lifted interval
-	 * @return the nearest lifted parameter evaluated on the component's own side; the
-	 *         given parameter for an interval, a closed periodic arc or an unknown extent
+	 * @return the nearest sampled lifted parameter that is evaluated on the component's own
+	 *         side; empty when no such parameter is established, or the extent is unknown
 	 */
-	public double insideExcludedEnd(String branchKey, LocusInterval2D componentExtent,
+	public OptionalDouble insideExcludedEnd(String branchKey, LocusInterval2D componentExtent,
 			double parameter, boolean upperEnd) {
+		return insideExcludedEnd(definition, branchKey, componentExtent, parameter, upperEnd);
+	}
+
+	/** The same question for a definition that a pair query evaluates. */
+	static OptionalDouble insideExcludedEnd(LocusDefinition2D definition, String branchKey,
+			LocusInterval2D componentExtent, double parameter, boolean upperEnd) {
 		LocusBranch2D branch = definition.getBranch(branchKey);
-		if (branch == null || !definition.getProvider().isPeriodic()) {
-			return parameter;
+		if (branch == null) {
+			return OptionalDouble.empty();
 		}
 		for (LocusExistenceStructure2D.ContinuousComponent component
 				: branch.getExistenceStructure().getContinuousValidComponents()) {
-			if (!component.getInterval().equals(componentExtent)) {
-				continue;
+			if (component.getInterval().equals(componentExtent)) {
+				return ownSideOfExcludedEnd(definition.getProvider(), component, parameter,
+						upperEnd);
 			}
-			if (!component.isArc() || component.isClosedPeriodic()) {
-				return parameter;
-			}
-			double candidate = parameter;
-			for (int step = 0; step < 64; step++) {
-				double coordinate = component.getArcCoordinate(
-						definition.getProvider().canonicalize(candidate));
-				if (!Double.isNaN(coordinate) && Math.abs(coordinate
-						- (candidate - componentExtent.getLower())) <= component.getLength() / 2) {
-					return candidate;
-				}
-				candidate = upperEnd ? Math.nextDown(candidate) : Math.nextUp(candidate);
-			}
-			return parameter;
 		}
-		return parameter;
+		return OptionalDouble.empty();
+	}
+
+	/**
+	 * The sampling parameter next to an excluded end of a certified component, on the
+	 * component's own side of that end.
+	 *
+	 * <p>A parameter is on the component's own side when the arc coordinate of its canonical
+	 * form is the coordinate of its lifted position: the two differ by the rounding of the
+	 * canonicalization on the same side, and by the whole length when the canonical form is
+	 * the parameter that the two ends of a full-length open arc share. The search doubles
+	 * the distance to the end, from the given parameter up to half the length of the
+	 * component, where that comparison stops separating the two sides. A certified closed
+	 * periodic component has no excluded end of its own, and an unbounded end shares no
+	 * parameter: both keep the given parameter.</p>
+	 *
+	 * @param component the certified component
+	 * @param parameter the lifted parameter next to the excluded end
+	 * @param upperEnd whether the excluded end is the upper end of the lifted interval
+	 * @return the parameter, or empty when the search finds none on the own side
+	 */
+	static OptionalDouble ownSideOfExcludedEnd(LocusDriverDomainProvider2D provider,
+			LocusExistenceStructure2D.ContinuousComponent component, double parameter,
+			boolean upperEnd) {
+		LocusInterval2D extent = component.getInterval();
+		double end = upperEnd ? extent.getUpper() : extent.getLower();
+		if (component.isClosedPeriodic() || !Double.isFinite(end)) {
+			return OptionalDouble.of(parameter);
+		}
+		double length = component.getLength();
+		double offset = Math.abs((upperEnd ? Math.nextDown(end) : Math.nextUp(end)) - end);
+		if (Math.abs(parameter - end) > offset) {
+			offset = Math.abs(parameter - end);
+		}
+		for (; offset <= length / 2 && Double.isFinite(offset); offset *= 2) {
+			double candidate = upperEnd ? end - offset : end + offset;
+			double coordinate = component.getArcCoordinate(provider.canonicalize(candidate));
+			if (!Double.isNaN(coordinate) && Math.abs(coordinate
+					- (candidate - extent.getLower())) <= length / 2) {
+				return OptionalDouble.of(candidate);
+			}
+		}
+		return OptionalDouble.empty();
 	}
 
 	/**
@@ -228,11 +270,24 @@ public final class IntersectionCapabilityContext2D {
 				Math.max(Math.ulp(parameter) * 32, span * 1E-6));
 		double lower = Math.max(component.getLower(), parameter - step);
 		double upper = Math.min(component.getUpper(), parameter + step);
+		// The neighbour of an excluded end is read on the component's own side, or not at all.
 		if (!component.isLowerClosed() && lower == component.getLower()) {
-			lower = Math.nextUp(lower);
+			OptionalDouble inside = insideExcludedEnd(branchKey, component,
+					Math.nextUp(lower), false);
+			if (inside.isEmpty()) {
+				return unknownDifferential("No finite-difference sample is established on "
+						+ "the component's side of its excluded end");
+			}
+			lower = inside.getAsDouble();
 		}
 		if (!component.isUpperClosed() && upper == component.getUpper()) {
-			upper = Math.nextDown(upper);
+			OptionalDouble inside = insideExcludedEnd(branchKey, component,
+					Math.nextDown(upper), true);
+			if (inside.isEmpty()) {
+				return unknownDifferential("No finite-difference sample is established on "
+						+ "the component's side of its excluded end");
+			}
+			upper = inside.getAsDouble();
 		}
 		if (!(lower < upper)) {
 			return unknownDifferential("Semantic component has no finite difference span");

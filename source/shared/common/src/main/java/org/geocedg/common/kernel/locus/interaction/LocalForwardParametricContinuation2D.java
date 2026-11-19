@@ -24,11 +24,13 @@ import org.geocedg.common.kernel.locus.LocusSingularParameter2D;
  *
  * <p>The argument moves continuously from the current parameter: a bounded Gauss-Newton
  * descent of the squared distance to the request, in the lifted parameter of the component.
- * Every accepted iterate is a valid semantic evaluation of the same branch and component,
- * the distance to the request never increases, and the result is proposed only when the
- * descent has converged to a well-conditioned projection within its explicit work bounds.
- * Component ends, certified folds, singular parameters, invalid or singular evaluations, a
- * reversed or collapsing tangent and an ill-conditioned projection are barriers: the
+ * Every accepted iterate is a valid semantic evaluation of the same branch and component
+ * on its own side of the component ends, the distance to the request never increases, and
+ * the result is proposed only with evidence, within explicit work bounds: a stationary or
+ * discretely minimizing argument with second-order evidence, or an end that the component
+ * includes with the correction pointing out of it. An excluded end, certified folds,
+ * singular parameters, invalid or singular evaluations, a reversed or collapsing tangent,
+ * an ill-conditioned projection and a reading that cannot be taken are barriers: the
  * request is refused and nothing is proposed.</p>
  *
  * <p>This is a numerical correspondence between the request and the argument. It is not a
@@ -92,6 +94,10 @@ final class LocalForwardParametricContinuation2D {
 	private final int maximumEvaluations;
 	private final double x;
 	private final double y;
+	/** Period of the provider, or zero. */
+	private final double period;
+	/** Whether the component is a certified closed periodic one; never the provider's word. */
+	private final boolean closed;
 	private int evaluations;
 
 	private LocalForwardParametricContinuation2D(LocusDefinition2D definition, LocusBranch2D branch,
@@ -105,6 +111,9 @@ final class LocalForwardParametricContinuation2D {
 		this.y = y;
 		this.maximumEvaluations = maximumEvaluations;
 		this.session = session;
+		LocusInterval2D domain = provider.getDeclaredDomain();
+		this.period = provider.isPeriodic() ? domain.getUpper() - domain.getLower() : 0;
+		this.closed = period > 0 && component.isClosedPeriodic();
 	}
 
 	/**
@@ -138,9 +147,6 @@ final class LocalForwardParametricContinuation2D {
 
 	private Proposal advance(LocusSemanticAddress2D current, LocusPointInteractionPolicy2D policy) {
 		double old = current.getCanonicalParameter();
-		LocusInterval2D domain = provider.getDeclaredDomain();
-		double period = provider.isPeriodic() ? domain.getUpper() - domain.getLower() : 0;
-		boolean closed = period > 0 && component.isClosedPeriodic();
 		double length = component.getLength();
 		double radius = policy.getMaximumWorldDistance();
 		if (!(length > 0) || !Double.isFinite(length) || !(radius > 0) || !Double.isFinite(radius)) {
@@ -150,6 +156,9 @@ final class LocalForwardParametricContinuation2D {
 		double start;
 		double lower;
 		double upper;
+		// Only an end that the component includes can hold a constrained minimizer.
+		boolean includedLower = false;
+		boolean includedUpper = false;
 		if (closed) {
 			start = old;
 			lower = old - period / 2;
@@ -163,6 +172,8 @@ final class LocalForwardParametricContinuation2D {
 			start = component.isArc() ? component.getStart() + coordinate : old;
 			lower = interval.isLowerClosed() ? interval.getLower() : Math.nextUp(interval.getLower());
 			upper = interval.isUpperClosed() ? interval.getUpper() : Math.nextDown(interval.getUpper());
+			includedLower = interval.isLowerClosed();
+			includedUpper = interval.isUpperClosed();
 		}
 		// Certified folds and singular parameters are never crossed or entered.
 		LocusExistenceStructure2D structure = branch.getExistenceStructure();
@@ -178,16 +189,17 @@ final class LocalForwardParametricContinuation2D {
 		if (admissible == null || !(admissible[0] <= start && start <= admissible[1])) {
 			return barrier();
 		}
-		double hardLower = admissible[0];
-		double hardUpper = admissible[1];
-		lower = hardLower;
-		upper = hardUpper;
+		// A limit set by an excluded fold or singular parameter is not an end of the component.
+		includedLower &= admissible[0] == lower;
+		includedUpper &= admissible[1] == upper;
+		lower = admissible[0];
+		upper = admissible[1];
 		double tolerance = radius * CONVERGENCE_FRACTION;
 		double differenceLength = radius * PROBE_RADIUS_FRACTION;
 		double maximumStep = length * STEP_FRACTION;
 		double maximumProbe = length * PROBE_FRACTION * 64;
 		double minimumProbe = Math.max(length * 0x1p-30,
-				16 * Math.ulp(Math.max(1, Math.max(Math.abs(hardLower), Math.abs(hardUpper)))));
+				16 * Math.ulp(Math.max(1, Math.max(Math.abs(lower), Math.abs(upper)))));
 
 		double v = start;
 		double[] point = evaluate(v);
@@ -202,13 +214,17 @@ final class LocalForwardParametricContinuation2D {
 		double h;
 		double aheadDistance;
 		double speed;
+		// Whether the descent stopped because its correction leaves the admissible interval,
+		// and whether it leaves it through an end that the component includes.
+		boolean outward = false;
+		boolean throughIncludedEnd = false;
 		for (int correction = 0;; correction++) {
 			// One-sided difference toward the interior; its bias only slows convergence.
 			h = Math.max(minimumProbe, Math.min(maximumProbe, probe));
-			if (v + h > hardUpper) {
+			if (v + h > upper) {
 				h = -h;
 			}
-			double[] ahead = v + h < hardLower || v + h > hardUpper ? null : evaluate(v + h);
+			double[] ahead = v + h < lower || v + h > upper ? null : evaluate(v + h);
 			if (ahead == null) {
 				return barrier();
 			}
@@ -238,6 +254,11 @@ final class LocalForwardParametricContinuation2D {
 			if (Math.abs(step) * Math.sqrt(speed) <= tolerance) {
 				break;
 			}
+			if (step > 0 ? v >= upper : v <= lower) {
+				outward = true;
+				throughIncludedEnd = step > 0 ? includedUpper : includedLower;
+				break;
+			}
 			if (correction >= MAXIMUM_CORRECTIONS) {
 				// Not a projection yet: a partial descent is never proposed as one.
 				return barrier();
@@ -247,8 +268,11 @@ final class LocalForwardParametricContinuation2D {
 			double[] accepted = null;
 			double acceptedDistance = Double.NaN;
 			double candidate = target;
+			// Whether the smallest trial of this correction had no valid evaluation.
+			boolean unread = true;
 			for (int attempt = 0; attempt <= MAXIMUM_BACKTRACKS && candidate != v; attempt++) {
 				double[] next = evaluate(candidate);
+				unread = next == null;
 				if (next != null) {
 					double nextDistance = squared(next);
 					if (nextDistance < distance) {
@@ -260,29 +284,37 @@ final class LocalForwardParametricContinuation2D {
 				candidate = v + (candidate - v) / 2;
 			}
 			if (accepted == null) {
-				// No admissible decrease, or an end reached: this argument is the minimizer.
+				if (unread) {
+					// Nothing was read next to this argument: it is not known to minimize.
+					return barrier();
+				}
+				// No strict decrease down to 1/64 of the correction: a discrete minimizer
+				// along the descent direction, subject to the second-order evidence below.
 				break;
 			}
 			v = candidate;
 			point = accepted;
 			distance = acceptedDistance;
 		}
-		// The differences above were read at the final argument. An included end of the
-		// admissible interval is a constrained minimizer and needs no interior condition;
-		// the half-period window of a closed component is not an end and decides nothing.
-		boolean atEnd = v == hardLower || v == hardUpper;
-		if (atEnd && closed && (v == start - period / 2 || v == start + period / 2)) {
-			return barrier();
-		}
-		if (!atEnd && !conditioned(v, hardLower, hardUpper, h, aheadDistance, distance, speed,
+		// The differences above were read at the final argument.
+		if (outward) {
+			// A constrained minimizer, by its strict first-order condition, only at an end
+			// that the component includes. The neighbour of an excluded end, the limit of an
+			// excluded fold or singular parameter and the half-period window of a closed
+			// component are not ends: the distance has no established minimum there.
+			if (!throughIncludedEnd) {
+				return barrier();
+			}
+		} else if (closed && (v <= lower || v >= upper) || !conditioned(v, lower, upper, h,
+				aheadDistance, distance, speed,
 				Math.max(minimumProbe, Math.min(maximumProbe, differenceLength / Math.sqrt(speed))))) {
 			return barrier();
 		}
 		if (v == start) {
 			return new Proposal(old, current.getPeriodicLift(), evaluations, null);
 		}
-		double canonical = canonical(v);
-		if (!component.contains(canonical, 0)) {
+		double canonical = coherent(v);
+		if (Double.isNaN(canonical)) {
 			return barrier();
 		}
 		long lift = current.getPeriodicLift();
@@ -294,34 +326,53 @@ final class LocalForwardParametricContinuation2D {
 	}
 
 	/**
-	 * Second-order regularity of the squared distance at {@code v}: the projection is a
-	 * well-conditioned strict local minimum only while the request stays clear of the
-	 * centre of curvature. The difference already read at {@code v} is reused when its
-	 * step is large enough to dominate evaluation noise.
+	 * Second-order evidence at a stationary or discretely minimizing argument {@code v}: the
+	 * projection is a well-conditioned strict local minimum only while the request stays
+	 * clear of the centre of curvature. The second difference of the squared distance over
+	 * a window of width {@code 2 s} must reach {@code 2 * CONDITIONING * |F'|^2 * s^2}; it
+	 * equals {@code s^2} times the second derivative at some argument of its window. The
+	 * window is centred at {@code v}; where a centred window leaves the admissible interval
+	 * it starts at {@code v} and lies on its interior side. Without a window of that width
+	 * in the admissible interval, or without a valid evaluation at an argument of it, there
+	 * is no evidence and the answer is {@code false}: an impossible reading never admits.
+	 * The difference already read at {@code v} is reused when its step is large enough to
+	 * dominate evaluation noise.
 	 */
 	private boolean conditioned(double v, double lower, double upper, double h,
 			double aheadDistance, double distance, double speed, double preferred) {
 		double step = Math.abs(h);
-		double ahead = aheadDistance;
+		double direction = h < 0 ? -1 : 1;
+		double read = aheadDistance;
 		if (step < preferred / 4) {
 			step = preferred;
-			double[] forward = v + step > upper ? null : evaluate(v + step);
-			if (forward == null) {
-				// Too close to an end for a two-sided reading: decided by the end itself.
-				return v + step > upper;
+			read = Double.NaN;
+		}
+		double second;
+		if (v - step >= lower && v + step <= upper) {
+			second = (Double.isNaN(read) ? distanceAt(v + direction * step) : read)
+					+ distanceAt(v - direction * step) - 2 * distance;
+		} else {
+			double side = admits(v + 2 * direction * step, lower, upper) ? direction
+					: admits(v - 2 * direction * step, lower, upper) ? -direction : 0;
+			if (side == 0) {
+				return false;
 			}
-			ahead = squared(forward);
-			h = step;
+			double first = side == direction && !Double.isNaN(read) ? read
+					: distanceAt(v + side * step);
+			second = distanceAt(v + 2 * side * step) - 2 * first + distance;
 		}
-		double behind = v - h;
-		if (behind < lower || behind > upper) {
-			return true;
-		}
-		double[] other = evaluate(behind);
-		if (other == null) {
-			return false;
-		}
-		return ahead + squared(other) - 2 * distance >= 2 * CONDITIONING * speed * step * step;
+		// A missing evaluation makes the difference NaN, which reaches no bound.
+		return second >= 2 * CONDITIONING * speed * step * step;
+	}
+
+	private static boolean admits(double lifted, double lower, double upper) {
+		return lifted >= lower && lifted <= upper;
+	}
+
+	/** @return the squared distance at a lifted argument, or {@code NaN} without evaluation */
+	private double distanceAt(double lifted) {
+		double[] point = evaluate(lifted);
+		return point == null ? Double.NaN : squared(point);
 	}
 
 	/** Removes the enclosure of one barrier parameter from the admissible interval. */
@@ -355,10 +406,43 @@ final class LocalForwardParametricContinuation2D {
 		return provider.canonicalize(provider.canonicalize(lifted));
 	}
 
-	/** @return the valid regular semantic image of a lifted argument, or {@code null} */
-	private double[] evaluate(double lifted) {
+	/**
+	 * The canonical parameter that a lifted argument addresses on its own side of the
+	 * component.
+	 *
+	 * <p>Membership of the canonical parameter is not enough on a component that is not a
+	 * certified closed periodic one: the two ends of a full-length open arc share a canonical
+	 * parameter, and the periodic canonicalization of the provider can round the lifted
+	 * neighbour of the excluded end onto it. That parameter belongs to the component as its
+	 * included end, on the other side ({@code locus-v2-existence-components.md} section
+	 * 15.3). The arc coordinate of the canonical parameter must therefore be the lifted
+	 * coordinate of the argument: the two differ by canonicalization rounding on the same
+	 * side and by the whole length across the ends. On a certified closed periodic component
+	 * the wrap is the authorized seam crossing and membership decides.</p>
+	 *
+	 * @return the canonical parameter, or {@code NaN} when the argument does not address a
+	 *         parameter of the component on its own side
+	 */
+	private double coherent(double lifted) {
 		double canonical = canonical(lifted);
 		if (!Double.isFinite(canonical) || !component.contains(canonical, 0)) {
+			return Double.NaN;
+		}
+		if (closed) {
+			return canonical;
+		}
+		double coordinate = component.getArcCoordinate(canonical);
+		return Math.abs(coordinate - (lifted - component.getInterval().getLower()))
+				<= component.getLength() / 2 ? canonical : Double.NaN;
+	}
+
+	/**
+	 * @return the valid regular semantic image of a lifted argument on its own side of the
+	 *         component, or {@code null}
+	 */
+	private double[] evaluate(double lifted) {
+		double canonical = coherent(lifted);
+		if (Double.isNaN(canonical)) {
 			return null;
 		}
 		if (evaluations >= maximumEvaluations) {

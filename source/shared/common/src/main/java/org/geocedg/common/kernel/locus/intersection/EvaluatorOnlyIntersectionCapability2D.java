@@ -56,6 +56,7 @@ public final class EvaluatorOnlyIntersectionCapability2D
 			IntersectionCapabilityContext2D context) {
 		List<IntersectionCandidate2D> candidates = new ArrayList<>();
 		List<String> examinedComponents = new ArrayList<>();
+		List<String> unsampledComponents = new ArrayList<>();
 		for (LocusBranch2D branch : context.getDefinition().getBranches()) {
 			List<LocusInterval2D> components =
 					branch.getCertifiedContinuousValidComponents();
@@ -63,18 +64,24 @@ public final class EvaluatorOnlyIntersectionCapability2D
 					componentIndex++) {
 				String componentKey = IntersectionCapabilityContext2D.componentKey(
 						branch.getBranchKey(), componentIndex);
-				examinedComponents.add(componentKey);
-				isolateComponent(context, branch, componentKey,
-						components.get(componentIndex), candidates);
+				// A component without an admissible end sample is not examined: it is not
+				// covered, and no root or absence of roots is claimed on it.
+				(isolateComponent(context, branch, componentKey,
+						components.get(componentIndex), candidates)
+								? examinedComponents : unsampledComponents).add(componentKey);
 			}
 		}
 		List<IntersectionCandidate2D> deduplicated = deduplicate(context,
 				candidates);
-		List<IntersectionDiagnostic2D> diagnostics = List.of(
-				new IntersectionDiagnostic2D(
-						DiagnosticCode.COVERAGE_NOT_ESTABLISHED,
-						"Evaluator-only adaptive search verifies candidates but "
-								+ "cannot establish exhaustive component coverage"));
+		List<IntersectionDiagnostic2D> diagnostics = new ArrayList<>();
+		diagnostics.add(new IntersectionDiagnostic2D(
+				DiagnosticCode.COVERAGE_NOT_ESTABLISHED,
+				"Evaluator-only adaptive search verifies candidates but "
+						+ "cannot establish exhaustive component coverage"));
+		if (!unsampledComponents.isEmpty()) {
+			diagnostics.add(ExtendedTargetIntersectionCapability2D.unsampledDiagnostic(
+					unsampledComponents));
+		}
 		return new IntersectionCandidateSet2D(Completeness.NOT_ESTABLISHED,
 				CompletenessMethod.NOT_ESTABLISHED,
 				deduplicated.isEmpty() ? GeometryKind.UNRESOLVED
@@ -85,19 +92,28 @@ public final class EvaluatorOnlyIntersectionCapability2D
 				diagnostics);
 	}
 
-	private static void isolateComponent(IntersectionCapabilityContext2D context,
+	/** @return whether the component was examined; {@code false} leaves it uncovered */
+	private static boolean isolateComponent(IntersectionCapabilityContext2D context,
 			LocusBranch2D branch, String componentKey, LocusInterval2D interval,
 			List<IntersectionCandidate2D> candidates) {
 		// A neighbour of an excluded arc end is sampled on the component's own side: its
-		// canonical form must not round onto the parameter that the two ends share.
-		double lower = interval.isLowerClosed() ? interval.getLower()
+		// canonical form must not round onto the parameter that the two ends share. Without
+		// such a neighbour the component is not sampled at all.
+		OptionalDouble lowerSample = interval.isLowerClosed()
+				? OptionalDouble.of(interval.getLower())
 				: context.insideExcludedEnd(branch.getBranchKey(), interval,
 						Math.nextUp(interval.getLower()), false);
-		double upper = interval.isUpperClosed() ? interval.getUpper()
+		OptionalDouble upperSample = interval.isUpperClosed()
+				? OptionalDouble.of(interval.getUpper())
 				: context.insideExcludedEnd(branch.getBranchKey(), interval,
 						Math.nextDown(interval.getUpper()), true);
+		if (lowerSample.isEmpty() || upperSample.isEmpty()) {
+			return false;
+		}
+		double lower = lowerSample.getAsDouble();
+		double upper = upperSample.getAsDouble();
 		if (lower > upper) {
-			return;
+			return true;
 		}
 		if (lower == upper) {
 			Sample sample = sample(context, branch.getBranchKey(), lower);
@@ -105,7 +121,7 @@ public final class EvaluatorOnlyIntersectionCapability2D
 				candidates.add(candidate(branch.getBranchKey(), componentKey,
 						sample.parameter, sample.parameter, sample.parameter));
 			}
-			return;
+			return true;
 		}
 		int subdivisions = Math.min(DEFAULT_INITIAL_SUBDIVISIONS,
 				context.getQuery().getPolicy().getWorkBudget()
@@ -163,6 +179,7 @@ public final class EvaluatorOnlyIntersectionCapability2D
 				}
 			}
 		}
+		return true;
 	}
 
 	private static Sample refineSignChange(IntersectionCapabilityContext2D context,

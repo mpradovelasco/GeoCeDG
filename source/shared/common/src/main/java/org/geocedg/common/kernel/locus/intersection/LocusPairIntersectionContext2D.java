@@ -8,6 +8,7 @@ package org.geocedg.common.kernel.locus.intersection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalDouble;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
@@ -166,11 +167,24 @@ public final class LocusPairIntersectionContext2D {
 				Math.max(Math.ulp(parameter) * 32, span * 1E-6));
 		double lower = Math.max(component.getLower(), parameter - step);
 		double upper = Math.min(component.getUpper(), parameter + step);
+		// The neighbour of an excluded end is read on the component's own side, or not at all.
 		if (!component.isLowerClosed() && lower == component.getLower()) {
-			lower = Math.nextUp(lower);
+			OptionalDouble inside = IntersectionCapabilityContext2D.insideExcludedEnd(
+					definition, branchKey, component, Math.nextUp(lower), false);
+			if (inside.isEmpty()) {
+				return unknownDifferential("No finite-difference sample is established on "
+						+ "the component's side of its excluded end");
+			}
+			lower = inside.getAsDouble();
 		}
 		if (!component.isUpperClosed() && upper == component.getUpper()) {
-			upper = Math.nextDown(upper);
+			OptionalDouble inside = IntersectionCapabilityContext2D.insideExcludedEnd(
+					definition, branchKey, component, Math.nextDown(upper), true);
+			if (inside.isEmpty()) {
+				return unknownDifferential("No finite-difference sample is established on "
+						+ "the component's side of its excluded end");
+			}
+			upper = inside.getAsDouble();
 		}
 		if (!(lower < upper)) {
 			return unknownDifferential(

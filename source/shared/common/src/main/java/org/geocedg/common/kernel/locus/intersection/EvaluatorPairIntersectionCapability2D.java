@@ -60,14 +60,22 @@ public final class EvaluatorPairIntersectionCapability2D
 		ArrayList<IntersectionOverlapEvidence2D> overlap = new ArrayList<>();
 		ArrayList<IntersectionDiagnostic2D> diagnostics = new ArrayList<>();
 		ArrayList<String> covered = new ArrayList<>();
+		ArrayList<String> unsampled = new ArrayList<>();
 		for (ComponentAddress first : context.getFirstComponents()) {
 			SampledComponent firstSamples = sample(context, true, first);
 			for (ComponentAddress second : context.getSecondComponents()) {
 				String pairKey = LocusPairIntersectionContext2D.componentPairKey(
 						first.getBranchKey(), first.getComponentKey(),
 						second.getBranchKey(), second.getComponentKey());
+				SampledComponent secondSamples = firstSamples == null ? null
+						: sample(context, false, second);
+				if (secondSamples == null) {
+					// A component without an admissible end sample is not inspected: the
+					// pair is not covered, and no root or absence of roots is claimed on it.
+					unsampled.add(pairKey);
+					continue;
+				}
 				covered.add(pairKey);
-				SampledComponent secondSamples = sample(context, false, second);
 				OverlapRelationKind suspicion = suspectedOverlap(context,
 						firstSamples, secondSamples);
 				if (suspicion != null) {
@@ -93,6 +101,10 @@ public final class EvaluatorPairIntersectionCapability2D
 			diagnostics.add(new IntersectionDiagnostic2D(
 					DiagnosticCode.OVERLAP_SUSPECTED,
 					"Sample agreement was retained only as suspected overlap"));
+		}
+		if (!unsampled.isEmpty()) {
+			diagnostics.add(ExtendedTargetIntersectionCapability2D.unsampledDiagnostic(
+					unsampled));
 		}
 		GeometryKind kind = !overlap.isEmpty() && !candidates.isEmpty()
 				? GeometryKind.MIXED_FINITE_OVERLAP
@@ -241,6 +253,20 @@ public final class EvaluatorPairIntersectionCapability2D
 		for (int index = 0; index <= SUBDIVISIONS; index++) {
 			double parameter = parameter(address.getInterval(), index,
 					SUBDIVISIONS);
+			if (index == 0 && !address.getInterval().isLowerClosed()
+					|| index == SUBDIVISIONS && !address.getInterval().isUpperClosed()) {
+				// The neighbour of an excluded end is sampled on the component's own side:
+				// its canonical form must not round onto the parameter that the two ends
+				// of a full-length open arc share. Without such a neighbour the component
+				// is not sampled at all.
+				OptionalDouble inside = IntersectionCapabilityContext2D.ownSideOfExcludedEnd(
+						(first ? context.getFirstDefinition() : context.getSecondDefinition())
+								.getProvider(), address.getComponent(), parameter, index != 0);
+				if (inside.isEmpty()) {
+					return null;
+				}
+				parameter = inside.getAsDouble();
+			}
 			LocusEvaluation2D evaluation = first
 					? context.evaluateFirst(address.getBranchKey(), parameter)
 					: context.evaluateSecond(address.getBranchKey(), parameter);

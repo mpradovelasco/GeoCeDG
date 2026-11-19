@@ -78,6 +78,7 @@ public final class ExtendedTargetIntersectionCapability2D
 			ResidualJetSource2D certified) {
 		ArrayList<LocalizedRoot> roots = new ArrayList<>();
 		ArrayList<String> examinedComponents = new ArrayList<>();
+		ArrayList<String> unsampledComponents = new ArrayList<>();
 		boolean[] invalidTargetObserved = {false};
 		boolean[] nonIsolatedZeroRun = {false};
 		for (LocusBranch2D branch : context.getDefinition().getBranches()) {
@@ -87,10 +88,12 @@ public final class ExtendedTargetIntersectionCapability2D
 					componentIndex < components.size(); componentIndex++) {
 				String componentKey = IntersectionCapabilityContext2D.componentKey(
 						branch.getBranchKey(), componentIndex);
-				examinedComponents.add(componentKey);
-				isolateComponent(context, branch.getBranchKey(), componentKey,
+				// A component without an admissible end sample is not examined: it is not
+				// covered, and no root or absence of roots is claimed on it.
+				(isolateComponent(context, branch.getBranchKey(), componentKey,
 						components.get(componentIndex), roots,
-						invalidTargetObserved, nonIsolatedZeroRun, certified);
+						invalidTargetObserved, nonIsolatedZeroRun, certified)
+								? examinedComponents : unsampledComponents).add(componentKey);
 			}
 		}
 		ArrayList<IntersectionDiagnostic2D> diagnostics = new ArrayList<>();
@@ -98,6 +101,9 @@ public final class ExtendedTargetIntersectionCapability2D
 				DiagnosticCode.COVERAGE_NOT_ESTABLISHED,
 				"G8C1 adaptive finite evaluation verifies local candidates "
 						+ "but does not prove exhaustive component coverage"));
+		if (!unsampledComponents.isEmpty()) {
+			diagnostics.add(unsampledDiagnostic(unsampledComponents));
+		}
 		if (invalidTargetObserved[0]) {
 			diagnostics.add(new IntersectionDiagnostic2D(
 					DiagnosticCode.TARGET_UNDEFINED,
@@ -175,23 +181,41 @@ public final class ExtendedTargetIntersectionCapability2D
 				diagnostics);
 	}
 
-	private static void isolateComponent(
+	/** The typed notice of the components that could not be sampled next to an excluded end. */
+	static IntersectionDiagnostic2D unsampledDiagnostic(List<String> componentKeys) {
+		return new IntersectionDiagnostic2D(DiagnosticCode.NUMERICAL_FAILURE,
+				"No sampling parameter is established on the own side of an excluded end of "
+						+ String.join(", ", componentKeys) + ": the component was not "
+						+ "examined, and neither a root nor the absence of roots is claimed "
+						+ "on it");
+	}
+
+	/** @return whether the component was examined; {@code false} leaves it uncovered */
+	private static boolean isolateComponent(
 			IntersectionCapabilityContext2D context, String branchKey,
 			String componentKey, LocusInterval2D component,
 			List<LocalizedRoot> roots, boolean[] invalidTargetObserved,
 			boolean[] nonIsolatedZeroRun, ResidualJetSource2D certified) {
 		// A neighbour of an excluded arc end is sampled on the component's own side: its
-		// canonical form must not round onto the parameter that the two ends share.
-		double lower = component.isLowerClosed() ? component.getLower()
+		// canonical form must not round onto the parameter that the two ends share. Without
+		// such a neighbour the component is not sampled at all.
+		OptionalDouble lowerSample = component.isLowerClosed()
+				? OptionalDouble.of(component.getLower())
 				: context.insideExcludedEnd(branchKey, component,
 						Math.nextUp(component.getLower()), false);
 		boolean completePeriodicSeam = hasCompletePeriodicSeam(context,
 				branchKey, component);
-		double upper = component.isUpperClosed() || completePeriodicSeam
-				? component.getUpper() : context.insideExcludedEnd(branchKey, component,
+		OptionalDouble upperSample = component.isUpperClosed() || completePeriodicSeam
+				? OptionalDouble.of(component.getUpper())
+				: context.insideExcludedEnd(branchKey, component,
 						Math.nextDown(component.getUpper()), true);
+		if (lowerSample.isEmpty() || upperSample.isEmpty()) {
+			return false;
+		}
+		double lower = lowerSample.getAsDouble();
+		double upper = upperSample.getAsDouble();
 		if (lower > upper) {
-			return;
+			return true;
 		}
 		if (lower == upper) {
 			Sample sample = sample(context, branchKey, lower,
@@ -200,7 +224,7 @@ public final class ExtendedTargetIntersectionCapability2D
 				roots.add(new LocalizedRoot(branchKey, componentKey, component,
 						lower, lower, lower, Origin.ENDPOINT));
 			}
-			return;
+			return true;
 		}
 		int subdivisions = Math.min(INITIAL_SUBDIVISIONS,
 				context.getQuery().getPolicy().getWorkBudget()
@@ -224,7 +248,7 @@ public final class ExtendedTargetIntersectionCapability2D
 			}
 		}
 		if (nonIsolatedZeroRun[0]) {
-			return;
+			return true;
 		}
 		double scale = certified == null ? Double.NaN
 				: characteristicScale(context, samples);
@@ -283,6 +307,7 @@ public final class ExtendedTargetIntersectionCapability2D
 				}
 			}
 		}
+		return true;
 	}
 
 	private static List<Double> semanticGrid(
