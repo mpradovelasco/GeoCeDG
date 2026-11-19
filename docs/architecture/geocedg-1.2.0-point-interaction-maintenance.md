@@ -41,10 +41,10 @@ Kernel (shared semantics):
    used only when no certified chart is established or its proof passes are
    exhausted. It is a bounded Gauss-Newton descent of the squared distance to the
    request in the lifted parameter of the current certified component, by forward
-   semantic evaluations. It is accepted only with the evidence of section 3, A2:
-   a well-conditioned stationary or discretely minimizing argument, or an end
-   that the component includes; otherwise the request is refused and nothing is
-   published.
+   semantic evaluations. It is accepted only under the admission predicates of
+   section 3, A2: the best argument that the descent reached, with its numerical
+   evidence of conditioning, or an end that the component includes; otherwise
+   the request is refused and nothing is published.
 3. **Discovery replay** in the creation facade. The historical discovery is
    charged once; later permissions of the same operation receive its exact-key
    values as cache hits and spend only their own proofs and forward
@@ -80,7 +80,10 @@ gesture continues, and the next request needs a complete fresh proof anchored at
 that address. No proof, chart or partial result survives a refusal.
 
 **A2. `LOCAL_FORWARD_PARAMETRIC_CONTINUATION`.** An independent sufficient route,
-below the certified charts in priority. Its predicates, all mandatory:
+below the certified charts in priority. It is a best-effort interactive numerical
+correspondence between the request and an argument of the locus: the accepted
+argument is the best one that the bounded descent reached, and it is not required
+to be the orthogonal projection of the request. Its predicates, all mandatory:
 
 - the argument stays in the current certified continuous component, in its lifted
   parameter; component ends, certified folds and singular parameters are never
@@ -95,36 +98,53 @@ below the certified charts in priority. Its predicates, all mandatory:
   argument (section 7, R1);
 - within 16 corrections of at most 1/16 of the component length each, the
   descent stops in exactly one of three ways:
-  1. the Gauss-Newton correction is below the interactive resolution (a
-     stationary argument);
-  2. no trial of the correction, halved down to 1/64, strictly decreases the
-     distance, and the smallest trial was read (a discrete minimizer along the
-     descent direction);
+  1. the Gauss-Newton correction, estimated by finite differences, is below the
+     interactive resolution;
+  2. the descent stalls: no trial of the correction, halved down to 1/64,
+     strictly decreases the distance, and the smallest trial was read. The
+     argument is then the best one reached, whatever the size of the
+     correction that was left;
   3. the correction points out of the admissible interval at its bound;
 - in cases 1 and 2 the second difference of the squared distance over a window
   of width `2h` that contains the argument is at least
   `2 * (1/4) * |F'|^2 * h^2`. The window is centred at the argument; where a
   centred window leaves the admissible interval it starts at the argument and
-  lies on the interior side. Either difference is `h^2` times the second
-  derivative at some argument of its window, so the request is clear of the
-  centre of curvature there. A window that does not fit, or an argument of it
-  without a valid evaluation, is no evidence: the request is refused;
+  lies on the interior side. This is numerical evidence of admission, read from
+  finite differences of floating-point evaluations: it keeps the request clear
+  of the centre of curvature, where the correspondence is ill-conditioned. It
+  proves neither that the argument is stationary nor that it minimizes the
+  distance. A window that does not fit, or an argument of it without a valid
+  evaluation, is no evidence: the request is refused;
 - in case 3 the bound must be an end that the component includes; the argument
-  is then the constrained minimizer by its strict first-order condition. The
-  neighbour of an excluded end, the limit set by an excluded fold or singular
-  parameter and the half-period window of a closed component are not ends:
-  the request is refused;
+  is then kept at that end, because the estimated correction points beyond it.
+  The neighbour of an excluded end, the limit set by an excluded fold or
+  singular parameter and the half-period window of a closed component are not
+  ends: the request is refused;
 - at most `maximumRefinementIterations` root evaluations, charged, with their
   nested work, to the same hard-bounded session as the chart proofs.
 
-Guarantee: the published point is the semantic evaluation at the proposed
-argument. Only the choice of the argument is `FLOATING_POINT_UNCERTIFIED`: no
-argument-error bound, inverse uniqueness, distance minimum or incidence
-certificate is claimed. The argument is never chosen by a search, so Cartesian
-proximity cannot select another branch, component or sheet. Three tolerances
-stay distinct: the interactive resolution of the request (1/1024 of the
-declared radius), the unclaimed error of `u`, and the precision of the semantic
-evaluation, which this route does not alter.
+Guarantee: the published point is the semantic evaluation `F(u)` at the proposed
+argument, and that evaluation is the only geometric authority of the point. Only
+the choice of the argument is `FLOATING_POINT_UNCERTIFIED`: no argument-error
+bound, inverse uniqueness, stationarity, local or global distance minimum or
+incidence certificate is claimed. The argument is never chosen by a search, so
+Cartesian proximity cannot select another branch, component or sheet. Three
+tolerances stay distinct: the interactive resolution of the request (1/1024 of
+the declared radius), the unclaimed error of `u`, and the precision of the
+semantic evaluation, which this route does not alter.
+
+Author decision of 2026-11-19 on the desired behaviour of the drag, recorded
+here as the intent of A2: the drag does not need to return the optimal
+orthogonal projection of the cursor. When the descent stalls, the best valid
+argument reached is kept, provided that the admission predicates and the
+geometric barriers above hold; a request is not refused only because optimality
+with respect to the cursor was not shown. The refusals for an unauthorized
+change of branch or component, a discontinuity, an excluded end, an invalid
+parameter, a loss of authority and an exhausted work limit stay mandatory. When
+no admissible argument can be published, the last valid one is kept and the
+gesture continues when the refusal is recoverable (A1). This decision states
+the intended behaviour; it does not approve the amendment, which stays a
+candidate.
 
 **A3. Cumulative creation accounting.** "A different permission never restarts
 the operation budget" is kept. It is completed by: the historical discovery of
@@ -186,11 +206,12 @@ evidence belongs to that commit and is not carried over.
   past a fold or an excluded end, as the certified charts do; it does not prove
   them. Its acceptance remains `FLOATING_POINT_UNCERTIFIED`: neither uniqueness,
   nor an argument-error bound, nor a global minimum is claimed.
-- A stalled descent (section 3, A2, stop 2) is accepted with second-order
-  evidence although its correction is above the interactive resolution. It was
-  examined in the review of section 7 and kept, now refused when its smallest
-  trial could not be read. How often ordinary drags end in that stop was not
-  measured.
+- A stalled descent (section 3, A2, stop 2) is accepted under the admission
+  predicates although its correction is above the interactive resolution: the
+  point is then not the nearest point of the locus to the cursor. This is the
+  behaviour that the author decided on 2026-11-19 (section 3), not a defect. It
+  is refused when its smallest trial could not be read. How often ordinary
+  drags end in that stop was not measured.
 - `s_2` evaluates as invalid at the single parameter `u = -pi/6`. It was observed
   and not investigated; the continuation steps over an isolated invalid sample
   only by never accepting it.
@@ -249,20 +270,22 @@ The four cases are now distinct:
 
 | Case | Rule |
 |---|---|
-| Interior stationary or discretely minimizing argument | second difference on a centred window of width `2h` |
+| Interior argument where the descent stopped (correction below the resolution, or stalled) | second difference on a centred window of width `2h` |
 | Same, closer than `h` to a bound | second difference on the one-sided interior window `[v, v + 2h]`; refused when no window fits |
-| Bound that is an end the component includes | accepted when the correction points out of it: strict first-order condition of a constrained minimizer; otherwise as an interior argument |
+| Bound that is an end the component includes | accepted when the estimated correction points out of it; otherwise as an interior argument |
 | Neighbour of an excluded end, limit of an excluded fold or singular parameter, half-period window | never an end: a correction pointing out of it is refused |
 
-The one-sided window is sufficient for the declared numerical admission for the
-same reason as the centred one: each second difference is `h^2` times the
-second derivative of the squared distance at some argument of its window, and
-the bound it must reach is the same. An impossible reading never admits. The
-correspondence stays `FLOATING_POINT_UNCERTIFIED`; no solver was added.
+The one-sided window serves the declared numerical admission as the centred one
+does: for a twice differentiable squared distance each second difference is
+`h^2` times its second derivative at some argument of the window, and the bound
+it must reach is the same. Both are readings of floating-point evaluations:
+evidence of admission, not a certificate that the argument is stationary or
+optimal. An impossible reading never admits. The correspondence stays
+`FLOATING_POINT_UNCERTIFIED`; no solver was added.
 
-A request beyond an excluded end is refused. The squared distance has no
-minimum on the component there, and its last binary64 argument is not offered
-as one. On the half circle that request was already refused before this round,
+A request beyond an excluded end is refused. The excluded end is not a position
+of the component, and its last binary64 argument is not offered in its place.
+On the half circle that request was already refused before this round,
 but only because the wrong-side evaluation of R1 lay far from the request; by
 the previous code an argument at that bound was otherwise accepted as an end.
 
