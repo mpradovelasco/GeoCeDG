@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Roadmap vivo y normativo de fases; no sustituye las especificaciones ni los ADR aceptados |
-| Versión documental | 5.112 |
+| Versión documental | 5.113 |
 | Fecha de revisión | 20 de noviembre de 2026 |
 | Disposición CU5/CU6 vigente | CU5 **PASS — AUTHOR APPROVED**. CU6 **PASS — AUTHOR APPROVED WITH EXPLICIT LIMITATION**. El clic sobre un deslizador en Gráficos 1 no introduce su nombre en M07. La deuda abierta OBS-CU6-M07-GV1-SLIDER-PICK es no bloqueante por decisión autoral. [Cierre conjunto](../validation/pre_g9b_cu5_cu6_closeout_record.md) |
 | Disposición CU7 vigente | El autor aprobó el cierre reducido sobre R5 el 2026-11-05, con smoke `PASS — AUTHOR REPORTED`. El candidato R5 y la resolución `1c3893f53` están integrados en el baseline publicado `b84216573`. D1 adopta la excepción XML acotada. U2 queda como deuda de interfaz. F8 sigue diferido y desactivado. M08-S-R2 conserva su cierre canónico del 2026-11-02. M08-D, M09/I2, I2G e I3 quedan fuera del cierre reducido. CU10/guía/E1 y deuda científica conservan su disposición. [Resolución y perímetro](../validation/pre_g9b_cu7_r5_author_decision_record.md) |
@@ -4477,3 +4477,38 @@ fechas, aprobaciones ni resultados anteriores y no autoriza ni inicia ninguna fa
   mismos un éxito técnico. No se crean etiquetas de aprobación para versiones públicas.
   La aceptación de una referencia como baseline técnico del libro se decide y se registra
   en su propio repositorio.
+
+## 2026-11-20 — Publicación de la reconciliación 1.2.x y del puente con referencias tipadas
+
+Registro aditivo de hechos de publicación. No altera fechas, aprobaciones ni resultados
+anteriores, no cambia código, especificaciones ni contratos de verificación, y no autoriza
+ni inicia ninguna fase.
+
+- El autor autorizó por SHA exacto, el 2026-11-20, el avance de `main` a
+  `2971e75df7b8ef0c34cdc116bdeaf1a519e30601` (tree
+  `df7f65b13ab8ab54a3588c2d9fc8402dc501141e`). El avance fue un fast-forward sin forzar
+  desde `01aacee074b117f270c05e098d17342b3ad59b35` y publicó dos commits:
+  `763cff0931630d96be9cacafb4ddd3c2dc240690` (referencias tipadas del puente y registros
+  de release) y `2971e75df7b8ef0c34cdc116bdeaf1a519e30601` (disposición sucesora 1.2.x).
+- GitHub informó «Bypassed rule violations for refs/heads/main»: «Changes must be made
+  through a pull request» y «Cannot change this locked branch». El avance se aceptó.
+- No se creó ni se movió ninguna etiqueta. `v1.2.1` sigue en el objeto
+  `085d71439784512e1ff6011cfeaf51e66be79519` y `geocedg-pre-g9b-r7-pass` en
+  `a93e4946e296363b02e9190df13534996c8b5437`.
+- Evidencia previa sobre `2971e75d`: `STATIC` `ACCEPTED / COMPLETE` y los fixtures del
+  puente con código 0. No se ejecutaron `PHASE`, `INTEGRATION`, `FINAL` ni `PACKAGING` para
+  esta operación documental y de herramienta.
+- Con el puente publicado, `tools/book/book-worktree.ps1 -Action BaselineCandidate
+  -ReferenceTag v1.2.1` se ejecutó dos veces. Ambas resolvieron `PUBLIC_RELEASE:v1.2.1` en
+  `4267cff35129ea743d911a61e97b3d189d66e4d2`, con huella
+  `5498af046a0c84f365368c82c9c1d06fad12cbc5c96987d944866c3a3f0e5da4`, y produjeron una
+  candidata idéntica, SHA-256
+  `68acc857076ddc1c14a4ce165fec3af9f6d30f671b3b6d814296fc37ac46cb31`. Las candidatas son
+  evidencia local no versionada.
+- El repositorio del libro registró por decisión autoral GeoCeDG 1.2.1 como baseline
+  técnico editorial y publicó ese registro el mismo día, por autorización de SHA exacto,
+  en su `main` `7736b71ef0980ccb3fcb1111e27133a7970ee63a`. Desde entonces el puente
+  informa `ALIGNED`. La autoridad de ese registro es del repositorio del libro; aquí
+  solo se anota el hecho.
+- `main` queda tres commits por delante de `v1.2.1`, sin cambios de producto: el registro
+  de publicación de 1.2.1 y los dos commits anteriores.
