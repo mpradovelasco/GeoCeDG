@@ -1,5 +1,7 @@
 # GeoCeDG 1.2.0 — Expediente científico-editorial
 
+> **Nota de estado posterior (2026-11-20).** Este expediente es un registro histórico preparado sobre el checkpoint S (`0ae033ff3`). El encabezado «Estado actual» que sigue describe el estado a 2026-11-16 y se conserva sin cambios. Los hechos posteriores están en la [disposición sucesora](geocedg_1_2_x_publication_status_disposition.md). El contenido científico conserva la clasificación de evidencia con que se redactó; su uso editorial depende de la referencia de producto que acepte el libro. Esta nota no modifica ningún resultado.
+
 **Estado actual: transferencia técnica provisional; cierre R13 bloqueado.**
 El [foco R13](geocedg_1_2_0_r13_terminal_report.md) terminó con 262/265 casos
 aprobados y tres fallidos; trece rondas consumidas. La construcción científica

@@ -2,6 +2,8 @@
 
 Este expediente registra la implementación, las revisiones y la preparación del candidato. La aceptación técnica del árbol exacto se acredita mediante los resultados y recibos de las puertas canónicas, conservados con la entrega en `artifacts/agent/geocedg-1.2.0/`.
 
+> **Nota de estado posterior (2026-11-20).** Este expediente es el registro histórico del checkpoint S (`0ae033ff3`). El encabezado «Estado actual» que sigue describe el estado a 2026-11-16 y se conserva sin cambios. Los hechos posteriores —continuación correctiva, publicación de 1.2.0 por decisión autoral y publicación de 1.2.1— están en la [disposición sucesora](geocedg_1_2_x_publication_status_disposition.md). Esta nota no modifica ningún resultado de R1–R13.
+
 **Estado actual: R13 terminada y fallida; 13/13 rondas consumidas; cierre técnico bloqueado.**
 
 El foco R13 completó 265 casos: 262 aprobados y tres fallidos, sin errores ni

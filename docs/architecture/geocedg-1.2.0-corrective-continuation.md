@@ -447,3 +447,10 @@ Do not correct these new Shared causes within this delivery. The candidate is
 blocked and the inventory/pin remain unchanged. Results of these source-stage
 checks belong in a new external corrective delivery, with exact commit/tree,
 raw logs/XML and an independent superseding review; none relabel S or b0fcee9.
+
+## Later status (2026-11-20)
+
+Later facts, including the publication of GeoCeDG 1.2.0 and 1.2.1 by author
+decision, are recorded in the
+[successor disposition](../validation/geocedg_1_2_x_publication_status_disposition.md).
+The sections above are unchanged and keep the state they had when written.

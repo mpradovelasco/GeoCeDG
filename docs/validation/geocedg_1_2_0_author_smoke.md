@@ -1,5 +1,7 @@
 # GeoCeDG 1.2.0 — Guion de smoke autoral
 
+> **Nota de estado posterior (2026-11-20).** Este guion es un registro histórico del checkpoint S (`0ae033ff3`); el encabezado «Estado actual» que sigue describe el estado a 2026-11-16 y se conserva sin cambios. No registra el smoke selectivo posterior del autor, cuyo contenido no consta en el repositorio. Los hechos posteriores están en la [disposición sucesora](geocedg_1_2_x_publication_status_disposition.md). Esta nota no modifica ningún resultado.
+
 **Estado actual: no ejecutar como smoke de aceptación.** R13 terminó con
 262/265 casos aprobados y tres fallidos; el [cierre permanece bloqueado](geocedg_1_2_0_r13_terminal_report.md)
 tras consumir trece rondas. Las imágenes pasan 65/68 casos focales. Computer
