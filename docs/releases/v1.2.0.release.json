@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "kind": "GEOCEDG_PUBLIC_RELEASE_RECORD",
+  "version": "1.2.0",
+  "version_date": "2026-11-16",
+  "nature": "FIRST_PUBLIC_NON_COMMERCIAL_RELEASE",
+  "tag": {
+    "name": "v1.2.0",
+    "object": "e7a16a3e23504fb3d7a00989e0b9b3129a989cd4",
+    "annotated": true,
+    "signed": false
+  },
+  "commit": "4f6a0a9e3ae25702c8c43fef287bf5881e0cb24e",
+  "tree": "ab96f99ad2cfe423e40a0229b0b2f415e02fdff0",
+  "predecessor_release": null,
+  "distribution": {
+    "profile": "NC",
+    "platform": "windows-x64",
+    "release_url": "https://github.com/mpradovelasco/GeoCeDG/releases/tag/v1.2.0",
+    "published_at": "2026-11-19T10:18:40Z",
+    "assets": [
+      {
+        "name": "app-image.SHA256SUMS.txt",
+        "size": 46123,
+        "sha256": "ba7bfda5d014146a4a8eb5f36c81708ab35c07b21a7de23f785160521a343a75"
+      },
+      {
+        "name": "build-manifest.json",
+        "size": 6942,
+        "sha256": "3a6e43fc025c1b1067eff8262e158b3c8513efc2444db9d68a23c71a451a8290"
+      },
+      {
+        "name": "GeoCeDG-1.2.0-windows-x64-nc.exe",
+        "size": 99868160,
+        "sha256": "0d90669324dc53213118277d5a9fd5b2062be980d2907e6aeddb2ecf0a06735c"
+      },
+      {
+        "name": "GeoCeDG-1.2.0-windows-x64-nc.msi",
+        "size": 99294766,
+        "sha256": "ace8b57badbce04449385ff5efb303a2a854e1e57466630f490a5b2983cc6d13"
+      },
+      {
+        "name": "GeoCeDG-1.2.0-windows-x64-nc.zip",
+        "size": 105941062,
+        "sha256": "4d4f12675a5162212dc028770b874da1ca53251e6cbe7f2e91c164e1d7b95f6c"
+      },
+      {
+        "name": "geocedg-windows.cdx.json",
+        "size": 161462,
+        "sha256": "8a564117d58376ab746867f3b08c6f838336ba99b78d71d01f7bdd35e1adbaa6"
+      },
+      {
+        "name": "NC_DISTRIBUTION_NOTICE.txt",
+        "size": 1847,
+        "sha256": "eea919bb716b916b84a8768ec61b0d70068e4fd1bd1cef1b4d5f0b8794856281"
+      },
+      {
+        "name": "resolved-runtime-components.json",
+        "size": 51525,
+        "sha256": "020da0a4d4e5c83076dee78972e248f70b77f3e7f5f51704b6c8b8e032b63451"
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "size": 689,
+        "sha256": "b08ee68b326572a470e6f2a29e45d28dfd75ca882d073330047c66766e194aa4"
+      }
+    ]
+  },
+  "publication_contrast": {
+    "status": "CONTRASTED_WITH_GITHUB",
+    "date": "2026-11-20",
+    "method": "gh release view v1.2.0 --repo mpradovelasco/GeoCeDG and git ls-remote origin: published, neither draft nor prerelease; remote tag object and peeled commit equal to the local ones; asset names, sizes and SHA-256 digests as reported by the GitHub API",
+    "scope": "Release metadata and API digests only; the binaries were not downloaded and their hashes were not recomputed."
+  },
+  "author_authorization": {
+    "date": "2026-11-19",
+    "kind": "PUBLICATION_RECORDED_IN_THE_ROADMAP_AND_TAG_MESSAGE",
+    "record": "docs/roadmap/geocedg_roadmap.md#2026-11-19--geocedg-120-publicada-y-mantenimiento-correctivo-posterior"
+  },
+  "verification": {
+    "accepted_runs": [],
+    "not_executed_on_release_commit": [],
+    "not_established_on_release_commit": [
+      "STATIC",
+      "PACKAGING",
+      "PHASE",
+      "INTEGRATION",
+      "FINAL"
+    ],
+    "final_receipt": "NOT_ESTABLISHED",
+    "evidence_class": "NOT_ESTABLISHED_IN_REPOSITORY"
+  },
+  "inherited_evidence": [],
+  "limits": [
+    {
+      "id": "R13-HISTORICAL-RESULT-FAILED",
+      "statement_ref": "docs/validation/geocedg_1_2_0_r13_terminal_report.md"
+    },
+    {
+      "id": "VERIFICATION-ON-RELEASE-COMMIT-NOT-ESTABLISHED",
+      "statement_ref": "docs/validation/geocedg_1_2_x_publication_status_disposition.md"
+    },
+    {
+      "id": "RELEASE-HISTORY-DISPOSITION",
+      "statement_ref": "docs/validation/geocedg_1_2_x_publication_status_disposition.md"
+    }
+  ]
+}

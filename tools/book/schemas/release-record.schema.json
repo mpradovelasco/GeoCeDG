@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GeoCeDG public release record",
+  "description": "Verifiable descriptor of one public release. The book bridge enforces this contract in code and additionally checks every identity against Git objects and the package profile at the release commit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "kind", "version", "version_date", "tag", "commit",
+    "tree", "distribution", "publication_contrast", "author_authorization",
+    "verification", "limits"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "kind": { "const": "GEOCEDG_PUBLIC_RELEASE_RECORD" },
+    "version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+    "version_date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+    "nature": { "type": "string" },
+    "tag": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "object", "annotated", "signed"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" },
+        "object": { "type": "string", "pattern": "^[0-9a-f]{40,64}$" },
+        "annotated": { "const": true },
+        "signed": { "type": "boolean" }
+      }
+    },
+    "commit": { "type": "string", "pattern": "^[0-9a-f]{40,64}$" },
+    "tree": { "type": "string", "pattern": "^[0-9a-f]{40,64}$" },
+    "predecessor_release": { "type": ["string", "null"] },
+    "distribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile", "platform", "release_url", "published_at", "assets"],
+      "properties": {
+        "profile": { "type": "string" },
+        "platform": { "type": "string" },
+        "release_url": { "type": "string" },
+        "published_at": { "type": "string" },
+        "assets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "size", "sha256"],
+            "properties": {
+              "name": { "type": "string" },
+              "size": { "type": "integer", "minimum": 0 },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+            }
+          }
+        }
+      }
+    },
+    "publication_contrast": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "date", "method"],
+      "properties": {
+        "status": { "enum": ["CONTRASTED_WITH_GITHUB", "NOT_CONTRASTED"] },
+        "date": { "type": "string" },
+        "method": { "type": "string" },
+        "scope": { "type": "string" }
+      }
+    },
+    "author_authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date", "kind", "record"],
+      "properties": {
+        "date": { "type": "string" },
+        "kind": { "type": "string" },
+        "record": { "type": "string" }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accepted_runs", "not_executed_on_release_commit",
+        "not_established_on_release_commit", "final_receipt", "evidence_class"
+      ],
+      "properties": {
+        "accepted_runs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["profile", "run_id", "acceptance", "coverage", "result_hash"],
+            "properties": {
+              "profile": { "type": "string" },
+              "run_id": { "type": "string" },
+              "acceptance": { "type": "string" },
+              "coverage": { "type": "string" },
+              "result_hash": { "type": "string" }
+            }
+          }
+        },
+        "not_executed_on_release_commit": { "type": "array", "items": { "type": "string" } },
+        "not_established_on_release_commit": { "type": "array", "items": { "type": "string" } },
+        "final_receipt": { "type": "string" },
+        "evidence_class": { "type": "string" }
+      }
+    },
+    "inherited_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["commit", "record"],
+        "properties": {
+          "commit": { "type": "string", "pattern": "^[0-9a-f]{40,64}$" },
+          "record": { "type": "string" }
+        }
+      }
+    },
+    "limits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "statement_ref"],
+        "properties": {
+          "id": { "type": "string" },
+          "statement_ref": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -36,6 +36,12 @@ Repository-relative parent directory for generated G9O1 evidence.
 .PARAMETER AllowDirtyEvidence
 Explicitly permits dirty or unpublished NON_RELEASE evidence and forwards the
 dirty-evidence opt-in to the G9O1 generator.
+
+.PARAMETER ReferenceTag
+Optional explicit technical reference: an annotated phase-checkpoint tag
+(geocedg-*-pass) or an annotated version tag (vMAJOR.MINOR.PATCH) backed by a
+valid release record under docs/releases in published authority. Without it the
+nearest eligible reference to origin/main is selected deterministically.
 #>
 [CmdletBinding()]
 param(
@@ -47,7 +53,8 @@ param(
         "artifacts/book/technical-baseline-candidate.json",
     [string[]]$EvidenceProfiles = @("knowledge"),
     [string]$EvidenceOutputDirectory = "artifacts/knowledge/book",
-    [switch]$AllowDirtyEvidence
+    [switch]$AllowDirtyEvidence,
+    [string]$ReferenceTag = ""
 )
 
 Set-StrictMode -Version Latest
@@ -59,6 +66,14 @@ $FingerprintSchemaVersion = 2
 $QuarantinedBookCommit = "e2e5676f39b59b757db109ffcc0edd9d84019d54"
 $TechnicalBaselinesPath =
     "editorial/source-mapping/TECHNICAL_BASELINES.json"
+# Typed technical references. A phase checkpoint is an annotated approval tag;
+# a public release is an annotated version tag backed by a release record read
+# from published GeoCeDG authority. Neither type is an editorial acceptance.
+$PhaseCheckpointTagPattern = '^geocedg-[a-z0-9-]+-pass$'
+$PublicReleaseTagPattern =
+    '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
+$ReleaseRecordDirectory = "docs/releases"
+$PackageProfilePath = "packaging/windows/package.yml"
 $RepositoryRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot "..\.."))
 $BookLink = Join-Path $RepositoryRoot "book"
 . (Join-Path $RepositoryRoot "tools\agent\repository-state.ps1")
@@ -779,49 +794,305 @@ function Test-GitAncestor {
     return $result.ExitCode -eq 0
 }
 
-function Get-ReachableAnnotatedPassTags {
+function ConvertTo-OrderedData {
+    param([AllowNull()] [object]$Value)
+
+    if ($null -eq $Value) {
+        return $null
+    }
+    if ($Value -is [Collections.IDictionary]) {
+        $ordered = [ordered]@{}
+        foreach ($key in @($Value.Keys | ForEach-Object { [string]$_ } |
+                Sort-Object -CaseSensitive)) {
+            $ordered[$key] = ConvertTo-OrderedData -Value $Value[$key]
+        }
+        return $ordered
+    }
+    if ($Value -is [string] -or $Value -is [ValueType]) {
+        return $Value
+    }
+    if ($Value -is [Collections.IEnumerable]) {
+        return , @($Value | ForEach-Object { ConvertTo-OrderedData -Value $_ })
+    }
+    return $Value
+}
+
+function Get-TagIdentity {
+    param(
+        [Parameter(Mandatory)] [string]$Root,
+        [Parameter(Mandatory)] [string]$TagName
+    )
+
+    $tagRef = "refs/tags/$TagName"
+    $typeResult = Invoke-RepositoryGit -Root $Root `
+        -Arguments @("cat-file", "-t", $tagRef) -AllowedExitCodes @(0, 128)
+    if ($typeResult.ExitCode -ne 0) {
+        return $null
+    }
+    $objectType = $typeResult.Text.Trim()
+    $tagObject = (Invoke-RepositoryGit -Root $Root `
+        -Arguments @("rev-parse", "--verify", $tagRef)
+    ).Text.Trim().ToLowerInvariant()
+    $commit = Get-OptionalGitCommit -Root $Root -Revision $tagRef
+    if ($null -eq $commit -or $tagObject -notmatch '^[0-9a-f]{40,64}$') {
+        throw "TECHNICAL CONTRADICTION: tag $TagName does not resolve to a commit."
+    }
+    $tree = (Invoke-RepositoryGit -Root $Root `
+        -Arguments @("rev-parse", "--verify", "${commit}^{tree}")
+    ).Text.Trim().ToLowerInvariant()
+    if ($tree -notmatch '^[0-9a-f]{40,64}$') {
+        throw "TECHNICAL CONTRADICTION: tag $TagName has no valid tree identity."
+    }
+    if ($objectType -eq "tag") {
+        $body = Invoke-RepositoryGit -Root $Root `
+            -Arguments @("cat-file", "-p", $tagRef)
+        foreach ($line in $body.Lines) {
+            if ($line -cmatch '^Commit:\s*([0-9a-fA-F]{40,64})\s*$' -and
+                    $Matches[1].ToLowerInvariant() -cne $commit) {
+                throw "TECHNICAL CONTRADICTION: the message of tag $TagName " +
+                    "declares a commit that the tag does not resolve to."
+            }
+            if ($line -cmatch '^Tree:\s*([0-9a-fA-F]{40,64})\s*$' -and
+                    $Matches[1].ToLowerInvariant() -cne $tree) {
+                throw "TECHNICAL CONTRADICTION: the message of tag $TagName " +
+                    "declares a tree that its commit does not have."
+            }
+        }
+    }
+    return [pscustomobject][ordered]@{
+        name = $TagName
+        annotated = [bool]($objectType -eq "tag")
+        tag_object = $tagObject
+        commit = $commit
+        tree = $tree
+    }
+}
+
+function Assert-ReleaseRecordKeys {
+    param(
+        [AllowNull()] [object]$Table,
+        [Parameter(Mandatory)] [string[]]$Required,
+        [string[]]$Optional = @(),
+        [Parameter(Mandatory)] [string]$Where
+    )
+
+    if ($Table -isnot [Collections.IDictionary]) {
+        throw "TECHNICAL CONTRADICTION: release record $Where is not an object."
+    }
+    foreach ($key in $Required) {
+        if (-not $Table.Contains($key)) {
+            throw "TECHNICAL CONTRADICTION: release record $Where lacks '$key'."
+        }
+    }
+    foreach ($key in @($Table.Keys)) {
+        if ([string]$key -cnotin ($Required + $Optional)) {
+            throw "TECHNICAL CONTRADICTION: release record $Where has the " +
+                "unknown property '$key'."
+        }
+    }
+}
+
+function Get-ReleaseRecordEvaluation {
+    param(
+        [Parameter(Mandatory)] [string]$Root,
+        [Parameter(Mandatory)] [string]$AuthorityCommit,
+        [Parameter(Mandatory)] [object]$Identity
+    )
+
+    $tagName = [string]$Identity.name
+    $path = "$ReleaseRecordDirectory/$tagName.release.json"
+    $source = Get-GitSourceRecord -Root $Root -Commit $AuthorityCommit `
+        -RepositoryPath $path
+    if ($null -eq $source.git_object) {
+        return [pscustomobject]@{
+            State = "MISSING"
+            Reason = "VERSION_TAG_WITHOUT_RELEASE_RECORD"
+            Record = $null
+            Source = $source
+        }
+    }
+    try {
+        $record = Get-GitFileText -Root $Root -Commit $AuthorityCommit `
+            -RepositoryPath $path | ConvertFrom-Json -Depth 100 -AsHashtable
+    } catch {
+        throw "TECHNICAL CONTRADICTION: release record $path is not valid JSON."
+    }
+    Assert-ReleaseRecordKeys -Table $record -Where $path -Required @(
+        "schema_version", "kind", "version", "version_date", "tag", "commit",
+        "tree", "distribution", "publication_contrast",
+        "author_authorization", "verification", "limits") -Optional @(
+        "predecessor_release", "nature", "inherited_evidence")
+    Assert-ReleaseRecordKeys -Table $record["tag"] -Where "$path tag" `
+        -Required @("name", "object", "annotated", "signed")
+    Assert-ReleaseRecordKeys -Table $record["distribution"] `
+        -Where "$path distribution" -Required @(
+        "profile", "platform", "release_url", "published_at", "assets")
+    Assert-ReleaseRecordKeys -Table $record["publication_contrast"] `
+        -Where "$path publication_contrast" `
+        -Required @("status", "date", "method") -Optional @("scope")
+    Assert-ReleaseRecordKeys -Table $record["author_authorization"] `
+        -Where "$path author_authorization" `
+        -Required @("date", "kind", "record")
+    Assert-ReleaseRecordKeys -Table $record["verification"] `
+        -Where "$path verification" -Required @(
+        "accepted_runs", "not_executed_on_release_commit",
+        "not_established_on_release_commit", "final_receipt",
+        "evidence_class")
+    foreach ($run in @($record["verification"]["accepted_runs"])) {
+        Assert-ReleaseRecordKeys -Table $run -Where "$path accepted run" `
+            -Required @("profile", "run_id", "acceptance", "coverage",
+            "result_hash")
+    }
+    foreach ($asset in @($record["distribution"]["assets"])) {
+        Assert-ReleaseRecordKeys -Table $asset -Where "$path asset" `
+            -Required @("name", "size", "sha256")
+        if ([string]$asset["sha256"] -cnotmatch '^[0-9a-f]{64}$') {
+            throw "TECHNICAL CONTRADICTION: release record $path has an " +
+                "invalid asset digest."
+        }
+    }
+    foreach ($limit in @($record["limits"])) {
+        Assert-ReleaseRecordKeys -Table $limit -Where "$path limit" `
+            -Required @("id", "statement_ref")
+    }
+
+    $versionMatch = [regex]::Match($tagName, '^v(?<version>.+)$')
+    $expected = [ordered]@{
+        "schema_version" = ($record["schema_version"] -eq 1)
+        "kind" = ([string]$record["kind"] -ceq
+            "GEOCEDG_PUBLIC_RELEASE_RECORD")
+        "version" = ([string]$record["version"] -ceq
+            $versionMatch.Groups["version"].Value)
+        "tag.name" = ([string]$record["tag"]["name"] -ceq $tagName)
+        "tag.object" = ([string]$record["tag"]["object"] -ceq
+            [string]$Identity.tag_object)
+        "tag.annotated" = ($record["tag"]["annotated"] -is [bool] -and
+            $record["tag"]["annotated"] -and [bool]$Identity.annotated)
+        "commit" = ([string]$record["commit"] -ceq [string]$Identity.commit)
+        "tree" = ([string]$record["tree"] -ceq [string]$Identity.tree)
+    }
+    foreach ($field in $expected.Keys) {
+        if (-not $expected[$field]) {
+            throw "TECHNICAL CONTRADICTION: release record $path contradicts " +
+                "Git identity or its contract in '$field'."
+        }
+    }
+    try {
+        $package = Get-GitFileText -Root $Root -Commit $Identity.commit `
+            -RepositoryPath $PackageProfilePath |
+            ConvertFrom-Json -Depth 100 -AsHashtable
+        $packageVersion = [string]$package["application"]["version"]
+        $packageDate = [string]$package["application"]["version_date"]
+    } catch {
+        throw "TECHNICAL CONTRADICTION: the package profile is unavailable " +
+            "or invalid at the commit of tag $tagName."
+    }
+    if ($packageVersion -cne [string]$record["version"] -or
+            $packageDate -cne [string]$record["version_date"]) {
+        throw "TECHNICAL CONTRADICTION: the package profile at tag $tagName " +
+            "declares a version or version date other than its release record."
+    }
+
+    $sufficient = [string]$record["publication_contrast"]["status"] -ceq
+        "CONTRASTED_WITH_GITHUB" -and
+        -not [string]::IsNullOrWhiteSpace(
+            [string]$record["distribution"]["release_url"]) -and
+        -not [string]::IsNullOrWhiteSpace(
+            [string]$record["distribution"]["published_at"]) -and
+        -not [string]::IsNullOrWhiteSpace(
+            [string]$record["author_authorization"]["record"])
+    return [pscustomobject]@{
+        State = if ($sufficient) { "VALID" } else { "INSUFFICIENT" }
+        Reason = if ($sufficient) {
+            $null
+        } else {
+            "INSUFFICIENT_PUBLICATION_PROVENANCE"
+        }
+        Record = $record
+        Source = $source
+    }
+}
+
+function Get-ReachableTechnicalReferences {
     param(
         [Parameter(Mandatory)] [string]$Root,
         [Parameter(Mandatory)] [string]$Commit
     )
 
-    $tags = [Collections.Generic.List[object]]::new()
+    $eligible = [Collections.Generic.List[object]]::new()
+    $ineligible = [Collections.Generic.List[object]]::new()
     $tagNames = (Invoke-RepositoryGit -Root $Root `
-        -Arguments @("tag", "--merged", $Commit, "--list", "geocedg-*-pass")
+        -Arguments @("tag", "--merged", $Commit, "--list",
+            "geocedg-*-pass", "v[0-9]*")
     ).Lines | Where-Object {
         -not [string]::IsNullOrWhiteSpace($_)
     } | Sort-Object -CaseSensitive
     foreach ($tagName in $tagNames) {
-        $tagRef = "refs/tags/$tagName"
-        $type = (Invoke-RepositoryGit -Root $Root `
-            -Arguments @("cat-file", "-t", $tagRef)).Text.Trim()
-        if ($type -ne "tag") {
+        $type = if ($tagName -cmatch $PhaseCheckpointTagPattern) {
+            "PHASE_CHECKPOINT"
+        } elseif ($tagName -cmatch $PublicReleaseTagPattern) {
+            "PUBLIC_RELEASE"
+        } else {
             continue
         }
-        $tagObject = (Invoke-RepositoryGit -Root $Root `
-            -Arguments @("rev-parse", $tagRef)).Text.Trim().ToLowerInvariant()
-        $tagCommit = Get-OptionalGitCommit -Root $Root -Revision $tagRef
-        $distance = (Invoke-RepositoryGit -Root $Root `
-            -Arguments @("rev-list", "--count", "${tagCommit}..${Commit}")
-        ).Text.Trim()
-        if ($tagObject -notmatch '^[0-9a-f]{40,64}$' -or
-                $distance -notmatch '^\d+$') {
-            throw "Invalid annotated pass-tag provenance: $tagName"
+        $identity = Get-TagIdentity -Root $Root -TagName $tagName
+        if ($null -eq $identity) {
+            continue
         }
-        $tags.Add([pscustomobject][ordered]@{
+        if (-not $identity.annotated) {
+            $ineligible.Add([pscustomobject][ordered]@{
+                    tag = $tagName
+                    type = $type
+                    reason = "LIGHTWEIGHT_TAG"
+                })
+            continue
+        }
+        $distance = (Invoke-RepositoryGit -Root $Root `
+            -Arguments @("rev-list", "--count",
+                "$($identity.commit)..${Commit}")).Text.Trim()
+        if ($distance -notmatch '^\d+$') {
+            throw "Invalid annotated tag provenance: $tagName"
+        }
+        $release = $null
+        if ($type -eq "PUBLIC_RELEASE") {
+            $evaluation = Get-ReleaseRecordEvaluation -Root $Root `
+                -AuthorityCommit $Commit -Identity $identity
+            if ($evaluation.State -ne "VALID") {
+                $ineligible.Add([pscustomobject][ordered]@{
+                        tag = $tagName
+                        type = $type
+                        reason = $evaluation.Reason
+                    })
+                continue
+            }
+            $release = $evaluation
+        }
+        $eligible.Add([pscustomobject][ordered]@{
+                type = $type
+                id = "${type}:$tagName"
                 name = $tagName
-                tag_object = $tagObject
-                commit = $tagCommit
+                tag_object = $identity.tag_object
+                commit = $identity.commit
+                tree = $identity.tree
                 commits_to_reference = [int]$distance
+                type_rank = if ($type -eq "PUBLIC_RELEASE") { 0 } else { 1 }
+                release = $release
             })
     }
-    return @($tags | Sort-Object -Property `
-            @{ Expression = 'commits_to_reference'; Ascending = $true },
-            @{ Expression = 'name'; Ascending = $true })
+    return [pscustomobject]@{
+        Eligible = @($eligible | Sort-Object -Property `
+                @{ Expression = 'commits_to_reference'; Ascending = $true },
+                @{ Expression = 'type_rank'; Ascending = $true },
+                @{ Expression = 'name'; Ascending = $true })
+        Ineligible = @($ineligible | Sort-Object -Property tag -CaseSensitive)
+    }
 }
 
 function Get-TechnicalBaselineCandidate {
-    param([Parameter(Mandatory)] [object]$GeoCeDGState)
+    param(
+        [Parameter(Mandatory)] [object]$GeoCeDGState,
+        [string]$SelectedReferenceTag = ""
+    )
 
     $repositoryName = ConvertTo-GitHubRepositoryName `
         -Origin $GeoCeDGState.Origin
@@ -836,23 +1107,95 @@ function Get-TechnicalBaselineCandidate {
     }
 
     $referenceCommit = $GeoCeDGState.OriginMainCommit
-    $passTagsByDistance = @(Get-ReachableAnnotatedPassTags `
-            -Root $RepositoryRoot -Commit $referenceCommit)
-    if ($passTagsByDistance.Count -eq 0) {
-        throw "No annotated GeoCeDG pass tag is reachable from origin/main."
+    $references = Get-ReachableTechnicalReferences `
+        -Root $RepositoryRoot -Commit $referenceCommit
+    $eligible = @($references.Eligible)
+    if ([string]::IsNullOrWhiteSpace($SelectedReferenceTag)) {
+        if ($eligible.Count -eq 0) {
+            throw "No eligible GeoCeDG technical reference is reachable from " +
+                "origin/main: an annotated phase-checkpoint tag or an " +
+                "annotated version tag with a valid release record is required."
+        }
+        $releases = @($eligible | Where-Object { $_.type -eq "PUBLIC_RELEASE" })
+        for ($index = 1; $index -lt $releases.Count; $index++) {
+            $nearer = [version]$releases[$index - 1].name.Substring(1)
+            $farther = [version]$releases[$index].name.Substring(1)
+            if ($releases[$index - 1].commit -ne $releases[$index].commit -and
+                    $nearer -le $farther) {
+                throw "VERSION_ORDER_ANOMALY: public release " +
+                    "$($releases[$index - 1].name) is nearer to origin/main " +
+                    "than $($releases[$index].name); select one explicitly " +
+                    "with -ReferenceTag."
+            }
+        }
+        $selected = $eligible[0]
+    } else {
+        $selected = @($eligible | Where-Object {
+                $_.name -ceq $SelectedReferenceTag
+            }) | Select-Object -First 1
+        if ($null -eq $selected) {
+            $rejected = @($references.Ineligible | Where-Object {
+                    $_.tag -ceq $SelectedReferenceTag
+                }) | Select-Object -First 1
+            $reason = if ($null -eq $rejected) {
+                "REFERENCE_NOT_FOUND"
+            } else {
+                $rejected.reason
+            }
+            throw "The requested reference tag '$SelectedReferenceTag' is not " +
+                "an eligible technical reference reachable from origin/main: " +
+                "$reason."
+        }
     }
-    $publishedTagRecord = $passTagsByDistance[0]
-    $publishedTag = $publishedTagRecord.name
-    $publishedCommit = $publishedTagRecord.commit
-    $distance = $publishedTagRecord.commits_to_reference
+    $publishedCommit = $selected.commit
+    $distance = $selected.commits_to_reference
     $snapshot = Get-TechnicalAuthoritySnapshot -Root $RepositoryRoot `
         -Commit $publishedCommit
+    $mainChangedCategories = @()
+    if ($distance -gt 0) {
+        try {
+            $mainSnapshot = Get-TechnicalAuthoritySnapshot `
+                -Root $RepositoryRoot -Commit $referenceCommit
+            $mainChangedCategories = @(Get-ChangedAuthorityCategories `
+                    -AcceptedSnapshot $snapshot -PublishedSnapshot $mainSnapshot)
+        } catch {
+            $mainChangedCategories = $null
+        }
+    }
+
+    $releaseBlock = $null
+    if ($null -ne $selected.release) {
+        $record = $selected.release.Record
+        $releaseBlock = [ordered]@{
+            record = [ordered]@{
+                path = $selected.release.Source.path
+                git_object = $selected.release.Source.git_object
+                authority_commit = $referenceCommit
+            }
+            bridge_check = "RECORD_COHERENT_WITH_GIT_OBJECTS — PUBLIC " +
+                "AVAILABILITY NOT RECHECKED BY THE OFFLINE BRIDGE"
+            version = [string]$record["version"]
+            version_date = [string]$record["version_date"]
+            distribution = [ordered]@{
+                profile = [string]$record["distribution"]["profile"]
+                platform = [string]$record["distribution"]["platform"]
+                release_url = [string]$record["distribution"]["release_url"]
+                published_at = [string]$record["distribution"]["published_at"]
+            }
+            publication_contrast = ConvertTo-OrderedData `
+                -Value $record["publication_contrast"]
+            author_authorization = ConvertTo-OrderedData `
+                -Value $record["author_authorization"]
+            verification = ConvertTo-OrderedData -Value $record["verification"]
+            limits = ConvertTo-OrderedData -Value $record["limits"]
+        }
+    }
 
     $commitTimestamp = (Invoke-RepositoryGit -Root $RepositoryRoot `
         -Arguments @("show", "-s", "--format=%cI",
             $publishedCommit)).Text.Trim()
     return [pscustomobject][ordered]@{
-        schema_version = 1
+        schema_version = 2
         kind = "GEOCEDG_BOOK_TECHNICAL_BASELINE_CANDIDATE"
         status = "REVIEW_CANDIDATE_ONLY"
         repository = $ExpectedGeoCeDGRepository
@@ -861,10 +1204,29 @@ function Get-TechnicalBaselineCandidate {
             commit = $referenceCommit
         }
         published_reference = [ordered]@{
-            tag = $publishedTag
+            type = $selected.type
+            id = $selected.id
+            tag = $selected.name
+            tag_object = $selected.tag_object
             commit = $publishedCommit
+            tree = $selected.tree
             commit_timestamp = $commitTimestamp
             commits_to_origin_main = $distance
+        }
+        release = $releaseBlock
+        coincident_references = @($eligible | Where-Object {
+                $_.commit -eq $publishedCommit -and $_.name -cne $selected.name
+            } | Sort-Object -Property name -CaseSensitive | ForEach-Object {
+                [ordered]@{
+                    type = $_.type
+                    id = $_.id
+                    tag = $_.name
+                    tag_object = $_.tag_object
+                }
+            })
+        main_delta = [ordered]@{
+            commits = $distance
+            changed_authority_categories = $mainChangedCategories
         }
         technical_authority_fingerprint =
             $snapshot.technical_authority_fingerprint
@@ -874,8 +1236,19 @@ function Get-TechnicalBaselineCandidate {
         application_profile = $snapshot.application_profile
         bundle_provenance = $snapshot.bundle_provenance
         authority_categories = $snapshot.authority_categories
-        reachable_pass_tags = @($passTagsByDistance |
-            Sort-Object -Property name -CaseSensitive)
+        reachable_references = @($eligible |
+            Sort-Object -Property name -CaseSensitive | ForEach-Object {
+                [ordered]@{
+                    type = $_.type
+                    id = $_.id
+                    tag = $_.name
+                    tag_object = $_.tag_object
+                    commit = $_.commit
+                    tree = $_.tree
+                    commits_to_reference = $_.commits_to_reference
+                }
+            })
+        ineligible_tags = @($references.Ineligible)
         source_records = $snapshot.source_records
     }
 }
@@ -975,7 +1348,9 @@ function Get-BookTechnicalAlignment {
         [string]$authorityProperty.Value.repository -eq $ExpectedBookRepository -and
         [string]$authorityProperty.Value.policy -eq
         "editorial/source-mapping/TECHNICAL_BASELINE_POLICY.md"
-    if ($registry.schema_version -ne 1 -or -not $validAuthority) {
+    $registrySchema = $registry.schema_version
+    if (($registrySchema -ne 1 -and $registrySchema -ne 2) -or
+            -not $validAuthority) {
         return New-AlignmentResult `
             -Classification "TECHNICAL CONTRADICTION" `
             -Message "The published book registry schema or authority is invalid." `
@@ -1015,9 +1390,44 @@ function Get-BookTechnicalAlignment {
     } else {
         $acceptedSchemaProperty.Value
     }
+    # Ledger schema 1 has no reference type: its records are phase
+    # checkpoints. Schema 2 declares the type explicitly.
+    $typeProperty = $current.PSObject.Properties['reference_type']
+    $acceptedType = if ($registrySchema -eq 1 -and $null -eq $typeProperty) {
+        "PHASE_CHECKPOINT"
+    } elseif ($registrySchema -eq 2 -and $null -ne $typeProperty) {
+        [string]$typeProperty.Value
+    } else {
+        ""
+    }
+    $acceptedTagPattern = switch -CaseSensitive ($acceptedType) {
+        "PHASE_CHECKPOINT" { $PhaseCheckpointTagPattern }
+        "PUBLIC_RELEASE" { $PublicReleaseTagPattern }
+        default { '(?!)' }
+    }
+    $tagObjectProperty = $current.PSObject.Properties['tag_object']
+    $treeProperty = $current.PSObject.Properties['geocedg_tree']
+    $acceptedTagObject = if ($null -eq $tagObjectProperty) {
+        $null
+    } else {
+        [string]$tagObjectProperty.Value
+    }
+    $acceptedTree = if ($null -eq $treeProperty) {
+        $null
+    } else {
+        [string]$treeProperty.Value
+    }
+    $identityPinsMalformed =
+        ($acceptedType -eq "PUBLIC_RELEASE" -and
+            ($null -eq $acceptedTagObject -or $null -eq $acceptedTree)) -or
+        ($null -ne $acceptedTagObject -and
+            $acceptedTagObject -cnotmatch '^[0-9a-f]{40,64}$') -or
+        ($null -ne $acceptedTree -and
+            $acceptedTree -cnotmatch '^[0-9a-f]{40,64}$')
     if ($acceptedCommit -notmatch '^[0-9a-fA-F]{40}$' -or
             $acceptedFingerprint -notmatch '^[0-9a-fA-F]{64}$' -or
-            $acceptedTag -notmatch '^geocedg-[a-z0-9-]+-pass$' -or
+            $acceptedTag -cnotmatch $acceptedTagPattern -or
+            $identityPinsMalformed -or
             $acceptedSchema -ne $FingerprintSchemaVersion) {
         return New-AlignmentResult `
             -Classification "TECHNICAL CONTRADICTION" `
@@ -1053,6 +1463,45 @@ function Get-BookTechnicalAlignment {
             -Message "The accepted pass tag does not annotate the accepted commit." `
             -Candidate $Candidate -Registry $registry `
             -CurrentBaseline $current -BookAuthorityCommit $bookAuthorityCommit
+    }
+    try {
+        $acceptedIdentity = Get-TagIdentity -Root $RepositoryRoot `
+            -TagName $acceptedTag
+    } catch {
+        $acceptedIdentity = $null
+    }
+    if ($null -eq $acceptedIdentity -or
+            ($null -ne $acceptedTagObject -and
+                $acceptedTagObject -cne $acceptedIdentity.tag_object) -or
+            ($null -ne $acceptedTree -and
+                $acceptedTree -cne $acceptedIdentity.tree)) {
+        return New-AlignmentResult `
+            -Classification "TECHNICAL CONTRADICTION" `
+            -Message "The accepted tag object or tree contradicts the recorded identity." `
+            -Candidate $Candidate -Registry $registry `
+            -CurrentBaseline $current -BookAuthorityCommit $bookAuthorityCommit
+    }
+    if ($acceptedType -eq "PUBLIC_RELEASE") {
+        try {
+            $acceptedRelease = Get-ReleaseRecordEvaluation `
+                -Root $RepositoryRoot `
+                -AuthorityCommit $Candidate.technical_source.commit `
+                -Identity $acceptedIdentity
+        } catch {
+            return New-AlignmentResult `
+                -Classification "TECHNICAL CONTRADICTION" `
+                -Message "The release record of the accepted public release is contradictory." `
+                -Candidate $Candidate -Registry $registry `
+                -CurrentBaseline $current `
+                -BookAuthorityCommit $bookAuthorityCommit
+        }
+        if ($acceptedRelease.State -ne "VALID") {
+            return New-AlignmentResult -Classification "REFERENCE MISSING" `
+                -Message "The accepted public release has no valid release record in published GeoCeDG authority." `
+                -Candidate $Candidate -Registry $registry `
+                -CurrentBaseline $current `
+                -BookAuthorityCommit $bookAuthorityCommit
+        }
     }
     try {
         $acceptedSnapshot = Get-TechnicalAuthoritySnapshot `
@@ -1532,7 +1981,7 @@ function Write-EvidenceExportSidecar {
     )
 
     $relativeSidecar = ($RelativeOutputDirectory.TrimEnd("/", "\") +
-        "/book-evidence-export.v1.json").Replace("\", "/")
+        "/book-evidence-export.v2.json").Replace("\", "/")
     $absolute = Resolve-GeoCeDGArtifactPath -RelativePath $relativeSidecar `
         -RequiredSubtree "artifacts/knowledge/book" -RequireFileName
     $repositoryPath = [IO.Path]::GetRelativePath(
@@ -1543,7 +1992,7 @@ function Write-EvidenceExportSidecar {
         throw "Evidence refuses to overwrite a tracked sidecar: $repositoryPath"
     }
     $sidecar = [ordered]@{
-        schema_version = 1
+        schema_version = 2
         kind = "GEOCEDG_BOOK_EVIDENCE_EXPORT"
         disposition = $Disposition
         authority = [ordered]@{
@@ -1555,9 +2004,10 @@ function Write-EvidenceExportSidecar {
             head_commit = $GeoCeDGState.Commit
             working_tree_dirty = [bool]($GeoCeDGState.Status.Count -gt 0)
             origin_main_commit = $Candidate.technical_source.commit
-            published_pass_tag = $Candidate.published_reference.tag
-            published_pass_commit = $Candidate.published_reference.commit
-            head_matches_published_pass = [bool](
+            reference_type = $Candidate.published_reference.type
+            reference_tag = $Candidate.published_reference.tag
+            reference_commit = $Candidate.published_reference.commit
+            head_matches_published_reference = [bool](
                 $GeoCeDGState.Commit -eq $Candidate.published_reference.commit)
         }
         profile_outputs = @($ProfileOutputs | Sort-Object -Property profile `
@@ -1588,12 +2038,13 @@ function Invoke-EvidenceExport {
         throw "Evidence profile names must be non-empty and unique."
     }
     $geoCeDGState = Get-GitRepositoryState -Root $RepositoryRoot
-    $candidate = Get-TechnicalBaselineCandidate -GeoCeDGState $geoCeDGState
+    $candidate = Get-TechnicalBaselineCandidate -GeoCeDGState $geoCeDGState `
+        -SelectedReferenceTag $ReferenceTag
     $releaseQuality = $geoCeDGState.Status.Count -eq 0 -and
         $geoCeDGState.Commit -eq $candidate.published_reference.commit
     if (-not $releaseQuality -and -not $AllowDirty) {
         throw "Release-quality book evidence requires a clean checkout exactly " +
-            "at the published annotated pass commit. Use -AllowDirtyEvidence " +
+            "at the commit of the published reference. Use -AllowDirtyEvidence " +
             "only for explicit NON_RELEASE evidence."
     }
     $disposition = if ($releaseQuality) {
@@ -1671,21 +2122,45 @@ function Write-PublishedAndAlignmentState {
         [Parameter(Mandatory)] [object]$Alignment
     )
 
-    $productState = if ($GeoCeDGState.Commit -ne
-            $Candidate.published_reference.commit -or
-            $GeoCeDGState.Status.Count -gt 0 -or
-            $Candidate.published_reference.commits_to_origin_main -ne 0) {
-        "UNPUBLISHED PRODUCT STATE"
-    } else {
+    $distance = $Candidate.published_reference.commits_to_origin_main
+    $mainState = if ($distance -eq 0) {
         "PUBLISHED REFERENCE CURRENT"
+    } else {
+        $categories = if ($null -eq
+                $Candidate.main_delta.changed_authority_categories) {
+            "unavailable"
+        } elseif (@($Candidate.main_delta.changed_authority_categories
+                ).Count -eq 0) {
+            "none"
+        } else {
+            @($Candidate.main_delta.changed_authority_categories) -join ", "
+        }
+        "MAIN AHEAD OF PUBLISHED REFERENCE ($distance commits; changed " +
+            "authority categories: $categories)"
+    }
+    $checkoutState = if ($GeoCeDGState.Commit -eq
+            $Candidate.published_reference.commit -and
+            $GeoCeDGState.Status.Count -eq 0) {
+        "AT PUBLISHED REFERENCE"
+    } else {
+        "NOT AT PUBLISHED REFERENCE"
     }
     Write-Host ("GeoCeDG technical source SHA: " +
         $GeoCeDGState.Commit)
     Write-Host ("GeoCeDG published reference: " +
-        "$($Candidate.published_reference.tag) @ " +
+        "$($Candidate.published_reference.id) @ " +
         $Candidate.published_reference.commit)
-    Write-Host ("GeoCeDG published/source relationship: " +
-        $productState)
+    if ($null -ne $Candidate.release) {
+        Write-Host ("GeoCeDG release record: " +
+            "$($Candidate.release.record.path) (coherent with Git objects; " +
+            "public availability recorded, not rechecked offline)")
+    }
+    foreach ($rejected in @($Candidate.ineligible_tags)) {
+        Write-Host ("GeoCeDG ineligible tag: " +
+            "$($rejected.tag) ($($rejected.reason))")
+    }
+    Write-Host ("GeoCeDG origin/main relationship: " + $mainState)
+    Write-Host ("GeoCeDG checkout relationship: " + $checkoutState)
     Write-Host ("GeoCeDG latest closed phase: " +
         $Candidate.normative_phase_status.latest_closed_phase)
     Write-Host ("GeoCeDG next gate: " +
@@ -1709,11 +2184,11 @@ try {
     $geoCeDGState = Get-GitRepositoryState -Root $RepositoryRoot
     if ($Action -eq "BaselineCandidate") {
         $candidate = Get-TechnicalBaselineCandidate `
-            -GeoCeDGState $geoCeDGState
+            -GeoCeDGState $geoCeDGState -SelectedReferenceTag $ReferenceTag
         $writtenPath = Write-TechnicalBaselineCandidate `
             -Candidate $candidate -RelativeOutputPath $OutputPath
         Write-Host "Action: BaselineCandidate (GeoCeDG evidence only)"
-        Write-Host "Published reference: $($candidate.published_reference.tag)"
+        Write-Host "Published reference: $($candidate.published_reference.id)"
         Write-Host "Published commit: $($candidate.published_reference.commit)"
         Write-Host ("Technical authority fingerprint: " +
             $candidate.technical_authority_fingerprint)
@@ -1738,7 +2213,8 @@ try {
             throw "The quarantined generated book branch cannot be audited as authority."
         }
         $candidate = Get-TechnicalBaselineCandidate `
-            -GeoCeDGState $context.GeoCeDGState
+            -GeoCeDGState $context.GeoCeDGState `
+            -SelectedReferenceTag $ReferenceTag
         $alignment = Get-BookTechnicalAlignment `
             -BookRoot $context.BookRoot -Candidate $candidate
         Write-PublishedAndAlignmentState `

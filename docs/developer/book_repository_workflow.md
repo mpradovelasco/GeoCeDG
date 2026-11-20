@@ -49,12 +49,48 @@ repository change.
 ## Published technical authority
 
 The bridge resolves published product state offline from the local
-`refs/remotes/origin/main` and the closest reachable annotated
-`geocedg-*-pass` tag. It never fetches. Working `HEAD`, local `main`,
-`origin/main`, ahead/behind, and dirty state are reported separately.
+`refs/remotes/origin/main` and the closest reachable eligible technical
+reference. It never fetches. Working `HEAD`, local `main`, `origin/main`,
+ahead/behind, and dirty state are reported separately.
+
+A technical reference has an explicit type and a pinned identity (type, tag
+name, tag object, commit and tree):
+
+| Type | Tag | Eligible when |
+|---|---|---|
+| `PHASE_CHECKPOINT` | annotated `geocedg-*-pass` | the tag is annotated and its commit is reachable from `origin/main` |
+| `PUBLIC_RELEASE` | annotated `vMAJOR.MINOR.PATCH` | as above, and `docs/releases/<tag>.release.json`, read from the Git object of `origin/main`, agrees with the tag object, commit, tree and version, with the package profile at that commit, and records a contrasted publication |
+
+The three notions are distinct. A phase checkpoint records a phase approval and
+implies no binary distribution. A public release records that the author
+authorized a distribution; its record lists the verification that was accepted
+on the release commit, what was not executed or is not established there, and
+its limits, and it carries no single pass flag. Neither is an editorial
+acceptance: the book accepts or rejects a reference in its own ledger.
+
+A release record is a verifiable descriptor, not an autonomous statement of
+technical success. The offline bridge checks that it is coherent with Git
+objects; whether the release is publicly available was contrasted when the
+record was written (`publication_contrast`) and is not rechecked by the bridge.
+
+Lightweight tags are never a reference. An annotated version tag without a
+record, or whose record lacks contrasted publication provenance, is reported as
+ineligible. A record that contradicts Git identity, a tag message that declares
+another commit or tree, or a package profile that declares another version
+stops the operation: errors of identity or provenance fail closed.
+
+Selection is deterministic: the eligible reference with the fewest commits to
+`origin/main`; a public release before a phase checkpoint on the same commit;
+then the tag name. Two eligible references on one commit are one technical
+state and the candidate lists the other as coincident. `-ReferenceTag <tag>`
+selects one eligible reference explicitly. If a nearer release has a lower
+version than a farther one, the default selection is refused and an explicit
+tag is required. `origin/main` after the last reference is reported as
+`MAIN AHEAD OF PUBLISHED REFERENCE` with the changed authority categories; it
+never replaces the commit of the reference.
 
 The deterministic technical snapshot is derived from Git objects at the
-published tag. Lightweight tags are not publication authority. Fingerprint
+commit of the reference; it does not depend on the reference type. Fingerprint
 schema version 2 records conservative domain fingerprints for:
 
 - normative phase state;
@@ -95,7 +131,11 @@ does not fetch; preflight must establish that the remote-tracking ref is current
 Alignment validates the accepted commit, annotated tag, fingerprint schema,
 recomputed fingerprint, and book authority before comparing current published
 state. It uses the current accepted editorial baseline, not a historical BOOK
-phase pin.
+phase pin. It reads ledger schema 1, whose records are phase checkpoints, and
+schema 2, whose current record declares its `reference_type`; an accepted
+public release must also pin its tag object and tree and keep a valid release
+record in published GeoCeDG authority. Any other schema, type or identity is a
+`TECHNICAL CONTRADICTION`.
 
 Finite classifications are:
 
@@ -107,7 +147,7 @@ Finite classifications are:
 - `REFERENCE MISSING`: the ledger/current accepted reference or Git object is
   absent, including `NOT_YET_REFRESHED`;
 - `UNPUBLISHED PRODUCT STATE`: an editorial reference points beyond the
-  published tag.
+  published reference.
 
 Dirty/ahead checkout state is reported separately as the product-source
 relationship; it does not contaminate the deterministic candidate.
@@ -125,7 +165,13 @@ or changes the book.
 .\tools\book\book-worktree.ps1 -Action BaselineCandidate
 .\tools\book\book-worktree.ps1 -Action BaselineCandidate `
   -OutputPath artifacts/book/p1-candidate.json
+.\tools\book\book-worktree.ps1 -Action BaselineCandidate `
+  -ReferenceTag v1.2.1 -OutputPath artifacts/book/v1.2.1-candidate.json
 ```
+
+Candidate schema 2 records the typed reference (`published_reference` with its
+type, tag object and tree), the release block of a public release, coincident
+and reachable references, ineligible tags and the delta of `origin/main`.
 
 The candidate uses the published commit timestamp, not wall-clock generation
 time. Repeated runs over the same published repository/ref state are
@@ -167,12 +213,12 @@ option; any requested identifier must already exist in
 ownership, rights, budget, path, and determinism rules remain authoritative.
 The bridge propagates a profile's authoritative encoding/ownership failure; it
 does not patch or bypass G9O1. Release-quality evidence requires a clean
-checkout exactly at the published annotated pass commit. `-AllowDirtyEvidence`
+checkout exactly at the commit of the published reference. `-AllowDirtyEvidence`
 is an explicit `NON_RELEASE_DIRTY_OR_UNPUBLISHED_STATE` mode. Evidence output is
 restricted to `artifacts/knowledge/book/**`. Each export writes a deterministic
-bridge-owned `book-evidence-export.v1.json` sidecar beside the profile
+bridge-owned `book-evidence-export.v2.json` sidecar beside the profile
 directories. The sidecar records the release/non-release disposition, source
-and published commits, dirty state, and SHA-256 bindings to each G9O1 manifest
+commit, the type, tag and commit of the reference, dirty state, and SHA-256 bindings to each G9O1 manifest
 and archive; it does not replace or modify the G9O1 bundle authority. Canonical
 `.ggb`/`.ggt` models remain referenced by repository path and blob/manifests
 rather than copied into text bundles.
@@ -209,6 +255,11 @@ explicit and opt-in.
 Run Git commands separately from the intended repository root. Never use a
 recursive `git add` from GeoCeDG to operate on book content. Neither bridge nor
 verifier installs, stages, commits, merges, tags, fetches, pulls, or pushes.
+
+The block below is the state at the BOOK-P0-post closeout, kept as the
+historical record of when this workflow was written. It is not the current
+state of the BOOK phases: that state is read in the roadmap of the book
+repository and is never copied here.
 
 ```text
 BOOK-P0-post = PASS — AUTHOR APPROVED

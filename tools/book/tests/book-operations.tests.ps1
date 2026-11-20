@@ -399,7 +399,7 @@ try {
         $candidate.fingerprint_schema_version -eq 2 -and
         @($candidate.authority_categories).Count -ge 8) `
         -Message "Baseline candidate did not use published fixture authority."
-    Assert-Condition -Condition (-not (@($candidate.reachable_pass_tags.name) `
+    Assert-Condition -Condition (-not (@($candidate.reachable_references.tag) `
                 -contains "geocedg-lightweight-pass")) `
         -Message "A lightweight tag entered published pass-tag provenance."
 
@@ -462,14 +462,14 @@ try {
     $evidenceFile = Join-Path $evidenceRoot `
         "knowledge\fixture-knowledge\bundle.zip"
     $evidenceSidecarPath = Join-Path $evidenceRoot `
-        "book-evidence-export.v1.json"
+        "book-evidence-export.v2.json"
     $evidenceHash = (Get-FileHash -LiteralPath $evidenceFile).Hash
     $evidenceSidecarHash = (Get-FileHash `
         -LiteralPath $evidenceSidecarPath).Hash
     $evidenceSidecar = Get-Content -LiteralPath $evidenceSidecarPath -Raw |
         ConvertFrom-Json -Depth 100 -NoEnumerate
     Assert-Condition -Condition (
-        $evidenceSidecar.schema_version -eq 1 -and
+        $evidenceSidecar.schema_version -eq 2 -and
         $evidenceSidecar.kind -eq "GEOCEDG_BOOK_EVIDENCE_EXPORT" -and
         $evidenceSidecar.disposition -eq
             "RELEASE_QUALITY_PUBLISHED_STATE" -and
@@ -604,7 +604,7 @@ try {
     $nonReleaseRoot = Join-Path $geoRoot `
         "artifacts\knowledge\book\unpublished"
     $nonReleaseSidecar = Get-Content -LiteralPath (Join-Path $nonReleaseRoot `
-            "book-evidence-export.v1.json") -Raw |
+            "book-evidence-export.v2.json") -Raw |
         ConvertFrom-Json -Depth 100 -NoEnumerate
     $nonReleaseArchive = Join-Path $nonReleaseRoot (
         [string]$nonReleaseSidecar.profile_outputs[0].archive.path)
@@ -613,11 +613,11 @@ try {
     $nonReleaseHead = (Invoke-TestGit -Root $geoRoot `
         -Arguments @("rev-parse", "HEAD")).Trim()
     Assert-Condition -Condition (
-        $nonReleaseSidecar.schema_version -eq 1 -and
+        $nonReleaseSidecar.schema_version -eq 2 -and
         $nonReleaseSidecar.disposition -eq
             "NON_RELEASE_DIRTY_OR_UNPUBLISHED_STATE" -and
         -not $nonReleaseSidecar.geocedg_source_state.working_tree_dirty -and
-        -not $nonReleaseSidecar.geocedg_source_state.head_matches_published_pass -and
+        -not $nonReleaseSidecar.geocedg_source_state.head_matches_published_reference -and
         $nonReleaseSidecar.geocedg_source_state.head_commit -eq
             $nonReleaseHead -and
         $nonReleaseSidecar.profile_outputs[0].archive.sha256 -eq
@@ -1144,7 +1144,514 @@ try {
     $lightweightOnly = Invoke-BookOperation -Script $geo.Script `
         -Action "BaselineCandidate"
     Assert-OperationResult -Result $lightweightOnly -ExitCode 1 `
-        -Contains "No annotated GeoCeDG pass tag"
+        -Contains "No eligible GeoCeDG technical reference"
+
+    # Typed technical references: phase checkpoints and public releases.
+    # An isolated fixture pair keeps the scenarios above unchanged.
+    $typedGeoRoot = Join-Path $testRoot "typed\GeoCeDG"
+    $typedBookRoot = Join-Path $testRoot "typed\geocedg_book"
+    $typed = New-GeoAuthorityFixture -GeoRoot $typedGeoRoot
+    New-BookFixture -BookRoot $typedBookRoot -HistoricalCommit $typed.Commit
+    $typedLink = Join-Path $typedGeoRoot "book"
+    [void](New-Item -ItemType Junction -Path $typedLink -Target $typedBookRoot)
+
+    function Get-TypedRevision {
+        param([Parameter(Mandatory)] [string]$Revision)
+
+        return (Invoke-TestGit -Root $typedGeoRoot `
+            -Arguments @("rev-parse", "--verify", $Revision)).Trim()
+    }
+
+    function Publish-TypedHead {
+        $head = Get-TypedRevision -Revision "HEAD"
+        [void](Invoke-TestGit -Root $typedGeoRoot -Arguments @(
+                "update-ref", "refs/remotes/origin/main", $head))
+        return $head
+    }
+
+    function Add-TypedCommit {
+        param(
+            [Parameter(Mandatory)] [string]$Path,
+            [Parameter(Mandatory)] [string]$Content,
+            [Parameter(Mandatory)] [string]$Message
+        )
+
+        Write-Utf8File -Path (Join-Path $typedGeoRoot $Path) -Content $Content
+        [void](Invoke-TestGit -Root $typedGeoRoot `
+            -Arguments @("add", "--", $Path.Replace("\", "/")))
+        [void](Invoke-TestGit -Root $typedGeoRoot `
+            -Arguments @("commit", "-m", $Message))
+        return Get-TypedRevision -Revision "HEAD"
+    }
+
+    function Add-TypedPackageCommit {
+        param([Parameter(Mandatory)] [string]$Version)
+
+        $text = "{`n  `"schema_version`": 2,`n  `"application`": " +
+            "{`"version`": `"$Version`", `"version_date`": `"2026-01-01`"}`n}`n"
+        return Add-TypedCommit -Path "packaging\windows\package.yml" `
+            -Content $text -Message "fixture package $Version"
+    }
+
+    function New-TypedReleaseRecord {
+        param(
+            [Parameter(Mandatory)] [string]$Tag,
+            [Parameter(Mandatory)] [string]$Version
+        )
+
+        $commit = Get-TypedRevision -Revision "refs/tags/$Tag^{commit}"
+        return [ordered]@{
+            schema_version = 1
+            kind = "GEOCEDG_PUBLIC_RELEASE_RECORD"
+            version = $Version
+            version_date = "2026-01-01"
+            nature = "FIXTURE"
+            tag = [ordered]@{
+                name = $Tag
+                object = Get-TypedRevision -Revision "refs/tags/$Tag"
+                annotated = $true
+                signed = $false
+            }
+            commit = $commit
+            tree = Get-TypedRevision -Revision "$commit^{tree}"
+            predecessor_release = $null
+            distribution = [ordered]@{
+                profile = "NC"
+                platform = "fixture"
+                release_url = "https://example.invalid/releases/$Tag"
+                published_at = "2026-01-01T00:00:00Z"
+                assets = @([ordered]@{
+                        name = "fixture.zip"
+                        size = 1
+                        sha256 = ("a" * 64)
+                    })
+            }
+            publication_contrast = [ordered]@{
+                status = "CONTRASTED_WITH_GITHUB"
+                date = "2026-01-01"
+                method = "fixture"
+            }
+            author_authorization = [ordered]@{
+                date = "2026-01-01"
+                kind = "FIXTURE"
+                record = "docs/roadmap/geocedg_roadmap.md"
+            }
+            verification = [ordered]@{
+                accepted_runs = @([ordered]@{
+                        profile = "STATIC"
+                        run_id = "verification-fixture"
+                        acceptance = "ACCEPTED"
+                        coverage = "COMPLETE"
+                        result_hash = ("b" * 64)
+                    })
+                not_executed_on_release_commit = @("FINAL")
+                not_established_on_release_commit = @()
+                final_receipt = "NONE"
+                evidence_class = "FIXTURE"
+            }
+            inherited_evidence = @()
+            limits = @([ordered]@{
+                    id = "NO-FINAL-ON-RELEASE-COMMIT"
+                    statement_ref = "docs/roadmap/geocedg_roadmap.md"
+                })
+        }
+    }
+
+    function Copy-TypedRecord {
+        param([Parameter(Mandatory)] [object]$Record)
+
+        return ($Record | ConvertTo-Json -Depth 20 |
+            ConvertFrom-Json -Depth 20 -AsHashtable)
+    }
+
+    function Publish-TypedReleaseRecord {
+        param(
+            [Parameter(Mandatory)] [string]$Tag,
+            [Parameter(Mandatory)] [object]$Record,
+            [Parameter(Mandatory)] [string]$Message
+        )
+
+        $json = ($Record | ConvertTo-Json -Depth 20).Replace("`r`n", "`n") +
+            "`n"
+        [void](Add-TypedCommit -Path "docs\releases\$Tag.release.json" `
+            -Content $json -Message $Message)
+        return Publish-TypedHead
+    }
+
+    function Get-TypedCandidate {
+        param(
+            [Parameter(Mandatory)] [string]$Name,
+            [string[]]$Arguments = @()
+        )
+
+        $relative = "artifacts/book/$Name.json"
+        $result = Invoke-BookOperation -Script $typed.Script `
+            -Action "BaselineCandidate" `
+            -Arguments (@("-OutputPath", $relative) + $Arguments)
+        Assert-OperationResult -Result $result -ExitCode 0 `
+            -Contains "No editorial file was changed or accepted."
+        return Get-Content -LiteralPath (Join-Path $typedGeoRoot `
+                $relative.Replace("/", "\")) -Raw |
+            ConvertFrom-Json -Depth 100 -NoEnumerate
+    }
+
+    function Set-TypedLedger {
+        param(
+            [Parameter(Mandatory)] [int]$SchemaVersion,
+            [Parameter(Mandatory)] [Collections.IDictionary]$Current,
+            [Parameter(Mandatory)] [string]$Message
+        )
+
+        $registry = [ordered]@{
+            schema_version = $SchemaVersion
+            authority = [ordered]@{
+                repository = "mpradovelasco/geocedg_book"
+                policy = "editorial/source-mapping/TECHNICAL_BASELINE_POLICY.md"
+                product_candidate_source =
+                    "GeoCeDG tools/book/book-worktree.ps1"
+            }
+            historical_phase_baselines = @(
+                [ordered]@{
+                    book_phase = "BOOK-P0"
+                    status = "PASS_AUTHOR_APPROVED"
+                    geocedg_commit = $typed.Commit
+                    published_tag = "geocedg-test-pass"
+                    evidence = "editorial/source-mapping/AUDIT_BASELINE.md"
+                    immutable = $true
+                }
+            )
+            current_editorial_technical_baseline = $Current
+            chapter_closeout_provenance = @()
+        }
+        $json = ($registry | ConvertTo-Json -Depth 100).Replace(
+            "`r`n", "`n") + "`n"
+        Write-Utf8File -Path (Join-Path $typedBookRoot `
+                "editorial\source-mapping\TECHNICAL_BASELINES.json") `
+            -Content $json
+        Commit-BookBaselineRegistry -BookRoot $typedBookRoot -Message $Message
+    }
+
+    function Assert-TypedAlignment {
+        param(
+            [Parameter(Mandatory)] [string]$Classification,
+            [string]$AlsoContains = ""
+        )
+
+        $result = Invoke-BookOperation -Script $typed.Script `
+            -Action "Alignment"
+        Assert-OperationResult -Result $result -ExitCode 0 `
+            -Contains "Book technical alignment: $Classification"
+        if (-not [string]::IsNullOrEmpty($AlsoContains)) {
+            Assert-Condition -Condition $result.Text.Contains($AlsoContains) `
+                -Message "Alignment output is missing '$AlsoContains': $($result.Text)"
+        }
+    }
+
+    function Assert-TypedCandidateFailure {
+        param(
+            [Parameter(Mandatory)] [string]$Contains,
+            [string[]]$Arguments = @()
+        )
+
+        $result = Invoke-BookOperation -Script $typed.Script `
+            -Action "BaselineCandidate" -Arguments $Arguments
+        Assert-OperationResult -Result $result -ExitCode 1 -Contains $Contains
+    }
+
+    # A phase checkpoint without any release.
+    $checkpointCandidate = Get-TypedCandidate -Name "typed-checkpoint"
+    Assert-Condition -Condition (
+        $checkpointCandidate.schema_version -eq 2 -and
+        $checkpointCandidate.published_reference.type -eq "PHASE_CHECKPOINT" -and
+        $checkpointCandidate.published_reference.id -eq
+            "PHASE_CHECKPOINT:geocedg-test-pass" -and
+        $checkpointCandidate.published_reference.tag_object -match
+            '^[0-9a-f]{40}$' -and
+        $checkpointCandidate.published_reference.tree -eq
+            (Get-TypedRevision -Revision "$($typed.Commit)^{tree}") -and
+        $null -eq $checkpointCandidate.release -and
+        $checkpointCandidate.main_delta.commits -eq 0) `
+        -Message "A phase checkpoint was not resolved as a typed reference."
+    Assert-Condition -Condition (@($checkpointCandidate.ineligible_tags |
+            Where-Object {
+                $_.tag -eq "geocedg-lightweight-pass" -and
+                $_.reason -eq "LIGHTWEIGHT_TAG"
+            }).Count -eq 1) `
+        -Message "A lightweight checkpoint tag was not reported as ineligible."
+
+    # An annotated version tag without a release record is not a release.
+    $releaseCommit = Add-TypedPackageCommit -Version "1.0.0"
+    $releaseTree = Get-TypedRevision -Revision "$releaseCommit^{tree}"
+    [void](Invoke-TestGit -Root $typedGeoRoot -Arguments @(
+            "tag", "-a", "v1.0.0", "-m", "Fixture 1.0.0",
+            "-m", "Commit: $releaseCommit", "-m", "Tree: $releaseTree"))
+    [void](Publish-TypedHead)
+    $unrecorded = Get-TypedCandidate -Name "typed-unrecorded"
+    Assert-Condition -Condition (
+        $unrecorded.published_reference.id -eq
+            "PHASE_CHECKPOINT:geocedg-test-pass" -and
+        $unrecorded.main_delta.commits -eq 1 -and
+        @($unrecorded.main_delta.changed_authority_categories) -contains
+            "packaging_export_workflow" -and
+        @($unrecorded.ineligible_tags | Where-Object {
+                $_.tag -eq "v1.0.0" -and
+                $_.reason -eq "VERSION_TAG_WITHOUT_RELEASE_RECORD"
+            }).Count -eq 1) `
+        -Message "A version tag without a release record became eligible."
+    Assert-TypedCandidateFailure -Arguments @("-ReferenceTag", "v1.0.0") `
+        -Contains "VERSION_TAG_WITHOUT_RELEASE_RECORD"
+    Assert-TypedCandidateFailure -Arguments @("-ReferenceTag", "v9.9.9") `
+        -Contains "REFERENCE_NOT_FOUND"
+    $aheadStatus = Invoke-BookOperation -Script $typed.Script -Action "Status"
+    Assert-OperationResult -Result $aheadStatus -ExitCode 0 `
+        -Contains "MAIN AHEAD OF PUBLISHED REFERENCE (1 commits"
+
+    # A public release: annotated version tag plus a coherent record.
+    $goodRecord = New-TypedReleaseRecord -Tag "v1.0.0" -Version "1.0.0"
+    [void](Publish-TypedReleaseRecord -Tag "v1.0.0" -Record $goodRecord `
+        -Message "record fixture release 1.0.0")
+    $releaseCandidate = Get-TypedCandidate -Name "typed-release-a"
+    [void](Get-TypedCandidate -Name "typed-release-b")
+    Assert-Condition -Condition (
+        (Get-FileHash -LiteralPath (Join-Path $typedGeoRoot `
+                "artifacts\book\typed-release-a.json")).Hash -eq
+        (Get-FileHash -LiteralPath (Join-Path $typedGeoRoot `
+                "artifacts\book\typed-release-b.json")).Hash) `
+        -Message "Release candidates are not byte-identical."
+    Assert-Condition -Condition (
+        $releaseCandidate.published_reference.type -eq "PUBLIC_RELEASE" -and
+        $releaseCandidate.published_reference.id -eq
+            "PUBLIC_RELEASE:v1.0.0" -and
+        $releaseCandidate.published_reference.commit -eq $releaseCommit -and
+        $releaseCandidate.published_reference.tree -eq $releaseTree -and
+        $releaseCandidate.published_reference.tag_object -eq
+            (Get-TypedRevision -Revision "refs/tags/v1.0.0") -and
+        $releaseCandidate.release.record.path -eq
+            "docs/releases/v1.0.0.release.json" -and
+        @($releaseCandidate.release.verification.not_executed_on_release_commit
+            ) -contains "FINAL" -and
+        @($releaseCandidate.release.limits).Count -eq 1 -and
+        $releaseCandidate.main_delta.commits -eq 1 -and
+        @($releaseCandidate.main_delta.changed_authority_categories
+            ).Count -eq 0 -and
+        $releaseCandidate.technical_authority_fingerprint -ne
+            $checkpointCandidate.technical_authority_fingerprint) `
+        -Message "A recorded public release was not resolved correctly."
+    Assert-Condition -Condition (
+        ($releaseCandidate | ConvertTo-Json -Depth 100) -notmatch
+            '"(pass|passed|approved)"\s*:') `
+        -Message "A release candidate carries a single pass/approval flag."
+    $explicitCheckpoint = Get-TypedCandidate -Name "typed-explicit" `
+        -Arguments @("-ReferenceTag", "geocedg-test-pass")
+    Assert-Condition -Condition (
+        $explicitCheckpoint.published_reference.id -eq
+            "PHASE_CHECKPOINT:geocedg-test-pass" -and
+        $explicitCheckpoint.technical_authority_fingerprint -eq
+            $checkpointCandidate.technical_authority_fingerprint) `
+        -Message "An explicit checkpoint reference was not honoured."
+
+    # A release that is not yet accepted leaves the legacy ledger stale.
+    $checkpointBaseline = [ordered]@{
+        status = "ACCEPTED"
+        geocedg_commit = $typed.Commit
+        published_tag = "geocedg-test-pass"
+        technical_authority_fingerprint =
+            $checkpointCandidate.technical_authority_fingerprint
+        fingerprint_schema_version = 2
+        accepted_in_book_phase = "BOOK-P1"
+        candidate_source = "reviewed-fixture-candidate.json"
+    }
+    Set-TypedLedger -SchemaVersion 1 -Current $checkpointBaseline `
+        -Message "legacy ledger with a checkpoint baseline"
+    Assert-TypedAlignment -Classification "EDITORIAL BASELINE STALE" `
+        -AlsoContains "packaging_export_workflow"
+    Assert-TypedAlignment -Classification "EDITORIAL BASELINE STALE" `
+        -AlsoContains "GeoCeDG published reference: PUBLIC_RELEASE:v1.0.0"
+
+    # Additive ledger migration keeps the same classification.
+    $migratedBaseline = [ordered]@{ reference_type = "PHASE_CHECKPOINT" }
+    foreach ($key in $checkpointBaseline.Keys) {
+        $migratedBaseline[$key] = $checkpointBaseline[$key]
+    }
+    Set-TypedLedger -SchemaVersion 2 -Current $migratedBaseline `
+        -Message "migrated ledger keeps the checkpoint baseline"
+    Assert-TypedAlignment -Classification "EDITORIAL BASELINE STALE"
+
+    # An accepted public release aligns even when main is ahead of it.
+    $releaseBaseline = [ordered]@{
+        status = "ACCEPTED"
+        reference_type = "PUBLIC_RELEASE"
+        geocedg_commit = $releaseCommit
+        geocedg_tree = $releaseTree
+        published_tag = "v1.0.0"
+        tag_object = $releaseCandidate.published_reference.tag_object
+        technical_authority_fingerprint =
+            $releaseCandidate.technical_authority_fingerprint
+        fingerprint_schema_version = 2
+        accepted_in_book_phase = "FIXTURE"
+        candidate_source = "reviewed-fixture-release-candidate.json"
+    }
+    Set-TypedLedger -SchemaVersion 2 -Current $releaseBaseline `
+        -Message "accept the fixture public release"
+    Assert-TypedAlignment -Classification "ALIGNED" `
+        -AlsoContains "MAIN AHEAD OF PUBLISHED REFERENCE (1 commits"
+
+    # Contradictory ledger identities fail closed.
+    $ledgerContradictions = [ordered]@{
+        "retouched tag object" = @{ tag_object = ("0" * 40) }
+        "wrong tree" = @{ geocedg_tree = ("0" * 40) }
+        "type contradicts tag grammar" = @{ reference_type = "PHASE_CHECKPOINT" }
+        "unknown reference type" = @{ reference_type = "SNAPSHOT" }
+    }
+    foreach ($case in $ledgerContradictions.Keys) {
+        $broken = [ordered]@{}
+        foreach ($key in $releaseBaseline.Keys) {
+            $broken[$key] = $releaseBaseline[$key]
+        }
+        foreach ($key in $ledgerContradictions[$case].Keys) {
+            $broken[$key] = $ledgerContradictions[$case][$key]
+        }
+        Set-TypedLedger -SchemaVersion 2 -Current $broken `
+            -Message "ledger contradiction: $case"
+        Assert-TypedAlignment -Classification "TECHNICAL CONTRADICTION"
+    }
+    $unpinned = [ordered]@{}
+    foreach ($key in $releaseBaseline.Keys) {
+        if ($key -ne "tag_object") {
+            $unpinned[$key] = $releaseBaseline[$key]
+        }
+    }
+    Set-TypedLedger -SchemaVersion 2 -Current $unpinned `
+        -Message "release baseline without a pinned tag object"
+    Assert-TypedAlignment -Classification "TECHNICAL CONTRADICTION"
+    Set-TypedLedger -SchemaVersion 3 -Current $releaseBaseline `
+        -Message "unknown ledger schema"
+    Assert-TypedAlignment -Classification "TECHNICAL CONTRADICTION"
+    $legacyRelease = [ordered]@{}
+    foreach ($key in $checkpointBaseline.Keys) {
+        $legacyRelease[$key] = $checkpointBaseline[$key]
+    }
+    $legacyRelease["geocedg_commit"] = $releaseCommit
+    $legacyRelease["published_tag"] = "v1.0.0"
+    Set-TypedLedger -SchemaVersion 1 -Current $legacyRelease `
+        -Message "legacy ledger cannot name a version tag"
+    Assert-TypedAlignment -Classification "TECHNICAL CONTRADICTION"
+
+    # Contradictory release records fail closed; none yields a candidate.
+    $recordContradictions = [ordered]@{
+        "commit" = { param($r) $r["commit"] = ("1" * 40) }
+        "tree" = { param($r) $r["tree"] = ("1" * 40) }
+        "tag object" = { param($r) $r["tag"]["object"] = ("1" * 40) }
+        "version" = { param($r) $r["version"] = "1.0.1" }
+        "kind" = { param($r) $r["kind"] = "OTHER" }
+        "single pass flag" = { param($r) $r["pass"] = $true }
+    }
+    foreach ($case in $recordContradictions.Keys) {
+        $brokenRecord = Copy-TypedRecord -Record $goodRecord
+        & $recordContradictions[$case] $brokenRecord
+        [void](Publish-TypedReleaseRecord -Tag "v1.0.0" -Record $brokenRecord `
+            -Message "record contradiction: $case")
+        Assert-TypedCandidateFailure -Contains "TECHNICAL CONTRADICTION"
+    }
+
+    # Insufficient publication provenance makes the release ineligible.
+    $uncontrasted = Copy-TypedRecord -Record $goodRecord
+    $uncontrasted["publication_contrast"]["status"] = "NOT_CONTRASTED"
+    [void](Publish-TypedReleaseRecord -Tag "v1.0.0" -Record $uncontrasted `
+        -Message "record without contrasted publication")
+    $insufficient = Get-TypedCandidate -Name "typed-insufficient"
+    Assert-Condition -Condition (
+        $insufficient.published_reference.id -eq
+            "PHASE_CHECKPOINT:geocedg-test-pass" -and
+        @($insufficient.ineligible_tags | Where-Object {
+                $_.tag -eq "v1.0.0" -and
+                $_.reason -eq "INSUFFICIENT_PUBLICATION_PROVENANCE"
+            }).Count -eq 1) `
+        -Message "A release without contrasted publication became eligible."
+    Set-TypedLedger -SchemaVersion 2 -Current $releaseBaseline `
+        -Message "accepted release whose record is insufficient"
+    Assert-TypedAlignment -Classification "REFERENCE MISSING"
+    [void](Publish-TypedReleaseRecord -Tag "v1.0.0" -Record $goodRecord `
+        -Message "restore the coherent release record")
+    Assert-TypedAlignment -Classification "ALIGNED"
+
+    # A checkpoint and a release on the same commit are one technical state.
+    [void](Invoke-TestGit -Root $typedGeoRoot -Arguments @(
+            "tag", "-a", "geocedg-release-pass", $releaseCommit,
+            "-m", "fixture checkpoint on the release commit"))
+    $coincident = Get-TypedCandidate -Name "typed-coincident"
+    Assert-Condition -Condition (
+        $coincident.published_reference.id -eq "PUBLIC_RELEASE:v1.0.0" -and
+        @($coincident.coincident_references).Count -eq 1 -and
+        $coincident.coincident_references[0].id -eq
+            "PHASE_CHECKPOINT:geocedg-release-pass") `
+        -Message "Coincident references were not resolved deterministically."
+
+    # A tag message that declares another commit is a contradiction.
+    $nextCommit = Add-TypedPackageCommit -Version "1.1.0"
+    [void](Invoke-TestGit -Root $typedGeoRoot -Arguments @(
+            "tag", "-a", "v1.1.0", "-m", "Fixture 1.1.0",
+            "-m", "Commit: $releaseCommit"))
+    [void](Publish-TypedHead)
+    Assert-TypedCandidateFailure -Contains "TECHNICAL CONTRADICTION"
+    [void](Invoke-TestGit -Root $typedGeoRoot `
+        -Arguments @("tag", "-d", "v1.1.0"))
+
+    # The package profile at the tag must declare the tagged version.
+    [void](Invoke-TestGit -Root $typedGeoRoot -Arguments @(
+            "tag", "-a", "v1.2.0", $nextCommit, "-m", "Mislabelled 1.2.0"))
+    [void](Publish-TypedReleaseRecord -Tag "v1.2.0" -Message "mislabelled record" `
+        -Record (New-TypedReleaseRecord -Tag "v1.2.0" -Version "1.2.0"))
+    Assert-TypedCandidateFailure -Contains "TECHNICAL CONTRADICTION"
+    [void](Invoke-TestGit -Root $typedGeoRoot `
+        -Arguments @("tag", "-d", "v1.2.0"))
+
+    # The nearest eligible release is selected by default.
+    [void](Invoke-TestGit -Root $typedGeoRoot -Arguments @(
+            "tag", "-a", "v1.1.0", $nextCommit, "-m", "Fixture 1.1.0"))
+    [void](Publish-TypedReleaseRecord -Tag "v1.1.0" -Message "record 1.1.0" `
+        -Record (New-TypedReleaseRecord -Tag "v1.1.0" -Version "1.1.0"))
+    $newest = Get-TypedCandidate -Name "typed-newest"
+    Assert-Condition -Condition (
+        $newest.published_reference.id -eq "PUBLIC_RELEASE:v1.1.0" -and
+        @($newest.reachable_references.id) -contains "PUBLIC_RELEASE:v1.0.0" -and
+        @($newest.reachable_references.id) -contains
+            "PHASE_CHECKPOINT:geocedg-test-pass") `
+        -Message "The nearest eligible release was not selected by default."
+    Assert-TypedAlignment -Classification "EDITORIAL BASELINE STALE"
+
+    # A nearer release with a lower version requires an explicit choice.
+    [void](Add-TypedPackageCommit -Version "0.9.0")
+    [void](Invoke-TestGit -Root $typedGeoRoot -Arguments @(
+            "tag", "-a", "v0.9.0", "-m", "Fixture 0.9.0"))
+    [void](Publish-TypedReleaseRecord -Tag "v0.9.0" -Message "record 0.9.0" `
+        -Record (New-TypedReleaseRecord -Tag "v0.9.0" -Version "0.9.0"))
+    Assert-TypedCandidateFailure -Contains "VERSION_ORDER_ANOMALY"
+    $explicitRelease = Get-TypedCandidate -Name "typed-explicit-release" `
+        -Arguments @("-ReferenceTag", "v1.1.0")
+    Assert-Condition -Condition (
+        $explicitRelease.published_reference.id -eq "PUBLIC_RELEASE:v1.1.0") `
+        -Message "An explicit release reference was not honoured."
+    [void](Invoke-TestGit -Root $typedGeoRoot `
+        -Arguments @("tag", "-d", "v0.9.0"))
+
+    # A lightweight version tag is never a release, even with a record.
+    $lightCommit = Add-TypedPackageCommit -Version "2.0.0"
+    [void](Invoke-TestGit -Root $typedGeoRoot -Arguments @("tag", "v2.0.0"))
+    [void](Publish-TypedReleaseRecord -Tag "v2.0.0" -Message "record 2.0.0" `
+        -Record (New-TypedReleaseRecord -Tag "v2.0.0" -Version "2.0.0"))
+    $lightweight = Get-TypedCandidate -Name "typed-lightweight"
+    Assert-Condition -Condition (
+        $lightweight.published_reference.id -eq "PUBLIC_RELEASE:v1.1.0" -and
+        $lightCommit -ne $lightweight.published_reference.commit -and
+        @($lightweight.ineligible_tags | Where-Object {
+                $_.tag -eq "v2.0.0" -and $_.reason -eq "LIGHTWEIGHT_TAG"
+            }).Count -eq 1) `
+        -Message "A lightweight version tag became an eligible release."
+    Assert-TypedCandidateFailure -Arguments @("-ReferenceTag", "v2.0.0") `
+        -Contains "LIGHTWEIGHT_TAG"
+
+    Remove-Item -LiteralPath $typedLink -Force
 
     Write-Host "BOOK-P0-post book operational fixture tests passed."
 } finally {
