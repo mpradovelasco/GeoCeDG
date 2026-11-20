@@ -1106,4 +1106,157 @@ Invoke-Case 'packaging repository safety detects worktree and generated-state ch
     }
 }
 
+Invoke-Case 'repository integrity inventory is Git-derived and independent of generated outputs' {
+    # Operational simplification: artifacts/ and Git-ignored Gradle output
+    # directories are excluded from the global integrity hash and are never
+    # read; tracked, untracked and other ignored entries stay protected.
+    Import-Module (Join-Path $PSScriptRoot '../verification-packaging-state.psm1') -Force
+    $tempBase = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\', '/')
+    $root = Join-Path $tempBase ('geocedg-integrity-inventory-' + [guid]::NewGuid().ToString('N'))
+    $repo = Join-Path $root 'repo'
+    $marker = Join-Path $root '.fixture-owner'
+    [void][IO.Directory]::CreateDirectory($repo)
+    Write-FixtureText $marker 'verification-contract-boundary'
+    $roots = [string[]]@('.gradle', 'build', '.kotlin')
+    try {
+        [void](Invoke-Git $repo @('init', '-q'))
+        [void](Invoke-Git $repo @('config', 'user.name', 'Fixture'))
+        [void](Invoke-Git $repo @('config', 'user.email', 'fixture@example.invalid'))
+        Write-FixtureText (Join-Path $repo '.gitignore') "build/`n.gradle/`n.kotlin/`nartifacts/`nforeign/`nlinked`n"
+        Write-FixtureText (Join-Path $repo 'tracked.txt') "clean`n"
+        Write-FixtureText (Join-Path $repo 'artifacts/manifest.json') "{}`n"
+        [void](Invoke-Git $repo @('add', 'tracked.txt', '.gitignore'))
+        [void](Invoke-Git $repo @('add', '-f', 'artifacts/manifest.json'))
+        [void](Invoke-Git $repo @('commit', '-q', '-m', 'fixture'))
+        Write-FixtureText (Join-Path $repo 'foreign/ignored.txt') "ignored but not generated`n"
+        Write-FixtureText (Join-Path $repo 'module/build/classes/A.class') 'gradle output'
+        Write-FixtureText (Join-Path $repo 'module/.gradle/cache.bin') 'gradle cache'
+        Write-FixtureText (Join-Path $repo 'artifacts/run-1/evidence-0.json') 'generated'
+
+        $small = Get-VerificationPackagingStateSnapshot -RepositoryRoot $repo -DeclaredWriteRoots $roots
+        Assert-Case ([string]$small.inventory_scheme -ceq 'GIT_INVENTORY_V1') 'Inventory scheme is not explicit.'
+        Assert-Case ($small.files_hashed -eq 4 -and $small.protected_file_count -eq 4) `
+            ("Inventory did not hash exactly tracked plus non-generated ignored files: hashed={0}; protected={1}" -f
+                $small.files_hashed, $small.protected_file_count)
+        Assert-Case (@($small.excluded_generated_entries) -ccontains 'artifacts/run-1' -and
+            @($small.excluded_generated_entries) -ccontains 'module/build' -and
+            @($small.excluded_generated_entries) -ccontains 'module/.gradle') `
+            ('Declared generated outputs were not excluded by name: ' + (@($small.excluded_generated_entries) -join ','))
+
+        # Grow the generated trees by two orders of magnitude and mutate them:
+        # neither the cost counters nor the protected hash may change.
+        $bulk = Join-Path $repo 'artifacts/run-2'
+        [void][IO.Directory]::CreateDirectory($bulk)
+        foreach ($index in 1..400) {
+            [IO.File]::WriteAllBytes((Join-Path $bulk "blob-$index.bin"), [byte[]]::new(4096))
+        }
+        Write-FixtureText (Join-Path $repo 'artifacts/run-1/evidence-0.json') 'regenerated'
+        Write-FixtureText (Join-Path $repo 'module/build/classes/B.class') 'more gradle output'
+        $large = Get-VerificationPackagingStateSnapshot -RepositoryRoot $repo -DeclaredWriteRoots $roots
+        Assert-Case ($large.files_hashed -eq $small.files_hashed -and
+            $large.bytes_hashed -eq $small.bytes_hashed -and
+            $large.protected_state_sha256 -ceq $small.protected_state_sha256) `
+            ("Generated-output growth affected the global inventory: hashed {0}->{1}; bytes {2}->{3}" -f
+                $small.files_hashed, $large.files_hashed, $small.bytes_hashed, $large.bytes_hashed)
+
+        # Negative controls: every protected class is still detected.
+        $mutations = @(
+            @{ name = 'tracked source'; apply = { Write-FixtureText (Join-Path $repo 'tracked.txt') "changed`n" }
+               undo = { Write-FixtureText (Join-Path $repo 'tracked.txt') "clean`n" } },
+            @{ name = 'tracked file under artifacts'; apply = { Write-FixtureText (Join-Path $repo 'artifacts/manifest.json') "{`"x`":1}`n" }
+               undo = { Write-FixtureText (Join-Path $repo 'artifacts/manifest.json') "{}`n" } },
+            @{ name = 'untracked non-ignored file'; apply = { Write-FixtureText (Join-Path $repo 'new-input.txt') 'input' }
+               undo = { Remove-Item -LiteralPath (Join-Path $repo 'new-input.txt') -Force } },
+            @{ name = 'ignored non-generated file'; apply = { Write-FixtureText (Join-Path $repo 'foreign/ignored.txt') 'mutated' }
+               undo = { Write-FixtureText (Join-Path $repo 'foreign/ignored.txt') "ignored but not generated`n" } },
+            @{ name = 'deleted tracked file'; apply = { Remove-Item -LiteralPath (Join-Path $repo 'tracked.txt') -Force }
+               undo = { Write-FixtureText (Join-Path $repo 'tracked.txt') "clean`n" } }
+        )
+        foreach ($mutation in $mutations) {
+            & $mutation.apply
+            $mutated = Get-VerificationPackagingStateSnapshot -RepositoryRoot $repo -DeclaredWriteRoots $roots
+            Assert-Case ($mutated.protected_state_sha256 -cne $small.protected_state_sha256) `
+                "Protected mutation was not detected: $($mutation.name)"
+            & $mutation.undo
+        }
+        $restored = Get-VerificationPackagingStateSnapshot -RepositoryRoot $repo -DeclaredWriteRoots $roots
+        Assert-Case ($restored.protected_state_sha256 -ceq $small.protected_state_sha256) `
+            'Restored fixture did not reproduce the protected inventory.'
+
+        # A link is recorded by its target and never followed, so content
+        # outside the repository is not read and a retargeted link is detected.
+        $outsideA = Join-Path $root 'outside-a'
+        $outsideB = Join-Path $root 'outside-b'
+        Write-FixtureText (Join-Path $outsideA 'secret.txt') 'outside a'
+        Write-FixtureText (Join-Path $outsideB 'secret.txt') 'outside b'
+        $linkType = if ($IsWindows) { 'Junction' } else { 'SymbolicLink' }
+        $link = Join-Path $repo 'linked'
+        [void](New-Item -ItemType $linkType -Path $link -Target $outsideA -ErrorAction Stop)
+        $linkedA = Get-VerificationPackagingStateSnapshot -RepositoryRoot $repo -DeclaredWriteRoots $roots
+        Write-FixtureText (Join-Path $outsideA 'secret.txt') 'outside a changed'
+        $linkedAChanged = Get-VerificationPackagingStateSnapshot -RepositoryRoot $repo -DeclaredWriteRoots $roots
+        Remove-Item -LiteralPath $link -Force
+        [void](New-Item -ItemType $linkType -Path $link -Target $outsideB -ErrorAction Stop)
+        $linkedB = Get-VerificationPackagingStateSnapshot -RepositoryRoot $repo -DeclaredWriteRoots $roots
+        Remove-Item -LiteralPath $link -Force
+        Assert-Case ($linkedA.links_recorded -eq 1 -and $linkedA.files_hashed -eq $small.files_hashed) `
+            'A repository link was followed instead of being recorded.'
+        Assert-Case ($linkedAChanged.protected_state_sha256 -ceq $linkedA.protected_state_sha256) `
+            'Content behind a link was read as repository state.'
+        Assert-Case ($linkedB.protected_state_sha256 -cne $linkedA.protected_state_sha256) `
+            'A retargeted repository link was not detected.'
+
+        # The packaging safety leaf keeps detecting a protected mutation and
+        # tolerates generated-output growth through the same inventory.
+        $checker = Join-Path $repositoryRoot 'tools/agent/checks/repository-safety.ps1'
+        $baseline = Join-Path $root 'baseline.json'
+        $baselineRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $baseline, '-DeclaredWriteRoots', ($roots -join ','),
+            '-ContractMode', 'PACKAGING_BASELINE')
+        Write-FixtureText (Join-Path $bulk 'late-artifact.bin') 'late'
+        $afterGrowth = Join-Path $root 'after-growth.json'
+        $growthRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $afterGrowth, '-BaselinePath', $baseline,
+            '-DeclaredWriteRoots', ($roots -join ','), '-ContractMode', 'PACKAGING')
+        Write-FixtureText (Join-Path $repo 'tracked.txt') "unauthorized`n"
+        $afterMutation = Join-Path $root 'after-mutation.json'
+        $mutationRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $afterMutation, '-BaselinePath', $baseline,
+            '-DeclaredWriteRoots', ($roots -join ','), '-ContractMode', 'PACKAGING')
+        Write-FixtureText (Join-Path $repo 'tracked.txt') "clean`n"
+        Assert-Case ($baselineRun.exit_code -eq 0 -and
+            [string](Read-VerificationJson $baseline).inventory_scheme -ceq 'GIT_INVENTORY_V1') `
+            "Packaging baseline did not record the Git inventory scheme: $($baselineRun.stderr)"
+        Assert-Case ($growthRun.exit_code -eq 0 -and
+            (Read-VerificationJson $afterGrowth).outcome -ceq 'CONTRACT_SATISFIED') `
+            "Generated-output growth was reported as a repository mutation: $($growthRun.stderr)"
+        Assert-Case ($mutationRun.exit_code -eq 2 -and
+            @((Read-VerificationJson $afterMutation).subcontracts | Where-Object {
+                $_.contract_id -ceq 'packaging.generated-state-preserved' -and $_.status -ceq 'VIOLATED'
+            }).Count -eq 1) 'An unauthorized tracked-source mutation escaped packaging safety.'
+
+        $legacyBaseline = Read-VerificationJson $baseline
+        $legacyBaseline.inventory_scheme = 'RECURSIVE_WALK_V0'
+        $legacyPath = Join-Path $root 'legacy-baseline.json'
+        Write-FixtureText $legacyPath (ConvertTo-Json $legacyBaseline -Depth 20)
+        $legacyResult = Join-Path $root 'legacy-result.json'
+        $legacyRun = Invoke-PowerShellCapture $checker @('-RepositoryRoot', $repo,
+            '-SafetyResultPath', $legacyResult, '-BaselinePath', $legacyPath,
+            '-DeclaredWriteRoots', ($roots -join ','), '-ContractMode', 'PACKAGING')
+        Assert-Case ($legacyRun.exit_code -eq 3 -and
+            (Read-VerificationJson $legacyResult).outcome -ceq 'EVIDENCE_UNTRUSTED') `
+            'A baseline from another inventory scheme was compared instead of rejected.'
+    } finally {
+        $resolved = [IO.Path]::GetFullPath($root)
+        $prefix = $tempBase + [IO.Path]::DirectorySeparatorChar
+        $leftover = Join-Path $repo 'linked'
+        if (Test-Path -LiteralPath $leftover) { Remove-Item -LiteralPath $leftover -Force }
+        if ($resolved.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) -and
+                (Test-Path -LiteralPath $marker) -and
+                [IO.File]::ReadAllText($marker) -ceq 'verification-contract-boundary') {
+            Remove-Item -LiteralPath $resolved -Recurse -Force
+        } else { throw "Fixture cleanup refused unexpected path: $resolved" }
+    }
+}
+
 Write-Host "verification-contract-boundary.Tests: $script:Cases cases, $script:Assertions assertions, 0 failures"

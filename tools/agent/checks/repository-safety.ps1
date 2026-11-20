@@ -118,11 +118,17 @@ function Get-PackagingRepositorySnapshot {
         head = $head.stdout.TrimEnd("`r", "`n")
         tree = $tree.stdout.TrimEnd("`r", "`n")
         status = $status.stdout.Replace("`r`n", "`n").TrimEnd("`n")
+        inventory_scheme = $state.inventory_scheme
         declared_write_roots = $state.declared_write_roots
         declared_state_sha256 = $state.declared_state_sha256
         declared_file_count = $state.declared_file_count
         protected_state_sha256 = $state.protected_state_sha256
         protected_file_count = $state.protected_file_count
+        excluded_generated_entry_count = $state.excluded_generated_entry_count
+        excluded_generated_entries = $state.excluded_generated_entries
+        files_hashed = $state.files_hashed
+        bytes_hashed = $state.bytes_hashed
+        links_recorded = $state.links_recorded
     }
 }
 
@@ -141,6 +147,7 @@ if ($ContractMode -ceq 'PACKAGING_BASELINE') {
             head = $null
             tree = $null
             status = $null
+            inventory_scheme = $null
             declared_write_roots = $null
             declared_state_sha256 = $null
             declared_file_count = $null
@@ -222,6 +229,9 @@ try {
                     throw 'Packaging baseline lacks protected repository-state evidence.'
                 }
                 $current = Get-PackagingRepositorySnapshot -WriteRoots $roots
+                if ([string]$baseline.inventory_scheme -cne [string]$current.inventory_scheme) {
+                    throw 'Packaging baseline uses a different repository inventory scheme.'
+                }
                 $identityEqual = [string]$baseline.repository_root -ceq [string]$current.repository_root -and
                     [string]$baseline.git_toplevel -ceq [string]$current.git_toplevel -and
                     [string]$baseline.head -ceq [string]$current.head -and

@@ -326,6 +326,12 @@ for the full rule.
 
 ### Prepare a FINAL candidate
 
+Ordinary verification is `INTEGRATION` (CORE) plus the focused tests of the
+change; a `FINAL` campaign requires an express author authorization naming the
+operation and its scope
+([operational simplification](../../geocedg/specs/operations/verification-levels.md#operational-simplification),
+candidate for author review).
+
 Before freezing a candidate for a future `FINAL` campaign, review the
 verification catalogs and derived inventories and bring them up to date. Run
 `INFRA_UNIT` and `STATIC` successfully. Where applicable, also complete

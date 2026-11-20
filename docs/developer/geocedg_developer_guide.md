@@ -142,6 +142,15 @@ Legacy `COMPOSED` maps to `INTEGRATION`; `FULL` and `FullTests` map to
 wrappers. Closeout adapters inspect an immutable candidate and its receipt; they
 do not run verification, modify Git, publish, or record author approval.
 
+Ordinary verification is `INTEGRATION` (the bounded CORE selection) plus the
+focused `DEV` or `PHASE` tests of the change. `FINAL` is the exceptional
+exhaustive campaign and runs only with an express author authorization for a
+named operation and scope. A documentary-only correction after a technical run
+is checked with `tools/agent/documentary-descendant.ps1 -TechnicalCommit <T>
+-DocumentCommit <D>` and does not repeat verification. See
+[Operational simplification](../../geocedg/specs/operations/verification-levels.md#operational-simplification)
+(candidate for author review).
+
 <details>
 <summary>Archived pre-recovery verification and closeout instructions</summary>
 

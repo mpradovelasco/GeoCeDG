@@ -38,7 +38,6 @@ $resultSchemaPath = Join-Path $repositoryRoot 'geocedg/specs/operations/verifica
 Import-Module (Join-Path $PSScriptRoot 'verification-io.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-registry.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-supervisor.psm1') -Force
-Import-Module (Join-Path $PSScriptRoot 'verification-packaging-state.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-environment.psm1') -Force
 Import-Module (Join-Path $PSScriptRoot 'verification-receipt.psm1') -Force
 . (Join-Path $PSScriptRoot 'repository-input-identity.ps1')
@@ -69,37 +68,6 @@ function Get-GitObject {
         throw "Unable to resolve Git identity: $Expression"
     }
     return $value
-}
-
-function New-PackagingRepositoryBaseline {
-    $git = Get-Command git -CommandType Application -ErrorAction Stop |
-        Select-Object -First 1
-    $status = (& $git.Path -C $repositoryRoot status --porcelain=v1 --untracked-files=all) -join "`n"
-    if ($LASTEXITCODE -ne 0) { throw 'Unable to capture packaging repository status.' }
-    $declaredWriteRoots = [string[]]@('.gradle', 'build', '.kotlin')
-    $top = (& $git.Path -C $repositoryRoot rev-parse --show-toplevel).Trim()
-    if ($LASTEXITCODE -ne 0) { throw 'Unable to capture packaging repository root.' }
-    $state = Get-VerificationPackagingStateSnapshot -RepositoryRoot $repositoryRoot `
-        -DeclaredWriteRoots $declaredWriteRoots
-    $path = Join-Path ([IO.Path]::GetTempPath()) (
-        'geocedg-packaging-baseline-' + [guid]::NewGuid().ToString('N') + '.json')
-    [void](Write-VerificationAtomicJson -Path $path -Value ([ordered]@{
-        schema_version = 1
-        evidence_kind = 'PACKAGING_REPOSITORY_BASELINE'
-        evidence_state = 'PRESENT'
-        cause = $null
-        repository_root = [IO.Path]::GetFullPath($repositoryRoot)
-        git_toplevel = $top
-        head = Get-GitObject 'HEAD'
-        tree = Get-GitObject 'HEAD^{tree}'
-        status = $status
-        declared_write_roots = $state.declared_write_roots
-        declared_state_sha256 = $state.declared_state_sha256
-        declared_file_count = $state.declared_file_count
-        protected_state_sha256 = $state.protected_state_sha256
-        protected_file_count = $state.protected_file_count
-    }))
-    return $path
 }
 
 try {
@@ -150,18 +118,16 @@ try {
         RegistrySchemaPath = $registrySchemaPath
         ResultSchemaPath = $resultSchemaPath
     }
-    $packagingBaseline = $null
+    # The packaging repository baseline is produced once, by the registered
+    # packaging.repository-baseline.producer node; the runner computes no
+    # second, unconsumed snapshot.
     $packagingEnvironment = @{}
     if ($requestedProfile -ceq 'PACKAGING') {
-        $packagingBaseline = New-PackagingRepositoryBaseline
-        foreach ($name in @('GEOCEDG_PACKAGING_BASELINE_PATH',
-                'GEOCEDG_PACKAGING_CHECK_TOOLCHAIN',
+        foreach ($name in @('GEOCEDG_PACKAGING_CHECK_TOOLCHAIN',
                 'GEOCEDG_PACKAGING_REQUIRE_ARTIFACTS',
                 'GEOCEDG_PACKAGING_ARTIFACT_ROOT')) {
             $packagingEnvironment[$name] = [Environment]::GetEnvironmentVariable($name)
         }
-        [Environment]::SetEnvironmentVariable('GEOCEDG_PACKAGING_BASELINE_PATH',
-            $packagingBaseline)
         [Environment]::SetEnvironmentVariable('GEOCEDG_PACKAGING_CHECK_TOOLCHAIN',
             $(if ($CheckToolchain -or $VerifyPackagingArtifacts) { 'true' } else { 'false' }))
         [Environment]::SetEnvironmentVariable('GEOCEDG_PACKAGING_REQUIRE_ARTIFACTS',
@@ -175,10 +141,6 @@ try {
         if ($requestedProfile -ceq 'PACKAGING') {
             foreach ($name in $packagingEnvironment.Keys) {
                 [Environment]::SetEnvironmentVariable($name, $packagingEnvironment[$name])
-            }
-            if (-not [string]::IsNullOrWhiteSpace($packagingBaseline) -and
-                    (Test-Path -LiteralPath $packagingBaseline -PathType Leaf)) {
-                Remove-Item -LiteralPath $packagingBaseline -Force
             }
         }
     }

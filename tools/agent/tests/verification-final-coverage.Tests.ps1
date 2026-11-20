@@ -42,7 +42,7 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
     Assert-Case $inventoryRejected 'JUnit inventory accepted a missing selection fingerprint.'
     Assert-Case (@($inventory.modules).Count -eq 2) 'Module discovery count changed.'
     Assert-Case (@($inventory.modules|Where-Object{$_.PSObject.Properties.Name -ccontains 'identities'}).Count -eq 0) 'Per-method inventory was tracked.'
-    Assert-Case (@($inventory.selections).Count -eq 94) 'Selection inventory count changed.'
+    Assert-Case (@($inventory.selections).Count -eq 96) 'Selection inventory count changed.'
     foreach($selection in $inventory.selections){
         Assert-Case ($selection.expected_identity_count -gt 0) "Selection has zero inventory: $($selection.selection_id)"
         Assert-Case ([string]$selection.expected_identities_sha256 -cmatch '^[0-9a-f]{64}$') "Selection fingerprint is invalid: $($selection.selection_id)"
@@ -322,6 +322,38 @@ Invoke-Case 'INTEGRATION and FINAL are complete unions of pure nodes' {
         Assert-Case (@($plan.nodes|Where-Object{$_.node_kind -ceq 'PROCESS_PRODUCER' -and (Has-Field $_ 'contract_class')}).Count -eq 0) "$profile producer has a verdict class."
         $legacy=@($plan.nodes|Where-Object{(@($_.argv)-join ' ') -cmatch '[/\\]verify-[^/\\ ]+\.ps1'})
         Assert-Case ($legacy.Count -eq 0) "$profile contains a legacy mixed wrapper."
+    }
+}
+Invoke-Case 'INTEGRATION is the ordinary CORE level and FINAL keeps the exhaustive selections' {
+    # Operational simplification: ordinary verification runs the bounded CORE
+    # selections; the unfiltered suites, the isolated G9U1 cases and the
+    # Revision3 diagnostic belong to the exceptional FINAL campaign only, and
+    # FINAL does not execute CORE a second time.
+    $integration=Resolve-VerificationRegistryPlan $registry INTEGRATION -Platform WINDOWS
+    $final=Resolve-VerificationRegistryPlan $registry FINAL -Platform WINDOWS
+    $integrationJUnit=[string[]]@($integration.nodes|Where-Object{$_.output_adapter -cin @('PROJECTION_JUNIT_SELECTION_V1','PROJECTION_JUNIT_DIAGNOSTIC_V1')}|ForEach-Object check_id|Sort-Object -CaseSensitive)
+    Assert-Case (($integrationJUnit -join ',') -ceq 'junit.desktop.core.semantic,junit.shared.core.semantic') `
+        ('INTEGRATION JUnit evidence is not exactly CORE: '+($integrationJUnit -join ','))
+    foreach($id in @('junit.shared.final.producer','junit.desktop.final.producer','junit.desktop.g9u1-isolated.producer','junit.desktop.revision3-diagnostic.producer')){
+        Assert-Case (@($integration.nodes|Where-Object check_id -CEQ $id).Count -eq 0) "INTEGRATION still drags an exhaustive selection: $id"
+        Assert-Case (@($final.nodes|Where-Object check_id -CEQ $id).Count -eq 1) "FINAL lost an exhaustive selection: $id"
+    }
+    foreach($id in @('junit.shared.core.producer','junit.desktop.core.producer')){
+        Assert-Case (@($final.nodes|Where-Object check_id -CEQ $id).Count -eq 0) "FINAL executes CORE a second time: $id"
+    }
+    foreach($module in @('shared','desktop')){
+        $core=@($inventory.selections|Where-Object selection_id -CEQ "core.$module")
+        $broad=@($inventory.selections|Where-Object selection_id -CEQ "final.$module")
+        Assert-Case ($core.Count -eq 1 -and $broad.Count -eq 1) "CORE or FINAL inventory is missing for $module."
+        Assert-Case ($core[0].gradle_task -ceq $broad[0].gradle_task -and @($broad[0].test_filters).Count -eq 0) `
+            "FINAL does not run the unfiltered task that subsumes CORE for $module."
+        Assert-Case (@($core[0].test_filters).Count -gt 0 -and @($core[0].excluded_test_filters).Count -eq 0) "CORE $module is not an explicit class selection."
+        foreach($filter in @($core[0].test_filters)){
+            Assert-Case ([string]$filter -cnotmatch '[*?]') "CORE filter is not an explicit class: $filter"
+            Assert-Case (@($broad[0].excluded_test_filters|Where-Object{([string]$_).StartsWith([string]$filter,[StringComparison]::Ordinal)}).Count -eq 0) `
+                "CORE filter is not subsumed by FINAL: $filter"
+        }
+        Assert-Case ($core[0].expected_identity_count -lt $broad[0].expected_identity_count) "CORE $module is not smaller than FINAL."
     }
 }
 Invoke-Case 'FINAL JUnit compilation and Python evidence boundaries are explicit' {

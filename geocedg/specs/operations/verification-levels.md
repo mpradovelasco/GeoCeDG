@@ -70,6 +70,168 @@ exact technical and reconciliation commits.
 The recovery protocol is temporary. It is removed when the complete registry,
 profiles, adapters and one-run receipt flow are author-accepted and published.
 
+## Operational simplification
+
+- Status: `OPERATIONAL SIMPLIFICATION — CANDIDATE FOR AUTHOR REVIEW`;
+  `selfApproved=false`. This section takes effect prospectively, for
+  operations started after the author approves and publishes the exact commit
+  that introduces it. It approves no omitted campaign retrospectively and
+  reinterprets no existing result, receipt or closeout.
+- Scope: verification policy, registry composition and repository-integrity
+  inventory. No product, kernel, serialization, numerical reference or
+  tolerance changes.
+
+### Three levels of use
+
+| Level | Profiles | Use and claim |
+|---|---|---|
+| FOCUSED | `DEV`, `PHASE` | Tests of the change and its directly related regression perimeter. The claim is limited to that perimeter. |
+| CORE | `INTEGRATION` | Ordinary verification: compilation, Python reference checks, packaging repository/product contracts, workstation safety, static scientific inputs, Checkstyle diagnostics and the bounded `core.shared`/`core.desktop` selections. The claim is reduced coverage of the product guarantees in the matrix below, never exhaustive coverage. |
+| EXHAUSTIVE | `FINAL` | Unfiltered shared and Desktop suites, the isolated G9U1 selection, the Revision3 diagnostic and every `INFRA_UNIT` leaf. Exceptional only. |
+
+Ordinary verification of a change is `CORE + FOCUSED`: the CORE profile plus
+the tests that belong to the change (its own and the directly affected ones,
+through `DEV` or `PHASE`). A focused or CORE failure blocks acceptance of the
+change. `FINAL` does not execute the CORE selections again, because its
+unfiltered tasks subsume them; nor does `INTEGRATION` run the unfiltered
+suites. A reduced result is reported as reduced and is never extrapolated to
+the whole product.
+
+### Exhaustive campaigns and the prospective FINAL obligation
+
+This subsection explicitly modifies, prospectively, every rule of this
+document that makes `FULL`/`FINAL` mandatory by category: section 2 (phase
+closeout, release, major integration, build/toolchain, verifier/bootstrap and
+shared-kernel changes), section 6 (clean-output FULL for infrastructure
+changes), section 8 (verification-infrastructure changes), the last
+paragraphs of section 11.2, and sections 12.1, 12.7 and 12.8 (`GLOBAL_IMPACT`
+and `RELEASE_OR_MILESTONE`). Those rules remain the historical contract for
+the operations that ran under them.
+
+1. Ordinary verification is satisfied by `CORE + FOCUSED`.
+2. An exhaustive `FINAL` campaign requires an express author authorization
+   naming the operation and its scope. No agent starts one by inference,
+   prudence or category.
+3. A change whose risk exceeds what `CORE + FOCUSED` can verify is identified
+   as such, with the concrete uncovered obligation, and the agent requests a
+   decision (`VERIFICATION_ESCALATION_REQUEST`). It does not launch thousands
+   of executions automatically.
+4. Results already obtained on an exact commit are not repeated for an
+   operation that is exclusively documentary (see below).
+5. Reduced coverage is always declared reduced; it is never labelled
+   exhaustive, and a `FINAL` receipt is produced only by a real `FINAL`.
+
+When the author closes an operation on `CORE + FOCUSED` evidence, the closeout
+cites the exact commit and its verification results through the existing
+record-based closeout route. No new receipt type is introduced.
+
+### Repository integrity scope
+
+The repository-preservation contract (`packaging.repository-baseline.producer`
+and `packaging.repository-safety`) uses the Git inventory scheme
+`GIT_INVENTORY_V1` of `tools/agent/verification-packaging-state.psm1`:
+
+- protected: commit, tree, index/worktree status, the raw bytes of every
+  tracked path, every untracked non-ignored path, and every Git-ignored entry
+  that is not a declared generated output; links are recorded by target and
+  never followed; `.git` is never traversed;
+- excluded and never read: the top-level `artifacts` tree and Git-ignored
+  directories named `build`, `.gradle` or `.kotlin`; a tracked file inside them
+  stays protected through the tracked inventory.
+
+This exclusion concerns only the global integrity hash. Each operation keeps
+verifying the generated files it produces or consumes through its own
+contract: for packaging, `packaging.product` checks the selected ZIP, MSI and
+EXE, the SBOM, the build manifest, the installed distribution record, the
+checksums, versions, the NC profile, commit provenance and the versioned
+inputs that determine the package. A generated file used as evidence carries
+its own hash and provenance. The runner computes the packaging baseline once,
+in its registered producer.
+
+### Documentary corrections
+
+A purely documentary discrepancy is reported, corrected documentarily, and
+does not change the technical result or trigger a rerun of kernel, Desktop,
+scientific or packaging verification. The procedure is:
+
+1. verify the exact technical commit `T` at the applicable level;
+2. record the documentary discrepancy as a diagnostic;
+3. keep the technical result of `T`;
+4. correct the document in a descendant commit `D` that changes no executable
+   or normative input;
+5. check only the correction and the Git delta with
+   `tools/agent/documentary-descendant.ps1 -TechnicalCommit <T> -DocumentCommit <D>`;
+6. close by citing `T` (technical result) and `D` (documentary correction),
+   without attributing `T`'s result to `D` as a new execution.
+
+The assessment classifies each changed path by evidence, not by extension:
+`EXECUTABLE` (product, build, verifier, validation, model, packaging or prompt
+input, or a path cited by product/test sources, canonical checks, modules,
+registry-referenced verifier files, release helpers or operations catalogs),
+`NORMATIVE` (approved specifications, ADRs and agent authorities) or
+`DOCUMENTARY`. Only an all-`DOCUMENTARY` delta keeps `T`'s result
+(`DOCUMENTARY_ONLY`, exit 0); any other class requires a decision
+(`REQUIRES_DECISION`, exit 5). The assessment writes no receipt and changes no
+Git state. An unresolved diagnostic stays visible in the history without
+becoming a technical failure.
+
+### Records and roadmap
+
+One canonical authority per datum: the verification result (and, for `FINAL`,
+its receipt) of the exact commit is the technical result; the author's
+explicit decision, recorded once in the closeout record, is the approval; the
+roadmap status row is the phase status; commit SHAs link them. Closeout and
+publication records cite those authorities instead of copying them, and a
+documentary correction needs no additional record beyond its assessment.
+Verification never promotes, approves or publishes; `selfApproved=false`
+holds until an express author decision.
+
+### Ordinary CORE coverage matrix
+
+`core.shared` and `core.desktop` in the JUnit inventory are the executable
+definition; this matrix is their rationale. Each row names the guarantee, the
+selected class, the principal risk and the complementary evidence that
+remains outside CORE.
+
+| Guarantee | Selected test | Risk covered | Complementary evidence |
+|---|---|---|---|
+| Dynamic construction, redefine and DAG propagation | `RedefineTest` (upstream) | Redefinition, reload and update order break the construction graph | `FINAL` upstream kernel suites |
+| Locus V2 dependency and invalidation in the DAG | `LocusV2KernelIntegrationTest` | Hidden recomputation, stale coordinates, cycles | `G9U0GeneratorSuiteTest`, PHASE G6/G9U0 |
+| Identity and persistence, Undo/Redo, reopen | `G9U0PersistenceCompatibilityTest` | Lost identity graph, non-byte-identical save/reopen, silent legacy migration, partial ledger load | `G9U1IntersectionSessionTest` (Desktop) |
+| Locale-independent persistence | `DotXmlLocaleIndependentSerializationTest` | Localized command heads corrupt saved dependencies | — |
+| Durable spatial identity XML | `G9A1SpatialIdentityXmlTest` | Synthesized, duplicated or label-repaired identities | `G9A3SpatialCompatibilityXmlTest` |
+| Locus V2 semantic evaluation and components | `LocusV2SemanticCharacterizationTest` | Branch/component conflation, order dependence | PHASE G6 |
+| Rendering is not authority | `LocusV2RenderSeparationTest` | Tessellation or viewport alters the semantic locus | `G9X1LocusV2ExportTest` |
+| Locus metrics | `LocusMetricProductiveValueTest`, `LocusMetricProductiveNumericalTest`, `GeoCeDG120MetricPublicContractTest` | Sentinel values, wrong error evidence, public metric contract drift | PHASE G7/CU1–CU3 |
+| Intersections: line, segment, ray, circle | `G8BIntersectionKernelTest` | Missed tangencies, false completeness, endpoint errors | PHASE G8B |
+| Intersections: conic, function, implicit | `G8C1ExtendedTargetKernelTest` | Poles, singular points, even roots | PHASE G8C1 |
+| Intersections: Locus × Locus and overlap | `G8C2LocusPairKernelTest` | Duplicate or manufactured points, overlap taxonomy | PHASE G8C2 |
+| Points on loci | `G9U0R6SemanticLocusPointInteractionTest`, `Maintenance120PointInteractionTest` | Ambiguous preimages assigned silently, excluded ends, budget refusal with mutation | PHASE G9U0-R6, CU7 |
+| Spline V2 definition, intersections, persistence, Classic compatibility | `G9S1SemanticSpline2DTest` | Wrong roots at knots, lost identity, changed Classic `Spline` | PHASE G9S1 |
+| Spline V2 continuity | `G9S1R1StructuralSplineContinuityTest` | Tolerance-glued knots, broken periodic seams | PHASE G9S1-R1 |
+| Spline V2 pair intersections | `G9S1R1SplinePairMaterializationTest` | Unstable pair tokens, reopen/undo drift | PHASE G9S1-R1 |
+| Spline V2 degeneracies and admission | `G9S1R1SplinePrecisionAdmissionTest` | Singular systems or invalid inputs admitted | — |
+| Spatial semantics (implemented scope) | `G9A2SpatialSemanticRuntimeTest` | Stale derived points, projection authority leaks | PHASE G9A2 |
+| Transactional spatial redefine | `G9A3SpatialRedefineTransactionTest` | Non-atomic rejection, identity from labels or coordinates | PHASE G9A3 |
+| Document compatibility | `G9A3SpatialCompatibilityXmlTest`, `LegacyLocusCharacterizationTest`, `LegacyCeDGScientificModelCharacterizationTest` | Legacy files silently associated or migrated; canonical CeDG models changed | `G9A3SpatialNativeCompatibilityTest`, Desktop `Cu4LegacyDefaultsCompatibilityTest` |
+| DXF fidelity and representation | `GeometryExportFoundationTest`, `G9X1PreflightFidelityTest`, `G9X1LocusV2ExportTest` | Viewport-dependent DXF, silent approximation, export mutating DAG/XML/Undo | Desktop `G9X1DxfManifestTest`, `G9X1PairedOutputTest` |
+| Work limits | `G7AR1MetricValueAndWorkBudgetTest`, `R4NativeFidelityBudgetTest` | Unbounded work, budget exhaustion confused with failure or applied after mutation | PHASE CU7 |
+| Constructive identity certificates | `ConstructiveIdentityIntegrationTest` | Certificates not recomputed on undo, reopen or redefinition | PHASE CU3 |
+| Native document lifecycle (Desktop) | `GeoCeDGDocumentLifecycleTest` | Non-atomic save replaces bytes; `.ggb` reclassification | — |
+| Native reopen of Locus V2 and Spline pairs (Desktop) | `G9U0R6NativeArchivePersistenceTest`, `G9S1R1NativeArchivePersistenceTest` | Dormant/owned addresses lost after reopen | PHASE G9U0-R6, G9S1-R1 |
+| Undo/Redo lifecycle (Desktop) | `R3NativeUndoLifecycleDesktopTest` | Asynchronous store races, corrupt snapshots, private bindings published | `PreG9BR6PlusF3UndoAccountingTest` |
+| Transactional insertion and recovery (Desktop) | `PreG9BR6PlusF3RecoveryTest`, `DesktopInputRedefineCancelRecoveryTest` | Partial insertion or cancelled redefine leaves a corrupted construction | `PreG9BR6PlusF3InsertionTest` |
+| Authoring and intersection sessions (Desktop) | `PreG9BR4SplineV2AuthoringTest`, `G9U1IntersectionSessionTest` | Tool commits several undo points, materializes duplicate or stale points | PHASE G9U1, R4 |
+| DXF provenance and atomic paired output (Desktop) | `G9X1DxfManifestTest`, `G9X1PairedOutputTest` | Manifest not bound to DXF hash; non-atomic pair promotion | PHASE G9X1 |
+| Product profile and policy (Desktop) | `GeoCeDGProfileTest`, `G9U1ProductPolicyTest`, `Cu4LegacyDefaultsCompatibilityTest`, `Maintenance120PointToolsDesktopTest` | Classic altered globally; blocked commands advertised; legacy defaults changed | `workspace-profile.product` |
+
+Outside CORE, by design: the rest of the upstream GeoGebra suites, historical
+characterization and benchmark classes, presentation/export detail
+(PDF/SVG/LaTeX/PSTricks), guide and help rendering, layers and units, and the
+phase-specific corrective suites. They stay in `FINAL` and in their `PHASE`
+selections. Changing CORE requires a reviewed edit of both selections and
+this matrix, with pins refreshed only from executed passing evidence.
+
 ## Archived pre-recovery contract
 
 The remainder of this document records the superseded executable-governance
