@@ -148,7 +148,7 @@ class PreG9BP1PublicSurfaceTest {
 	void packageProfileKeepsOneVersionAuthorityAndUpgradeIdentity() throws IOException {
 		String profile = read("packaging/windows/package.yml");
 		assertEquals(1, occurrences(profile, "\"version\""), profile);
-		assertTrue(profile.contains("\"version\": \"1.2.0\""));
+		assertTrue(profile.contains("\"version\": \"1.2.1\""));
 		assertEquals(1, occurrences(profile, "\"version_date\""), profile);
 		assertTrue(profile.contains(
 				"\"upgrade_uuid\": \"b52d8e6d-3996-4bc5-b9ba-4f51f73c6e44\""));

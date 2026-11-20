@@ -1,7 +1,7 @@
 <!-- geocedg-guide-section: about-this-guide -->
 # Guía de usuario de GeoCeDG
 
-GeoCeDG 1.2.0 · Edición en español
+GeoCeDG 1.2.1 · Edición en español
 
 Empiece por [La primera construcción](#getting-started/2.7), consulte una
 herramienta en la [referencia](#command-and-workflow-reference) o pulse
@@ -49,8 +49,8 @@ detallan el alcance de las vistas y la compatibilidad.
 
 ### 1.3 Versión y estado
 
-**Ayuda → Acerca de GeoCeDG** muestra la versión **1.2.0**, la fecha de versión
-**2026-11-16** y la identificación de la compilación. Allí puede consultar
+**Ayuda → Acerca de GeoCeDG** muestra la versión **1.2.1**, la fecha de versión
+**2026-11-20** y la identificación de la compilación. Allí puede consultar
 la *condición de distribución* y los avisos de la copia en uso.
 Una copia instalada puede mostrar **INTERNAL EVALUATION — NOT FOR REDISTRIBUTION**
 o **NON-COMMERCIAL DISTRIBUTION — PROFILE NC**. Una *compilación de desarrollo*
@@ -88,7 +88,7 @@ en la revisión `9b93256b7df401ff056c37b502d82df4d72b1522`.
 ### 2.1 Iniciar GeoCeDG
 
 Inicie GeoCeDG desde su acceso directo instalado. El título de la ventana indica
-`GeoCeDG 1.2.0`, o `GeoCeDG 1.2.0 — <nombre de archivo>` cuando hay un documento
+`GeoCeDG 1.2.1`, o `GeoCeDG 1.2.1 — <nombre de archivo>` cuando hay un documento
 abierto.
 
 Si trabaja desde un checkout de fuentes preparado en lugar de una copia
@@ -3089,7 +3089,7 @@ muestra los tipos de entrada. Un caso degenerado puede quedar indefinido.
 
 ---
 
-*GeoCeDG 1.2.0 — Manuel Prado-Velasco, Universidad de Sevilla. Los créditos y
+*GeoCeDG 1.2.1 — Manuel Prado-Velasco, Universidad de Sevilla. Los créditos y
 licencias upstream obligatorios se conservan en `LICENSE`, `NOTICE.md` y
 `THIRD_PARTY.md`.*
 
