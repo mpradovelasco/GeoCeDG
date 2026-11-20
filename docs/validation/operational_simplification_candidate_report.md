@@ -2,9 +2,11 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | `OPERATIONAL SIMPLIFICATION — CANDIDATE FOR AUTHOR REVIEW` |
+| Estado | `OPERATIONAL SIMPLIFICATION — PASS — AUTHOR APPROVED` (decisión autoral explícita del 2026-11-20 sobre `T` y `D`, incluida la excepción procedimental de la sección 3) |
+| Estado al redactar este informe | `CANDIDATE FOR AUTHOR REVIEW` (conservado como historia) |
 | `selfApproved` | `false` |
-| Rama | `maintenance/operational-simplification` (local, sin publicar) |
+| Publicación | `main`: `c311829d` → `8f9218dbc8a6312eb3505faa313f1b2a51e3c47f` por fast-forward sin force (2026-11-20); GitHub informó del bypass habitual de las reglas «Changes must be made through a pull request» y «Cannot change this locked branch» |
+| Rama de trabajo | `maintenance/operational-simplification` |
 | Baseline | `main` = `origin/main` = `c311829d0cfe809a0b7a9ba006b476545cd3a867`, árbol `df5ddaee93909fd6551f361c2885de2da4ad5c03` |
 | Commit técnico `T` | `4cd5dc9d3b46dbec3e9c4c53bf2cbaf08f667af7`, árbol `e68e19c81a6bdcebfb6e0018a93026233a0f859d` |
 | Commit documental `D` | este informe, descendiente directo de `T` |
@@ -146,6 +148,11 @@ nueva, la excepción procedimental de verificar este candidato de
 infraestructura con evidencia focal (`STATIC`, `PACKAGING`, `INFRA_UNIT`, suites
 focales y las dos selecciones CORE) en lugar del `FINAL` que exigía el contrato
 anterior. La política nueva no es retroactiva y no aprueba campañas omitidas.
+
+Decisión posterior (2026-11-20): el autor aprobó la política nueva, esta
+excepción procedimental y la promoción de `T` y `D`. La aprobación no convierte
+en ejecutadas las campañas que no se ejecutaron: `FINAL` y la `INTEGRATION`
+completa siguen sin ejecutarse para este candidato.
 
 ## 4. Auditoría inicial de solapamientos en FINAL
 

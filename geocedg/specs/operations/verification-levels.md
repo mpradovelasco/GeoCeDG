@@ -72,11 +72,19 @@ profiles, adapters and one-run receipt flow are author-accepted and published.
 
 ## Operational simplification
 
-- Status: `OPERATIONAL SIMPLIFICATION — CANDIDATE FOR AUTHOR REVIEW`;
-  `selfApproved=false`. This section takes effect prospectively, for
-  operations started after the author approves and publishes the exact commit
-  that introduces it. It approves no omitted campaign retrospectively and
-  reinterprets no existing result, receipt or closeout.
+- Status: `OPERATIONAL SIMPLIFICATION — PASS — AUTHOR APPROVED`
+  (explicit author decision of 2026-11-20 for technical candidate
+  `4cd5dc9d3b46dbec3e9c4c53bf2cbaf08f667af7` and report
+  `8f9218dbc8a6312eb3505faa313f1b2a51e3c47f`, published on `main` by
+  fast-forward); `selfApproved=false`. This section takes effect
+  prospectively, for operations started after that publication. It approves
+  no omitted campaign retrospectively and reinterprets no existing result,
+  receipt or closeout.
+- Procedural exception approved by the same decision: the candidate that
+  introduced this section was verified with focused evidence (`STATIC`,
+  `PACKAGING`, `INFRA_UNIT`, its focused suites and the two CORE selections)
+  instead of the `FINAL` required by the previous contract. No `FINAL` and no
+  end-to-end `INTEGRATION` was run for it.
 - Scope: verification policy, registry composition and repository-integrity
   inventory. No product, kernel, serialization, numerical reference or
   tolerance changes.
