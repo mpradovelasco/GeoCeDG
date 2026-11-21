@@ -287,6 +287,12 @@ y regeneración documentada. Con esas entradas reproduce byte a byte las tablas 
 6. La pintura se mide fuera de pantalla; la latencia de una ventana real no se ha medido.
 7. El contorno transportado no está certificado; su presentación y su consumo dependen del
    bloque 3.
+8. Observación previa, ajena a estas reparaciones:
+   `PreG9BCu2AuthorModelConsumerTest.theCertificateIsTheSingleClosureAuthority` falla en la
+   base `9ccefdcfe` con el mismo mensaje que en la rama (para `e_2` espera una raíz
+   `INTERIOR` en la costura y no se publica ninguna). Comprobado en un checkout limpio de la
+   base. No se ha triado ni modificado; la clase solo pertenece a la suite Desktop sin
+   filtro.
 
 ## 6. Impactos
 
