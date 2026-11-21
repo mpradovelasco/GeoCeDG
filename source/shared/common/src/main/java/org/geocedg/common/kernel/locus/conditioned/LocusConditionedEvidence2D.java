@@ -1,0 +1,208 @@
+/* GeoCeDG
+ * Copyright (c) 2026 GeoCeDG contributors
+ * SPDX-License-Identifier: EUPL-1.2
+ */
+
+package org.geocedg.common.kernel.locus.conditioned;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.geocedg.common.kernel.locus.LocusEvidenceNature2D;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
+
+/**
+ * Conditioned evidence of one branch for one revision and one policy version (candidate
+ * contract {@code post-r1-conditioned-use.md}, sections 3 and 7): an immutable partition of
+ * the declared driver domain into conditioned spans and typed bands.
+ *
+ * <p>It is of nature {@link LocusEvidenceNature2D#NUMERICAL_UNDER_HYPOTHESES} and certifies
+ * nothing. It is derived per revision, never persisted, never part of the semantic snapshot
+ * and never identity material. Its content is a function of the traced function, the policy
+ * and the contradiction set, and of nothing else; the content identity states exactly
+ * that. A publication counter is another attribute, kept by the owner, and is never part of
+ * this value.</p>
+ */
+public final class LocusConditionedEvidence2D {
+	private static final String IDENTITY_KIND = "conditioned-evidence/v1";
+
+	private final String branchKey;
+	private final long revision;
+	private final String policyVersion;
+	private final double domainLower;
+	private final double domainUpper;
+	private final List<Double> contradictions;
+	private final List<LocusConditionedCell2D> cells;
+	private final int work;
+	private final String contentIdentity;
+
+	LocusConditionedEvidence2D(String branchKey, long revision, String policyVersion,
+			double domainLower, double domainUpper, List<Double> contradictions,
+			List<LocusConditionedCell2D> cells, int work) {
+		this.branchKey = branchKey;
+		this.revision = revision;
+		this.policyVersion = policyVersion;
+		this.domainLower = domainLower;
+		this.domainUpper = domainUpper;
+		this.contradictions = Collections.unmodifiableList(new ArrayList<>(contradictions));
+		this.cells = Collections.unmodifiableList(new ArrayList<>(cells));
+		this.work = work;
+		StringBuilder identity = new StringBuilder(IDENTITY_KIND).append('|')
+				.append(branchKey).append('|').append(revision).append('|')
+				.append(policyVersion).append('|');
+		for (int i = 0; i < this.contradictions.size(); i++) {
+			identity.append(i == 0 ? "" : ",").append(Long.toHexString(
+					Double.doubleToLongBits(this.contradictions.get(i))));
+		}
+		this.contentIdentity = identity.toString();
+	}
+
+	/** @return branch that the evidence describes */
+	public String getBranchKey() {
+		return branchKey;
+	}
+
+	/** @return revision of the definition that the evidence was derived from */
+	public long getRevision() {
+		return revision;
+	}
+
+	/** @return version of the traversal policy */
+	public String getPolicyVersion() {
+		return policyVersion;
+	}
+
+	/** @return lower end of the declared driver domain */
+	public double getDomainLower() {
+		return domainLower;
+	}
+
+	/** @return upper end of the declared driver domain */
+	public double getDomainUpper() {
+		return domainUpper;
+	}
+
+	/**
+	 * @return canonical parameters at which the producer confirmed a contradiction, in
+	 *         ascending order: a set, with no order of discovery and no multiplicity
+	 */
+	public List<Double> getContradictions() {
+		return contradictions;
+	}
+
+	/** @return cells of the partition, in ascending order */
+	public List<LocusConditionedCell2D> getCells() {
+		return cells;
+	}
+
+	/** @return distinct nodes that the traversal read, charged to the work limit */
+	public int getWork() {
+		return work;
+	}
+
+	/**
+	 * @return canonical content identity: revision, policy version and contradiction set.
+	 *         Two evidences with the same content identity have the same cells, kinds and
+	 *         classes
+	 */
+	public String getContentIdentity() {
+		return contentIdentity;
+	}
+
+	/** @return {@link LocusEvidenceNature2D#NUMERICAL_UNDER_HYPOTHESES}: never certifies */
+	public LocusEvidenceNature2D getNature() {
+		return LocusEvidenceNature2D.NUMERICAL_UNDER_HYPOTHESES;
+	}
+
+	/**
+	 * @param parameter canonical parameter
+	 * @return the cells whose closed range contains the parameter: one, or two at a shared
+	 *         end
+	 */
+	public List<LocusConditionedCell2D> cellsContaining(double parameter) {
+		return cellsBetween(parameter, parameter);
+	}
+
+	/**
+	 * @param first one canonical parameter
+	 * @param second another canonical parameter
+	 * @return every cell that meets the closed range between the two parameters
+	 */
+	public List<LocusConditionedCell2D> cellsBetween(double first, double second) {
+		double low = Math.min(first, second);
+		double high = Math.max(first, second);
+		List<LocusConditionedCell2D> found = new ArrayList<>();
+		for (LocusConditionedCell2D cell : cells) {
+			if (cell.getUpper() >= low && cell.getLower() <= high) {
+				found.add(cell);
+			}
+		}
+		return found;
+	}
+
+	/**
+	 * Decides whether two parameters lie in one conditioned region: every cell from one to
+	 * the other is a span. A parameter at an end shared with a band is not inside a region.
+	 *
+	 * @param first one canonical parameter
+	 * @param second another canonical parameter
+	 * @return whether no band and no unexplored cell meets the range between them
+	 */
+	public boolean inOneRegion(double first, double second) {
+		List<LocusConditionedCell2D> between = cellsBetween(first, second);
+		if (between.isEmpty()) {
+			return false;
+		}
+		for (LocusConditionedCell2D cell : between) {
+			if (!cell.getKind().isSpan()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * @return conditioned regions: maximal runs of adjacent spans. A region is not a
+	 *         component: it has no lineage, no ordinal identity and no persisted form
+	 */
+	public List<LocusInterval2D> getRegions() {
+		List<LocusInterval2D> regions = new ArrayList<>();
+		LocusConditionedCell2D first = null;
+		LocusConditionedCell2D last = null;
+		for (LocusConditionedCell2D cell : cells) {
+			if (cell.getKind().isSpan() && last != null
+					&& last.getUpperIndex() == cell.getLowerIndex()) {
+				last = cell;
+				continue;
+			}
+			if (first != null) {
+				regions.add(new LocusInterval2D(first.getLower(), last.getUpper(), true, true));
+			}
+			first = cell.getKind().isSpan() ? cell : null;
+			last = first;
+		}
+		if (first != null) {
+			regions.add(new LocusInterval2D(first.getLower(), last.getUpper(), true, true));
+		}
+		return regions;
+	}
+
+	/**
+	 * @param newer content published after this one for the same revision
+	 * @return the cells that the newer content withdraws: those that are not present in it
+	 *         with the same ends, kind and class
+	 */
+	public List<LocusConditionedCell2D> withdrawnBy(LocusConditionedEvidence2D newer) {
+		Set<LocusConditionedCell2D> kept = new HashSet<>(newer.cells);
+		List<LocusConditionedCell2D> withdrawn = new ArrayList<>();
+		for (LocusConditionedCell2D cell : cells) {
+			if (!kept.contains(cell)) {
+				withdrawn.add(cell);
+			}
+		}
+		return withdrawn;
+	}
+}
