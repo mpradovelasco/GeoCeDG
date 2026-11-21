@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,8 +23,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusEvaluation2D;
+import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
+import org.geocedg.common.kernel.locus.intersection.LocusIntersectionResult2D;
+import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
+import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.euclidian.EuclidianView;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -49,6 +56,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * the product drawing code on an image, without the compositor of a real window. Counters
  * are read from the public instrumentation; the counters of the equivalent update of an
  * intersection are read by reflection so that the same harness runs on an earlier commit.</li>
+ * <li>{@code evidence}: design inspection for the conditioned-use proposal. For each hole
+ * locus of the original it evaluates the faithful slice at uniform parameters and reads, by
+ * reflection and without changing anything, the root evidence that the isolated copy already
+ * holds after each evaluation: the public evaluation result does not carry it.</li>
  * </ul>
  *
  * Latencies are telemetry of one machine and one short series. They are never a threshold.
@@ -56,7 +67,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 @ExtendWith({G9U1TestApp.Lifecycle.class,
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
 		PreG9BR6PlusD1DocumentUnitsTest.DesktopLogger.class})
-@EnabledIfSystemProperty(named = "geocedg.postr1.harness", matches = "variant|benchmark")
+@EnabledIfSystemProperty(named = "geocedg.postr1.harness",
+		matches = "variant|benchmark|evidence")
 class PostR1Harness {
 	private static final String ORIGINAL = "InterCilConoObliqueFinal_2.cedg";
 	private static final String PACKAGE = "models/regression/post-r1-locus-on-intersection";
@@ -78,7 +90,8 @@ class PostR1Harness {
 		Path work = Files.createDirectories(output.resolve("work"));
 		String scenario = System.getProperty("geocedg.postr1.harness");
 		List<String> report = PreG9BR6PlusF3Fixtures.onEdt(() -> "variant".equals(scenario)
-				? variant(work, output) : benchmark(work));
+				? variant(work, output) : "evidence".equals(scenario) ? evidence(work)
+						: benchmark(work));
 		Files.write(output.resolve(scenario + ".txt"), report, StandardCharsets.UTF_8);
 		assertTrue(!report.isEmpty());
 	}
@@ -98,6 +111,69 @@ class PostR1Harness {
 		report.add("objects=" + reopened.getKernel().getConstruction()
 				.getGeoSetConstructionOrder().size());
 		return report;
+	}
+
+	private static List<String> evidence(Path work) throws Exception {
+		List<String> report = new ArrayList<>();
+		report.add("# root evidence held by the isolated slice copy after each evaluation");
+		report.add("locus\tparameter\tstatus\tms\trich results\troots: status@parameter"
+				+ "[isolating width; isolation; guarantee]\tseparation of the roots");
+		AppGeoCeDG app = open(work);
+		for (String label : new String[] {"w_2", "a_3"}) {
+			GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, label);
+			Object evaluator = locus.getSemanticDefinition().getEvaluatorCapability();
+			Field field = evaluator.getClass().getDeclaredField("isolatedConstruction");
+			field.setAccessible(true);
+			Construction copy = (Construction) field.get(evaluator);
+			for (int index = 0; index < 64; index++) {
+				double parameter = -Math.PI + 2 * Math.PI * index / 64;
+				long start = System.nanoTime();
+				LocusEvaluation2D evaluation = locus.evaluate("generator.main", parameter,
+						LocusEvaluationSession2D.reference());
+				double millis = (System.nanoTime() - start) / 1e6;
+				StringBuilder roots = new StringBuilder();
+				int results = 0;
+				double separation = Double.NaN;
+				for (GeoElement geo : copy.getGeoSetConstructionOrder()) {
+					if (!(geo instanceof GeoLocusIntersectionResult)
+							|| !geo.isChildOf(findDriverCopy(copy))) {
+						continue;
+					}
+					results++;
+					LocusIntersectionResult2D result = ((GeoLocusIntersectionResult) geo)
+							.getIntersectionResult();
+					if (result == null) {
+						roots.append("unpublished ");
+						continue;
+					}
+					List<LocusIntersectionSolution2D> solutions = result.getFiniteSolutions();
+					for (LocusIntersectionSolution2D solution : solutions) {
+						roots.append(solution.getIdentity().getIdentityStatus()).append('@')
+								.append(String.format(Locale.ROOT, "%.6f[%.1e; %s; %s] ",
+										solution.getRevisionEvidence().getSemanticParameter(),
+										solution.getRevisionEvidence().getIsolatingInterval()
+												.getUpper() - solution.getRevisionEvidence()
+												.getIsolatingInterval().getLower(),
+										solution.getRevisionEvidence().getLocalIsolationStatus(),
+										solution.getRevisionEvidence().getNumericGuarantee()));
+					}
+					if (solutions.size() == 2) {
+						separation = Math.abs(solutions.get(0).getRevisionEvidence()
+								.getSemanticParameter() - solutions.get(1).getRevisionEvidence()
+								.getSemanticParameter());
+					}
+				}
+				report.add(String.format(Locale.ROOT, "%s\t%.5f\t%s\t%.2f\t%d\t%s\t%.6f", label,
+						parameter, evaluation.getStatus(), millis, results, roots.toString().trim(),
+						separation));
+			}
+		}
+		return report;
+	}
+
+	/** @return the copy of the driver of the hole loci, by its label in this model */
+	private static GeoElement findDriverCopy(Construction copy) {
+		return copy.lookupLabel("E_1");
 	}
 
 	private static List<String> benchmark(Path work) throws Exception {
