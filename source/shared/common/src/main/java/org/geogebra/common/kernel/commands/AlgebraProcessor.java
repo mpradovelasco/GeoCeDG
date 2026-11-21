@@ -29,6 +29,7 @@ import java.util.TreeSet;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
+import org.geocedg.common.kernel.locus.LocusDedicatedAuxiliary2D;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityDiagnostic;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry.RedefinePublicationLease;
@@ -2100,6 +2101,18 @@ public class AlgebraProcessor {
 		if (replaceable != null && replaceable.isSecondaryOutput() && kernel.getLoadingMode()) {
 			replaceable.setLabel(replaceable.getFreeLabel(replaceable.getLabelSimple()));
 			replaceable = null;
+		}
+		// GeoCeDG post-R1 repair F7 (locus-v2-point-interaction.md section 12): the
+		// dedicated auxiliary input of a Locus V2 point is refused as an input or as the
+		// redefinition target of any other expression, before any mutation.
+		try {
+			LocusDedicatedAuxiliary2D.requireAdmissibleExpression(kernel, exp, replaceable);
+		} catch (LocusDedicatedAuxiliary2D.OwnershipException refusal) {
+			MyError error = new MyError(loc, loc.getPlain(
+					LocusDedicatedAuxiliary2D.MESSAGE_KEY, refusal.getAuxiliaryLabel(),
+					refusal.getOwnerLabel()));
+			error.initCause(refusal);
+			throw error;
 		}
 		if (replaceable instanceof HasArbitraryConstant) {
 			HasArbitraryConstant hasConstant = (HasArbitraryConstant) replaceable;
