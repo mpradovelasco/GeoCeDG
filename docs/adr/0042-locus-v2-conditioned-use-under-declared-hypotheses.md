@@ -1,11 +1,12 @@
 # ADR 0042 — Locus V2 conditioned use under declared hypotheses
 
-- Status: **PROPOSED, REVISION 2 — PENDING AUTHOR REVIEW**. The product decisions D-V1 to
+- Status: **PROPOSED, REVISION 3 — PENDING AUTHOR APPROVAL**. The product decisions D-V1 to
   D-V7 below are fixed by the author; this text, which states them as a contract, is not
   approved, and no implementation of the new semantics is authorized by it.
   `selfApproved=false`.
-- Date: 2026-11-21 (revision 1, commit `ab37fb5ff`); revised the same day after the author
-  decisions.
+- Date: 2026-11-21 (revision 1, commit `ab37fb5ff`; revision 2, commit `83cd56c4c`);
+  revision 3 the same day, with the focal amendment that the author requested after
+  reviewing revision 2.
 - Authorization of the design work: author instructions of 2026-11-21, «Ejecución secuencial
   tras R1» (block 3A) and «Revisión normativa post-R1, continuación de implementación y
   objetivo 1.2.2».
@@ -25,6 +26,15 @@
 | D-V5 | A conditioned locus takes part in the same families of operations as a certified one, with the guarantees that correspond: points, following, intersections, transformations, dependent constructions, nested loci, metrics, DAG propagation, presentation and manipulation. Functional equality is not equality of certification |
 | D-V6 | The cost of an update that really changes the geometry is reduced, without a shared result cache and without shared mutable copies |
 | D-V7 | GeoCeDG 1.2.2 is the target version; its number is changed only when the functionality is implemented and validated |
+
+Author responses to the open points of revision 2 (2026-11-21): the design is assessed
+favourably and D-V1 to D-V7 stand; the D-V6 result is accepted technically with its
+documented verification coverage; the system mark is a hollow rhombus of 7 pixels (P2); the
+future semantic export is registered as a requirement of the B-spline and DXF line, with no
+new subphase opened (P3); the early triage of the pre-existing defect F8 is authorized, with
+its repair before increment I4 closes (P4). The normative approval of this text was withheld
+until the six points of the focal amendment were incorporated; they are listed under
+«Differences from revision 2».
 
 ## Context
 
@@ -64,19 +74,23 @@ distinguishable from an exact result.
    proved, what is only checked at nodes, what remains a hypothesis and which consumers may
    read it. A rigorous bound of the separation of roots proves that those roots do not
    collide on a cell; it proves neither the validity of the other operations nor the
-   existence or continuity of the branch. No hypothesis is withdrawn without a proof that
-   satisfies it. Density of samples never raises a class.
+   existence or continuity of the branch, nor that a selection is stable: the stability of a
+   selection is established only by a proof of the selection predicate itself. No hypothesis
+   is withdrawn without a proof that satisfies it. Density of samples never raises a class,
+   and no class gives a consumer a permission that another class does not give.
 
 4. **Failure is not absence.** A computational failure, a work limit, an authority refusal
    or an unreproduced selection yields an unresolved band. A conditioned absence needs
    positive evidence of an eligible geometric cause.
 
-5. **A deterministic lifecycle, owned by the semantic producer.** Evidence is identified by
-   revision, policy and generation. Its content depends on the function, the policy and the
-   canonical set of confirmed contradictions, never on the order of queries, on the renderer
-   or on the view. A contradiction is reported to the producer, which re-evaluates it itself
-   and publishes a new generation through the dependency graph. Stale evidence is never
-   reused.
+5. **A deterministic lifecycle, owned by the semantic producer.** The content identity of
+   the evidence is the revision, the policy and the set of parameters at which a
+   contradiction was confirmed; its content is a function of them and never of the order of
+   queries, reports or drawing, of the renderer or of the view. The counter of publications
+   is another attribute: it orders publications and is never an identity. A contradiction is
+   reported to the producer, which re-evaluates it itself and publishes through the
+   dependency graph. A result is current while the cells it used are unchanged; stale
+   evidence is never reused.
 
 6. **One contract per operation, functionally complete.** Points, following, metrics,
    intersections, transformations, dependent and nested loci each state inputs, premises,
@@ -85,25 +99,33 @@ distinguishable from an exact result.
    although global completeness is `NOT_ESTABLISHED`. No operation publishes an ambiguous
    root, an association by proximity, an unproved closure, `EMPTY` or a complete set. A
    consumer that requires a certificate keeps failing closed. A transformation transforms
-   the parametric procedure, never the drawing polyline.
+   the parametric procedure, never the drawing polyline, and a dilation of ratio zero keeps
+   the approved `COLLAPSED_IMAGE` contract. Under the constructive authority the integrity
+   and relaxed-admission requirements are unchanged: conditioned evidence never grants
+   `RELAXED`, and no widening of those requirements is proposed.
 
-7. **Addresses name a parameter.** A point on a region without a certified component
-   persists a parameter address without a component selector, in its own versioned codec.
-   The meaning of an earlier codec is never reused, and no migration invents an identity or
-   a spatial association. Reading by earlier versions is not a requirement (D-V2);
-   reproducible persistence within 1.2.2 is.
+7. **Identity never comes from the sampling.** A point on a region without a certified
+   component persists a parameter address without a component selector, in its own versioned
+   codec. An intersection root on such a region takes a selector of its own kind whose frame
+   is the branch, without rank; a region, a cell and the partition are never identity. The
+   meaning of an earlier codec or selector is never reused, and no migration invents an
+   identity or a spatial association. The validity of a point and the admissibility of a
+   continuation are separate facts: a valid point inside a band is defined and has no
+   continuation. Reading by earlier versions is not a requirement (D-V2); reproducible
+   persistence within 1.2.2 is.
 
 8. **Identification independent of style.** The line style of a locus stays the user's. The
    conditioned state is stated in the properties of the object in ordinary words, with its
-   hypotheses, and is shown in the view by a discrete system mark that is not a style, not
-   an orientation arrow, and neither geometry nor evidence (D-V3). The mark never suggests
-   certification or completeness.
+   hypotheses, and is shown in the view by a discrete system mark, a hollow rhombus of 7
+   pixels, that is not a style, not an orientation arrow, and neither geometry nor evidence
+   (D-V3). The mark never suggests certification or completeness.
 
 9. **Exports are explicit.** Picture exports of a view export what it shows. Semantic
    exports omit conditioned regions with a diagnostic until a format can carry their
-   guarantee and provenance; that work belongs to the future line on derived representations
-   and DXF interchange, in which a spline or polyline of interchange never replaces the
-   authoritative CeDG object (D-V4).
+   guarantee and provenance; that work is registered in the roadmap as a requirement of the
+   future line on derived representations and DXF interchange, with no subphase opened, in
+   which a spline or polyline of interchange never replaces the authoritative CeDG object
+   (D-V4).
 
 10. **Certification stays direct, and conditioned evidence feeds it.** A certifiable
     producer is certified as today and keeps its contracts. Spans and bands are proof plans
@@ -123,6 +145,20 @@ distinguishable from an exact result.
 | Export | admission rule, increment I5 | excluded from 1.2.2 with diagnostic; dependency on the derived-representation and DXF line (D-V4) |
 | Scope of the first implementation | I0–I3 | I0–I4 and I4T are all required for 1.2.2 |
 
+## Differences from revision 2 (`83cd56c4c`)
+
+Focal amendment; the functional objective and the rest of the design do not change. The
+exact text and the validation criteria of each point are in §14 of the candidate contract.
+
+| # | Point | Revision 3 |
+|---|---|---|
+| 1 | `RELAXED` integrity | `CONDITIONED` never grants `RELAXED`; the positive requirements of the authority contract are preserved and none is widened |
+| 2 | Identity of intersection roots | a branch-frame selector of its own kind for a root on a span, without rank and never built from the partition; selectors of certified roots unchanged |
+| 3 | Generations | content identity and publication counter are separate; the content is a function of a set of parameters; staleness is decided by cells |
+| 4 | Points in bands | point validity and admissibility of continuation are separate |
+| 5 | Ratio zero | the approved `COLLAPSED_IMAGE` contract, unchanged |
+| 6 | `MARGIN_BOUNDED` | proves only the pairwise separation of the enclosed roots; H2 stays whole |
+
 ## Alternatives considered
 
 | Alternative | Why it is not proposed |
@@ -133,6 +169,8 @@ distinguishable from an exact result.
 | A document-wide relaxed authority or a user switch | The document authority decides relations, not existence; the author decided against a switch (D-V1) |
 | A dash pattern as the identification | The style belongs to the user (D-V3) |
 | Transform or intersect the drawing polyline | Not the geometric operation; forbidden by AGENTS §11.2 and by D-V5 |
+| Give a conditioned region a lineage from its bands, and rank its roots | The bands are what the traversal detected: an identity by sampling. Rank needs a verified cardinality |
+| Let conditioned evidence count toward `RELAXED` | The authority contract excludes a numerical verification under hypotheses; a widening would be its own normative decision |
 
 ## Consequences
 

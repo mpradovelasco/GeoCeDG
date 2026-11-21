@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| Status | **CANDIDATE, REVISION 2 — PROPOSED, PENDING AUTHOR REVIEW. NOT NORMATIVE.** `selfApproved=false` |
-| Version | `conditioned-use/v2-candidate` (revision 1 is the text of commit `ab37fb5ff`) |
-| Decision | [ADR 0042](../../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md), proposed, with the author decisions D-V1 to D-V7 of 2026-11-21 |
+| Status | **CANDIDATE, REVISION 3 — PROPOSED, PENDING AUTHOR APPROVAL. NOT NORMATIVE.** `selfApproved=false` |
+| Version | `conditioned-use/v3-candidate` (revision 2 is the text of commit `83cd56c4c`; revision 1 that of `ab37fb5ff`) |
+| Decision | [ADR 0042](../../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md), proposed, with the author decisions D-V1 to D-V7 and the focal amendment requested by the author on 2026-11-21 |
 | Design | [architecture and source analysis](../../../../docs/architecture/post_r1_locus_conditioned_use_design.md) |
 | Layer | Shared Java kernel (evidence, addresses, operations); derived rendering; Desktop adapters; export adapters |
 
@@ -22,9 +22,12 @@ every revision, and each operation decides admissibility from the premises it ne
 
 It certifies nothing. `locus-v2-existence-components.md` §15.1 is unchanged: a finite
 exploration never establishes `LOCAL_CERTIFIED` or `COMPLETE`. The document authority of
-ADR 0040, relation integrity, intersection tokens and selectors and the semantic snapshot
-are unchanged. A certified component keeps every contract and guarantee it has today, and a
-producer that can be certified is certified as before.
+ADR 0040, relation integrity and relaxed admission with their positive requirements, the
+semantic snapshot, and every existing token, selector and address with its text and meaning
+are unchanged. The only identity material this contract adds is the parameter address of
+§6.1 and the root selector of §6.5, each in its own versioned kind. A certified component
+keeps every contract and guarantee it has today, and a producer that can be certified is
+certified as before.
 
 ## 2. Independent axes
 
@@ -36,10 +39,11 @@ producer that can be certified is certified as before.
 | Existence and continuity certified | `LOCAL_CERTIFIED` components, unchanged |
 | Global completeness | `COMPLETE` only by certificate; otherwise `NOT_ESTABLISHED` |
 | Numeric guarantee | the existing classes of a value, unchanged |
-| Incidence and membership integrity | `relation-integrity/v1` under the constructive authority; the existing contracts under the legacy one |
+| Incidence and membership integrity | `relation-integrity/v1` under the constructive authority, with its requirements unchanged; the existing contracts under the legacy one. Conditioned evidence is not integrity evidence (§8) |
 | Identity and continuation of selection | per selecting dependency: established deterministic selection, or not established |
+| Admissibility of continuation | whether a route or a following exists between two positions; distinct from the validity of each position (§6.4) |
 | Coverage | which part of the requested domain each fact covers |
-| Currentness | revision of the definition; generation of the evidence |
+| Currentness | revision of the definition; content identity of the evidence (§7) |
 
 None is inferred from another. The interval-evidence values are ordered
 (`EXPLORATORY`, `CONDITIONED`, `LOCAL_CERTIFIED`); that order is not a scale for the other
@@ -65,7 +69,8 @@ cells whose ends are dyadic fractions of that domain, and classifies every cell:
 | `UNEXPLORED` | the work limit of the policy ended before the cell was classified |
 
 A *conditioned region* is a maximal run of adjacent spans. It is not a component: it has no
-lineage, no ordinal identity and no persisted form.
+lineage, no ordinal identity and no persisted form. Neither a region, a cell, a node nor the
+partition is ever identity material (§6).
 
 ### 3.2 Root testimony
 
@@ -90,12 +95,22 @@ For a span `[a, b]` with nodes `a`, `m`, `b`. H1 to H4 are the hypotheses of §4
 | Class | Proved on the whole cell | Checked at the nodes only | Still a hypothesis | Consumers |
 |---|---|---|---|---|
 | `RESOLUTION_ONLY` | nothing | validity; established selection of every dependency; chord deviation and turning between the nodes | H1, H2, H3, H4 | every conditioned consumer of §8 |
-| `MARGIN_ESTIMATED` | nothing | the same, and a separation of the selected root above the policy margin | H1, H2, H3, H4. The separation observed at nodes is not a bound between them, so H2 is not reduced | the same as `RESOLUTION_ONLY`; the class is evidence for diagnosis and for choosing proof cells, not a stronger permission |
-| `MARGIN_BOUNDED` | for the dependencies that carry the bound: the roots enclosed by the bound do not collide on the cell, so the selected root is not exchanged with another of *those* roots | the same as `MARGIN_ESTIMATED` | H1 (validity of every operation); H2 for every dependency without the bound, and for the creation or loss of roots that the bound does not enclose; H3 (continuity of the composed function); H4 | the same as `RESOLUTION_ONLY`. It is recorded so that a partial proof is not discarded and can be completed by a promoter (§11) |
+| `MARGIN_ESTIMATED` | nothing | the same, and a separation of the selected root above the policy margin | H1, H2, H3, H4. The separation observed at nodes is not a bound between them | the same as `RESOLUTION_ONLY`; the class is evidence for diagnosis and for choosing proof cells, not a stronger permission |
+| `MARGIN_BOUNDED` | for the dependencies that carry the bound: the roots that the bound encloses stay pairwise separated on the cell. Nothing else | the same as `MARGIN_ESTIMATED` | H1; H2 in full, for every dependency, those that carry the bound included; H3; H4 | the same as `RESOLUTION_ONLY`. It is recorded so that a partial proof is not discarded and can be completed by a promoter (§11) |
 
-No class of this table certifies existence or continuity of the branch. A cell on which H1
-to H3 are all proved is not a conditioned span: it is a certified component, produced by the
-certifier.
+A separation of roots is a fact about the positions of roots. It is never, by itself,
+evidence that a selection is stable: which root a dependency selects also depends on the
+germ and its orientation, on the eligibility and local isolation of each root, on the
+membership of a limited target, on the cardinality of a collision group and on roots that
+the bound does not enclose. H2 is reduced on a cell only by a proof of the selection
+predicate itself on that cell, with the certified sign conditions and the captured selection
+that `locus-v2-existence-components.md` §15.2 requires; that proof is the work of the
+certifier or of a promoter, never of this traversal.
+
+No class of this table certifies existence or continuity of the branch, and no consumer
+receives a permission from one class that it does not receive from another. A cell on which
+H1 to H3 are all proved is not a conditioned span: it is a certified component, produced by
+the certifier.
 
 ### 3.4 Policy
 
@@ -145,68 +160,167 @@ design (§7 of the design document) and are part of the acceptance of increment 
 
 ## 6. Addresses, identity and persistence
 
-1. **Parameter address.** A point at a parameter that no certified component contains is
-   addressed by `(source locus identity, branch key, provider contract, canonical parameter,
-   periodic lift, seam side)`, without a component selector. Its codec is
-   `geocedg-locus-parameter-address/v1`, distinct from `geocedg-locus-address/v1` and
-   `geocedg-locus-principal-selection/v1`, whose texts and meanings do not change. A sample,
-   a polyline index or a screen position is never an address.
-2. **No reinterpretation and no invented migration.** An address with a component selector
-   resolves only as §15.6 says. It is never rewritten into a parameter address, and a
-   parameter address never acquires a component selector silently. Converting one into the
-   other is an explicit redefinition of the point. No migration creates an identity or a
-   spatial association.
-3. **Resolution per revision.** A parameter address resolves when the evaluation at its
-   parameter is valid and every selecting dependency has an established selection there. The
-   evidence that contains the parameter is reported with the point; it does not decide
-   whether the point is defined.
-4. **Obligations of GeoCeDG 1.2.2** (D-V2). Reading by GeoCeDG 1.2.1 is not required. Within
-   1.2.2 the following are required and tested:
+### 6.1 Parameter address
+
+A point at a parameter that no certified component contains is addressed by
+`(source locus identity, branch key, provider contract, canonical parameter, periodic lift,
+seam side)`, without a component selector. Its codec is
+`geocedg-locus-parameter-address/v1`, distinct from `geocedg-locus-address/v1` and
+`geocedg-locus-principal-selection/v1`, whose texts and meanings do not change. A sample, a
+polyline index, a cell, a node or a screen position is never an address.
+
+### 6.2 No reinterpretation and no invented migration
+
+An address with a component selector resolves only as §15.6 says. It is never rewritten into
+a parameter address, and a parameter address never acquires a component selector silently.
+Converting one into the other is an explicit redefinition of the point. No migration creates
+an identity or a spatial association.
+
+### 6.3 Point validity
+
+A parameter address resolves, and its point is defined, when the evaluation at its parameter
+is valid, every selecting dependency has an established selection at that parameter and the
+address is unambiguous. Nothing else decides it. In particular the kind of the cell that
+contains the parameter does not: a point whose own isolated evaluation and selection are
+valid is defined inside a span, inside a band of any kind and inside an unexplored cell
+alike. The point reports the cell that contains it, as information.
+
+A point is undefined, with a typed cause, only for a cause of its own: a parameter outside
+the declared domain, an invalid or failed evaluation at that parameter, a selection that is
+not established there, an ambiguous seam side, or a point component, which a parameter never
+selects (§15.8). An undefined point never becomes a neighbouring point.
+
+A valid evaluation at a parameter inside an `ABSENT_BAND` or a `FAILURE_BAND`, and an
+invalid one inside a span, are contradictions of that cell: they are reported to the
+producer as §7.3 says.
+
+### 6.4 Admissibility of continuation
+
+Continuation is another fact. A following, a drag along the curve, a route and a length
+between positions need interval evidence along their path (§8.2 to §8.4). A point inside a
+band or an unexplored cell is a valid position with no admissible continuation: following
+from it and routes through it are refused with the kind of the cell as cause, and the point
+keeps its address, its identity and its definition. Giving it another parameter explicitly
+is a redefinition, not a continuation, and is always possible.
+
+### 6.5 Root selectors on a conditioned region
+
+The selector of an intersection root in `locus-v2-intersections.md` §6.2 binds the lineage
+of the certified component that contains the root. A conditioned region has no lineage
+(§3.1), and none is given to it: a region, its boundaries and its cells depend on which
+events the traversal detected, so any identity built from them would be an identity by
+sampling.
+
+1. **Certified roots are unchanged.** A root whose source parameter lies in a certified
+   component keeps the selector, the phase and rank rules and the token of the intersection
+   contract, with the same text.
+2. **Frame of a conditioned root.** A root whose source parameter lies in a span, and in no
+   certified component, takes a selector of its own versioned kind,
+   `conditioned-use/branch-frame-root/v1`:
+
+   ```text
+   selector kind
+   + stable branch lineage of the source branch
+   + typed transverse current-root germ, as §6.2 of the intersection contract defines it
+   ```
+
+   Its frame is the branch, which is the finest frame of the source that does not depend on
+   the traversal. It contains no component lineage and no region, cell, dyadic address,
+   node, parameter, coordinate, index, order or generation.
+3. **No rank.** The intrinsic phase and rank need a certified oriented component and a
+   verified cardinality of the collision group. Neither exists here, and no ordinal among
+   the roots found replaces them. Two or more current roots of one result that share a
+   branch-frame selector are ambiguous: they keep revision-local handles with the existing
+   identity statuses and are not point-admissible.
+4. **Allocation and resolution.** The existing rule applies unchanged: only a complete
+   selector that is unique among the current published finite roots of the result allocates
+   or resolves a durable token; the first publication reports `NEW_TOPOLOGICAL_SOLUTION` and
+   a later resolution of the same ledger binding `DETERMINISTIC_SELECTION_ESTABLISHED`. The
+   binding is a function of the current state: movement history, previous positions and
+   proximity never select, mint, transfer or replace a token. No continuation is claimed
+   across a band.
+5. **Change of frame.** Each current root has one selector, decided by where its parameter
+   lies in the current revision. When a root passes between a certified component and the
+   uncertified part of its branch, its selector is another one: the earlier token is
+   non-current and is never transferred, the root is published under the selector of its
+   frame, and the earlier token is current again when the state returns.
+6. **Pairs.** In an intersection of two loci each source side binds the lineage of its
+   certified component, or the branch frame of that source when the root lies in a span of
+   it. A pair with a branch-frame side has no rank.
+7. **Persistence.** A branch-frame selector is stored in the token ledger as an entry of its
+   own kind, in a new ledger format version. Every existing entry keeps its text and its
+   meaning, and no entry is rewritten into another kind. Evidence is never stored. A reader
+   that does not know the version rejects the document closed, as the ledger contract
+   already says; reading by GeoCeDG 1.2.1 is not required (D-V2).
+
+Consequence, stated: on a conditioned source a result with two or more roots of the same
+germ on one branch publishes them as roots without durable tokens. That limit is removed
+only by certification of the component.
+
+### 6.6 Obligations of GeoCeDG 1.2.2 (D-V2)
+
+Reading by GeoCeDG 1.2.1 is not required. Within 1.2.2 the following are required and
+tested, for parameter addresses and for branch-frame selectors:
 
 | Operation | Requirement |
 |---|---|
-| Durable identity | independent of coordinates, labels and sampling; unchanged by refinement, split, merge, withdrawal, reactivation and promotion of evidence |
-| Save and reopen | the address is read back exactly; evidence is recomputed, never read from the document |
+| Durable identity | independent of coordinates, labels and sampling; unchanged by refinement, split, merge, withdrawal, reactivation and promotion of evidence, and by the policy depth |
+| Save and reopen | the address or selector is read back exactly; evidence is recomputed, never read from the document |
 | Copy, duplicate | a new identity for the copy; the source locus is remapped by the existing exact copy rules |
 | Undo, redo | the address, the identity and the definedness of each step are restored |
 | Redefinition | a compatible redefinition keeps the identity under the redefine contract; an incompatible one is refused or replaces the object as that contract already says |
 | Selection and continuation | a drag publishes another parameter address of the same point; it never retargets by proximity |
-| Degeneracies | a parameter in a band, at a seam side, at a domain end or in a point component gives a typed cause, never a neighbouring point |
+| Degeneracies | a parameter outside the domain, at an ambiguous seam side or on a point component gives a typed cause, never a neighbouring point; a valid parameter inside a band is a defined point without continuation (§6.3, §6.4) |
 | Temporary invalidity | the point is undefined with its cause while its evaluation is invalid, and the same point is defined again when the same address evaluates |
-| Existing constructions | every document used as regression reads as before; no existing selector changes meaning |
+| Existing constructions | every document used as regression reads as before; no existing selector, token or address changes text or meaning |
 
 ## 7. Evidence lifecycle
 
-1. **Identity.** The producer publishes the evidence atomically, as an immutable value
-   identified by `(revision, policy version, generation)`.
-2. **Determinism.** The content of a generation is a function of the traced function, the
-   policy and the *contradiction set* of the revision: the set of dyadic cells in which a
-   contradiction has been confirmed. It does not depend on the order of the queries, of the
-   reports or of the drawing. Generation `g` is the evidence computed with the first `g`
-   confirmed cells taken in canonical order of their dyadic address; two histories that
-   confirm the same cells reach the same evidence.
-3. **Contradiction.** A consumer, the renderer or a later evaluation that observes, inside a
-   span, an invalid evaluation, another selection or a jump above the limits *reports* the
-   parameter to the producer. The report changes nothing by itself. The producer evaluates
-   that parameter with its own evaluator; when the contradiction is confirmed it adds the
-   cell to the contradiction set, refines that cell by the ordinary traversal and publishes
-   the next generation. The renderer never decides a geometric fact and never changes
-   admissibility.
-4. **Withdrawal and invalidation.** A new generation withdraws exactly the spans that its
-   refinement replaced. Publication is an update of the producer in the dependency graph: a
-   dependent whose result used a withdrawn cell is recomputed by the normal cascade and
-   reads the new generation; one that used only other cells keeps its result. A point keeps
-   its address and identity: it stays defined when its own evaluation is still valid, with
-   the new evidence reported, and is undefined with a typed cause otherwise.
-5. **No stale evidence.** A result records the revision and generation it read. Evidence of
-   a previous revision, or of a generation that withdrew the cells in use, is never reused. A
-   new revision discards the evidence and the contradiction set of the previous one and
-   cancels work in progress for it.
-6. **No promotion by density.** No number of nodes, refinements or agreeing evaluations
+1. **Two attributes, never confused.** The producer publishes the evidence atomically, as an
+   immutable value with:
+   - a **content identity**: `(revision, policy version, contradiction set)`, in canonical
+     form. Two evidences with the same content identity have the same cells, kinds and
+     classes. It is what a result records and what currentness is decided from;
+   - a **publication counter**: an integer of the revision that grows by one at each
+     publication. It orders the publications of one session and wakes the dependents. It is
+     never an identity, is never compared between two histories, never enters a result as
+     its evidence and is never persisted.
+2. **Contradiction set.** It is the set of canonical parameters of the revision at which the
+   producer has confirmed a contradiction. It is a set: it has no order and no multiplicity.
+3. **Determinism.** The content is a function of the traced function, the policy and the
+   contradiction set, and of nothing else. A cell is split exactly when the ordinary
+   criteria of the policy require it, or when it is larger than the minimum step and
+   contains a parameter of the contradiction set; a minimum-step cell that contains one is
+   classified with that parameter as an additional node. The partition is the one that this
+   rule determines, whatever the order in which the contradictions were found, reported or
+   confirmed, and whatever was queried or drawn in between. Two histories that confirm the
+   same set have the same content identity; their publication counters may differ.
+4. **Contradiction.** A consumer, the renderer or a later evaluation that observes, inside a
+   cell, an evaluation that the kind of the cell excludes — an invalid evaluation, another
+   selection or a jump above the limits in a span; a valid evaluation in an `ABSENT_BAND` or
+   a `FAILURE_BAND` — *reports* the parameter to the producer. The report changes nothing by
+   itself. The producer evaluates that parameter with its own evaluator; when the
+   contradiction is confirmed it adds the parameter to the contradiction set and publishes
+   the content of the new set. A report that is not confirmed, or whose parameter is already
+   in the set, changes neither the content nor the counter. The renderer never decides a
+   geometric fact and never changes admissibility.
+5. **Withdrawal and invalidation.** A publication withdraws exactly the cells that are not
+   present, with the same ends, kind and class, in the new content. Publication is an update
+   of the producer in the dependency graph. A dependent whose result used a withdrawn cell
+   is recomputed by the normal cascade and reads the new content; one that used only cells
+   that remain keeps its result. A point keeps its address, its identity and, when its own
+   evaluation is valid, its definition (§6.3).
+6. **No stale evidence.** A result records the revision and the content identity it read,
+   and the cells it used. It is current while every one of those cells is present unchanged
+   in the published content of the same revision; otherwise it is recomputed before it is
+   served. Evidence of a previous revision is never reused: a new revision discards the
+   evidence and the contradiction set of the previous one and cancels work in progress for
+   it.
+7. **No promotion by density.** No number of nodes, refinements or agreeing evaluations
    changes a span into a certified component. Promotion is only §11.
-7. **Work.** The traversal of a revision is charged to the work limit of the policy. Cells
-   not reached are `UNEXPLORED`. What a consumer may read is the published generation, the
-   same whatever has been drawn; a progressive drawing never changes it.
+8. **Work.** The traversal of a revision is charged to the work limit of the policy. Cells
+   not reached are `UNEXPLORED`. What a consumer may read is the published content, the same
+   whatever has been drawn; a progressive drawing never changes it.
 
 ## 8. Operations
 
@@ -216,12 +330,24 @@ its behaviour where the source has conditioned evidence. Common rules:
 - **Propagation by premise.** A result is graded by the facts it used, never by the weakest
   evidence of the locus. A local result that meets its premises is usable although global
   completeness is `NOT_ESTABLISHED`.
-- **Authority.** Under the constructive authority an incidence or membership decided on a
-  conditioned span is at most `RELAXED` and lists the span hypotheses among its premises;
-  under the legacy authority the existing contracts apply. A consumer that requires
-  `STRICT`, a certified component or `COMPLETE` fails closed with its existing cause.
+- **Integrity under the constructive authority.** `locus-v2-constructive-authority.md` §6,
+  §6.1 and §7 apply unchanged, and this contract proposes no widening of them. Conditioned
+  evidence is a numerical verification under hypotheses: it is not a kind of relaxed
+  admission, it is not a premise that raises an integrity, and `CONDITIONED` never grants
+  `RELAXED`. An incidence or a membership decided on a conditioned region is
+  `NOT_ESTABLISHED` unless that relation itself has, in the revision, the evidence that the
+  authority contract requires: rigorous evidence for `STRICT`, or a positive kind of its §7
+  (`SUBSTITUTE_GENERIC`, `ENCLOSURE_COMPATIBLE`) with every one of its preconditions and its
+  record for `RELAXED`. A relation with such evidence lists the span hypotheses it used
+  among its premises and is bounded by them as §6 of that contract bounds any derivation. A
+  consumer that declares a minimum integrity, or that requires a constructive admission,
+  keeps failing closed with its existing cause when it is not met; a consumer that declares
+  none publishes its result with the integrity shown. Under the legacy authority the
+  existing contracts apply.
+- **Strict consumers.** A consumer that requires `STRICT`, a certified component or
+  `COMPLETE` fails closed with its existing cause.
 - **Propagation.** Every result is an ordinary node of the dependency graph, recomputed when
-  the revision or the relevant evidence generation of its source changes (§7).
+  the revision of its source changes or when a cell it used is withdrawn (§7).
 - **Never published.** An ambiguous root, an association by proximity or by index, an
   unproved closure, `EMPTY`, or a set declared complete.
 
@@ -230,19 +356,20 @@ its behaviour where the source has conditioned evidence. Common rules:
 | | |
 |---|---|
 | Inputs and domain | locus, branch, number; the declared driver domain |
-| Preconditions | point validity at `u`; established selection of every selecting dependency at `u`; unambiguous address |
+| Preconditions | point validity at `u`; established selection of every selecting dependency at `u`; unambiguous address (§6.3) |
 | Evidence required | none on an interval: a point is an isolated position (§15.8) |
-| Guarantee | defined; existence `POINT_VALID`, with the evidence that contains `u` reported; numeric guarantee of the evaluation |
-| Incidence | on the locus by construction of the address; integrity at most `RELAXED` under the constructive authority |
-| Identity and continuation | parameter address (§6); following needs §8.2 |
-| Degeneracies | band, seam side, domain end, point component: typed cause |
-| Persistence and recovery | §6.4 |
+| Guarantee | defined; existence `POINT_VALID`, with the cell that contains `u` reported; numeric guarantee of the evaluation |
+| Incidence | on the locus by construction of the address. Under the constructive authority its integrity is `NOT_ESTABLISHED` unless the relation has its own evidence (common rule) |
+| Identity and continuation | parameter address (§6.1); following needs §8.2 |
+| Degeneracies | a valid `u` inside a band or an unexplored cell: defined, without continuation (§6.4). Seam side, domain end, point component: typed cause |
+| Persistence and recovery | §6.6 |
 | Refusals | `PARAMETER_OUTSIDE_DOMAIN`, `EVALUATION_FAILED`, `SELECTION_NOT_ESTABLISHED`, `POINT_COMPONENT` |
 
 `Point(L, D)` and `Intersect(L, r, D)` by driver correspondence keep the contract of ADR
-0040: they need the constructive authority and a membership that transfers from a certified
-component. On a conditioned region they resolve as a parametric point at the parameter of
-`D` only when the correspondence itself is established, with integrity at most `RELAXED`.
+0040 and of `locus-v2-existence-components.md` §16 unchanged: they need the constructive
+authority, a correspondence in the interior of a certified continuous component and the
+integrity their contract requires. On a conditioned region they are undefined with their
+existing typed cause.
 
 ### 8.2 Following, drag and continuation
 
@@ -253,19 +380,19 @@ component. On a conditioned region they resolve as a parametric point at the par
 | Evidence required | spans of any class along the route |
 | Guarantee | continuation along the region, declared conditioned |
 | Identity and continuation | the same point; a new parameter address; never a jump to another region by proximity |
-| Degeneracies | the gesture stops at a band, with the band kind as cause; a recoverable refusal does not end the gesture |
-| Refusals | `CONTINUATION_REACHED_BAND`, `TARGET_IN_ANOTHER_REGION` |
+| Degeneracies | the gesture stops at a band, with the band kind as cause; a recoverable refusal does not end the gesture. A point that starts inside a band or an unexplored cell stays defined and is not moved by following |
+| Refusals | `CONTINUATION_REACHED_BAND`, `CONTINUATION_START_IN_BAND`, `TARGET_IN_ANOTHER_REGION` |
 
 ### 8.3 Length between two positions
 
 | | |
 |---|---|
 | Inputs and domain | two semantic positions of one branch and a route policy |
-| Preconditions | both positions in one conditioned region; route inside it |
+| Preconditions | both positions in one conditioned region; route inside it. A position inside a band is a valid position with no route |
 | Evidence required | spans of any class along the route |
 | Guarantee | at most `ESTIMATED`, with H1 to H4 and the hypotheses of the estimator recorded; never a rigorous enclosure |
 | Degeneracies | equal positions: the existing same-position policies; a full cycle only on a region that covers the whole period with no band and whose seam nodes agree, declared closed-conditioned |
-| Refusals | `ROUTE_CROSSES_BAND` with the band kinds, `POSITIONS_IN_DIFFERENT_REGIONS` |
+| Refusals | `ROUTE_CROSSES_BAND` with the band kinds, `POSITION_IN_BAND`, `POSITIONS_IN_DIFFERENT_REGIONS` |
 
 ### 8.4 Total length
 
@@ -283,19 +410,19 @@ component. On a conditioned region they resolve as a parametric point at the par
 |---|---|
 | Inputs and domain | locus; a supported target family; the conditioned regions and the certified components of the source |
 | Preconditions | the candidate search runs on the semantic evaluator of the source over those regions, never on drawing data |
-| Evidence required | per root: membership of its parameter in a span or a certified component; residual within tolerance; local isolation; established deterministic selection |
+| Evidence required | per root: its isolating interval inside one span or one certified component; residual within tolerance; local isolation; a sign-change bracket for a transverse root |
 | Guarantee | each root `VERIFIED_UNCERTIFIED` with the evidence class of its span; completeness always `NOT_ESTABLISHED` on a source that is not `COMPLETE`; never `EMPTY` |
-| Incidence | of the root on the target by the existing residual contract; on the source by its parameter |
-| Identity and continuation | tokens by the existing deterministic selection; the ledger and its format are unchanged; a token point may be created from an admissible root |
-| Degeneracies | tangency, coincident roots, overlap: the existing classifications; a root in a band is not published |
-| Persistence and recovery | as today: the command and the ledger |
-| Refusals | `SOURCE_NOT_EVALUABLE`; a root whose selection is not established keeps a revision-local handle and is not point-admissible |
+| Incidence | of the root on the target by the existing residual contract; on the source by its parameter. Under the constructive authority the admission of a root is the unchanged re-qualification of `locus-v2-constructive-authority.md` §7.4: `STRICT`, `RELAXED` by its own positive evidence, or `NOT_ESTABLISHED`; a root that is not admitted is published and is not point-admissible |
+| Identity and continuation | §6.5: component selector inside a certified component, branch-frame selector on a span, no rank on a span |
+| Degeneracies | tangency, coincident roots, overlap: the existing classifications. A root needs evidence on a neighbourhood, which a band does not give: a candidate whose isolating interval meets a band or an unexplored cell is reported unresolved and is not published as a root. This differs from a parametric point, which needs no neighbourhood (§6.3) |
+| Persistence and recovery | the command and the ledger, with the entry kind of §6.5 |
+| Refusals | `SOURCE_NOT_EVALUABLE`; a root whose selector is not unique keeps a revision-local handle and is not point-admissible |
 
 ### 8.6 Intersection of two loci — `Intersect(L1, L2)`
 
 The same contract with the pair of sources: component pairs become pairs of regions or
-components, each root needs membership on both sources, and the pair selector and ledger are
-unchanged. Completeness is `NOT_ESTABLISHED` whenever either source is not `COMPLETE`.
+components, each root needs its evidence on both sources, and the pair selector follows
+§6.5, point 6. Completeness is `NOT_ESTABLISHED` whenever either source is not `COMPLETE`.
 
 ### 8.7 Transformations — `Translate`, `Rotate`, `Mirror`, `Dilate`
 
@@ -307,14 +434,33 @@ domain, the branches and the orientation of the source.
 |---|---|
 | Inputs and domain | a locus and the parameters of a similarity |
 | Preconditions | the source is defined; the parameters are defined |
-| Evidence | the image *inherits* the conditioned evidence of the source cell by cell, with the same kinds, classes, hypotheses and generation, as it already inherits the existence structure. H1 to H3 are invariant under a similarity; the resolution bound of H4 is the source bound multiplied by the ratio of the similarity |
+| Evidence | the image *inherits* the conditioned evidence of the source cell by cell, with the same ends, kinds, classes, hypotheses and content identity, as it already inherits the existence structure. H1 to H3 are invariant under a similarity; the resolution bound of H4 is the source bound multiplied by the absolute ratio |
 | Guarantee | that of the source region, for every consumer of this section |
 | Incidence | a point of the image at parameter `u` is the image of the source point at `u` |
-| Identity and continuation | own identity; a parameter address on the image names the same parameter |
-| Propagation | recomputed when the source revision or generation, or a parameter, changes |
-| Degeneracies | ratio zero: the image is one point; every span is reported collapsed and no length or intersection treats it as an arc |
+| Identity and continuation | own identity; a parameter address on the image names the same parameter. A transformed query creates its own selectors and tokens, as `locus-v2-similarity-transformations.md` §8 says; none is copied from the source query |
+| Propagation | recomputed when the source revision, a source cell in use or a parameter changes |
+| Ratio zero | the approved `COLLAPSED_IMAGE` contract, unchanged (below) |
 | Persistence | the command and its inputs, as today |
 | Refusals | an undefined source or parameter gives an undefined image, as today |
+
+**Finite ratio zero.** `locus-v2-similarity-transformations.md` §5.4, §6, §7 and §8,
+`locus-v2-point-interaction.md` §11 and the collapsed-image clauses of
+`locus-v2-metrics.md` govern, on a conditioned source exactly as on a certified one:
+
+- the image is a valid semantic Locus V2 with the image property `COLLAPSED_IMAGE`. It
+  preserves the source domains with their `FINITE` or `UNBOUNDED` classification, the
+  branches, the semantic addresses and the invalid gaps; every source-valid address maps to
+  the centre and every source-invalid address stays invalid;
+- the conditioned evidence is inherited as for any other ratio: spans stay spans, bands stay
+  bands, and no cell is reclassified because the image collapsed;
+- an existing point keeps its selected address and its identity, evaluates at the centre and
+  recovers its position when the ratio is nonzero again; a new inverse query on the image
+  cannot choose one address and returns the existing degenerate, multiple result;
+- total and partial lengths are the zero values that the metric contract assigns to a
+  collapsed image, with the class it assigns. They follow from the image property, not from
+  the evidence; what remains conditioned is the existence of the positions and of the route;
+- a target that passes through the collapsed point is the existing overlap, non-isolated
+  case: no isolated root is fabricated and no bijective covariance is claimed.
 
 The image is never computed from a tessellation of the source.
 
@@ -344,19 +490,19 @@ then addressed by parameter.
    conditioned region and none identifies it.
 2. **Stroke.** A conditioned region is drawn as one continuous stroke with the style of the
    locus, tessellated per view from the evaluator inside the spans of the published
-   generation. Bands are not joined: the rule that no render segment crosses an unresolved
+   content. Bands are not joined: the rule that no render segment crosses an unresolved
    band is unchanged. A region is drawn closed only as §8.3 allows.
-3. **State in the properties.** The properties of the object state the grade in ordinary
-   words, localized, for example «Conditioned — existence/continuity not certified», and
-   list on request the hypotheses H1 to H4, the policy version, the number of regions and
-   bands with their kinds, and the generation. Results derived from a conditioned region
+3. **State in the properties.** The properties of the object always state the grade in
+   ordinary words, localized, for example «Conditioned — existence/continuity not
+   certified», and list on request the hypotheses H1 to H4, the policy version and the
+   number of regions and bands with their kinds. Results derived from a conditioned region
    state it the same way. No developer diagnostic is needed to read them.
-4. **System mark.** A discrete mark drawn by the system identifies each conditioned region
-   in the view. It is an overlay in screen pixels of fixed size, outlined with the colour of
-   the object, with no hit area; it is independent of the line style, thickness and zoom; it
-   is not serialized and is neither geometry, parametrization, identity, length nor
-   evidence. Its glyph is not an arrow and cannot be read as an orientation. It never
-   denotes certification or completeness.
+4. **System mark** (author decision of 2026-11-21). A hollow rhombus of 7 pixels, drawn by
+   the system, identifies each visible conditioned region in the view. It is an overlay in
+   screen pixels of fixed size, outlined with the colour of the object, with no hit area; it
+   is independent of the line style, thickness and zoom; it is not serialized and is neither
+   geometry, parametrization, identity, length nor evidence. It is not an arrow and cannot be
+   read as an orientation. It never denotes certification or completeness.
 5. **Fallback.** If the mark proves unsound to build, point 3 alone satisfies this section.
 6. A drawing that looks closed is never called complete.
 
@@ -368,19 +514,23 @@ then addressed by parameter.
    conditioned regions in GeoCeDG 1.2.2. Each omission is reported with the diagnostic
    `EXISTENCE_NOT_ESTABLISHED` and the list of regions and bands, as the adapter already
    reports a source without components. Certified components are exported as today.
-3. Semantic export of conditioned regions is future work. It depends on the line on
-   B-splines and other derived representations, DXF import and extended DXF export, with
-   preservation of quality, provenance and tolerances. In that line DXF import stays
-   read-only, and a spline, a polyline or another derived representation of interchange
-   never silently replaces the authoritative CeDG object.
+3. Semantic export of conditioned regions is future work, registered in the roadmap as a
+   requirement of the future line on B-splines and other derived representations, DXF import
+   and extended DXF export, with preservation of quality, provenance and tolerances. No
+   subphase is opened for it. In that line DXF import stays read-only, and a spline, a
+   polyline or another derived representation of interchange never silently replaces the
+   authoritative CeDG object.
 4. Exploratory evidence stays never exported.
 
 ## 11. Promotion by proof
 
 Conditioned evidence proposes; the kernel proves. A region is promoted to a certified
 component only by a certificate under `locus-existence/hybrid/v1` or a successor. Promotion
-changes no identity and no function. Two bounded promoters are identified, each a separate
-later capability with its own approval:
+changes no identity of the locus, no function and no parameter address. A root selector is
+bound to its frame (§6.5, point 5): a promoter that is to keep the tokens of the roots of a
+promoted region must define that correspondence in its own contract, by structural evidence
+and never by proximity; none is defined here. Two bounded promoters are identified, each a
+separate later capability with its own approval:
 
 - **K2, composition through a certified reparametrization**: for `P(θ) = L(τ(θ))` with `L`
   certified and `τ` an enclosed scalar program, a certificate of the image and, separately,
@@ -389,20 +539,21 @@ later capability with its own approval:
 - **K1, certified root family**: an enclosed family of the root parameter over a cell. A
   fold needs `h = 0` and `h_u = 0` together.
 
-No promotion is part of `conditioned-use/v2`.
+No promotion is part of `conditioned-use/v3`.
 
 ## 12. Amendments that adoption would require
 
 | Specification | Amendment |
 |---|---|
 | `locus-v2-existence-components.md` §15.1, §15.8 | name the conditioned evidence as the producer of `NUMERICAL_UNDER_HYPOTHESES`; state the consumer admissions of §8 beside the existing exception |
-| `locus-v2-public-surface.md` | parameter address codec and its resolution; result states of intersections on a conditioned source |
-| `locus-v2-point-interaction.md` | continuation along a conditioned region |
+| `locus-v2-public-surface.md` | parameter address codec and its resolution; result states of intersections on a conditioned source; ledger format version with the branch-frame entry kind |
+| `locus-v2-point-interaction.md` | continuation along a conditioned region; a valid point inside a band has no continuation |
 | `locus-v2-metrics.md` | conditioned between-position and total lengths; relation to §26.5 and §26.6 |
-| `locus-v2-intersections.md`, `locus-v2-extended-intersections.md` | local roots on conditioned regions, for a target and for a pair |
-| `locus-v2-similarity-transformations.md` | inheritance of conditioned evidence by the image |
+| `locus-v2-intersections.md`, `locus-v2-extended-intersections.md` | local roots on spans beside the rule that a locally verified root needs a certified component; the branch-frame selector kind beside §6.2, whose text for certified components does not change |
+| `locus-v2-similarity-transformations.md` | inheritance of conditioned evidence by the image; no change of the `COLLAPSED_IMAGE` clauses |
 | `locus-v2-presentation.md` | state in the properties, system mark, closure wording |
 | export specifications | omission with diagnostic (§10) |
+| `locus-v2-constructive-authority.md` | none: integrity and relaxed admission do not change |
 | `locus-v2-semantics.md` | none: the snapshot does not change |
 
 ## 13. Differences from revision 1 (`ab37fb5ff`)
@@ -419,3 +570,36 @@ No promotion is part of `conditioned-use/v2`.
    manipulation added.
 7. §9: the mandatory stroke style is removed; state in the properties and a system mark.
 8. §10: semantic export excluded from 1.2.2, with its future dependency.
+
+## 14. Differences from revision 2 (`83cd56c4c`) and their validation
+
+Focal amendment requested by the author on 2026-11-21. Nothing else changes.
+
+| # | Point | Revision 2 | Revision 3 | Where |
+|---|---|---|---|---|
+| 1 | `RELAXED` integrity | an incidence on a conditioned span was «at most `RELAXED`» | `CONDITIONED` never grants `RELAXED`; the positive requirements of the authority contract are unchanged and no widening is proposed; without the relation's own evidence the integrity is `NOT_ESTABLISHED` | §2, §8 common rule, §8.1, §8.5 |
+| 2 | Identity of intersection roots | «tokens by the existing deterministic selection», which needs a component lineage that a region does not have | a branch-frame selector of its own kind, without rank, never built from the partition; certified selectors unchanged | §1, §6.5, §8.5, §8.6, §11, §12 |
+| 3 | Generations | one «generation» was both counter and identity, and depended on the order of confirmation | content identity (function of the contradiction set, a set of parameters) and publication counter are separate; staleness is decided by cells | §2, §7 |
+| 4 | Points in bands | a parameter in a band gave a typed cause | point validity and admissibility of continuation are separate; a valid point in a band is defined, without continuation | §2, §6.3, §6.4, §6.6, §8.1 to §8.3, §8.5 |
+| 5 | Ratio zero | «the image is one point; every span is reported collapsed» | the approved `COLLAPSED_IMAGE` contract unchanged: domains, gaps, addresses, identities and zero metrics | §8.7 |
+| 6 | `MARGIN_BOUNDED` | inferred that the selected root is not exchanged | proves only the pairwise separation of the enclosed roots; H2 stays whole | §3.3 |
+| — | Driver correspondence | resolved as a parametric point on a region | unchanged contract: needs a certified component | §8.1 |
+| — | System mark | glyph proposed | hollow rhombus of 7 px, approved by the author | §9.4 |
+
+Validation criteria. Each is a discriminating test of the increment named, in addition to
+the bench of the design document.
+
+| # | Criterion | Increment |
+|---|---|---|
+| 1a | under the constructive authority, a parametric point and a root on a span without evidence of their own have integrity or admission `NOT_ESTABLISHED`; the root is published and its token point is undefined with the existing cause | I1, I4 |
+| 1b | the same relation with a positive kind of the authority contract is `RELAXED`, with its record; every existing test of the authority contract passes unchanged; no production path builds `RELAXED` from conditioned evidence | I4 |
+| 2a | two roots of opposite germ on one region receive two tokens; direct, incremental, undo and redo, and save and reopen histories give the same bindings | I4 |
+| 2b | the same construction traversed with another policy depth, and after a new publication, gives the same selectors and tokens | I4 |
+| 2c | two roots of the same germ on one branch receive no token and keep revision-local handles; a root that passes between a certified component and a span does not carry its token, and recovers it when the state returns | I4 |
+| 2d | the selector and token texts of every root on a certified component are byte-identical to those of the base; every existing ledger document reads as before | I4 |
+| 3a | every permutation of three or more confirmed contradictions, interleaved with queries and drawing, gives the same content identity and the same cells; the counters may differ; a duplicate or unconfirmed report changes nothing | I0 |
+| 3b | a dependent that used a withdrawn cell is recomputed and one that did not keeps its result; after a new revision no result of the previous one is served | I0 |
+| 4a | a point at a valid parameter inside each kind of band is defined, reports the band, keeps its address through publications and is refused following and routes with the typed cause; an explicit redefinition moves it | I1, I3 |
+| 4b | a valid evaluation inside an `ABSENT_BAND` or a `FAILURE_BAND` is reported, confirmed and reclassified | I0 |
+| 5 | with ratio zero on a conditioned source: valid image, domains, gaps and cells equal to the source, existing point with its address that recovers at a nonzero ratio, degenerate inverse query, zero lengths with the class of the metric contract, a target through the centre as overlap; the existing `COLLAPSED_IMAGE` tests pass unchanged | I4T |
+| 6 | adverse case: the enclosed roots stay separated on a cell while the selection of the dependency changes inside it; the span is `MARGIN_BOUNDED`, records H2 and gives no consumer more than `RESOLUTION_ONLY`; no consumer branches on the class | I0 |
