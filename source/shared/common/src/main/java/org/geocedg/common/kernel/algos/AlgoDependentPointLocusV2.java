@@ -141,6 +141,16 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		publishInitialSnapshot();
 	}
 
+	/** @return the driver state that this locus traces over */
+	public GeoElement getDriverState() {
+		return state;
+	}
+
+	/** @return the true coordinate of the driver of this locus */
+	public GeoElement getDriverCoordinate() {
+		return coordinate;
+	}
+
 	/** @return current late-bound descriptor, or {@code null} before attachment */
 	public SemanticGeneratorDescriptor1D getGeneratorDescriptor() {
 		return descriptor;

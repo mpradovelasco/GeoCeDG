@@ -46,7 +46,11 @@ import org.geogebra.common.kernel.geos.GeoElement;
  * <li>values: the exact binary64 bits of every independent element, of every unlabelled
  * input of an algorithm and of every number literal of a definition, and the parameters of
  * the free place of every point on a path or in a region that depends on the driver and is
- * not a driver root (finding H-CU2A-9);</li>
+ * not a driver root (finding H-CU2A-9); the values that are evaluation state of a nested
+ * Locus V2 at the position of its own driver, and reach the traced point only through the
+ * output of a locus of that driver, enter like the values that follow the driver of the
+ * slice: without their exact state, with the free place of every point that has one and is
+ * not a nested driver root (post-R1 repair A');</li>
  * <li>selection: the selection state of every line-conic intersection, read through
  * read-only accessors (D-CU2-17);</li>
  * <li>labels: the label state of the outputs of every intersection.</li>
@@ -58,7 +62,7 @@ import org.geogebra.common.kernel.geos.GeoElement;
  */
 public final class ReconstructionSliceFingerprint2D {
 	/** Version participating in the evaluator signature. */
-	public static final String VERSION = "reconstruction-slice-fingerprint/v2";
+	public static final String VERSION = "reconstruction-slice-fingerprint/v3";
 
 	/**
 	 * Tags that carry the derived value of a dependent element, recomputed from its inputs
@@ -196,6 +200,13 @@ public final class ReconstructionSliceFingerprint2D {
 		ordered.sort(CONSTRUCTION_ORDER);
 		Set<GeoElement> driverDependent = ReconstructionExactState2D.driverDependent(
 				ordered, driverRoots);
+		// Post-R1 repair A': evaluation state of a nested locus at its own driver position.
+		Set<GeoElement> nestedState = ReconstructionExactState2D.nestedDriverState(ordered,
+				driverDependent);
+		Set<GeoElement> nestedRoots = ReconstructionExactState2D.nestedDriverRoots(ordered);
+		Set<GeoElement> neutral = Collections.newSetFromMap(new IdentityHashMap<>());
+		neutral.addAll(driverDependent);
+		neutral.addAll(nestedState);
 		Set<AlgoElement> written = Collections.newSetFromMap(new IdentityHashMap<>());
 		StringBuilder structure = new StringBuilder();
 		StringBuilder values = new StringBuilder();
@@ -210,7 +221,7 @@ public final class ReconstructionSliceFingerprint2D {
 				structure.append("|A:").append(algorithm);
 				for (ReconstructionExactState2D.InlineInput inline
 						: ReconstructionExactState2D.inlineInputs(parent)) {
-					appendInline(values, label, inline, driverDependent);
+					appendInline(values, label, inline, neutral);
 				}
 				appendSelection(selection, labels, label, parent);
 			}
@@ -220,7 +231,7 @@ public final class ReconstructionSliceFingerprint2D {
 				// set by program drops its literal and adds options. Its exact value is
 				// in the values part, unless it is the driver.
 				text = geo.getClass().getSimpleName() + ":" + label;
-				if (!driverDependent.contains(geo)) {
+				if (!neutral.contains(geo)) {
 					values.append("|V:").append(label).append(':')
 							.append(ReconstructionExactState2D.of(geo));
 				}
@@ -229,17 +240,17 @@ public final class ReconstructionSliceFingerprint2D {
 				geo.getXML(false, element);
 				text = DEFERRED_DRAWING_TAG.matcher(DERIVED_VALUE_TAG.matcher(
 						element.toString()).replaceAll("")).replaceAll("");
-				if (geo instanceof GeoLocusIntersectionResult
-						&& driverDependent.contains(geo)) {
+				if (geo instanceof GeoLocusIntersectionResult && neutral.contains(geo)) {
 					text = withEvaluationNeutralLedger(text,
 							(GeoLocusIntersectionResult) geo);
 				}
-				if (!driverDependent.contains(geo)) {
+				if (!neutral.contains(geo)) {
 					// Derived, but not always a function of the slice inputs: a random
 					// value changes on recomputation and must publish a revision.
 					values.append("|D:").append(label).append(':')
 							.append(ReconstructionExactState2D.of(geo));
-				} else if (driverRoots.stream().noneMatch(root -> root == geo)) {
+				} else if (driverRoots.stream().noneMatch(root -> root == geo)
+						&& !(nestedState.contains(geo) && nestedRoots.contains(geo))) {
 					// Its coordinates follow the driver, but the place of a point on a path
 					// or in a region is its own input (PRE-G9B-CU2, finding H-CU2A-9).
 					String place = ReconstructionExactState2D.freePlace(geo);
@@ -258,8 +269,9 @@ public final class ReconstructionSliceFingerprint2D {
 	}
 
 	/**
-	 * A result that does not follow the driver keeps its complete serialized ledger; this
-	 * replacement is applied only to one that does.
+	 * A result that follows neither the driver of the slice nor, as nested evaluation state,
+	 * the driver of a nested locus keeps its complete serialized ledger; this replacement is
+	 * applied only to one that does.
 	 */
 	private static String withEvaluationNeutralLedger(String text,
 			GeoLocusIntersectionResult result) {

@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.PathParameter;
@@ -181,6 +183,122 @@ final class ReconstructionExactState2D {
 			}
 		}
 		return dependent;
+	}
+
+	/**
+	 * The elements of a slice whose values are evaluation state of a nested Locus V2 at the
+	 * position of its own driver (post-R1 repair A'): the driver roots of a nested locus and
+	 * the elements computed from them, when every use of them inside the slice ends in the
+	 * output of a locus that has that same driver. The value of such an output does not depend
+	 * on the position of its driver ({@code locus-v2-semantics.md}, PRE-G9B-CU1 amendment), so
+	 * these values are not inputs of the function that the slice traces.
+	 *
+	 * <p>The decision is the greatest set closed under the uses of the existing dependency
+	 * graph. An element is kept out of it, with all the elements it is computed from, when an
+	 * algorithm of the slice reads it and has an output that is neither in the set nor the
+	 * output of a locus of that driver: an output that follows the driver of the slice (a
+	 * direct route to the traced point), the output of another locus that reads it as a
+	 * non-driver input, or any other element. Elements that already follow the driver of the
+	 * slice are not candidates.</p>
+	 *
+	 * @param ordered slice elements in construction order
+	 * @param driverDependent the elements that follow the driver of the slice
+	 * @return identity set of the nested evaluation state, with the nested driver roots
+	 */
+	static Set<GeoElement> nestedDriverState(List<GeoElement> ordered,
+			Set<GeoElement> driverDependent) {
+		Set<GeoElement> slice = Collections.newSetFromMap(new IdentityHashMap<>());
+		slice.addAll(ordered);
+		List<NestedDriver> drivers = new ArrayList<>();
+		for (GeoElement geo : ordered) {
+			AlgoElement parent = geo.getParentAlgorithm();
+			if (!(geo instanceof GeoLocusV2) || !(parent instanceof AlgoDependentPointLocusV2)) {
+				continue;
+			}
+			AlgoDependentPointLocusV2 producer = (AlgoDependentPointLocusV2) parent;
+			NestedDriver driver = null;
+			for (NestedDriver known : drivers) {
+				if (known.state == producer.getDriverState()
+						&& known.coordinate == producer.getDriverCoordinate()) {
+					driver = known;
+				}
+			}
+			if (driver == null) {
+				driver = new NestedDriver(producer.getDriverState(),
+						producer.getDriverCoordinate());
+				drivers.add(driver);
+			}
+			driver.producers.add(producer);
+		}
+		Set<GeoElement> nested = Collections.newSetFromMap(new IdentityHashMap<>());
+		for (NestedDriver driver : drivers) {
+			if (!slice.contains(driver.state) || !slice.contains(driver.coordinate)) {
+				continue;
+			}
+			Set<GeoElement> candidates = driverDependent(ordered,
+					java.util.Arrays.asList(driver.state, driver.coordinate));
+			candidates.removeAll(driverDependent);
+			boolean removed = true;
+			while (removed) {
+				removed = false;
+				for (Iterator<GeoElement> iterator = candidates.iterator(); iterator.hasNext();) {
+					if (escapes(iterator.next(), driver, candidates, slice)) {
+						iterator.remove();
+						removed = true;
+					}
+				}
+			}
+			nested.addAll(candidates);
+		}
+		return nested;
+	}
+
+	private static boolean escapes(GeoElement element, NestedDriver driver,
+			Set<GeoElement> candidates, Set<GeoElement> slice) {
+		if (element.getAlgorithmList() == null) {
+			return false;
+		}
+		for (AlgoElement consumer : element.getAlgorithmList()) {
+			if (driver.producers.contains(consumer)) {
+				// Through the output of a locus of this driver.
+				continue;
+			}
+			for (GeoElement output : consumer.getOutput()) {
+				if (output != null && slice.contains(output) && !candidates.contains(output)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** The driver roots shared by the nested loci of a slice that trace over them. */
+	private static final class NestedDriver {
+		private final GeoElement state;
+		private final GeoElement coordinate;
+		private final Set<AlgoElement> producers =
+				Collections.newSetFromMap(new IdentityHashMap<>());
+
+		private NestedDriver(GeoElement state, GeoElement coordinate) {
+			this.state = state;
+			this.coordinate = coordinate;
+		}
+	}
+
+	/**
+	 * @param ordered slice elements in construction order
+	 * @return identity set of the driver roots of the nested Locus V2 producers of the slice
+	 */
+	static Set<GeoElement> nestedDriverRoots(List<GeoElement> ordered) {
+		Set<GeoElement> roots = Collections.newSetFromMap(new IdentityHashMap<>());
+		for (GeoElement geo : ordered) {
+			AlgoElement parent = geo.getParentAlgorithm();
+			if (geo instanceof GeoLocusV2 && parent instanceof AlgoDependentPointLocusV2) {
+				roots.add(((AlgoDependentPointLocusV2) parent).getDriverState());
+				roots.add(((AlgoDependentPointLocusV2) parent).getDriverCoordinate());
+			}
+		}
+		return roots;
 	}
 
 	/** @return whether the element is the output of a locus */
