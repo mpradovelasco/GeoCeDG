@@ -268,6 +268,14 @@ public final class GeoLocusIntersectionResult extends GeoElement
 				? tokenLedger.exportEvaluationNeutralState() : null;
 	}
 
+	/**
+	 * @return the complete state of the ledger, persisted and pending
+	 *         ({@link LocusIntersectionTokenLedger2D#exportEquivalenceState()})
+	 */
+	public String getTokenLedgerEquivalenceState() {
+		return tokenLedger.exportEquivalenceState();
+	}
+
 	/** @return whether the current rich result admits this exact token */
 	public boolean isPointAdmissible(String rootToken) {
 		return findExactPointAdmissibleSolution(rootToken).isPresent();

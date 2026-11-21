@@ -13,6 +13,8 @@ import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
+import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
+import org.geocedg.common.kernel.locus.constructive.AuthorityPolicy;
 import org.geocedg.common.kernel.locus.constructive.DocumentDecisionConfiguration;
 import org.geocedg.common.kernel.locus.intersection.IntersectionCompletenessEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionDiagnostic2D;
@@ -23,6 +25,7 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Currentness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DiagnosticCode;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.GeometryKind;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.IdentityStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.SupportLevel;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.TargetFamily;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.TargetSupportStatus;
@@ -34,6 +37,7 @@ import org.geocedg.common.kernel.locus.intersection.LocusIntersectionInstrumenta
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionPolicy2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionQuery2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionResult2D;
+import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolver2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTarget2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionTargets2D;
@@ -70,6 +74,21 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 	private LocusIntersectionResult2D lastContinuableResult;
 	private long targetUpdateStamp;
 	private long nextRootToken;
+	/**
+	 * Post-R1 repair B: the complete semantic inputs of the last resolution of this producer,
+	 * its outcome and the state in which it left the ledger. A later update with the same
+	 * inputs is equivalent only after one resolution under those same inputs has reproduced
+	 * that outcome and left the ledger unchanged.
+	 */
+	private String resolvedInputs;
+	private LocusDefinition2D resolvedDefinition;
+	private LocusIntersectionResult2D resolvedResult;
+	private String resolvedOutcome;
+	private String resolvedLedgerState;
+	private boolean resolutionConfirmed;
+	private boolean equivalentUpdateReuse = true;
+	private long resolutionCount;
+	private long equivalentUpdateCount;
 
 	/**
 	 * Creates, wires and computes one internal rich intersection.
@@ -172,6 +191,21 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 		}
 		LocusDefinition2D definition = source.getSemanticDefinition();
 		long locusRevision = Math.max(1, source.getSemanticRevision());
+		// Post-R1 repair B (locus-v2-intersections.md section 10): an update whose complete
+		// semantic inputs are those of the current payload of this producer is not a
+		// recompute. The payload stays current, and no resolution starts.
+		String inputs = semanticInputs(definition, locusRevision);
+		String ledgerBefore = inputs == null ? null : result.getTokenLedgerEquivalenceState();
+		if (isEquivalentUpdate(definition, inputs, ledgerBefore)) {
+			equivalentUpdateCount++;
+			return;
+		}
+		LocusIntersectionResult2D previous = result.getIntersectionResult();
+		boolean sameInputs = inputs != null && inputs.equals(resolvedInputs)
+				&& definition == resolvedDefinition && previous == resolvedResult;
+		String previousOutcome = resolvedOutcome;
+		forgetResolution();
+		resolutionCount++;
 		targetUpdateStamp++;
 		String providerId = definition == null ? "unavailable-provider/v1"
 				: definition.getProvider().getProviderId();
@@ -239,6 +273,8 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 								candidate, policy);
 				publishWithLedger(binding, current, evaluation);
 				updateContinuationBaseline(current);
+				rememberResolution(definition, inputs, current, ledgerBefore, sameInputs,
+						previousOutcome);
 			} catch (RuntimeException exception) {
 				result.abortTokenEvaluation(evaluation);
 				throw exception;
@@ -255,6 +291,146 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 									+ exception.getClass().getSimpleName(),
 							basePolicy));
 		}
+	}
+
+	/**
+	 * The complete semantic inputs of a resolution of this public producer: the durable
+	 * identities of the source, the target, the pair and the owner; the semantic revision and
+	 * the provider contract of the source; the exact state of the target and of everything it
+	 * is built from, as the reconstruction fingerprint reads it; the target family; the
+	 * authority of the document, and the lineage, topology and policy versions. The current
+	 * definition object of the source and the state of the ledger are compared beside it.
+	 * Update counters and coordinates alone are never the key.
+	 *
+	 * @return the inputs, or {@code null} when this update is never equivalent
+	 */
+	private String semanticInputs(LocusDefinition2D definition, long locusRevision) {
+		if (!publicCommand || !equivalentUpdateReuse || definition == null
+				|| !source.isDefined() || !target.isDefined()) {
+			return null;
+		}
+		ArrayList<GeoElement> targetClosure = new ArrayList<>(target.getAllPredecessors());
+		targetClosure.add(target);
+		AuthorityPolicy authority = AuthorityPolicy.of(cons);
+		return "equivalent-update/v1|pair=" + sourcePairIdentity + "|target=" + targetIdentity
+				+ "|owner=" + resultOwnerIdentity() + "|lineage="
+				+ constructiveIntersectionLineage + "|topology=" + topologyContext
+				+ "|revision=" + locusRevision + "|provider="
+				+ definition.getProvider().getProviderId() + "|parameter="
+				+ definition.getProvider().getParameterDescriptor() + "|family="
+				+ LocusIntersectionTargets2D.familyOf(target) + "|authority="
+				+ authority.getAuthority() + "/" + authority.getClassTable() + "/"
+				+ authority.getRelaxedAdmission() + "/" + authority.getCertifier() + "/"
+				+ authority.getTransfer() + "|policy="
+				+ LocusIntersectionPolicy2D.initial(definition.getProvider().getProviderId(),
+						definition.getProvider().getParameterDescriptor()).getPolicyVersion()
+				+ "|target-state=" + ReconstructionSliceFingerprint2D.compute(targetClosure,
+						Collections.emptyList());
+	}
+
+	private boolean isEquivalentUpdate(LocusDefinition2D definition, String inputs,
+			String ledgerState) {
+		return inputs != null && resolutionConfirmed && inputs.equals(resolvedInputs)
+				&& definition == resolvedDefinition && result.isDefined()
+				&& result.getIntersectionResult() == resolvedResult
+				&& ledgerState.equals(resolvedLedgerState);
+	}
+
+	/**
+	 * Records the resolution that just published. It becomes reusable only when it is a
+	 * complete success whose roots all have an established deterministic selection, and when
+	 * it repeats, under the same inputs, the outcome of the previous resolution without having
+	 * changed the ledger: a failure, a work limit, a first publication, an ambiguous or
+	 * discontinuous identity and any ledger transition are always resolved again.
+	 */
+	private void rememberResolution(LocusDefinition2D definition, String inputs,
+			LocusIntersectionResult2D current, String ledgerBefore, boolean sameInputs,
+			String previousOutcome) {
+		if (inputs == null) {
+			return;
+		}
+		resolvedInputs = inputs;
+		resolvedDefinition = definition;
+		resolvedResult = current;
+		resolvedOutcome = stableOutcome(current);
+		resolvedLedgerState = result.getTokenLedgerEquivalenceState();
+		resolutionConfirmed = resolvedOutcome != null && sameInputs
+				&& resolvedOutcome.equals(previousOutcome)
+				&& resolvedLedgerState.equals(ledgerBefore);
+	}
+
+	private void forgetResolution() {
+		resolvedInputs = null;
+		resolvedDefinition = null;
+		resolvedResult = null;
+		resolvedOutcome = null;
+		resolvedLedgerState = null;
+		resolutionConfirmed = false;
+	}
+
+	/**
+	 * @return the outcome of a result without its update ordinal, or {@code null} for a result
+	 *         that is never reused: one that is not a current finite success, that reached a
+	 *         work limit or failed privately, or that has a root whose identity is not an
+	 *         established deterministic selection
+	 */
+	private static String stableOutcome(LocusIntersectionResult2D current) {
+		if (current.getComputationStatus() != ComputationStatus.SUCCESS
+				|| current.getCurrentness() != Currentness.CURRENT
+				|| current.getGeometryKind() != GeometryKind.FINITE
+				|| current.getWork().getFailedPrivateComputations() != 0) {
+			return null;
+		}
+		for (IntersectionDiagnostic2D diagnostic : current.getDiagnostics()) {
+			if (diagnostic.getCode() == DiagnosticCode.WORK_LIMIT_REACHED
+					|| diagnostic.getCode() == DiagnosticCode.NUMERICAL_FAILURE
+					|| diagnostic.getCode() == DiagnosticCode.INTERNAL_FAILURE) {
+				return null;
+			}
+		}
+		StringBuilder outcome = new StringBuilder();
+		outcome.append(current.getCompletenessEvidence().getCompleteness()).append('|')
+				.append(current.getSupportLevel()).append('|')
+				.append(current.getNumericGuarantee()).append('|')
+				.append(current.getUnresolvedCandidateComponentKeys());
+		for (LocusIntersectionSolution2D solution : current.getFiniteSolutions()) {
+			if (solution.getIdentity().getIdentityStatus()
+					!= IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED) {
+				return null;
+			}
+			outcome.append('|').append(solution.getIdentity().getRootToken()).append('@')
+					.append(Double.toHexString(solution.getRevisionEvidence()
+							.getSemanticParameter())).append(':')
+					.append(Double.toHexString(solution.getEvaluatedPoint().getX()))
+					.append(',')
+					.append(Double.toHexString(solution.getEvaluatedPoint().getY()))
+					.append(':').append(solution.getRevisionEvidence().getNumericGuarantee())
+					.append(':').append(solution.getRevisionEvidence()
+							.getLocalIsolationStatus()).append(':')
+					.append(solution.getClassification().getContactClass());
+		}
+		return outcome.toString();
+	}
+
+	/**
+	 * For verification only: with the reuse disabled every update resolves again, which is
+	 * the reference that an equivalent update must reproduce.
+	 *
+	 * @param reuse whether an equivalent update keeps the current payload
+	 */
+	public void setEquivalentUpdateReuse(boolean reuse) {
+		equivalentUpdateReuse = reuse;
+		forgetResolution();
+	}
+
+	/** @return resolutions started by this producer */
+	public long getResolutionCount() {
+		return resolutionCount;
+	}
+
+	/** @return updates that kept the current payload because their inputs were equivalent */
+	public long getEquivalentUpdateCount() {
+		return equivalentUpdateCount;
 	}
 
 	private LocusIntersectionQuery2D query(long locusRevision,
@@ -290,6 +466,7 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 	@Override
 	public void remove() {
 		lastContinuableResult = null;
+		forgetResolution();
 		super.remove();
 	}
 

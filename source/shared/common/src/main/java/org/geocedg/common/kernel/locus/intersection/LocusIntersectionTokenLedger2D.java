@@ -754,6 +754,21 @@ public final class LocusIntersectionTokenLedger2D {
 				+ encodeSnapshot(copySource, version);
 	}
 
+	/**
+	 * The complete state of this ledger as a comparison text: the persisted state and the
+	 * pending copy authorizations and point claims that are not persisted. Two equal texts
+	 * mean that nothing of the ledger changed between them (post-R1 repair B). It is never
+	 * persisted and never imported.
+	 *
+	 * @return comparison text of the complete state of this ledger
+	 */
+	public String exportEquivalenceState() {
+		return exportState() + "|copy-owner=" + authorizedCopySourceOwner + "|pair-copy="
+				+ new java.util.TreeMap<>(authorizedPairSourceCopy) + "|participant-copy="
+				+ new java.util.TreeMap<>(authorizedPairParticipantCopy) + "|claims="
+				+ new java.util.TreeMap<>(materializedClaimCounts);
+	}
+
 	private static boolean hasPairEntries(Snapshot snapshot) {
 		return snapshot != null && !snapshot.byPairBinding.isEmpty();
 	}
