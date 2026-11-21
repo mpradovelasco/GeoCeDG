@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
@@ -38,6 +39,13 @@ import org.geogebra.common.kernel.geos.GeoNumeric;
 import org.geogebra.common.kernel.kernelND.GeoElementND;
 import org.geogebra.desktop.awt.GGraphics2DD;
 import org.geogebra.desktop.euclidian.EuclidianViewD;
+
+import jdk.jfr.Configuration;
+import jdk.jfr.Recording;
+import jdk.jfr.consumer.RecordedEvent;
+import jdk.jfr.consumer.RecordedFrame;
+import jdk.jfr.consumer.RecordedStackTrace;
+import jdk.jfr.consumer.RecordingFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -60,6 +68,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * locus of the original it evaluates the faithful slice at uniform parameters and reads, by
  * reflection and without changing anything, the root evidence that the isolated copy already
  * holds after each evaluation: the public evaluation result does not carry it.</li>
+ * <li>{@code profile}: a real change of a non-driver parameter ({@code excCyl}) repeated on
+ * the original and on the transported document, with the work counters of every locus and an
+ * in-process Flight Recorder sample of the event thread attributed, inclusively, to marker
+ * frames of the kernel. Marks overlap and do not add up to the total.</li>
  * </ul>
  *
  * Latencies are telemetry of one machine and one short series. They are never a threshold.
@@ -68,7 +80,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
 		PreG9BR6PlusD1DocumentUnitsTest.DesktopLogger.class})
 @EnabledIfSystemProperty(named = "geocedg.postr1.harness",
-		matches = "variant|benchmark|evidence")
+		matches = "variant|benchmark|evidence|profile")
 class PostR1Harness {
 	private static final String ORIGINAL = "InterCilConoObliqueFinal_2.cedg";
 	private static final String PACKAGE = "models/regression/post-r1-locus-on-intersection";
@@ -91,7 +103,7 @@ class PostR1Harness {
 		String scenario = System.getProperty("geocedg.postr1.harness");
 		List<String> report = PreG9BR6PlusF3Fixtures.onEdt(() -> "variant".equals(scenario)
 				? variant(work, output) : "evidence".equals(scenario) ? evidence(work)
-						: benchmark(work));
+						: "profile".equals(scenario) ? profile(work, output) : benchmark(work));
 		Files.write(output.resolve(scenario + ".txt"), report, StandardCharsets.UTF_8);
 		assertTrue(!report.isEmpty());
 	}
@@ -111,6 +123,154 @@ class PostR1Harness {
 		report.add("objects=" + reopened.getKernel().getConstruction()
 				.getGeoSetConstructionOrder().size());
 		return report;
+	}
+
+	/** Marker frames of the inclusive attribution, as substrings of {@code Class.method}. */
+	private static final List<String> MARKERS = List.of(
+			"AlgoDependentPointLocusV2.compute",
+			"AlgoDependentPointLocusV2.synchronizeEvaluatorWithCurrentSlice",
+			"ReconstructionSliceFingerprint2D.snapshot",
+			"ReconstructibleLocusEvaluator2D.<init>",
+			"MacroKernel.loadXML", "Macro.buildMacroXML",
+			"ReconstructibleLocusEvaluator2D.validateFidelity",
+			"ReconstructibleLocusEvaluator2D.captureV3",
+			"ReconstructibleLocusEvaluator2D.settle",
+			"AlgoDependentPointLocusV2.getHybridExistenceCertificate",
+			"HybridExistenceCertifier2D", "LocusExploratoryEvidence2D",
+			"ReconstructibleLocusEvaluator2D.evaluate",
+			"ReconstructibleLocusEvaluator2D.applyCoordinate",
+			"AlgoLocusIntersectionV2.compute", "LocusIntersectionSolver2D.intersect",
+			"PublicIntersectionRootIdentityResolver2D", "AlgoLocusIntersectionPointV2",
+			"AlgoLocusBetweenMetricV2", "AlgoLocusMetric", "LocusMetric",
+			"AlgoSemanticLocusPoint2D.compute", "AlgoMacro",
+			"SpatialIdentityRegistry", "GeoElement.getXML", "AlgoElement.getXML",
+			"DrawLocusV2", "EuclidianView");
+
+	private static List<String> profile(Path work, Path output) throws Exception {
+		List<String> report = new ArrayList<>();
+		report.add("# post-R1 profile of a real parameter change (excCyl). Times in ms.");
+		report.add("jvm=" + System.getProperty("java.vm.name") + " "
+				+ System.getProperty("java.version") + " processors="
+				+ Runtime.getRuntime().availableProcessors());
+		for (boolean transported : new boolean[] {false, true}) {
+			AppGeoCeDG app = open(work);
+			if (transported) {
+				buildTransport(app);
+			}
+			String document = transported ? "transport" : "original";
+			EuclidianView view = app.getEuclidianView1();
+			((EuclidianViewD) view).getJPanel().setSize(VIEW_WIDTH, VIEW_HEIGHT);
+			view.updateSize();
+			view.setCoordSystem(VIEW_X_ZERO, VIEW_Y_ZERO, VIEW_SCALE, VIEW_SCALE);
+			paint(view);
+			GeoNumeric eccentricity = (GeoNumeric) app.getKernel().lookupLabel("excCyl");
+			double value = eccentricity.getValue();
+			for (int index = 0; index < 4; index++) {
+				PreG9BCu0Corpus.setNumber(app, "excCyl", value + (index % 2 == 0 ? 0.05 : 0));
+				paint(view);
+			}
+			Map<String, long[]> before = allCounters(app);
+			List<Double> dag = new ArrayList<>();
+			List<Double> paint = new ArrayList<>();
+			Path recordingFile = output.resolve("profile-" + document + ".jfr");
+			try (Recording recording = new Recording(Configuration.getConfiguration(
+					"profile"))) {
+				recording.start();
+				for (int index = 0; index < 20; index++) {
+					long start = System.nanoTime();
+					PreG9BCu0Corpus.setNumber(app, "excCyl",
+							value + (index % 2 == 0 ? 0.05 : 0));
+					long moved = System.nanoTime();
+					paint(view);
+					dag.add((moved - start) / 1e6);
+					paint.add((System.nanoTime() - moved) / 1e6);
+				}
+				recording.stop();
+				recording.dump(recordingFile);
+			}
+			report.add(row(document, "excCyl +0.05 / back, regular", 4, dag, paint, before,
+					allCounters(app)));
+			report.add(document + " | p95 dag=" + String.format(Locale.ROOT, "%.1f",
+					percentile(dag, 0.95)));
+			attribute(report, document, recordingFile);
+			Files.deleteIfExists(recordingFile);
+		}
+		return report;
+	}
+
+	private static double percentile(List<Double> values, double fraction) {
+		double[] sorted = values.stream().mapToDouble(Double::doubleValue).sorted().toArray();
+		return sorted[Math.min(sorted.length - 1, (int) Math.ceil(fraction * sorted.length)
+				- 1)];
+	}
+
+	private static void attribute(List<String> report, String document, Path recordingFile)
+			throws Exception {
+		Map<String, Integer> inclusive = new LinkedHashMap<>();
+		Map<String, Integer> top = new TreeMap<>();
+		int samples = 0;
+		for (RecordedEvent event : RecordingFile.readAllEvents(recordingFile)) {
+			if (!"jdk.ExecutionSample".equals(event.getEventType().getName())) {
+				continue;
+			}
+			RecordedStackTrace trace = event.getStackTrace();
+			if (trace == null || event.getThread("sampledThread") == null || !String.valueOf(
+					event.getThread("sampledThread").getJavaName()).startsWith("AWT-EventQueue")) {
+				continue;
+			}
+			samples++;
+			List<String> frames = new ArrayList<>();
+			for (RecordedFrame frame : trace.getFrames()) {
+				String type = frame.getMethod().getType().getName();
+				frames.add(type.substring(type.lastIndexOf('.') + 1) + "."
+						+ frame.getMethod().getName());
+			}
+			for (String marker : MARKERS) {
+				for (String frame : frames) {
+					if (frame.contains(marker)) {
+						inclusive.merge(marker, 1, Integer::sum);
+						break;
+					}
+				}
+			}
+			if (!frames.isEmpty()) {
+				top.merge(frames.get(0), 1, Integer::sum);
+			}
+		}
+		report.add(document + " | samples on the event thread=" + samples);
+		for (String marker : MARKERS) {
+			int count = inclusive.getOrDefault(marker, 0);
+			if (count > 0) {
+				report.add(String.format(Locale.ROOT, "%s | inclusive %5.1f%% | %s", document,
+						100.0 * count / Math.max(1, samples), marker));
+			}
+		}
+		int total = samples;
+		top.entrySet().stream().sorted((a, b) -> b.getValue() - a.getValue()).limit(14)
+				.forEach(entry -> report.add(String.format(Locale.ROOT,
+						"%s | self %5.1f%% | %s", document, 100.0 * entry.getValue()
+								/ Math.max(1, total), entry.getKey())));
+	}
+
+	/** The counters of every Locus V2 and Locus V2 intersection of the document. */
+	private static Map<String, long[]> allCounters(AppGeoCeDG app) {
+		Map<String, long[]> counters = new LinkedHashMap<>();
+		for (GeoElement geo : app.getKernel().getConstruction().getGeoSetConstructionOrder()) {
+			if (geo instanceof GeoLocusV2) {
+				LocusInstrumentation2D instrumentation = ((GeoLocusV2) geo).getInstrumentation();
+				counters.put(geo.getLabelSimple() + "[rev/build/eval/nested]", new long[] {
+						instrumentation.getRevisionPublications(),
+						instrumentation.getDependencySliceBuilds(),
+						instrumentation.getEvaluatorCalls(),
+						instrumentation.getNestedEvaluatorCalls()});
+			} else if (geo instanceof GeoLocusIntersectionResult
+					&& geo.getParentAlgorithm() != null) {
+				counters.put(geo.getLabelSimple() + "[resolved/equivalent]", new long[] {
+						count(geo.getParentAlgorithm(), "getResolutionCount"),
+						count(geo.getParentAlgorithm(), "getEquivalentUpdateCount")});
+			}
+		}
+		return counters;
 	}
 
 	private static List<String> evidence(Path work) throws Exception {
@@ -184,11 +344,23 @@ class PostR1Harness {
 				+ System.getProperty("java.version") + " os=" + System.getProperty("os.name")
 				+ " processors=" + Runtime.getRuntime().availableProcessors());
 		for (boolean transported : new boolean[] {false, true}) {
-			AppGeoCeDG app = open(work);
-			if (transported) {
+			String document = transported ? "transport" : "original";
+			// Opening: three loads of a fresh working copy; the last one is measured on.
+			List<Double> opening = new ArrayList<>();
+			AppGeoCeDG app = null;
+			Path variant = PreG9BCu0Corpus.repositoryRoot().resolve(PACKAGE).resolve("derived")
+					.resolve(VARIANT);
+			for (int index = 0; index < 3; index++) {
+				long start = System.nanoTime();
+				app = transported && Files.isRegularFile(variant)
+						? PreG9BCu0Corpus.open(copy(variant, work)) : open(work);
+				opening.add((System.nanoTime() - start) / 1e6);
+			}
+			if (transported && !Files.isRegularFile(variant)) {
 				buildTransport(app);
 			}
-			String document = transported ? "transport" : "original";
+			report.add(document + " | open (three loads) | ms=" + String.format(Locale.ROOT,
+					"%.0f / %.0f / %.0f", opening.get(0), opening.get(1), opening.get(2)));
 			EuclidianView view = app.getEuclidianView1();
 			((EuclidianViewD) view).getJPanel().setSize(VIEW_WIDTH, VIEW_HEIGHT);
 			view.updateSize();
@@ -217,8 +389,39 @@ class PostR1Harness {
 				times.add((System.nanoTime() - start) / 1e6);
 			}
 			report.add(row(document, "excCyl change", 0, times, null, before, counters(app)));
+			report.add(document + " | excCyl change | p95 dag=" + String.format(Locale.ROOT,
+					"%.1f", percentile(times, 0.95)));
+			// Changes of topology of the cone-cylinder family: above about 3.657 the cylinder
+			// leaves the cone for part of the turn of N.
+			series(report, app, document, "excCyl across the bite (3.60 / 3.70 / 3.80)",
+					new double[] {3.60, 3.70, 3.60, 3.70, 3.80, 3.60});
+			// Loss of the whole first family and recovery.
+			series(report, app, document, "excCyl loss and recovery (4.2 / saved)",
+					new double[] {4.2, value, 4.2, value});
+			StringBuilder recovered = new StringBuilder(document + " | after recovery |");
+			for (String label : LOCI) {
+				GeoElement geo = app.getKernel().lookupLabel(label);
+				if (geo instanceof GeoLocusV2) {
+					recovered.append(' ').append(label).append('=').append(
+							((GeoLocusV2) geo).getSemanticDefinition() != null ? "published"
+									: "unpublished");
+				}
+			}
+			report.add(recovered.toString());
 		}
 		return report;
+	}
+
+	private static void series(List<String> report, AppGeoCeDG app, String document,
+			String name, double[] values) {
+		Map<String, long[]> before = counters(app);
+		List<Double> times = new ArrayList<>();
+		for (double value : values) {
+			long start = System.nanoTime();
+			PreG9BCu0Corpus.setNumber(app, "excCyl", value);
+			times.add((System.nanoTime() - start) / 1e6);
+		}
+		report.add(row(document, name, 0, times, null, before, counters(app)));
 	}
 
 	private static void drag(List<String> report, AppGeoCeDG app, String document, String name,

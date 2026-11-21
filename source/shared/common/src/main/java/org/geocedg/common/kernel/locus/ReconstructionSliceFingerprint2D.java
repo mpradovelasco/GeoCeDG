@@ -196,19 +196,105 @@ public final class ReconstructionSliceFingerprint2D {
 	 */
 	public static Snapshot snapshot(Collection<GeoElement> slice,
 			Collection<GeoElement> driverRoots) {
+		return snapshot(slice, driverRoots, null);
+	}
+
+	/**
+	 * Whether every reuse of a {@link StructureMemo} is checked against the complete
+	 * computation (system property or environment variable; verification only).
+	 */
+	private static final boolean VERIFY_MEMO = Boolean.getBoolean(
+			"geocedg.fingerprint.verifyMemo")
+			|| "1".equals(System.getenv("GEOCEDG_FINGERPRINT_VERIFY_MEMO"));
+
+	/**
+	 * Structure part and dependency analysis of the last snapshot of one producer whose slice
+	 * lives in an isolated evaluation copy (post-R1, D-V6). Such a copy is never edited: the
+	 * definition and the options of its elements are fixed when it is filled, and afterwards
+	 * only the values that follow a driver, the labels withheld by its owner and the token
+	 * ledgers of its intersections change. The memo is reused only while every element of
+	 * the slice is the same object with the same label state and definedness, the same parent
+	 * algorithm with the same output labels, and the same ledger text; anything else is
+	 * computed again. It holds no value, no selection state and no result: those parts are
+	 * always read afresh. A live document never uses it.
+	 */
+	public static final class StructureMemo {
+		private Object[] roots;
+		private Object[] elements;
+		private Set<GeoElement> driverDependent;
+		private Set<GeoElement> nestedState;
+		private Set<GeoElement> nestedRoots;
+		private Set<GeoElement> neutral;
+		private Object[] key;
+		private String structure;
+		private long reuses;
+		private long computations;
+
+		/** @return snapshots that reused the structure part */
+		public long getReuses() {
+			return reuses;
+		}
+
+		/** @return snapshots that computed the structure part */
+		public long getComputations() {
+			return computations;
+		}
+	}
+
+	/**
+	 * @param slice elements read by the reconstruction slice
+	 * @param driverRoots the driver state and coordinate
+	 * @param memo the memo of a producer in an isolated evaluation copy, or {@code null}
+	 * @return exact, structured snapshot of the non-driver inputs
+	 */
+	public static Snapshot snapshot(Collection<GeoElement> slice,
+			Collection<GeoElement> driverRoots, StructureMemo memo) {
 		List<GeoElement> ordered = new ArrayList<>(Objects.requireNonNull(slice));
 		ordered.sort(CONSTRUCTION_ORDER);
-		Set<GeoElement> driverDependent = ReconstructionExactState2D.driverDependent(
-				ordered, driverRoots);
-		// Post-R1 repair A': evaluation state of a nested locus at its own driver position.
-		Set<GeoElement> nestedState = ReconstructionExactState2D.nestedDriverState(ordered,
-				driverDependent);
-		Set<GeoElement> nestedRoots = ReconstructionExactState2D.nestedDriverRoots(ordered);
-		Set<GeoElement> neutral = Collections.newSetFromMap(new IdentityHashMap<>());
-		neutral.addAll(driverDependent);
-		neutral.addAll(nestedState);
+		Object[] rootKey = driverRoots.toArray();
+		Object[] elementKey = ordered.toArray();
+		boolean sameGraph = memo != null && memo.driverDependent != null
+				&& sameObjects(memo.roots, rootKey) && sameObjects(memo.elements, elementKey);
+		Set<GeoElement> driverDependent;
+		Set<GeoElement> nestedState;
+		Set<GeoElement> nestedRoots;
+		Set<GeoElement> neutral;
+		if (sameGraph && !VERIFY_MEMO) {
+			driverDependent = memo.driverDependent;
+			nestedState = memo.nestedState;
+			nestedRoots = memo.nestedRoots;
+			neutral = memo.neutral;
+		} else {
+			driverDependent = ReconstructionExactState2D.driverDependent(ordered, driverRoots);
+			// Post-R1 repair A': evaluation state of a nested locus at its own driver position.
+			nestedState = ReconstructionExactState2D.nestedDriverState(ordered, driverDependent);
+			nestedRoots = ReconstructionExactState2D.nestedDriverRoots(ordered);
+			neutral = Collections.newSetFromMap(new IdentityHashMap<>());
+			neutral.addAll(driverDependent);
+			neutral.addAll(nestedState);
+			if (sameGraph && (!sameSet(driverDependent, memo.driverDependent)
+					|| !sameSet(nestedState, memo.nestedState)
+					|| !sameSet(nestedRoots, memo.nestedRoots))) {
+				throw new IllegalStateException(
+						"Slice dependency analysis changed in an isolated copy");
+			}
+			if (memo != null) {
+				memo.roots = rootKey;
+				memo.elements = elementKey;
+				memo.driverDependent = driverDependent;
+				memo.nestedState = nestedState;
+				memo.nestedRoots = nestedRoots;
+				memo.neutral = neutral;
+				if (!sameGraph) {
+					memo.key = null;
+					memo.structure = null;
+				}
+			}
+		}
+		Object[] structureKey = memo == null ? null : structureKey(ordered, neutral);
+		boolean reuse = memo != null && memo.key != null && sameKey(memo.key, structureKey);
 		Set<AlgoElement> written = Collections.newSetFromMap(new IdentityHashMap<>());
-		StringBuilder structure = new StringBuilder();
+		StringBuilder structure = reuse && !VERIFY_MEMO ? null : new StringBuilder();
 		StringBuilder values = new StringBuilder();
 		StringBuilder selection = new StringBuilder();
 		StringBuilder labels = new StringBuilder();
@@ -216,16 +302,18 @@ public final class ReconstructionSliceFingerprint2D {
 			String label = geo.getLabelSimple();
 			AlgoElement parent = geo.getParentAlgorithm();
 			if (parent != null && written.add(parent)) {
-				XMLStringBuilder algorithm = new XMLStringBuilder(new StringBuilder());
-				parent.getXML(algorithm, false);
-				structure.append("|A:").append(algorithm);
+				if (structure != null) {
+					XMLStringBuilder algorithm = new XMLStringBuilder(new StringBuilder());
+					parent.getXML(algorithm, false);
+					structure.append("|A:").append(algorithm);
+				}
 				for (ReconstructionExactState2D.InlineInput inline
 						: ReconstructionExactState2D.inlineInputs(parent)) {
 					appendInline(values, label, inline, neutral);
 				}
 				appendSelection(selection, labels, label, parent);
 			}
-			String text;
+			String text = null;
 			if (geo.isIndependent()) {
 				// The serialized form of a free element is representation only: a value
 				// set by program drops its literal and adds options. Its exact value is
@@ -236,13 +324,15 @@ public final class ReconstructionSliceFingerprint2D {
 							.append(ReconstructionExactState2D.of(geo));
 				}
 			} else {
-				XMLStringBuilder element = new XMLStringBuilder(new StringBuilder());
-				geo.getXML(false, element);
-				text = DEFERRED_DRAWING_TAG.matcher(DERIVED_VALUE_TAG.matcher(
-						element.toString()).replaceAll("")).replaceAll("");
-				if (geo instanceof GeoLocusIntersectionResult && neutral.contains(geo)) {
-					text = withEvaluationNeutralLedger(text,
-							(GeoLocusIntersectionResult) geo);
+				if (structure != null) {
+					XMLStringBuilder element = new XMLStringBuilder(new StringBuilder());
+					geo.getXML(false, element);
+					text = DEFERRED_DRAWING_TAG.matcher(DERIVED_VALUE_TAG.matcher(
+							element.toString()).replaceAll("")).replaceAll("");
+					if (geo instanceof GeoLocusIntersectionResult && neutral.contains(geo)) {
+						text = withEvaluationNeutralLedger(text,
+								(GeoLocusIntersectionResult) geo);
+					}
 				}
 				if (!neutral.contains(geo)) {
 					// Derived, but not always a function of the slice inputs: a random
@@ -259,13 +349,97 @@ public final class ReconstructionSliceFingerprint2D {
 					}
 				}
 			}
-			structure.append("|G:").append(text);
+			if (structure != null) {
+				structure.append("|G:").append(text);
+			}
 			if (!geo.isIndependent()) {
 				appendLiterals(values, "D:" + label, geo);
 			}
 		}
-		return new Snapshot(sha256(structure.toString()), sha256(values.toString()),
+		String structureDigest;
+		if (structure == null) {
+			structureDigest = memo.structure;
+			memo.reuses++;
+		} else {
+			structureDigest = sha256(structure.toString());
+			if (reuse && !structureDigest.equals(memo.structure)) {
+				throw new IllegalStateException(
+						"Slice structure changed in an isolated copy under an equal key");
+			}
+			if (memo != null) {
+				memo.key = structureKey;
+				memo.structure = structureDigest;
+				if (reuse) {
+					memo.reuses++;
+				} else {
+					memo.computations++;
+				}
+			}
+		}
+		return new Snapshot(structureDigest, sha256(values.toString()),
 				sha256(selection.toString()), sha256(labels.toString()));
+	}
+
+	/**
+	 * Everything that can change the structure text of a slice inside an isolated copy, read
+	 * without serializing: per element, the object, its label state and definedness, its parent
+	 * algorithm with the labels of its outputs, and the ledger text of an intersection result
+	 * exactly as the structure part would take it.
+	 */
+	private static Object[] structureKey(List<GeoElement> ordered, Set<GeoElement> neutral) {
+		List<Object> key = new ArrayList<>(ordered.size() * 6);
+		Set<AlgoElement> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+		for (GeoElement geo : ordered) {
+			key.add(geo);
+			key.add(geo.getLabelSimple());
+			key.add(geo.isLabelSet());
+			key.add(geo.isDefined());
+			AlgoElement parent = geo.getParentAlgorithm();
+			key.add(parent);
+			if (parent != null && seen.add(parent)) {
+				for (GeoElement output : parent.getOutput()) {
+					key.add(output == null ? null : output.getLabelSimple());
+				}
+			}
+			if (geo instanceof GeoLocusIntersectionResult) {
+				GeoLocusIntersectionResult result = (GeoLocusIntersectionResult) geo;
+				key.add(neutral.contains(geo) ? result.getTokenLedgerEvaluationNeutralState()
+						: result.getTokenLedgerState());
+			}
+		}
+		return key.toArray();
+	}
+
+	private static boolean sameKey(Object[] first, Object[] second) {
+		if (first.length != second.length) {
+			return false;
+		}
+		for (int index = 0; index < first.length; index++) {
+			Object a = first[index];
+			Object b = second[index];
+			boolean same = a instanceof GeoElement || a instanceof AlgoElement ? a == b
+					: Objects.equals(a, b);
+			if (!same) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean sameObjects(Object[] first, Object[] second) {
+		if (first == null || first.length != second.length) {
+			return false;
+		}
+		for (int index = 0; index < first.length; index++) {
+			if (first[index] != second[index]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static boolean sameSet(Set<GeoElement> first, Set<GeoElement> second) {
+		return first.size() == second.size() && first.containsAll(second);
 	}
 
 	/**

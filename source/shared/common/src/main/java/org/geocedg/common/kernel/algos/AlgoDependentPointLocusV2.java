@@ -91,6 +91,12 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private ReconstructibleLocusEvaluator2D evaluator;
 	private String sliceFingerprint;
 	private ReconstructionSliceFingerprint2D.Snapshot sliceSnapshot;
+	/**
+	 * Post-R1, D-V6: in an isolated evaluation copy, which is never edited, the structure part
+	 * of the fingerprint is reused while nothing that can change it has changed. A live
+	 * document always computes it.
+	 */
+	private ReconstructionSliceFingerprint2D.StructureMemo structureMemo;
 	private ReconstructibleLocusEvaluator2D certifiedEvaluator;
 	private String certifiedLimitation;
 	private HybridExistenceCertifier2D.Result certificate;
@@ -139,6 +145,13 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		this.family = Objects.requireNonNull(family);
 		configuredDomainEpsilon = domainEpsilon == 0 ? 0 : domainEpsilon;
 		publishInitialSnapshot();
+	}
+
+	/**
+	 * @return the structure memo of this producer, or {@code null} in a live document
+	 */
+	public ReconstructionSliceFingerprint2D.StructureMemo getStructureMemo() {
+		return structureMemo;
 	}
 
 	/** @return the driver state that this locus traces over */
@@ -699,9 +712,12 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	private void synchronizeEvaluatorWithCurrentSlice() {
 		SemanticGeneratorDescriptor1D candidate = currentDescriptor();
 		List<GeoElement> slice = getReconstructionSliceGeos();
+		if (structureMemo == null && kernel.isMacroKernel()) {
+			structureMemo = new ReconstructionSliceFingerprint2D.StructureMemo();
+		}
 		ReconstructionSliceFingerprint2D.Snapshot snapshot =
 				ReconstructionSliceFingerprint2D.snapshot(slice,
-						java.util.Arrays.asList(state, coordinate));
+						java.util.Arrays.asList(state, coordinate), structureMemo);
 		getLocus().getInstrumentation().recordCertificationWork(
 				LocusCertificationWork2D.FINGERPRINT_COMPUTATION);
 		if (evaluator != null && descriptor != null
