@@ -4512,3 +4512,29 @@ ni inicia ninguna fase.
   solo se anota el hecho.
 - `main` queda tres commits por delante de `v1.2.1`, sin cambios de producto: el registro
   de publicación de 1.2.1 y los dos commits anteriores.
+
+## 2026-11-21 — Requisito registrado para la línea futura de B-splines, representaciones derivadas y DXF
+
+Registro aditivo por decisión autoral de 2026-11-21 (punto P3 de la revisión normativa del
+uso condicionado de Locus V2). No altera fechas, aprobaciones ni resultados anteriores, y no
+abre, autoriza ni inicia ninguna fase o subfase.
+
+La exportación geométrica semántica de las regiones condicionadas de Locus V2 (evidencia de
+naturaleza `NUMERICAL_UNDER_HYPOTHESES`; ADR 0042, propuesto y pendiente de aprobación
+autoral) queda fuera del objetivo GeoCeDG 1.2.2: DXF y LaTeX semántico las omiten con
+diagnóstico explícito, y las exportaciones de imagen de una vista exportan lo que la vista
+muestra. Queda registrada como requisito de la línea futura que reúna B-splines y otras
+representaciones derivadas, importación DXF y exportación DXF extendida, es decir, la
+«subfase separada» que la nota de `PRE-G9B-S1` reserva para un nuevo contrato de fidelidad o
+una entidad DXF `SPLINE`. Condiciones fijadas por el autor para esa línea (decisión D-V4):
+
+- conservación de la calidad, la procedencia y las tolerancias de cada representación
+  derivada;
+- la importación DXF es de solo lectura;
+- una spline, una polilínea u otra representación de intercambio nunca sustituye en
+  silencio al objeto CeDG autoritativo.
+
+Esa línea no tiene todavía identificador, alcance ni autorización. `G9X1` y `G9S1` no se
+reabren y conservan su estado. Referencias: §10 del
+[contrato candidato de uso condicionado](../../geocedg/specs/locus/candidates/post-r1-conditioned-use.md)
+y [registro de decisiones autorales](../validation/post_r1_conditioned_use_author_decision_sheet.md).
