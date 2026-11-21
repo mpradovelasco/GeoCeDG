@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "intake": {
+    "local_path": "C:\\temp\\InterCilConoObliqueFinal_2.cedg",
+    "received": "2026-11-20",
+    "policy": "the local original stays untouched and unversioned; only its byte-exact copy is versioned; working copies are made in test temporary folders"
+  },
+  "author_evidence": [
+    {
+      "filename": "InterCilConoObliqueFinal_2.cedg",
+      "role": "source-construction",
+      "bytes": 78781,
+      "sha256": "949c2c931d22ec33820cd3ae5b35e8a75b94f5f3d45474fb8e818d74ff98159b",
+      "versioned_copy": "models/regression/post-r1-locus-on-intersection/original/InterCilConoObliqueFinal_2.cedg",
+      "content": "native GeoCeDG archive (geogebra.xml, defaults, geogebra_macro.xml with the user tools pointJump and translationCoor, thumbnail); declared app classic 5.4.928.0; 126 construction commands; ten Locus V2; three rich intersection results"
+    }
+  ],
+  "derived": [
+    {
+      "filename": "InterCilConoObliqueFinal_2.transport.cedg",
+      "role": "generated-variant",
+      "bytes": 20362,
+      "sha256": "9d7948f3272f0147106a01dc51f9b727155275e985bb62cd5626ef3b3911b26e",
+      "generator": "tools/benchmark/post-r1-locus/run-harness.ps1 -Scenario variant",
+      "generated_from_commit": "417ab2c0fe7e6704d82f0e26ea4660f17b7b9827",
+      "recipe": "models/regression/post-r1-locus-on-intersection/transport-commands.txt",
+      "notes": "Saved by the embedded test host, without a window: the thumbnail entry is empty. The durable identities of the objects created by the recipe are fresh for each generation, so a regeneration is not byte-identical; the regression test checks the recipe on the original in memory and this stored instance separately. Not an author artifact; not curated, stable or author-approved."
+    }
+  ],
+  "regression": {
+    "test": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PostR1AuthorModelRegressionTest.java",
+    "original": {
+      "driver_E_1": "no revision of w_2 or a_3 for positions inside the incidence domain (2.20 to 2.40 rad), outside it (0.5 rad) and back; t_2 = Intersect(s_2, l_2) is not resolved again",
+      "driver_N": "no revision of w_2 or a_3",
+      "excCyl": "a change of 0.05 publishes a revision of w_2 and changes its function"
+    },
+    "transported_contour": {
+      "reference": "geocedg/validation/post-r1-locus/transport-reference.tsv",
+      "parameters": 72,
+      "tolerance": 1e-6,
+      "measured_max_deviation": 1.4900714881959594e-8,
+      "measured_min_distance_to_conjugate_image": 2.822749592985535,
+      "reconstruction": "faithful",
+      "existence": "NOT_ESTABLISHED",
+      "driver_E_1": "the contour does not read E_1: same function bit for bit, no revision",
+      "driver_N": "no revision",
+      "excCyl": "a change of 0.05 publishes one revision; at excCyl = 3.8 the evaluations are VALID or DEPENDENCY_UNDEFINED",
+      "save_reopen": "same durable identities of trHole, MP and POrigen; same function bit for bit; revision 1 after reopening"
+    }
+  },
+  "limits": [
+    "Pointwise agreement at sampled parameters in the saved configuration; it establishes no existence structure, continuity or completeness.",
+    "The transported contour is uncertified: it is drawn as exploratory evidence and has no certified component for Point(L, u), lengths between positions or intersections with solutions.",
+    "The hole loci of the original procedure, w_2 and a_3, still draw the conjugate image; the package keeps them as the author's procedure."
+  ]
+}

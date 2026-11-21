@@ -25,6 +25,14 @@ models/regression/pre-g9b-cu/original/*.cedg binary
 # PRE-G9B-CU0 deterministic harness output, compared byte for byte on regeneration.
 geocedg/validation/pre-g9b-cu/*.json text eol=lf
 
+# Post-R1 author regression construction and its derived variant: byte-exact files,
+# identified by SHA-256 in their manifest.
+models/regression/post-r1-locus-on-intersection/original/*.cedg binary
+models/regression/post-r1-locus-on-intersection/derived/*.cedg binary
+# Post-R1 transport recipe and independent mathematical reference, identified by SHA-256.
+models/regression/post-r1-locus-on-intersection/transport-commands.txt text eol=lf
+geocedg/validation/post-r1-locus/** text eol=lf
+
 # PRE-G9B-S3 deterministic author-smoke construction.
 models/regression/pre-g9b-s3-text-view-scaling/geogebra.xml text eol=lf
 models/regression/pre-g9b-s3-text-view-scaling/pre-g9b-s3-text-view-scaling.ggb binary

@@ -1,0 +1,32 @@
+# Direct transport of the hole contour, N -> (X(N), R(N)) -> Y(N), on the author model
+# InterCilConoObliqueFinal_2.cedg. One public command per line, in order. This file is the
+# single source of the recipe: the Desktop regression corpus (PostR1Corpus) and the harness
+# (tools/benchmark/post-r1-locus) read it. Labels are those of this model only.
+#
+# R        foot, on the base circle p of the cone, of the cone generatrix through the space
+#          point of the driver N (far root of Ray(P, N) with p; existing object of the model).
+# trTau    parameter of R on p: a computed number, never a spatial association by coordinates.
+# MP       point of the spherical section e_2 at that parameter (public form Point(L, u)).
+# mN       oriented length of e_2 from the existing origin POrigen to MP.
+# trAng    developed angle: that length divided by the radius of the sphere, Distance(H, D_1).
+# TrU, trq developed position of the generatrix through R, by the rotation that the existing
+#          development uses (centre S_1, from T_1).
+# trd..TrF true length of the generatrix segment from the vertex to the space point, taken as
+#          the existing development takes it (rotation about the axis through I, elevation W).
+# TrG      developed point; trHole traces it over N.
+trTau = atan2(y(R) - y(B), x(R) - x(B))
+MP = Point(e_2, trTau)
+mN = LocusLength(e_2, POrigen, MP)
+trAng = mN / Distance(H, D_1)
+TrU = Rotate(T_1, -trAng, S_1)
+trq = Ray(S_1, TrU)
+trd = Circle(I, R)
+TrH = Intersect(trd, i, 1)
+trr = Line(TrH, k)
+TrI = Intersect(trr, h)
+trs = Ray(H, TrI)
+trh = Line(W, h)
+TrF = Intersect(trh, trs)
+trc = Circle(S_1, Segment(H, TrF))
+TrG = Intersect(trc, trq, 1)
+trHole = LocusV2(TrG, N)

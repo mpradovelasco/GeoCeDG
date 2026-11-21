@@ -1,0 +1,92 @@
+{
+  "$schema": "../../../geocedg/specs/operations/model-manifest.schema.json",
+  "schema_version": 1,
+  "template": false,
+  "id": "cedg.regression.post-r1-locus-on-intersection",
+  "maturity": "experimental",
+  "source": {
+    "uri": "models/regression/post-r1-locus-on-intersection/original",
+    "author": "Manuel Prado-Velasco",
+    "date": "2026-11-20",
+    "provenance_notes": "Byte-exact copy of the author construction InterCilConoObliqueFinal_2.cedg analysed by the locus-on-intersection diagnosis of 2026-11-20 and its revision R1 of 2026-11-21, received as the local file C:\\temp\\InterCilConoObliqueFinal_2.cedg and copied after size and SHA-256 capture. The local original remains untouched and unversioned. Incorporated as a regression input by the author instruction of 2026-11-21 (execution after R1). The derived variant is generated from this copy and is not an author artifact."
+  },
+  "required_geogebra": {
+    "version": "5.4.928.0",
+    "baseline_sha": "9b93256b7df401ff056c37b502d82df4d72b1522"
+  },
+  "loaded_by_default": false,
+  "inputs": [
+    "models/regression/post-r1-locus-on-intersection/original/InterCilConoObliqueFinal_2.cedg"
+  ],
+  "outputs": [
+    "The Locus V2 curves of the oblique cone-cylinder construction of models/regression/pre-g9b-cu (o, v, w, a_1 driven by N on g_1; e_1, o_1, e_2 driven by E_1 on p) and the development curve s_2 = LocusV2(V_1, E_1)",
+    "Rich intersection results u_1 = Intersect(o_1, h_2), t_2 = Intersect(s_2, l_2) and v_2 = Intersect(o, q_1), with the token points W_1, C_2 and D_2",
+    "The two hole loci of the author's procedure, w_2 = LocusV2(G_2, E_1) and a_3 = LocusV2(H_2, E_1), whose traced points depend on the selected roots C_2 and D_2 of v_2",
+    "Derived variant only: the transported hole contour trHole = LocusV2(TrG, N), built by transport-commands.txt"
+  ],
+  "validity_domain": {
+    "description": "Two-view descriptive-geometry construction of an oblique cone and an oblique cylinder with a common base plane, the development of the cone through the spherical support curve e_2, and the contour that the cylinder cuts in the developed cone. In the author's procedure the contour is traced over E_1 through the roots of the intersection curve o with the ray q_1 of the elevation; q_1 reads only the abscissa of E_1, so the mirror image of E_1 gives the same roots on the conjugate generatrix and the two loci draw an additional image. The transported contour is traced over N, the driver of the cylinder directrix, through the foot R of the cone generatrix of the space point. Both are valid for the saved configuration; the validity of every locus elsewhere is a characterization subject, not an established fact.",
+    "parameters": [
+      "excCyl (slider, saved value 2.9), rbCone = 5, rbCylinder = 1.5 and the free angles of the two axes",
+      "free points A, D, D_1, L_1 and S_1; path points B, C, H, A_2, N (driver on g_1) and E_1 (driver on p)",
+      "premises of a single closed transported contour in the saved configuration: the cylinder lies inside the cone for the whole turn of N, the far root R of Ray(P, N) with p exists for every N, the foot parameter crosses the origin of the development at most as an ordinary seam, and no generatrix is tangent to the cylinder"
+    ]
+  },
+  "known_degeneracies": [
+    "w_2 and a_3 are published with NOT_ESTABLISHED existence (cause NOT_CERTIFIED, selected-root-continuity-not-established): their traced points depend on a selected root of a Locus V2 intersection with a moving target. This refusal conforms to the current contract.",
+    "The transported contour trHole is published faithful and NOT_ESTABLISHED (operation outside the certified class): it is evaluated pointwise and drawn as exploratory evidence; it has no certified component.",
+    "The family Q of the near root of Ray(P, N) lies on the prolongation of the cone beyond its base; it is not a second hole of the finite cone.",
+    "For excCyl of about 3.7 or more the cylinder leaves the cone for part of the turn of N and the transported contour has driver subintervals with the explicit status DEPENDENCY_UNDEFINED.",
+    "Periodicity of N does not imply that the developed contour is closed or continuous for every configuration: a contour that crosses the cut generatrix of the development is split by it."
+  ],
+  "reference_models": [
+    "models/regression/pre-g9b-cu/manifest.yml",
+    "models/legacy/inter-cil-cono-oblique/manifest.yml"
+  ],
+  "expected_metrics": {
+    "InterCilConoObliqueFinal_2.cedg": {
+      "bytes": 78781,
+      "sha256": "949c2c931d22ec33820cd3ae5b35e8a75b94f5f3d45474fb8e818d74ff98159b",
+      "declared_version": "5.4.928.0",
+      "construction_commands": 126,
+      "locus_v2_count": 10,
+      "rich_intersection_results": 3
+    },
+    "InterCilConoObliqueFinal_2.transport.cedg": {
+      "bytes": 20362,
+      "sha256": "9d7948f3272f0147106a01dc51f9b727155275e985bb62cd5626ef3b3911b26e",
+      "objects_after_loading": 174,
+      "locus_v2_count": 11
+    }
+  },
+  "license": {
+    "spdx": null,
+    "evidence": "Author-supplied regression construction; redistribution remains subject to repository license approval.",
+    "review_status": "unreviewed"
+  },
+  "replacement_candidate": null,
+  "derived_artifacts": [
+    {
+      "path": "models/regression/post-r1-locus-on-intersection/transport-commands.txt",
+      "role": "regression-evidence"
+    },
+    {
+      "path": "models/regression/post-r1-locus-on-intersection/derived/InterCilConoObliqueFinal_2.transport.cedg",
+      "role": "regression-evidence"
+    },
+    {
+      "path": "models/regression/post-r1-locus-on-intersection/expected-results.yml",
+      "role": "regression-evidence"
+    },
+    {
+      "path": "geocedg/validation/post-r1-locus/transport-reference.tsv",
+      "role": "regression-evidence"
+    }
+  ],
+  "implementation": {
+    "mechanisms": ["native-cedg-archive", "locus-v2", "locus-metric", "locus-intersection", "user-tools"],
+    "embedded_tools": 2,
+    "global_javascript": false
+  },
+  "publications": []
+}

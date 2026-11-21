@@ -1,0 +1,29 @@
+// Post-R1 reproducible harness (tools/benchmark/post-r1-locus/run-harness.ps1).
+// Adds the harness sources to the Desktop test source set for one explicit run of
+// org.geocedg.desktop.PostR1Harness and forwards the harness properties to the test JVM. The
+// runner recompiles the test source set without this script afterwards, so no harness class
+// remains in the build output. Not used by the verifier.
+
+// The Desktop project lives in an included build, whose start parameters do not carry the
+// root build's -P properties: read them from the root build.
+def root = gradle
+while (root.parent != null) {
+    root = root.parent
+}
+def props = root.startParameter.projectProperties
+def sources = props['postR1HarnessSources']
+def target = java.nio.file.Paths.get('source', 'desktop', 'desktop')
+
+allprojects { p ->
+    if (sources != null && p.projectDir.toPath().endsWith(target)) {
+        p.afterEvaluate {
+            p.sourceSets.test.java.srcDir(sources)
+            p.tasks.named('test').configure { t ->
+                t.systemProperty('geocedg.postr1.harness', props['postR1Scenario'])
+                t.systemProperty('geocedg.postr1.output', props['postR1Output'])
+                t.maxHeapSize = '2g'
+                t.outputs.upToDateWhen { false }
+            }
+        }
+    }
+}
