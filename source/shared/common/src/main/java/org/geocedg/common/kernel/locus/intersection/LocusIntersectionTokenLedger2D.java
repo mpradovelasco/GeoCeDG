@@ -726,6 +726,34 @@ public final class LocusIntersectionTokenLedger2D {
 				+ encodeSnapshot(copySource, version);
 	}
 
+	/**
+	 * The canonical state of {@link #exportState()} without the evaluation state of the
+	 * current snapshot at the position where its inputs stand: the provider-canonical
+	 * parameter of each root, which is revision-scoped localization evidence and never
+	 * selector or token authority ({@code locus-v2-intersections.md} section 6.1), and the
+	 * distinction between a claimed allocation that is current at that position and one that
+	 * is dormant there, which the same exact binding reactivates (section 6.2). Every other
+	 * field is written as persisted: version, high-water mark, material, entry count and
+	 * kind, incarnation, lineages, continuation key, contracts, selectors, the unclaimed and
+	 * quarantined states, and the whole copy-source snapshot. An allocation, a retirement, a
+	 * quarantine or a selector change therefore still changes this text.
+	 *
+	 * <p>It is a comparison text for the fingerprint of a reconstruction slice in which this
+	 * result follows the driver ({@code locus-v2-semantics.md}, PRE-G9B-CU1 amendment). It is
+	 * never persisted and never imported.</p>
+	 *
+	 * @return comparison text independent of where the inputs of this result stand
+	 */
+	public String exportEvaluationNeutralState() {
+		String version = hasFoldContactEntries(current) || hasFoldContactEntries(copySource)
+				? FOLD_CONTACT_FORMAT_VERSION
+				: hasPairEntries(current) || hasPairEntries(copySource)
+						? PAIR_FORMAT_VERSION : FORMAT_VERSION;
+		return "evaluation-neutral/v1|" + version + "|" + nextIncarnation + "|"
+				+ encodeSnapshot(current, version, true) + "|"
+				+ encodeSnapshot(copySource, version);
+	}
+
 	private static boolean hasPairEntries(Snapshot snapshot) {
 		return snapshot != null && !snapshot.byPairBinding.isEmpty();
 	}
@@ -2331,6 +2359,11 @@ public final class LocusIntersectionTokenLedger2D {
 	}
 
 	private static String encodeSnapshot(Snapshot snapshot, String version) {
+		return encodeSnapshot(snapshot, version, false);
+	}
+
+	private static String encodeSnapshot(Snapshot snapshot, String version,
+			boolean evaluationNeutral) {
 		if (snapshot == null) {
 			return "-";
 		}
@@ -2353,7 +2386,10 @@ public final class LocusIntersectionTokenLedger2D {
 			} else if (entry.pairRootBinding.isPresent()) {
 				throw new IllegalArgumentException("Pair entries require ledger v5");
 			}
-			encoded.append(entry.status.code).append(',')
+			encoded.append(evaluationNeutral && entry.status.isClaimed()
+					&& !entry.status.isPeriodicallyQuarantined()
+					&& entry.status != Status.CLAIMED_PAIR_QUARANTINE
+							? "claimed" : entry.status.code).append(',')
 					.append(entry.incarnation).append(',')
 					.append(hex(entry.solutionLineage)).append(',')
 					.append(hex(entry.branchLineage)).append(',')
@@ -2362,7 +2398,9 @@ public final class LocusIntersectionTokenLedger2D {
 				PairRootAllocationKey binding = entry.pairRootBinding.get();
 				encoded.append(hex(binding.contract)).append(',')
 						.append(hex(binding.selector.toExternalForm())).append(',')
-						.append(hex(entry.pairAddressProof.toExternalForm())).append(',')
+						.append(hex(evaluationNeutral
+								? entry.pairAddressProof.toAddressNeutralForm()
+								: entry.pairAddressProof.toExternalForm())).append(',')
 						.append(hex(entry.pairCopyEvidence.map(PairCopyEvidence::external)
 								.orElse("")));
 				continue;
@@ -2371,7 +2409,7 @@ public final class LocusIntersectionTokenLedger2D {
 					.append(hex(entry.addressProof.getSourceProviderSignature()))
 					.append(',')
 					.append(hex(entry.addressProof.getTargetContractSignature()))
-					.append(',').append(Long.toHexString(
+					.append(',').append(evaluationNeutral ? "*" : Long.toHexString(
 							entry.addressProof.getCanonicalParameterBits()));
 			if (hasDeterministicBindingFields(version)) {
 				encoded.append(',').append(hex(entry.currentRootBinding

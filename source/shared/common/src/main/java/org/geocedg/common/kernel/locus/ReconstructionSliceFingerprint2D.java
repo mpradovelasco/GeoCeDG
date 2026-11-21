@@ -17,8 +17,10 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geogebra.common.io.XMLStringBuilder;
 import org.geogebra.common.kernel.algos.AlgoElement;
 import org.geogebra.common.kernel.algos.AlgoIntersect;
@@ -38,7 +40,9 @@ import org.geogebra.common.kernel.geos.GeoElement;
  * every dependent element, without the tags of its derived value, which its inputs and its
  * definition determine, and without the tags of its drawing state that the file loader
  * applies only after the whole construction is read; a free element enters only by its kind
- * and label, because its serialized form is representation only;</li>
+ * and label, because its serialized form is representation only; the token ledger of a
+ * Locus V2 intersection that follows the driver enters without its evaluation state at the
+ * driver position, the localization evidence of its roots (post-R1 repair A);</li>
  * <li>values: the exact binary64 bits of every independent element, of every unlabelled
  * input of an algorithm and of every number literal of a definition, and the parameters of
  * the free place of every point on a path or in a region that depends on the driver and is
@@ -78,6 +82,15 @@ public final class ReconstructionSliceFingerprint2D {
 	private static final Pattern DEFERRED_DRAWING_TAG = Pattern.compile(
 			"\\s*<(?:animation|condition|objColor|dynamicCaption|startPoint|linkedGeo)"
 					+ "\\b[^>]*/>");
+	/**
+	 * The persisted token ledger of a Locus V2 intersection result. For a result that follows
+	 * the driver, its state at the driver position is evaluation state: the provider-canonical
+	 * parameter of each root is revision-scoped localization evidence, not durable identity
+	 * ({@code locus-v2-intersections.md} section 6.1), and a claimed root is current or dormant
+	 * only at that position. The structure part takes the ledger without them.
+	 */
+	private static final Pattern TOKEN_LEDGER_TAG = Pattern.compile(
+			"<locusIntersectionTokenLedger\\b[^>]*/>");
 	private static final Comparator<GeoElement> CONSTRUCTION_ORDER =
 			Comparator.comparingInt(GeoElement::getConstructionIndex)
 					.thenComparingLong(GeoElement::getID);
@@ -216,6 +229,11 @@ public final class ReconstructionSliceFingerprint2D {
 				geo.getXML(false, element);
 				text = DEFERRED_DRAWING_TAG.matcher(DERIVED_VALUE_TAG.matcher(
 						element.toString()).replaceAll("")).replaceAll("");
+				if (geo instanceof GeoLocusIntersectionResult
+						&& driverDependent.contains(geo)) {
+					text = withEvaluationNeutralLedger(text,
+							(GeoLocusIntersectionResult) geo);
+				}
 				if (!driverDependent.contains(geo)) {
 					// Derived, but not always a function of the slice inputs: a random
 					// value changes on recomputation and must publish a revision.
@@ -237,6 +255,20 @@ public final class ReconstructionSliceFingerprint2D {
 		}
 		return new Snapshot(sha256(structure.toString()), sha256(values.toString()),
 				sha256(selection.toString()), sha256(labels.toString()));
+	}
+
+	/**
+	 * A result that does not follow the driver keeps its complete serialized ledger; this
+	 * replacement is applied only to one that does.
+	 */
+	private static String withEvaluationNeutralLedger(String text,
+			GeoLocusIntersectionResult result) {
+		String neutral = result.getTokenLedgerEvaluationNeutralState();
+		if (neutral == null) {
+			return text;
+		}
+		return TOKEN_LEDGER_TAG.matcher(text).replaceAll(Matcher.quoteReplacement(
+				"<locusIntersectionTokenLedger neutral=\"" + neutral + "\"/>"));
 	}
 
 	private static void appendInline(StringBuilder values, String owner,

@@ -118,6 +118,17 @@ public final class PairRootAddressProof2D {
 				+ PairSemanticSlotSelector2D.frame(Long.toHexString(secondParameterBits));
 	}
 
+	/**
+	 * @return the sources and provider contracts of this evidence without its two parameter
+	 *         values, which are revision-scoped localization; a comparison text, never parsed
+	 */
+	public String toAddressNeutralForm() {
+		return PairSemanticSlotSelector2D.frame(firstSource)
+				+ PairSemanticSlotSelector2D.frame(firstProvider)
+				+ PairSemanticSlotSelector2D.frame(secondSource)
+				+ PairSemanticSlotSelector2D.frame(secondProvider);
+	}
+
 	/** @return strict canonical two-address evidence */
 	public static PairRootAddressProof2D parse(String encoded) {
 		List<String> fields = PairSemanticSlotSelector2D.fields(encoded, 6);
