@@ -3,8 +3,8 @@
 **CANDIDATO TÉCNICO — PENDIENTE DE REVISIÓN AUTORAL.** `selfApproved=false`. Registro único
 de progreso del encargo «Ejecución secuencial tras R1: reparaciones, modelo y uso
 condicionado de Locus V2», de su continuación «Revisión normativa post-R1, continuación de
-implementación y objetivo 1.2.2» y de la respuesta del autor a la revisión 2 (instrucciones
-autorales del 2026-11-21). No es un cierre
+implementación y objetivo 1.2.2» y de las respuestas del autor a las revisiones 2 y 3
+(instrucciones autorales del 2026-11-21). No es un cierre
 de fase, no registra aprobación y no autoriza publicar en `main`.
 
 ## Plan y perímetro
@@ -156,7 +156,101 @@ macros y la copia quedaba vacía. En Desktop el efecto era un
 fallan las dos pruebas nuevas. Detalle en el
 [documento de reparaciones, §1.6](../architecture/post_r1_locus_repairs.md#16-f8--la-carga-de-una-copia-aislada-no-toca-la-vista-viva).
 
+## Checkpoint 6 — dos precisiones focales y trabajo preparatorio de I0
+
+Estado: **texto normativo de la revisión 4 entregado para aprobación definitiva; primer
+candidato preparatorio de I0 verificado; I4, I4T y el candidato 1.2.2 sin iniciar**. Misma
+rama, local y sin publicar.
+
+Respuesta del autor a la revisión 3 (2026-11-21), registrada en el
+[registro de decisiones](post_r1_conditioned_use_author_decision_sheet.md), §3 bis: las seis
+enmiendas están correctamente incorporadas y la arquitectura general tiene su conformidad;
+antes de registrar la aprobación normativa definitiva pide dos precisiones focales, sin
+ampliar la revisión a otros contratos ni repetir verificaciones válidas; permite adelantar
+los trabajos preparatorios de I0 a I3 que no dependan de ellas, como candidatos pendientes,
+y no iniciar I4 ni I4T; no autoriza publicación en `main`, etiqueta `v1.2.2` ni release.
+
+| Línea | Commit | Contenido |
+|---|---|---|
+| Precisiones focales | `9160d67d7` | ADR 0042 revisión 4, contrato `conditioned-use/v4-candidate` (§6.5 puntos 4 a 9, §8.7 «Resolution under a similarity», §15 con el diferencial y los criterios 7a a 7e y 8a a 8f), diseño revisión 4 y registro de decisiones revisión 4; segunda sonda externa `tools/benchmark/post-r1-locus/conditioned-use-precisions-probe.js` |
+| I0 preparatorio | `ee1518a1e` | paquete nuevo `org.geocedg.common.kernel.locus.conditioned` (12 clases) y `PostR1ConditionedEvidenceTest` (15 casos) |
+| Inventario | `349c1856c` | la prueba entra en `post-r1-locus.shared` (227 identidades); descubrimiento compartido 6 958; pin del catálogo |
+
+Resolución de las dos precisiones, en una línea cada una: (7) una sola asignación por
+selector de marco de rama, con un origen fijo; el token solo se resuelve si el origen y la
+raíz actual están en una misma región condicionada y, si no, se retiene sin entregarlo a
+otra raíz: la evidencia puede retener un token y nunca lo elige. (8) La cota de H4 de la
+fuente vale `ρ·δ` en la imagen; con razón absoluta no mayor que 1 las celdas se heredan
+iguales y con razón mayor cada tramo se recomprueba en el mundo de la imagen y el que falla
+se reclasifica; una banda nunca pasa a tramo.
+
+Pruebas discriminantes. Los criterios 7a a 7e y 8a a 8f del contrato §15 son pruebas de I4 e
+I4T, que no se han iniciado. Su contenido se ejecuta ya, sobre evaluadores de verdad
+conocida y con la regla de la revisión 3 y la de la revisión 4 en paralelo, en la sonda
+`conditioned-use-precisions-probe.js` (`node`, código de salida 0, «every discriminating
+check holds»):
+
+| Caso | Regla de la revisión 3 | Regla de la revisión 4 |
+|---|---|---|
+| C17, desaparición y aparición en regiones separadas (`c` = 0,2 → 1,8 → 1,0 → 1,8 → 0,3) | el token pasa a la raíz de la segunda región y el punto dependiente salta a ella | token retenido en un paso y tras un estado sin raíces; raíz con asa local; una sola entrada en el ledger; recuperado al volver a la primera región |
+| C17b, la evidencia no elige | — | con profundidades iniciales 32, 64 y 128, y con una banda confirmada entre el origen y la raíz, la raíz tiene el token o ninguno |
+| C17c, historia directa | — | el documento construido en el segundo estado guarda otro origen; su token se retiene en el primero |
+| C18, circunferencia unidad, límite 10⁻³ | razón 4: 128 tramos con flecha 1,205·10⁻³, todos sobre el límite | razón 0, 0,5, 1 y 3: las 128 celdas heredadas; razón 4: 256 tramos de 3,012·10⁻⁴, iguales a los de una travesía propia |
+| C18, paso mínimo 2⁻⁸ y razón 100 | 128 tramos de 3,0·10⁻² | 256 bandas, ningún tramo sobre el límite |
+| C18b, salto de 0,5 a razón 10⁻⁴ | — | la banda se conserva; una travesía de la imagen sola la daría por tramo |
+| C18c, composición | — | `Dilate(Dilate(L, 4), 1/4)`: 256 celdas; `Dilate(Dilate(L, 1/4), 4)`: 128 |
+
+Trabajo preparatorio de I0 (candidato pendiente de la aprobación normativa; ninguna
+operación pública lo lee y nada del producto llama al paquete nuevo). Contiene: tipos de
+celda, clases de tramo e hipótesis; muestra con testimonio de selección; política
+versionada `conditioned-traversal/v1`; evidencia inmutable con identidad de contenido,
+regiones y retirada; travesía diádica en anchura con conjunto de contradicciones y límite de
+trabajo; propietario del lado del productor con contador de publicación y regla de aviso; y
+registro de las celdas usadas por un resultado. Las pruebas cubren los casos C1 a C6, C9,
+C12 y C16 del banco y los criterios 3a, 3b, 4b y 6 del contrato. Ablaciones: sin la división
+por contradicción fallan 5 pruebas; sin la regla de que el interior de un fallo no se
+subdivide, 2; si los nodos ya evaluados no se cargan al límite de trabajo, 1.
+
+Queda de I0, sin hacer: el testimonio leído del evaluador real del slice, la integración en
+el productor del locus, el banco con el protocolo real y la medición del coste por
+revisión. Tres valores o reglas del candidato se fijan al cerrar I0 y hoy son provisionales:
+el umbral de margen (10⁻³) y el límite de trabajo (2 048 evaluaciones) de la política, y la
+clasificación de una celda cuyos nodos están ausentes con causas distintas, que hoy es
+`FAILURE_BAND` por prudencia (no es ausencia condicionada, que exige la misma causa).
+
 ## Verificación del candidato
+
+### Candidato de las precisiones focales y del trabajo preparatorio de I0
+
+Candidato técnico verificado: `349c1856c6e42f7ddb14c7b24f064ca2d627dc01`, árbol
+`7cc7637b31ad5260602569dc60461a16acbadb38`, árbol de trabajo limpio. Política aplicada:
+ordinaria = CORE + FOCUSED. El commit del texto normativo, `9160d67d7`, no es un
+descendiente solo documental de `afb916e10`: `tools/agent/documentary-descendant.ps1`
+devuelve `REQUIRES_DECISION` (código 5) porque cambia textos clasificados como normativos y
+añade un fichero bajo `tools/`. Por eso se verificó como candidato propio con `STATIC`
+(`tools/agent/verify.ps1 -Profile STATIC -LogDirectory
+artifacts/agent/post-r1-locus-static-9160d67d`, código 0,
+`verification-f5c85675ce0f4fc6b0a87551d7eaf774`, `ACCEPTED / COMPLETE`); no cambia ningún
+fichero bajo `source/`, así que `PHASE` e `INTEGRATION` de `afb916e10` no se repitieron
+para él. El trabajo preparatorio de I0 sí añade código, y la verificación completa se
+ejecutó sobre la punta técnica:
+
+| Nivel | Comando | Código | Identidad de ejecución | Veredicto | Notas |
+|---|---|---|---|---|---|
+| `STATIC` | `tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts/agent/post-r1-locus-static-349c1856` | 0 | `verification-cbe19ad149904e79968389c70f704a77` | `ACCEPTED / COMPLETE` | los dos diagnósticos permanentes |
+| FOCUSED: `PHASE` | `tools/agent/verify.ps1 -Profile PHASE -Phase POST-R1-LOCUS -LogDirectory artifacts/agent/post-r1-locus-phase-349c1856` | 0 | `verification-36e4741d8f3941368d2077677b80938b` | `ACCEPTED / COMPLETE` | 227 identidades compartidas y 25 Desktop; 0 hallazgos de diagnóstico |
+| CORE: `INTEGRATION` | `tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts/agent/post-r1-locus-integration-349c1856` | 0 | `verification-521344db1c644d80b2fb120faea2a3d0` | `ACCEPTED / COMPLETE` | los dos diagnósticos permanentes |
+
+Diagnósticos distintos de `DIAGNOSTIC_CLEAR`: los mismos dos permanentes que abajo
+(`diagnostic.governance` y `diagnostic.historical-consistency`).
+
+Bucle interno, que no es evidencia de aceptación: `gradlew :shared:common-jre:test --tests
+org.geocedg.common.locus.PostR1ConditionedEvidenceTest` (15 casos, 0 fallos) y Checkstyle de
+`:shared:common` y `:shared:common-jre` sin hallazgos en los ficheros nuevos. Los cuatro
+puntos de cobertura reducida siguen vigentes sin cambio: `FINAL` no ejecutado ni
+autorizado, `final.shared` y `final.desktop` sin refrescar, `INFRA_UNIT` completo no
+ejecutado, y el fallo previo de `PreG9BCu2AuthorModelConsumerTest`. No se formula
+`VERIFICATION_ESCALATION_REQUEST`.
 
 ### Candidato de la enmienda focal y de F8
 
@@ -254,7 +348,9 @@ mantenimiento del inventario para la próxima campaña exhaustiva.
 | Candidato técnico de la continuación `T2` (D-V6, paquete normativo revisado, inventario) | `1838c721149bb6a4ad9088dff767cc64320cfb00` | `52329d83632de0c6ffc609400aa1dad31d19da7a` |
 | Registro `D2` de `T2` | `9e2454206`, descendiente exclusivamente documental de `T2` | — |
 | Candidato técnico de la enmienda focal y de F8 `T3` | `afb916e10ce551df06c26000b7ab0ce671c64e3b` | `b3a192b0ec48d9fab0067e7a2508f7ee89a2ae3f` |
-| Registro `D3` | el commit que contiene esta versión del fichero, descendiente exclusivamente documental de `T3` | — |
+| Registro `D3` de `T3` | `96d0479ed`, descendiente exclusivamente documental de `T3` | — |
+| Candidato técnico de las precisiones focales y del trabajo preparatorio de I0 `T4` | `349c1856c6e42f7ddb14c7b24f064ca2d627dc01` | `7cc7637b31ad5260602569dc60461a16acbadb38` |
+| Registro `D4` | el commit que contiene esta versión del fichero, descendiente exclusivamente documental de `T4` | — |
 
 Commits de `T` sobre la base, en orden: `3881d7340` (A), `bc878779d` (F7), `d111a2e55` (F6),
 `efed59bc8` (B), `417ab2c0f` (A′), `246f0bb2d` (B, copias aisladas), `49704eb7a` (modelo,
@@ -266,11 +362,14 @@ Commits de `T2` sobre `D`: `4cbe89a3e`, `266d0a85e`, `83cd56c4c` y `1838c7211`.
 
 Commits de `T3` sobre `D2`: `57c495cce`, `58231d7d8`, `350b9d115` y `afb916e10`.
 
-El paquete normativo sometido a aprobación definitiva es el de `T3`: ADR 0042 revisión 3,
-contrato `conditioned-use/v3-candidate`, diseño revisión 3 y registro de decisiones
-revisión 3. Una aprobación debe citar `afb916e10` (el texto normativo es el de
-`57c495cce`, sin cambio posterior). Las revisiones 1 (`ab37fb5ff`) y 2 (`83cd56c4c`)
-quedan sustituidas.
+Commits de `T4` sobre `D3`: `9160d67d7`, `ee1518a1e` y `349c1856c`.
+
+El paquete normativo sometido a aprobación definitiva es el de la revisión 4: ADR 0042
+revisión 4, contrato `conditioned-use/v4-candidate`, diseño revisión 4 y registro de
+decisiones revisión 4. Una aprobación debe citar `9160d67d7`, que es el commit del texto
+(sin cambio posterior); `ee1518a1e` y `349c1856c` solo añaden el trabajo preparatorio de I0
+y su inventario, que quedan como candidatos pendientes de esa aprobación. Las revisiones 1
+(`ab37fb5ff`), 2 (`83cd56c4c`) y 3 (`57c495cce`) quedan sustituidas.
 
 Ramas locales `maintenance/post-r1-locus-repairs-and-conditioned-use` (en `96a4137e0`) y
 `maintenance/geocedg-1.2.2-post-r1`, sin publicar. `main` local y `origin/main` siguen en
@@ -278,17 +377,20 @@ la base. Ninguna etiqueta creada ni movida; versión de producto sin cambiar (1.
 
 ## Pendiente, siguiente acción y reanudación
 
-- **Pendiente del autor:** aprobación normativa definitiva del texto de la revisión 3;
+- **Pendiente del autor:** aprobación normativa definitiva del texto de la revisión 4;
   revisión de las reparaciones y del modelo (bloques 1 y 2) y de F8; revisión del texto de
   las aclaraciones normativas estrechas; autorización de publicación si procede.
-- **No hecho:** bloque 3B (I0 a I4T). Candidato 1.2.2 (versión, empaquetado, humo de
-  app-image, notas). Publicación en `main`. `FINAL` (no autorizado, no necesario bajo la
+- **No hecho:** el resto de I0 (testimonio del evaluador real, integración en el productor,
+  banco con el protocolo real y coste por revisión), I1 a I3, e I4 e I4T, que no se inician
+  antes de la aprobación normativa por decisión del autor. Candidato 1.2.2 (versión,
+  empaquetado, humo de app-image, notas). Publicación en `main`. `FINAL` (no autorizado, no necesario bajo la
   política vigente).
 - **Reanudación exacta:** con la aprobación normativa, partir de la punta de
   `maintenance/geocedg-1.2.2-post-r1`, comprobar la aprobación, el commit que cubre y si la
-  base ha cambiado, y empezar por el incremento I0 del
-  [plan](../architecture/post_r1_locus_conditioned_use_design.md#5-plan-de-incrementos-3b):
-  testimonio de evaluación y `LocusConditionedEvidence2D` en el kernel, sin cambiar
+  base ha cambiado, y continuar el incremento I0 del
+  [plan](../architecture/post_r1_locus_conditioned_use_design.md#5-plan-de-incrementos-3b)
+  desde el candidato preparatorio `ee1518a1e`: testimonio de evaluación leído del
+  evaluador real e integración de `LocusConditionedEvidence2D` en el productor, sin cambiar
   operaciones públicas. Orden: I0, I1, I2, I3, I4, I4T; después, el candidato funcional
   1.2.2, sin checkpoints autorales rutinarios intermedios (decisión del autor de
   2026-11-21). Siguen exigiendo decisión expresa: publicar en `main`, crear `v1.2.2`,
