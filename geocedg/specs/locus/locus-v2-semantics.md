@@ -268,6 +268,59 @@ public instrumentation:
 
 Duration is never a counter.
 
+### Post-R1 conformance clarification of the snapshot (2026-11-21)
+
+Status: implemented under the author instruction of 2026-11-21 (execution after revision
+R1 of the locus-on-intersection diagnosis), which authorized repairs A and A' and the
+narrow clarifications they need. The wording of this subsection has not yet been reviewed
+by the author; it adds no capability and approves nothing beyond those repairs. The
+fingerprint that implements it is `reconstruction-slice-fingerprint/v3`; it is not
+persisted.
+
+The rule of the v1.2 amendment is unchanged: for an element whose value depends on the
+driver position, the fingerprint takes its serialized options with numeric values
+neutralized, and the value of a Locus V2 output does not depend on the driver position.
+Two consequences are made explicit.
+
+**Evaluation state of a rich intersection (repair A).** The persisted token ledger of a
+Locus V2 intersection result that depends on the driver position enters the fingerprint
+without its evaluation state at that position:
+
+- the provider-canonical parameter of each root, which is revision-scoped localization
+  evidence and not durable identity (`locus-v2-intersections.md` §6.1);
+- the distinction between a claimed allocation that is current at that position and one
+  that is dormant there, which the same exact binding reactivates (§6.2).
+
+Every other field of the ledger enters as persisted: version, high-water mark, owner,
+source pair, lineage and topology material, number and kind of entries, incarnation,
+lineages, continuation key, provider and target contracts, selectors, the unclaimed
+state, every quarantine state and the copy-source snapshot. An allocation, a retirement, a
+quarantine or a selector change therefore remains a snapshot change. A result that does
+not depend on the driver position enters with its complete ledger. Consequently, an
+allocation that no point claims is dropped when its root leaves the incidence domain and
+allocated again on return, and each of those transitions publishes a revision.
+
+**Evaluation state of a nested locus (repair A').** A Locus V2 inside a slice traces over
+its own driver. The position of that nested driver, and the values of the elements computed
+from it, are evaluation state of the nested locus when every use of them inside the slice
+ends in the output of a locus that has that same driver. They then enter the fingerprint
+as the elements that depend on the driver of the slice do: without their exact values, and
+with the free place of every point on a path or in a region that is not itself a nested
+driver root.
+
+The decision is structural, taken on the dependency graph of the slice, never on values,
+labels or a list of cases. An element is an input of the traced function, and enters with
+its exact value together with everything it is computed from, whenever an algorithm of the
+slice reads it and has an output that
+
+- depends on the driver of the slice (a direct route to the traced point);
+- is the output of a locus with another driver, for which the element is a non-driver
+  input of its definition; or
+- is any other element outside that set.
+
+Literals, options, the inherited selection state of intersections and the support of a
+driver are not evaluation state and are unchanged.
+
 ### PRE-G9B-CU2 amendment (v1.3): publication, exact fingerprint and reconstruction fidelity
 
 Normative text of the publication rule of amendment A2.1-R of the

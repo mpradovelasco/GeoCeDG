@@ -154,6 +154,22 @@ Opening, editing, saving, undoing and redoing never change the policy of a docum
 automatic way back, and returning to the earlier policy is Undo. Copy, paste and macros follow the
 policy of the destination. A constructive document never loses its record when it is saved.
 
+**Post-R1 conformance clarification: evaluation of a reconstruction slice (2026-11-21).**
+Status: implemented under the author instruction of 2026-11-21 (execution after revision R1
+of the locus-on-intersection diagnosis), which authorized repair F6 and this narrow
+clarification. Its wording has not yet been reviewed by the author.
+
+The isolated copy of a reconstruction slice of a Locus V2 belongs to the document that owns
+the slice, and its relations are decided under the authority of that document. The copy
+receives that authority as an evaluation context captured when it is built. It receives no
+document record: nothing is persisted in it, the adoption event still refuses it, and no
+evaluation reads the live document. A change of the authority of the document makes the
+copy another evaluator: the owner rebuilds the slice and publishes a revision. A construct
+that requires the constructive policy is therefore evaluated in the slice exactly when it
+is defined in the live document, and fails closed in both otherwise. The macro
+construction of a user tool is not a reconstruction slice and is not covered by this
+clarification.
+
 ## 5. What is persisted
 
 The policy record is persisted. Integrity, transfer records, certificates and their evidence are

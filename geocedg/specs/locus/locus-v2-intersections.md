@@ -798,6 +798,32 @@ author-approved runner-specific policy says otherwise.
   dependencies, becomes coherently undefined for absent, stale or ambiguous
   continuation, never retargets to another root, and may recover only when the
   same token is current again under the approved continuation contract.
+
+**Post-R1 conformance clarification: equivalent update (2026-11-21).** Status:
+implemented under the author instruction of 2026-11-21 (execution after revision
+R1 of the locus-on-intersection diagnosis), which authorized repair B and this
+narrow clarification. Its wording has not yet been reviewed by the author; it
+adds no cache and approves nothing beyond that repair.
+
+An update of a public intersection whose complete semantic inputs are those of
+its own current payload is not a recompute: no resolution starts, the payload
+keeps its currentness, and nothing is published. The complete inputs are the
+durable identities of the source, the target, the pair and the result owner;
+the semantic revision and definition of the source and its provider contract;
+the exact state of the target and of every element it is computed from; the
+target family; the authority policy of the document; the lineage, topology and
+policy versions; and the complete state of the token ledger, persisted and
+pending. Update counters and coordinates alone are never those inputs.
+
+An update is equivalent only after one resolution under those same inputs has
+reproduced the previous outcome and left the ledger unchanged, and only for a
+current finite success in which every root has an established deterministic
+selection. A failure, a work limit, a first publication, an ambiguous or
+discontinuous identity and every ledger transition are resolved again. The
+producer keeps only the payload it already publishes: this is not the shared
+owner, index or result cache that §11 excludes, and §11 is unchanged. Publication
+stays atomic, and a payload of an obsolete revision is still dropped at
+recompute start.
 - The solution-local admissibility predicate requires a successful current
   `FINITE` result, a unique matching token, supported target/evaluator
   authority, coherent source/revision/branch/component bindings, independent

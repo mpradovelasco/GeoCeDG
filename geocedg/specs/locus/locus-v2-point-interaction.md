@@ -289,6 +289,24 @@ user inputs are not hidden or reclassified. Persistent identity attachment on
 reopen restores the auxiliary/restricted-visibility presentation for a valid
 owned pair without making presentation state semantic authority.
 
+**Post-R1 conformance clarification: ownership of dedicated inputs (2026-11-21).**
+Status: implemented under the author instruction of 2026-11-21 (execution after
+revision R1 of the locus-on-intersection diagnosis), which authorized repair F7 and
+this narrow clarification. Its wording has not yet been reviewed by the author.
+
+The same exclusivity holds for the selector text of `Point(L, u)`, whose point carries
+the stable `LOCUS_PRINCIPAL_BRANCH_POINT` role. A dedicated input has one owner, decided
+by that persisted role and by the place of the input in the parent of the point, never
+by the content of a text. An expression entered outside a document read that would read
+a dedicated input, or redefine it, is refused before any mutation with the typed cause
+`DEDICATED_AUXILIARY_OWNED`, unless it redefines the owner itself, whose definition
+names the input. The input is never copied for the new consumer: a copy would replace a
+requested dependency by a frozen value. An ordinary text with the same content has no
+owner and stays shareable, and the public forms `Point(L, u)` and
+`Point(L, "branch", u)` are unchanged. A document whose exclusivity is already broken
+keeps its `MALFORMED_RECORD` diagnostic on the record of the owner; nothing repairs it
+automatically.
+
 ## 13. Determinism and work evidence
 
 For one source revision and query, candidate status and canonical candidate set
