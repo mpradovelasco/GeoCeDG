@@ -148,9 +148,12 @@ Depende de la historia: 1,1 → 2,0 sin el paso previo no falla. Sin el consumid
 rama.
 
 Alcance conocido: composiciones en las que el conductor de un locus consumidor es entrada
-no conductora de un locus anidado. El modelo del autor no la contiene. Sin triar más allá
-del reproductor. Afecta a las composiciones anidadas del incremento I4 del uso condicionado,
-donde se propone triarlo y corregirlo con su propia prueba.
+no conductora de un locus anidado. El modelo del autor no la contiene.
+
+**Triado y reparado** el 2026-11-21, con la autorización del autor de la misma fecha. La
+causa no estaba en la reconstrucción: la carga de una copia aislada ordenaba la lista de
+dibujables de la vista viva. Causa, reparación, alternativas, pruebas y ablación:
+[documento de reparaciones, §1.6](post_r1_locus_repairs.md#16-f8--la-carga-de-una-copia-aislada-no-toca-la-vista-viva).
 
 ## 5. Límites
 

@@ -606,6 +606,12 @@ public class LayerManager {
 		drawingOrder.remove(newGeo);
 		newGeo.setOrdering(ordering);
 		drawingOrder.add(getInsertionIndex(newGeo), newGeo);
+		// GeoCeDG post-R1 repair F8: the construction of a macro kernel is never drawn.
+		// A replacement inside it, which the load of a Locus V2 slice copy performs for
+		// anonymous inputs, must not sort the drawables of the live view nor repaint it.
+		if (newGeo.getKernel().isMacroKernel()) {
+			return;
+		}
 		newGeo.getKernel().getApplication()
 					.getActiveEuclidianView().invalidateDrawableList();
 	}

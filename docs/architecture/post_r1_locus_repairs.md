@@ -172,6 +172,65 @@ identidad, la invalidación del grafo de dependencias y la autoridad de evaluaci
   parámetro de la definición anidada (`L_t`) y el soporte invalidan; un punto sobre un
   camino que se mueve con el conductor anidado conserva su parámetro propio.
 
+### 1.6 F8 — la carga de una copia aislada no toca la vista viva
+
+Reparación posterior, autorizada por el autor el 2026-11-21 («triaje temprano de F8 y su
+reparación antes de cerrar I4»). Defecto previo, igual en la base `9ccefdcfe`. No lo causa
+ninguna de las reparaciones anteriores.
+
+**Síntoma.** Con un locus consumidor `Zt` cuyo conductor `T` es entrada no conductora de un
+locus anidado `Lt`, el locus vivo `Lt` perdía su definición en ciertos movimientos de `T`
+(«Reconstructed evaluator omitted durable dependency»), según la historia de
+actualizaciones. En Desktop, actualizar los dibujables de la vista lanzaba
+`ConcurrentModificationException`.
+
+**Causa, demostrada con sondas fuera del árbol.**
+
+1. El XML de un slice escribe cada entrada anónima como `<expression label="" …>`. Con dos
+   o más (aquí, los centros de dos circunferencias), la carga de la segunda encuentra la
+   primera bajo la etiqueta vacía y entra en la ruta de redefinición,
+   `Construction.replace`.
+2. `Construction.replacePrepared` llama a `LayerManager.replace`, que termina en
+   `getApplication().getActiveEuclidianView().invalidateDrawableList()`: la copia aislada
+   ordena la lista de dibujables de la vista **viva** y pide repintarla.
+3. Si en ese momento la vista está recorriendo esa lista (actualización de dibujables en
+   Desktop; repintado síncrono en la aplicación sin interfaz), y un dibujable evalúa un
+   consumidor que reconstruye una copia anidada, esa segunda carga ordena la lista que se
+   está recorriendo. La excepción resultante, en la ruta de carga de macros, se registra y
+   se descarta: la copia queda vacía sin error y el siguiente uso falla por la dependencia
+   ausente.
+
+La dependencia de la historia era esa: falla la primera carga posterior a cada cambio que
+deja dibujables pendientes, y la siguiente funciona.
+
+**Reparación.** `LayerManager.replace` no notifica a la vista cuando el objeto pertenece a
+un macro-kernel: la construcción de un macro-kernel nunca se dibuja, así que la ordenación
+y el repintado de la vista viva eran un efecto espurio. Seis líneas en código heredado,
+marcadas como reparación GeoCeDG; el orden de dibujo de la propia copia se sigue
+manteniendo.
+
+Alternativas descartadas:
+
+| Alternativa | Motivo |
+|---|---|
+| No tratar la etiqueta vacía como redefinición al cargar | cambia el analizador heredado para todos los documentos; riesgo mayor que el defecto |
+| No escribir entradas anónimas repetidas en el XML del slice | el generador de XML de macros es compartido con las herramientas de usuario; no elimina la fuga hacia la vista |
+| Dejar de descartar excepciones en la carga de macros | cambia el contrato de carga de herramientas y no corrige la causa |
+
+**Pruebas discriminantes.**
+
+- `PostR1SliceCopyViewIsolationTest` (kernel compartido): el locus anidado y el consumidor
+  siguen definidos en siete posiciones de `T`, y el anidado evalúa en cada una el punto
+  del círculo analítico esperado, a 10⁻⁹.
+- `PostR1SliceCopyViewIsolationDesktopTest` (Desktop): la vista se actualiza y se pinta en
+  cada posición sin excepción.
+- Ablación: sin la guarda fallan las dos, la primera con el locus anidado indefinido en
+  `T = 2,0` y la segunda con `ConcurrentModificationException`.
+
+**Límite declarado.** La entrada en la ruta de redefinición al cargar entradas anónimas
+repetidas se conserva; es comportamiento heredado y, sin la notificación a la vista, no
+tiene efecto fuera de la copia.
+
 ## 2. Medición
 
 Arnés versionado: `tools/benchmark/post-r1-locus/run-harness.ps1 -Scenario benchmark`
