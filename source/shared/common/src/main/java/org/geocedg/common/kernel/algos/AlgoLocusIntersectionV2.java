@@ -302,11 +302,15 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 	 * definition object of the source and the state of the ledger are compared beside it.
 	 * Update counters and coordinates alone are never the key.
 	 *
+	 * <p>The isolated copy of a reconstruction slice never compares them: a point evaluation
+	 * updates only what follows the driver of the slice, so an intersection that is updated
+	 * there has a changed input, and the comparison would only add work to every sample.</p>
+	 *
 	 * @return the inputs, or {@code null} when this update is never equivalent
 	 */
 	private String semanticInputs(LocusDefinition2D definition, long locusRevision) {
-		if (!publicCommand || !equivalentUpdateReuse || definition == null
-				|| !source.isDefined() || !target.isDefined()) {
+		if (!publicCommand || !equivalentUpdateReuse || kernel.isMacroKernel()
+				|| definition == null || !source.isDefined() || !target.isDefined()) {
 			return null;
 		}
 		ArrayList<GeoElement> targetClosure = new ArrayList<>(target.getAllPredecessors());
