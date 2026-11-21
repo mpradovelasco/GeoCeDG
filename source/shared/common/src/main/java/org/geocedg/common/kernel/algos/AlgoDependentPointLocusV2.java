@@ -697,7 +697,10 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		if (evaluator != null && descriptor != null
 				&& candidate.getSemanticSignature()
 						.equals(descriptor.getSemanticSignature())
-				&& snapshot.getDigest().equals(sliceFingerprint)) {
+				&& snapshot.getDigest().equals(sliceFingerprint)
+				// Post-R1 repair F6: the copy was built under the authority of this
+				// document; an adoption makes it another evaluator.
+				&& evaluator.getEffectiveAuthority().equals(AuthorityPolicy.of(cons))) {
 			return;
 		}
 		ReconstructibleLocusEvaluator2D rebuilt =

@@ -55,12 +55,17 @@ public final class AuthorityPolicy {
 	}
 
 	/**
+	 * The policy that governs the relations decided in a construction: the persisted record of
+	 * a document, or, in the isolated evaluation copy of a reconstruction slice, the policy of
+	 * the document that owns the slice, captured when the copy was built (post-R1 repair F6).
+	 * Any other construction without a record is governed by the legacy policy.
+	 *
 	 * @param construction a construction
-	 * @return the policy of its document, from its persisted record
+	 * @return the policy of its document
 	 */
 	public static AuthorityPolicy of(Construction construction) {
 		return fromRecord(Objects.requireNonNull(construction).getSpatialIdentityRegistry()
-				.getDocumentAuthorityRecord());
+				.getEffectiveAuthorityRecord());
 	}
 
 	/**

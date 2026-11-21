@@ -25,6 +25,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationMethod;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.RepresentationRole;
+import org.geocedg.common.kernel.locus.constructive.AuthorityPolicy;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D;
@@ -101,6 +102,8 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private final GeoElement isolatedSupport;
 	private final double[][] certifiedAffineCoefficients;
 	private final long sliceScope = LocusEvaluationSession2D.newSliceScope();
+	/** Authority of the owning document, captured for the copy when it was built (F6). */
+	private final AuthorityPolicy effectiveAuthority;
 	private final List<GeoElement> liveSlice = new ArrayList<>();
 	private final List<GeoElement> liveDriverRoots = new ArrayList<>();
 	private final LocusInstrumentation2D fidelityOwner;
@@ -179,6 +182,13 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		certifiedAffineCoefficients = directScalarAffineCertificate();
 		MacroKernel macroKernel = construction.getKernel().newMacroKernel();
 		macroKernel.setGlobalVariableLookup(false);
+		// Post-R1 repair F6: the copy decides its relations under the authority of the
+		// document that owns the slice, captured here as a value before the copy is filled.
+		// The copy gets no document record and never reads the live document afterwards; the
+		// owner rebuilds the slice when the authority of its document changes.
+		effectiveAuthority = AuthorityPolicy.of(construction);
+		macroKernel.getConstruction().getSpatialIdentityRegistry()
+				.captureEvaluationAuthority(effectiveAuthority.toRecord());
 		try {
 			macroKernel.loadXML(Macro.buildMacroXML(construction.getKernel(), elements)
 					.toString());
@@ -229,6 +239,14 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		fidelity = validateFidelity();
 		programV3 = captureV3();
 		compositionV3 = captureCompositionV3();
+	}
+
+	/**
+	 * @return the authority of the owning document under which this copy decides its
+	 *         relations, captured when the copy was built
+	 */
+	public AuthorityPolicy getEffectiveAuthority() {
+		return effectiveAuthority;
 	}
 
 	/**
@@ -460,7 +478,11 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 				+ descriptor.getSemanticSignature() + "|affine="
 				+ getCertifiedAffineSignature() + "|fidelity="
 				+ ReconstructionFidelity2D.VERSION + ":"
-				+ (fidelity.isFaithful() ? "faithful" : "unfaithful");
+				+ (fidelity.isFaithful() ? "faithful" : "unfaithful")
+				// The legacy signature is unchanged; a copy governed by another authority
+				// is another evaluator (F6).
+				+ (effectiveAuthority.isConstructive()
+						? "|authority=" + effectiveAuthority.getAuthority() : "");
 	}
 
 	@Override

@@ -79,6 +79,14 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 	private final Construction owner;
 	/** PRE-G9B-CU3, ADR 0040: the persisted document policy, or null for the legacy one. */
 	private DocumentAuthorityRecord documentAuthority;
+	/**
+	 * Post-R1 repair F6: the authority of the document whose reconstruction slice an isolated
+	 * evaluation construction copies, captured once when the copy is built. It is an evaluation
+	 * context, not a document record: it is never persisted, never adopted and never cleared by
+	 * the parse that fills the copy.
+	 */
+	private DocumentAuthorityRecord evaluationAuthority;
+	private boolean evaluationAuthorityCaptured;
 	private final IdentityHashMap<GeoElement, PersistentGeoId> idsByGeo =
 			new IdentityHashMap<>();
 	private final Map<PersistentGeoId, GeoElement> geosById = new LinkedHashMap<>();
@@ -237,6 +245,44 @@ public final class SpatialIdentityRegistry implements SpatialIdentityGraph {
 	 */
 	public DocumentAuthorityRecord getDocumentAuthorityRecord() {
 		return documentAuthority;
+	}
+
+	/**
+	 * The authority under which the relations of this construction are decided: the persisted
+	 * policy of a document, or, in an isolated evaluation copy of a reconstruction slice, the
+	 * policy captured from the document that owns the slice ({@code
+	 * locus-v2-constructive-authority.md} section 4: one document has one authority).
+	 *
+	 * @return the record, or {@code null} for {@code legacy-representation-authority/v1}
+	 */
+	public DocumentAuthorityRecord getEffectiveAuthorityRecord() {
+		return documentAuthority != null ? documentAuthority : evaluationAuthority;
+	}
+
+	/**
+	 * Captures, once and before the copy is filled, the effective authority of the document
+	 * whose slice this isolated evaluation construction reconstructs. The copy gains no
+	 * document record: nothing is persisted, and {@link #getDocumentAuthorityRecord()} and
+	 * the adoption event are unchanged.
+	 *
+	 * @param record the effective record of the owning document, or {@code null} for the
+	 *        legacy policy
+	 * @throws IllegalStateException for a document construction or a second capture
+	 */
+	public void captureEvaluationAuthority(DocumentAuthorityRecord record) {
+		if (record != null && !DocumentAuthorityRecord.CONSTRUCTIVE_V1.equals(record)) {
+			throw new IllegalArgumentException("Unsupported authority policy record");
+		}
+		if (!(owner instanceof MacroConstruction)) {
+			throw new IllegalStateException(
+					"Only an isolated evaluation construction captures an authority");
+		}
+		if (evaluationAuthorityCaptured) {
+			throw new IllegalStateException(
+					"The evaluation authority of an isolated construction is captured once");
+		}
+		evaluationAuthority = record;
+		evaluationAuthorityCaptured = true;
 	}
 
 	/** @return whether the document has adopted a persisted authority policy */
