@@ -2,9 +2,9 @@
 
 | | |
 |---|---|
-| Status | **CANDIDATE, REVISION 3 — PROPOSED, PENDING AUTHOR APPROVAL. NOT NORMATIVE.** `selfApproved=false` |
-| Version | `conditioned-use/v3-candidate` (revision 2 is the text of commit `83cd56c4c`; revision 1 that of `ab37fb5ff`) |
-| Decision | [ADR 0042](../../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md), proposed, with the author decisions D-V1 to D-V7 and the focal amendment requested by the author on 2026-11-21 |
+| Status | **CANDIDATE, REVISION 4 — PROPOSED, PENDING AUTHOR APPROVAL. NOT NORMATIVE.** `selfApproved=false` |
+| Version | `conditioned-use/v4-candidate` (revision 3 is the text of commit `57c495cce`; revision 2 that of `83cd56c4c`; revision 1 that of `ab37fb5ff`) |
+| Decision | [ADR 0042](../../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md), proposed, with the author decisions D-V1 to D-V7, the focal amendment requested by the author on 2026-11-21 and the two focal precisions requested after the review of revision 3 |
 | Design | [architecture and source analysis](../../../../docs/architecture/post_r1_locus_conditioned_use_design.md) |
 | Layer | Shared Java kernel (evidence, addresses, operations); derived rendering; Desktop adapters; export adapters |
 
@@ -25,7 +25,8 @@ exploration never establishes `LOCAL_CERTIFIED` or `COMPLETE`. The document auth
 ADR 0040, relation integrity and relaxed admission with their positive requirements, the
 semantic snapshot, and every existing token, selector and address with its text and meaning
 are unchanged. The only identity material this contract adds is the parameter address of
-§6.1 and the root selector of §6.5, each in its own versioned kind. A certified component
+§6.1 and the root selector of §6.5, each in its own versioned kind; the origin of a binding
+(§6.5) is a parameter address. A certified component
 keeps every contract and guarantee it has today, and a producer that can be certified is
 certified as before.
 
@@ -232,30 +233,79 @@ sampling.
    the roots found replaces them. Two or more current roots of one result that share a
    branch-frame selector are ambiguous: they keep revision-local handles with the existing
    identity statuses and are not point-admissible.
-4. **Allocation and resolution.** The existing rule applies unchanged: only a complete
-   selector that is unique among the current published finite roots of the result allocates
-   or resolves a durable token; the first publication reports `NEW_TOPOLOGICAL_SOLUTION` and
-   a later resolution of the same ledger binding `DETERMINISTIC_SELECTION_ESTABLISHED`. The
-   binding is a function of the current state: movement history, previous positions and
-   proximity never select, mint, transfer or replace a token. No continuation is claimed
-   across a band.
-5. **Change of frame.** Each current root has one selector, decided by where its parameter
+4. **Allocation, with an origin.** Only a complete selector that is unique among the current
+   published finite roots of the result allocates a durable token, and the allocating
+   publication reports `NEW_TOPOLOGICAL_SOLUTION`, as the existing rule says. A result has at
+   most one binding per branch-frame selector. The binding records, with the selector and
+   the token, its **origin**: the parameter address (§6.1) of the root at the allocating
+   publication. The origin is a creation datum, of the same nature as the parameter of a
+   parameter address. It is not part of the selector, it is never updated by a later
+   resolution, and two bindings never differ by their origin alone.
+5. **Reuse guard.** The uniqueness of a branch-frame selector in the current state does not
+   establish that the current root is the root that received the token: the frame is the
+   whole branch, its regions are separated by bands, and the roots found are not known to be
+   all the roots. A current root therefore resolves the token of its selector only when both
+   conditions hold:
+   - its selector is unique among the current published finite roots of the result; and
+   - in the current published content of the source, the origin of the binding and the
+     isolating interval of the root lie in one conditioned region: every cell from one to
+     the other is a span. A band of any kind, an unexplored cell or a certified component
+     between them fails the guard, and so does an origin whose own cell is not a span.
+
+   When both hold the resolution reports `DETERMINISTIC_SELECTION_ESTABLISHED`, with the
+   meaning that status has in the intersection contract: the unique root of its germ in its
+   frame, which here is the region of the origin. H1 to H3 of the spans between the origin
+   and the root are recorded among the premises of the resolution, and those spans are cells
+   that the result used (§7, point 6). It is not a claim that an individual root was
+   followed.
+6. **The evidence withholds a token and never chooses one.** When the guard fails, the token
+   is not current. It is not given to the root, transferred, replaced or retired; no other
+   token is allocated for that selector while the binding exists; and the root is published
+   with a revision-local handle, identity status `NOT_ESTABLISHED`, and is not
+   point-admissible. An object that depends on the token is undefined with its existing
+   cause and is defined again when a later state satisfies the guard. In particular, when a
+   root disappears from one region and another root of the same branch and germ appears in
+   a separate region, the second root does not receive the token of the first, whether both
+   events fall in one update or a state without roots lies between them. This applies the
+   sentence of `locus-v2-intersections.md` §6.1, «failure to establish current admissibility
+   does not authorize another root to acquire the token», to the branch frame. A root holds
+   either the single token bound to its selector or none: no content of the evidence, policy
+   depth, order of contradictions or order of updates gives it another token or selects
+   among roots. The origin is the only position that a binding records; it is fixed, and it
+   can only withhold. Movement history, later positions and proximity never select, mint,
+   transfer or replace a token, and no continuation is claimed across a band.
+7. **Change of frame.** Each current root has one selector, decided by where its parameter
    lies in the current revision. When a root passes between a certified component and the
    uncertified part of its branch, its selector is another one: the earlier token is
    non-current and is never transferred, the root is published under the selector of its
-   frame, and the earlier token is current again when the state returns.
-6. **Pairs.** In an intersection of two loci each source side binds the lineage of its
+   frame, and the earlier token is current again when the state returns. A branch-frame
+   binding keeps its origin through such a passage.
+8. **Pairs.** In an intersection of two loci each source side binds the lineage of its
    certified component, or the branch frame of that source when the root lies in a span of
-   it. A pair with a branch-frame side has no rank.
-7. **Persistence.** A branch-frame selector is stored in the token ledger as an entry of its
-   own kind, in a new ledger format version. Every existing entry keeps its text and its
-   meaning, and no entry is rewritten into another kind. Evidence is never stored. A reader
+   it. A pair with a branch-frame side has no rank; each branch-frame side records its own
+   origin, and the guard of point 5 must hold on each of them.
+9. **Persistence.** A branch-frame binding is stored in the token ledger as an entry of its
+   own kind, in a new ledger format version, with its selector, its origin and its token.
+   The origin is an address, not evidence: evidence is never stored. Every existing entry
+   keeps its text and its meaning, and no entry is rewritten into another kind. A reader
    that does not know the version rejects the document closed, as the ledger contract
    already says; reading by GeoCeDG 1.2.1 is not required (D-V2).
 
-Consequence, stated: on a conditioned source a result with two or more roots of the same
-germ on one branch publishes them as roots without durable tokens. That limit is removed
-only by certification of the component.
+Consequences, stated:
+
+- on a conditioned source a result with two or more roots of the same germ on one branch
+  publishes them as roots without durable tokens. That limit is removed only by
+  certification of the component;
+- a root that the configuration carries out of the region of its origin holds no token
+  until a state returns in which the guard holds, and a root of the same selector found in
+  another region receives no durable token in that result. Another intersection result has
+  its own ledger context and allocates with its own origin;
+- two documents with the same ledger resolve identically in the same state. Histories that
+  allocate at different configurations record different origins: they can differ in when a
+  token is withheld, never in which root holds which token;
+- inside the region of its origin the token names, as on a certified component, the unique
+  root of its germ. The guard removes the reuse that the branch frame would add between
+  regions; it adds no proof of continuation that the intersection contract does not have.
 
 ### 6.6 Obligations of GeoCeDG 1.2.2 (D-V2)
 
@@ -265,6 +315,7 @@ tested, for parameter addresses and for branch-frame selectors:
 | Operation | Requirement |
 |---|---|
 | Durable identity | independent of coordinates, labels and sampling; unchanged by refinement, split, merge, withdrawal, reactivation and promotion of evidence, and by the policy depth |
+| Reuse across configurations | a branch-frame token is resolved only under the guard of §6.5, point 5; when the guard fails it is withheld and never given to another root, and it is current again when the guard holds |
 | Save and reopen | the address or selector is read back exactly; evidence is recomputed, never read from the document |
 | Copy, duplicate | a new identity for the copy; the source locus is remapped by the existing exact copy rules |
 | Undo, redo | the address, the identity and the definedness of each step are restored |
@@ -413,10 +464,10 @@ existing typed cause.
 | Evidence required | per root: its isolating interval inside one span or one certified component; residual within tolerance; local isolation; a sign-change bracket for a transverse root |
 | Guarantee | each root `VERIFIED_UNCERTIFIED` with the evidence class of its span; completeness always `NOT_ESTABLISHED` on a source that is not `COMPLETE`; never `EMPTY` |
 | Incidence | of the root on the target by the existing residual contract; on the source by its parameter. Under the constructive authority the admission of a root is the unchanged re-qualification of `locus-v2-constructive-authority.md` §7.4: `STRICT`, `RELAXED` by its own positive evidence, or `NOT_ESTABLISHED`; a root that is not admitted is published and is not point-admissible |
-| Identity and continuation | §6.5: component selector inside a certified component, branch-frame selector on a span, no rank on a span |
+| Identity and continuation | §6.5: component selector inside a certified component, branch-frame selector on a span, no rank on a span; the token of a branch-frame selector only under its reuse guard |
 | Degeneracies | tangency, coincident roots, overlap: the existing classifications. A root needs evidence on a neighbourhood, which a band does not give: a candidate whose isolating interval meets a band or an unexplored cell is reported unresolved and is not published as a root. This differs from a parametric point, which needs no neighbourhood (§6.3) |
 | Persistence and recovery | the command and the ledger, with the entry kind of §6.5 |
-| Refusals | `SOURCE_NOT_EVALUABLE`; a root whose selector is not unique keeps a revision-local handle and is not point-admissible |
+| Refusals | `SOURCE_NOT_EVALUABLE`; a root whose selector is not unique, or whose reuse guard fails, keeps a revision-local handle and is not point-admissible |
 
 ### 8.6 Intersection of two loci — `Intersect(L1, L2)`
 
@@ -434,14 +485,66 @@ domain, the branches and the orientation of the source.
 |---|---|
 | Inputs and domain | a locus and the parameters of a similarity |
 | Preconditions | the source is defined; the parameters are defined |
-| Evidence | the image *inherits* the conditioned evidence of the source cell by cell, with the same ends, kinds, classes, hypotheses and content identity, as it already inherits the existence structure. H1 to H3 are invariant under a similarity; the resolution bound of H4 is the source bound multiplied by the absolute ratio |
-| Guarantee | that of the source region, for every consumer of this section |
+| Evidence | the image *inherits* the conditioned evidence of the source cell by cell, as it already inherits the existence structure, and states it against the policy in its own world. H1 to H3 are invariant under a similarity; H4 is not: the rule «Resolution under a similarity» below says how its bound transforms and which cells are classified anew |
+| Guarantee | that of the cell of the image, for every consumer of this section |
 | Incidence | a point of the image at parameter `u` is the image of the source point at `u` |
 | Identity and continuation | own identity; a parameter address on the image names the same parameter. A transformed query creates its own selectors and tokens, as `locus-v2-similarity-transformations.md` §8 says; none is copied from the source query |
 | Propagation | recomputed when the source revision, a source cell in use or a parameter changes |
 | Ratio zero | the approved `COLLAPSED_IMAGE` contract, unchanged (below) |
 | Persistence | the command and its inputs, as today |
 | Refusals | an undefined source or parameter gives an undefined image, as today |
+
+**Resolution under a similarity.** Let `ρ` be the absolute ratio of the similarity: 1 for a
+translation, a rotation and a reflection, `abs(k)` for a dilation of factor `k`.
+
+1. *How the quantities of a cell transform.* A similarity multiplies every length by `ρ`,
+   preserves angles and does not act on the parameter. Hence, exactly: the ends of a cell,
+   the minimum step and every parameter interval are unchanged; the turning between nodes is
+   unchanged; the chord deviation between nodes, and every other length that a criterion of
+   the policy measures, is multiplied by `ρ`; and the bound of H4 that the source states,
+   the chord-deviation limit `δ` of the policy in the world of the source, is `ρ·δ` in the
+   world of the image. H1 to H3, the testimony, the margin and the evidence class are facts
+   of the source slice, upstream of the similarity, and are unchanged.
+2. *The policy of the image.* The limits of the policy are world quantities of the locus
+   that publishes the evidence (§3.4). The image publishes its evidence against the same
+   policy version with the limits in its own world: H4 of a span of the image is stated
+   with `δ`, and is never stated with `ρ·δ` when that is larger.
+3. *When a cell is classified anew.*
+   - `ρ ≤ 1` — every isometry, every reduction and ratio zero: `ρ·δ ≤ δ`, so every span of
+     the source meets the policy of the image. The cells are inherited unchanged, with the
+     same ends, kinds and classes. Nothing is merged or coarsened.
+   - `ρ > 1`: `ρ·δ > δ`. The bound of the source no longer meets the policy of the image
+     and is not kept. Every inherited span is checked again in the world of the image, with
+     the lengths at its nodes multiplied by `ρ`. A span that passes is a span of the image.
+     A span that fails is classified anew by the ordinary rule of §7, point 3, applied to
+     the image function inside that cell: it is subdivided until the checks pass, or to the
+     minimum step, where it is a `DISCONTINUITY_BAND`. The new nodes are evaluated through
+     the source evaluator. The work is charged to the work limit of the image, and a cell
+     that it does not reach is `UNEXPLORED`, never a span.
+   - Whatever the ratio, a band or an unexplored cell of the source is inherited with its
+     kind. A ratio never turns it into a span: a jump that falls below the limit at the
+     scale of the image is not evidence of continuity.
+   - The image of an image applies this rule to its immediate source.
+4. *No silent tolerance.* The image never publishes a span whose chord deviation at its
+   nodes, in its own world, exceeds the limit of the policy, and never states to a consumer
+   a resolution in the units of the source. Where its cells differ from those of the source,
+   the difference is part of its published content and of the state of §9, point 3.
+5. *Identity and lifecycle.* The evidence of the image has its own content identity:
+   `(revision of the image, policy version, content identity of the source evidence it
+   read, contradiction set of the image)`. The revision of the image identifies its traced
+   function, the similarity included, so the content is a function of the current state and
+   never of the order in which the ratio took its values. A contradiction of H1, H2 or H3
+   observed on the image is a contradiction of the source cell and is reported to the
+   producer of the source; a contradiction of a length criterion in the world of the image
+   is reported to the producer of the image (§7, point 4).
+6. *Consumers.* Every consumer of the image reads the cells of the image. Its regions are
+   contained in those of the source: the image admits no following, route or root that the
+   source refuses, and may refuse one that the source admits where a cell was classified
+   anew. The tolerances that the existing contracts compute on the image (root residual,
+   isolation, numeric guarantee) are computed on the image, as today. The `abs(k)`
+   covariance of lengths of `locus-v2-similarity-transformations.md` §7 is unchanged; it
+   relates lengths, and does not require the estimates of the image and of the source to
+   come from the same cells.
 
 **Finite ratio zero.** `locus-v2-similarity-transformations.md` §5.4, §6, §7 and §8,
 `locus-v2-point-interaction.md` §11 and the collapsed-image clauses of
@@ -451,8 +554,8 @@ domain, the branches and the orientation of the source.
   preserves the source domains with their `FINITE` or `UNBOUNDED` classification, the
   branches, the semantic addresses and the invalid gaps; every source-valid address maps to
   the centre and every source-invalid address stays invalid;
-- the conditioned evidence is inherited as for any other ratio: spans stay spans, bands stay
-  bands, and no cell is reclassified because the image collapsed;
+- the conditioned evidence is inherited as for any other ratio not above 1: spans stay
+  spans, bands stay bands, and no cell is classified anew because the image collapsed;
 - an existing point keeps its selected address and its identity, evaluates at the centre and
   recovers its position when the ratio is nonzero again; a new inverse query on the image
   cannot choose one address and returns the existing degenerate, multiple result;
@@ -539,18 +642,18 @@ separate later capability with its own approval:
 - **K1, certified root family**: an enclosed family of the root parameter over a cell. A
   fold needs `h = 0` and `h_u = 0` together.
 
-No promotion is part of `conditioned-use/v3`.
+No promotion is part of `conditioned-use/v4`.
 
 ## 12. Amendments that adoption would require
 
 | Specification | Amendment |
 |---|---|
 | `locus-v2-existence-components.md` §15.1, §15.8 | name the conditioned evidence as the producer of `NUMERICAL_UNDER_HYPOTHESES`; state the consumer admissions of §8 beside the existing exception |
-| `locus-v2-public-surface.md` | parameter address codec and its resolution; result states of intersections on a conditioned source; ledger format version with the branch-frame entry kind |
+| `locus-v2-public-surface.md` | parameter address codec and its resolution; result states of intersections on a conditioned source; ledger format version with the branch-frame entry kind and its origin |
 | `locus-v2-point-interaction.md` | continuation along a conditioned region; a valid point inside a band has no continuation |
 | `locus-v2-metrics.md` | conditioned between-position and total lengths; relation to §26.5 and §26.6 |
-| `locus-v2-intersections.md`, `locus-v2-extended-intersections.md` | local roots on spans beside the rule that a locally verified root needs a certified component; the branch-frame selector kind beside §6.2, whose text for certified components does not change |
-| `locus-v2-similarity-transformations.md` | inheritance of conditioned evidence by the image; no change of the `COLLAPSED_IMAGE` clauses |
+| `locus-v2-intersections.md`, `locus-v2-extended-intersections.md` | local roots on spans beside the rule that a locally verified root needs a certified component; the branch-frame selector kind, the origin of its binding and its reuse guard beside §6.2, whose text for certified components does not change |
+| `locus-v2-similarity-transformations.md` | inheritance of conditioned evidence by the image, with the rule of resolution under a similarity; no change of the `COLLAPSED_IMAGE` clauses nor of the metric and intersection covariance |
 | `locus-v2-presentation.md` | state in the properties, system mark, closure wording |
 | export specifications | omission with diagnostic (§10) |
 | `locus-v2-constructive-authority.md` | none: integrity and relaxed admission do not change |
@@ -593,8 +696,8 @@ the bench of the design document.
 |---|---|---|
 | 1a | under the constructive authority, a parametric point and a root on a span without evidence of their own have integrity or admission `NOT_ESTABLISHED`; the root is published and its token point is undefined with the existing cause | I1, I4 |
 | 1b | the same relation with a positive kind of the authority contract is `RELAXED`, with its record; every existing test of the authority contract passes unchanged; no production path builds `RELAXED` from conditioned evidence | I4 |
-| 2a | two roots of opposite germ on one region receive two tokens; direct, incremental, undo and redo, and save and reopen histories give the same bindings | I4 |
-| 2b | the same construction traversed with another policy depth, and after a new publication, gives the same selectors and tokens | I4 |
+| 2a | two roots of opposite germ on one region receive two tokens; with the same ledger, undo and redo and save and reopen give the same bindings; a direct and an incremental history differ at most as criterion 7d says | I4 |
+| 2b | the same construction traversed with another policy depth, and after a new publication, gives the same selectors, and each root holds the token of its selector or none (criterion 7c) | I4 |
 | 2c | two roots of the same germ on one branch receive no token and keep revision-local handles; a root that passes between a certified component and a span does not carry its token, and recovers it when the state returns | I4 |
 | 2d | the selector and token texts of every root on a certified component are byte-identical to those of the base; every existing ledger document reads as before | I4 |
 | 3a | every permutation of three or more confirmed contradictions, interleaved with queries and drawing, gives the same content identity and the same cells; the counters may differ; a duplicate or unconfirmed report changes nothing | I0 |
@@ -603,3 +706,33 @@ the bench of the design document.
 | 4b | a valid evaluation inside an `ABSENT_BAND` or a `FAILURE_BAND` is reported, confirmed and reclassified | I0 |
 | 5 | with ratio zero on a conditioned source: valid image, domains, gaps and cells equal to the source, existing point with its address that recovers at a nonzero ratio, degenerate inverse query, zero lengths with the class of the metric contract, a target through the centre as overlap; the existing `COLLAPSED_IMAGE` tests pass unchanged | I4T |
 | 6 | adverse case: the enclosed roots stay separated on a cell while the selection of the dependency changes inside it; the span is `MARGIN_BOUNDED`, records H2 and gives no consumer more than `RESOLUTION_ONLY`; no consumer branches on the class | I0 |
+
+## 15. Differences from revision 3 (`57c495cce`) and their validation
+
+Two focal precisions requested by the author on 2026-11-21, after confirming the six points
+of §14. Nothing else changes; criteria 2a and 2b of §14 are restated to agree with
+precision 7.
+
+| # | Precision | Revision 3 | Revision 4 | Where |
+|---|---|---|---|---|
+| 7 | Identity across configurations | a branch-frame selector that was unique in the current state resolved its ledger token, so a root that appeared in another region of the branch with the same germ received the token of a root that had disappeared | one binding per selector, with a fixed origin; the token is resolved only when the origin and the root lie in one conditioned region; otherwise it is withheld, never given to another root, and no evidence chooses a token | §1, §6.5 points 4 to 9 and consequences, §6.6, §8.5, §12 |
+| 8 | Resolution under similarities | the image inherited every cell and «the bound multiplied by the ratio», so for a ratio above 1 a span could be published with a deviation above the limit of the policy | the quantities of a cell transform as stated; the image states H4 with the limit of the policy in its own world; for a ratio above 1 every span is checked again and classified anew where it fails; a band is never turned into a span; the image evidence has its own content identity | §8.7, §12 |
+
+Validation criteria. Each is a discriminating test of the increment named: the rule of
+revision 3 fails it. Cases C17 and C18 of the design bench run them on evaluators of known
+truth (`tools/benchmark/post-r1-locus/conditioned-use-precisions-probe.js`), with both
+rules side by side.
+
+| # | Criterion | Increment |
+|---|---|---|
+| 7a | **adverse case, disappearance and appearance in separate regions.** One branch with two regions A and B separated by a band; a target that has one root on A, of germ `g`. The token `T` is allocated and a point depends on it. The target changes so that A has no root and B has one root of germ `g`, in one update and, separately, through a state without roots. The selector text of the root on B is equal to that of the root on A. Required: `T` is not current; the root on B has a revision-local handle and `NOT_ESTABLISHED`; the point is undefined with its existing cause and is never at the root on B; the ledger keeps one entry with its origin and no token is allocated. When the target returns to A the point is defined at the root on A with `DETERMINISTIC_SELECTION_ESTABLISHED` | I4 |
+| 7b | positive control: the root moves inside the region of the origin; `T` stays current at every step, and the spans between the origin and the root are recorded among the cells that the result used | I4 |
+| 7c | the evidence never chooses: with other policy depths, with every order of confirmation of contradictions, and with a band confirmed between the origin and the root, each root holds `T` or no token; the band withholds `T` and the dependents are recomputed through §7, point 5; no second entry of the selector exists in any history | I4 |
+| 7d | histories: undo and redo, and save and reopen in every state of 7a, restore the entry (selector, origin, token) and the definedness of the point exactly. A document built directly in the second state allocates a token with its origin on B, which is withheld on A. In no history does a root hold a token allocated to a root of another region | I4 |
+| 7e | pairs: in an intersection of two conditioned loci the guard is required on each branch-frame side; failing it on one side withholds the token | I4 |
+| 8a | for a translation, a rotation, a reflection, a ratio below 1 and ratio zero, the cells of the image are those of the source, with the same ends, kinds and classes; a `DISCONTINUITY_BAND` of the source whose jump is below the limit at the scale of the image is a band of the image | I4T |
+| 8b | **adverse case, magnification.** Source with spans whose chord deviation at the nodes is `d`, limit `δ`. For a ratio `ρ` with `ρ·d ≤ δ` the cells are inherited unchanged; for `ρ·d > δ` those cells are subdivided and no published span of the image has a deviation above `δ` in its own world. On the unit circle with the limits of the bench: 128 spans of deviation 3,01·10⁻⁴; ratio 3 inherits them (9,04·10⁻⁴); ratio 4 publishes 256 spans of 3,01·10⁻⁴, where copying the cells would publish 128 spans of 1,20·10⁻³ | I4T |
+| 8c | minimum step: where the checks still fail at the minimum step the cell of the image is a `DISCONTINUITY_BAND`, and where the work limit ends it is `UNEXPLORED`; following and lengths across it are refused on the image with the kind of the cell while the source admits them; a point at a valid parameter inside it is defined (§6.3) | I4T |
+| 8d | the content of the image is a function of the state: a ratio that goes from 4 to 1/2 and back to 4 gives the content identity of the direct ratio 4, with free publication counters; an image of an image decides against its immediate source and never coarsens | I4T |
+| 8e | a contradiction of H1 to H3 found at a node that the image added is reported to the producer of the source, appears in the content of the source and is inherited by the image; the content identity of the image records that of the source | I4T |
+| 8f | the existing tests of the similarity contract, the `COLLAPSED_IMAGE` tests of criterion 5 and the `abs(k)` covariance of lengths on certified sources pass unchanged | I4T |

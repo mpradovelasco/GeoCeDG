@@ -1,12 +1,13 @@
 # ADR 0042 — Locus V2 conditioned use under declared hypotheses
 
-- Status: **PROPOSED, REVISION 3 — PENDING AUTHOR APPROVAL**. The product decisions D-V1 to
+- Status: **PROPOSED, REVISION 4 — PENDING AUTHOR APPROVAL**. The product decisions D-V1 to
   D-V7 below are fixed by the author; this text, which states them as a contract, is not
   approved, and no implementation of the new semantics is authorized by it.
   `selfApproved=false`.
 - Date: 2026-11-21 (revision 1, commit `ab37fb5ff`; revision 2, commit `83cd56c4c`);
-  revision 3 the same day, with the focal amendment that the author requested after
-  reviewing revision 2.
+  revision 3 the same day (commit `57c495cce`), with the focal amendment that the author
+  requested after reviewing revision 2; revision 4 the same day, with the two focal
+  precisions that the author requested after reviewing revision 3.
 - Authorization of the design work: author instructions of 2026-11-21, «Ejecución secuencial
   tras R1» (block 3A) and «Revisión normativa post-R1, continuación de implementación y
   objetivo 1.2.2».
@@ -35,6 +36,15 @@ new subphase opened (P3); the early triage of the pre-existing defect F8 is auth
 its repair before increment I4 closes (P4). The normative approval of this text was withheld
 until the six points of the focal amendment were incorporated; they are listed under
 «Differences from revision 2».
+
+Author response to revision 3 (2026-11-21): the six points are confirmed as correctly
+incorporated and the general architecture is accepted. Before the definitive normative
+approval two focal precisions are required, on the identity of roots across configurations
+and on the resolution of the evidence under similarities; they are listed under
+«Differences from revision 3». The review is not widened to other contracts. Preparatory
+work on increments I0 to I3 that does not depend on the two precisions is allowed, kept as
+candidates pending the final normative approval; I4 and I4T are not started before it.
+Publication on `main`, the tag `v1.2.2` and a release remain unauthorized.
 
 ## Context
 
@@ -100,7 +110,11 @@ distinguishable from an exact result.
    root, an association by proximity, an unproved closure, `EMPTY` or a complete set. A
    consumer that requires a certificate keeps failing closed. A transformation transforms
    the parametric procedure, never the drawing polyline, and a dilation of ratio zero keeps
-   the approved `COLLAPSED_IMAGE` contract. Under the constructive authority the integrity
+   the approved `COLLAPSED_IMAGE` contract. The image states its evidence against the policy
+   in its own world: lengths and the bound of the resolution hypothesis are multiplied by
+   the absolute ratio, and a span that a ratio above 1 leaves outside the limit of the
+   policy is classified anew, never kept with a tolerance that no longer holds. Under the
+   constructive authority the integrity
    and relaxed-admission requirements are unchanged: conditioned evidence never grants
    `RELAXED`, and no widening of those requirements is proposed.
 
@@ -108,6 +122,10 @@ distinguishable from an exact result.
    component persists a parameter address without a component selector, in its own versioned
    codec. An intersection root on such a region takes a selector of its own kind whose frame
    is the branch, without rank; a region, a cell and the partition are never identity. The
+   token of such a selector is bound with a fixed origin and is resolved only while its root
+   lies in the conditioned region of that origin: the uniqueness of the selector in the
+   current state is not enough, the evidence can withhold a token, and it never chooses one
+   or gives it to another root. The
    meaning of an earlier codec or selector is never reused, and no migration invents an
    identity or a spatial association. The validity of a point and the admissibility of a
    continuation are separate facts: a valid point inside a band is defined and has no
@@ -159,6 +177,17 @@ exact text and the validation criteria of each point are in §14 of the candidat
 | 5 | Ratio zero | the approved `COLLAPSED_IMAGE` contract, unchanged |
 | 6 | `MARGIN_BOUNDED` | proves only the pairwise separation of the enclosed roots; H2 stays whole |
 
+## Differences from revision 3 (`57c495cce`)
+
+Two focal precisions; nothing else changes. The exact text and the validation criteria are
+in §15 of the candidate contract, and the adverse cases run in the design probe
+`tools/benchmark/post-r1-locus/conditioned-use-precisions-probe.js`.
+
+| # | Precision | Revision 4 |
+|---|---|---|
+| 7 | Identity across configurations | one binding per branch-frame selector, with a fixed origin; the token is resolved only when the origin and the root lie in one conditioned region, and is otherwise withheld: never transferred, replaced or retired, and no other token is allocated for the selector |
+| 8 | Resolution under similarities | the quantities of a cell transform by the absolute ratio as stated; the image states the resolution hypothesis with the limit of the policy in its own world; for a ratio above 1 every span is checked again and classified anew where it fails; a band never becomes a span; the image evidence has its own content identity |
+
 ## Alternatives considered
 
 | Alternative | Why it is not proposed |
@@ -171,6 +200,12 @@ exact text and the validation criteria of each point are in §14 of the candidat
 | Transform or intersect the drawing polyline | Not the geometric operation; forbidden by AGENTS §11.2 and by D-V5 |
 | Give a conditioned region a lineage from its bands, and rank its roots | The bands are what the traversal detected: an identity by sampling. Rank needs a verified cardinality |
 | Let conditioned evidence count toward `RELAXED` | The authority contract excludes a numerical verification under hypotheses; a widening would be its own normative decision |
+| Resolve a branch-frame token by the uniqueness of its selector alone | A root that appears in another region of the branch with the same germ would take the token of a root that disappeared, and the objects built on it would jump there |
+| Follow the root: update a recorded position at each resolution, or reuse by nearest position | Movement history and proximity, which the intersection contract excludes from identity |
+| Several bindings per selector, each with its origin | Which origin a root is connected to would depend on which bands the traversal has found: the evidence would choose the token |
+| Retire the token when its root is not found in the region of the origin | A band that is only a failure or an unexplored cell would destroy an identity for good; withholding is reversible |
+| Copy the cells to the image and declare the larger bound | A consumer of the image would read a resolution in the units of the source, and one policy version would mean different limits on two loci |
+| Traverse the image from scratch | It would turn a band of the source into a span when the image is small, and would coarsen the cells of a reduction |
 
 ## Consequences
 

@@ -1,10 +1,10 @@
 # Uso condicionado de Locus V2 — registro de decisiones autorales y puntos abiertos
 
-**REVISIÓN 3 — TEXTO NORMATIVO PENDIENTE DE APROBACIÓN AUTORAL.** `selfApproved=false`.
+**REVISIÓN 4 — TEXTO NORMATIVO PENDIENTE DE APROBACIÓN AUTORAL.** `selfApproved=false`.
 Este documento no aprueba nada. Registra las decisiones que el autor ya tomó el
 2026-11-21, dice dónde quedan recogidas y enumera lo único que sigue necesitando su
-decisión. La revisión 1 de esta hoja es la del commit `ab37fb5ff` y la revisión 2 la de
-`83cd56c4c`.
+decisión. La revisión 1 de esta hoja es la del commit `ab37fb5ff`, la revisión 2 la de
+`83cd56c4c` y la revisión 3 la de `57c495cce`.
 
 ## 1. Decisiones de producto del autor
 
@@ -72,34 +72,78 @@ Corrección añadida por coherencia con el punto 1, fuera de los seis: la revisi
 sobre una región. Contradecía `locus-v2-existence-components.md` §16, que exige componente
 certificada. La revisión 3 deja ese contrato sin cambio (contrato §8.1).
 
+## 3 bis. Respuesta del autor a la revisión 3 y precisiones focales de la revisión 4
+
+Fuente: respuesta del autor de 2026-11-21 a la entrega de la revisión 3, sobre el candidato
+`afb916e10ce551df06c26000b7ab0ce671c64e3b`.
+
+| Asunto | Decisión del autor | Dónde queda recogida |
+|---|---|---|
+| Seis enmiendas | confirmadas como correctamente incorporadas; conformidad con la arquitectura general | — |
+| Aprobación normativa | no registrada todavía: antes, dos precisiones focales | tabla siguiente |
+| Alcance | no ampliar la revisión a otros contratos ni repetir verificaciones que sigan siendo válidas | — |
+| Trabajo permitido | trabajos preparatorios de I0 a I3 que no dependan de las precisiones, como candidatos pendientes de la aprobación normativa final; I4 e I4T no se inician | diseño §5; registro de progreso |
+| Límites | sin publicación en `main`, sin etiqueta `v1.2.2` y sin release | — |
+
+| # | Precisión pedida | Cómo se resuelve | Texto |
+|---|---|---|---|
+| 7 | Identidad entre configuraciones: la unicidad actual de un selector de rama y germen no garantiza que una raíz que reaparece sea la misma; regla explícita que impida reutilizar tokens entre raíces diferentes, con test adverso de desaparición y aparición en regiones separadas | una sola asignación por selector, con un **origen** fijo (la dirección por parámetro de la raíz al asignar). El token solo se resuelve si el origen y la raíz actual están en una misma región condicionada; si no, se retiene: no se entrega a otra raíz, no se transfiere, no se retira y no se asigna otro. La evidencia puede retener un token y nunca lo elige | contrato §6.5 (puntos 4 a 9 y consecuencias), §6.6, §8.5; criterios 7a a 7e |
+| 8 | Resolución bajo semejanzas: cómo se transforma la cota de H4 y cuándo hay que reclasificar frente a la política de la imagen; ninguna tolerancia incumplida se conserva en silencio | la cota `δ` de la fuente vale `ρ·δ` en la imagen. Con razón absoluta `ρ ≤ 1` las celdas se heredan iguales. Con `ρ > 1` cada tramo se recomprueba en el mundo de la imagen y el que falla se reclasifica, hasta banda en el paso mínimo. Una banda nunca pasa a tramo. La evidencia de la imagen tiene identidad de contenido propia | contrato §8.7, «Resolution under a similarity»; criterios 8a a 8f |
+
+Consecuencias de las precisiones que el contrato declara y que conviene tener presentes al
+aprobar:
+
+- **Precisión 7.** Una raíz que la configuración saca de la región de su origen queda sin
+  token, y su punto indefinido, hasta que el estado regresa. Otra raíz del mismo selector en
+  otra región no recibe token durable en ese resultado; un resultado de intersección nuevo
+  tiene su propio ledger y su propio origen. El origen es estado persistido del documento:
+  dos historias que asignan en configuraciones distintas pueden diferir en cuándo se retiene
+  un token, nunca en qué raíz tiene qué token. Dentro de la región de su origen el token
+  significa lo mismo que la selección determinista vigente en una componente certificada, la
+  única raíz de su germen: la guarda elimina la reutilización entre regiones que añadía el
+  marco de rama y no añade una prueba de continuación que el contrato de intersecciones no
+  tiene.
+- **Precisión 8.** La imagen de una ampliación puede tener más celdas que la fuente, y
+  bandas donde la fuente tiene tramos; entonces rechaza un seguimiento o una longitud que la
+  fuente admite. Nunca ocurre lo contrario. Una reducción hereda las celdas de la fuente sin
+  fusionarlas.
+
+Pruebas discriminantes: los criterios 7a a 7e y 8a a 8f del contrato §15, y su ejecución
+sobre evaluadores de verdad conocida en la sonda
+`tools/benchmark/post-r1-locus/conditioned-use-precisions-probe.js` (casos C17 y C18 del
+banco del diseño), que aplica en paralelo la regla de la revisión 3 y la de la revisión 4.
+
 ## 4. Qué se somete a aprobación
 
 El **texto** del paquete revisado, en la rama `maintenance/geocedg-1.2.2-post-r1`:
 
 | Documento | Papel |
 |---|---|
-| [ADR 0042, revisión 3](../adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md) | decisión de arquitectura propuesta, con las diferencias respecto a las revisiones 1 y 2 |
-| [Contrato candidato, `conditioned-use/v3-candidate`](../../geocedg/specs/locus/candidates/post-r1-conditioned-use.md) | texto normativo candidato, matriz de operaciones, enmiendas que su adopción requeriría, diferencial y criterios de validación |
-| [Diseño, revisión 3](../architecture/post_r1_locus_conditioned_use_design.md) | inspección de capacidades, extensión mínima por operación, plan 3B, banco adversarial |
+| [ADR 0042, revisión 4](../adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md) | decisión de arquitectura propuesta, con las diferencias respecto a las revisiones 1, 2 y 3 |
+| [Contrato candidato, `conditioned-use/v4-candidate`](../../geocedg/specs/locus/candidates/post-r1-conditioned-use.md) | texto normativo candidato, matriz de operaciones, enmiendas que su adopción requeriría, diferenciales y criterios de validación (§14 y §15) |
+| [Diseño, revisión 4](../architecture/post_r1_locus_conditioned_use_design.md) | inspección de capacidades, extensión mínima por operación, plan 3B, banco adversarial |
 
 La identidad exacta del paquete (commit y árbol) consta en el
-[registro de progreso](post_r1_locus_repairs_progress.md), checkpoint 5. Una aprobación
+[registro de progreso](post_r1_locus_repairs_progress.md), checkpoint 6. Una aprobación
 debe citar ese commit.
 
-Mientras el texto no esté aprobado no se inicia la semántica V (bloque 3B). El motivo es
+Mientras el texto no esté aprobado no se inicia la semántica V (bloque 3B), salvo los
+trabajos preparatorios de I0 a I3 que el autor permitió el 2026-11-21, que quedan como
+candidatos pendientes y no cambian ninguna operación pública. El motivo es
 AGENTS §3.1 y §9: V cambia contratos de admisibilidad, identidad y evidencia de
 `locus-v2-existence-components.md` §15.1, §15.6 y §15.8.
 
 ## 5. Punto que requiere decisión del autor
 
-Queda uno: la **aprobación normativa definitiva** del ADR 0042 revisión 3 y del contrato
-`conditioned-use/v3-candidate` como base para 3B, con las enmiendas del contrato §12 a
+Queda uno: la **aprobación normativa definitiva** del ADR 0042 revisión 4 y del contrato
+`conditioned-use/v4-candidate` como base para 3B, con las enmiendas del contrato §12 a
 redactar sobre las especificaciones al implementar cada incremento. Si el autor corrige
 algún punto, se entrega primero el texto corregido.
 
 ## 6. Punto de reanudación
 
-Con esa aprobación se reanuda en 3B por I0 sin repetir lo cerrado: verificar la aprobación
+Con esa aprobación se reanuda en 3B sin repetir lo cerrado, a partir de lo que los trabajos
+preparatorios hayan dejado como candidato: verificar la aprobación
 y el commit que cubre, comprobar si la base ha cambiado y seguir el
 [plan](../architecture/post_r1_locus_conditioned_use_design.md#5-plan-de-incrementos-3b):
 I0, I1, I2, I3, I4, I4T, y después el candidato funcional GeoCeDG 1.2.2, sin checkpoints

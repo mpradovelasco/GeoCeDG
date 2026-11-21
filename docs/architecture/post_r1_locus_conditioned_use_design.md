@@ -1,6 +1,6 @@
-# GeoCeDG — Uso condicionado de Locus V2: diseño (bloque 3A, revisión 3)
+# GeoCeDG — Uso condicionado de Locus V2: diseño (bloque 3A, revisión 4)
 
-**DISEÑO PROPUESTO, REVISIÓN 3 — TEXTO NORMATIVO PENDIENTE DE APROBACIÓN AUTORAL. NADA DE V
+**DISEÑO PROPUESTO, REVISIÓN 4 — TEXTO NORMATIVO PENDIENTE DE APROBACIÓN AUTORAL. NADA DE V
 ESTÁ IMPLEMENTADO.** `selfApproved=false`.
 Decisión propuesta: [ADR 0042](../adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md).
 Texto normativo candidato: [contrato candidato](../../geocedg/specs/locus/candidates/post-r1-conditioned-use.md).
@@ -10,8 +10,10 @@ La revisión 1 es el texto del commit `ab37fb5ff`. Esta revisión incorpora las 
 D-V1 a D-V7 del autor (2026-11-21) y sustituye las alternativas anteriores donde las
 contradicen. La revisión 3 añade la enmienda focal de seis puntos que el autor pidió tras
 revisar la revisión 2 (commit `83cd56c4c`); no cambia el objetivo funcional ni el resto del
-diseño. Las diferencias constan en el ADR y en los §13 y §14 del contrato candidato, y el
-§14 lleva los criterios de validación de la enmienda. Este documento no repite el contrato: explica cómo se llega a él desde el código actual, cómo se
+diseño. La revisión 4 añade las dos precisiones focales que el autor pidió tras revisar la
+revisión 3 (commit `57c495cce`): identidad de las raíces entre configuraciones y resolución
+de la evidencia bajo semejanzas. Las diferencias constan en el ADR y en los §13 a §15 del
+contrato candidato; los §14 y §15 llevan los criterios de validación. Este documento no repite el contrato: explica cómo se llega a él desde el código actual, cómo se
 implementaría, qué se ha medido y qué queda fuera.
 
 ## 1. Objetivo y frontera de autoridad
@@ -146,6 +148,44 @@ es función del estado actual, nunca de la historia. Consecuencias que el contra
 En el modelo del autor una recta que corta el contorno transportado en dos puntos da dos
 gérmenes opuestos y, por tanto, dos tokens.
 
+**Identidad entre configuraciones** (revisión 4, contrato §6.5, puntos 4 a 6). Que el
+selector de marco de rama sea único en el estado actual no prueba que la raíz actual sea la
+que recibió el token: el marco es la rama entera, sus regiones están separadas por bandas y
+las raíces encontradas no son todas las raíces. En el mundo certificado esa separación la da
+el linaje de componente, y la norma vigente ya dice que no poder establecer la admisibilidad
+actual no autoriza a otra raíz a adquirir el token (`locus-v2-intersections.md` §6.1) y que
+una raíz que cruza un hueco termina (§6.3). Aquí hace falta una regla propia:
+
+- La asignación guarda, con el selector y el token, un **origen**: la dirección por
+  parámetro de la raíz en la publicación que asignó el token. Es un dato de creación, fijo,
+  de la misma naturaleza que el parámetro de una dirección. No forma parte del selector y
+  nunca se actualiza.
+- **Guarda de reutilización.** El token solo se resuelve si el selector es único y, además,
+  el origen y el intervalo aislante de la raíz actual están en una misma región condicionada
+  del contenido publicado: todas las celdas entre ambos son tramos.
+- Si la guarda falla, el token se **retiene**: no se entrega a esa raíz, no se transfiere,
+  no se retira y no se asigna otro para ese selector. La raíz se publica con asa local y
+  `NOT_ESTABLISHED`; el objeto que depende del token queda indefinido con su causa vigente y
+  vuelve a estar definido cuando un estado cumple la guarda.
+
+Propiedad que se exige y se prueba: **la evidencia puede retener un token; nunca lo elige**.
+De ella salen las dos decisiones de detalle. Hay una sola asignación por selector, porque con
+varias, cada una con su origen, a cuál queda conectada una raíz dependería de qué bandas haya
+encontrado la travesía. Y el origen no sigue a la raíz, porque actualizarlo sería historia
+de movimiento, que el contrato de intersecciones excluye de la identidad. La región no entra
+en el selector ni en el ledger: se lee como premisa, igual que en el seguimiento (contrato
+§8.2), y las celdas entre el origen y la raíz quedan registradas como celdas usadas por el
+resultado. Dentro de una región el token significa lo mismo que la selección determinista
+vigente en una componente: la única raíz de su germen en su marco; no afirma que se haya
+seguido una raíz individual. Consecuencias que el contrato declara:
+
+- una raíz que la configuración saca de la región de su origen queda sin token hasta que el
+  estado regresa, y otra raíz del mismo selector en otra región no recibe token durable en
+  ese resultado; otro resultado de intersección tiene su propio ledger y su propio origen;
+- dos documentos con el mismo ledger resuelven igual en el mismo estado. Dos historias que
+  asignan en configuraciones distintas guardan orígenes distintos y pueden diferir en cuándo
+  se retiene un token, nunca en qué raíz tiene qué token.
+
 ### 3.5 Ciclo de vida determinista
 
 Contrato §7. Tipo propuesto `LocusConditionedEvidence2D`, inmutable, propiedad del productor
@@ -196,7 +236,7 @@ el código actual:
 | Longitud total | `LocusMetricEngine2D.declaredPieces` | recorrer tramos y bandas con la política de §5.3; H10 y P2 intactos |
 | `Intersect(L, objetivo)` | `allComponents()` del solver; `component()` del resolvedor de identidad | añadir las regiones condicionadas al dominio de búsqueda; admisión por raíz; selector de marco de rama para la raíz sobre un tramo; completitud `NOT_ESTABLISHED`; nunca `EMPTY` |
 | `Intersect(L1, L2)` | pares de componentes | pares de regiones o componentes; marco de rama por lado |
-| `Translate`, `Rotate`, `Mirror`, `Dilate` | ninguna puerta; hereda la estructura | heredar también la evidencia condicionada, celda a celda; H4 escalada por el valor absoluto de la razón; razón cero: ningún cambio, rige el contrato vigente de `COLLAPSED_IMAGE` |
+| `Translate`, `Rotate`, `Mirror`, `Dilate` | ninguna puerta; hereda la estructura | heredar también la evidencia condicionada, celda a celda, frente a la política en el mundo de la imagen: sin cambio si la razón absoluta no supera 1; con razón mayor, recomprobar cada tramo y reclasificar el que falle; razón cero: ningún cambio, rige el contrato vigente de `COLLAPSED_IMAGE` |
 | Locus dependiente de puntos, raíces o métricas condicionadas | su propio certificado | su propia evidencia condicionada, con las hipótesis heredadas |
 | Locus conducido por un punto sobre un locus condicionado | `resolveDomain` exige soporte `COMPLETE` | piezas del dominio desde las regiones condicionadas del soporte |
 | Selección y manejo | ninguna | ninguna; el clic crea el punto por la consulta inversa existente y lo direcciona por parámetro |
@@ -205,6 +245,29 @@ el código actual:
 Las transformaciones no necesitan nueva semántica: la imagen ya es `T ∘ L` sobre el
 evaluador de la fuente. Lo único que falta es que la evidencia viaje con la estructura.
 Transformar la polilínea de dibujo no forma parte de ninguna vía, ni actual ni propuesta.
+
+**Resolución bajo semejanzas** (revisión 4, contrato §8.7). La evidencia no puede viajar sin
+más, porque los límites de la política son magnitudes del mundo del locus que la publica.
+Una semejanza de razón absoluta `ρ` multiplica por `ρ` la flecha entre nodos y toda longitud
+que mida un criterio, y deja iguales los extremos de celda, el paso mínimo, el giro, H1 a
+H3, el testimonio, el margen y la clase, que son hechos del slice de la fuente. La cota de
+H4 que declara la fuente, `δ`, vale `ρ·δ` en el mundo de la imagen.
+
+- Con `ρ ≤ 1` (isometrías, reducciones y razón cero) todo tramo cumple la política de la
+  imagen y las celdas se heredan iguales. Nada se fusiona.
+- Con `ρ > 1` la cota de la fuente deja de cumplirla y no se conserva. Cada tramo se
+  recomprueba en el mundo de la imagen, lo que es aritmética sobre los nodos que la fuente
+  ya tiene; el que pasa es tramo de la imagen y el que falla se reclasifica con la regla
+  ordinaria sobre la función imagen, subdividiendo hasta cumplir o hasta el paso mínimo,
+  donde es `DISCONTINUITY_BAND`. El trabajo se carga al límite de la imagen; lo que no
+  alcanza es `UNEXPLORED`.
+- Una banda de la fuente nunca pasa a tramo porque la imagen sea pequeña.
+
+La imagen declara H4 con el límite de la política en su mundo y nunca publica un tramo cuya
+flecha en los nodos lo supere. Su evidencia tiene identidad de contenido propia, que
+registra la de la fuente; sus regiones están contenidas en las de la fuente, de modo que la
+imagen no admite nada que la fuente rechace. Una contradicción de H1 a H3 vista en la imagen
+es de la celda de la fuente y se comunica a su productor.
 
 **Razón cero.** La revisión 2 decía que la imagen era un punto con tramos «colapsados» sin
 longitud ni intersección. Era incompatible con el contrato aprobado. La revisión 3 lo
@@ -305,8 +368,11 @@ elevar una propuesta puntual.
 
 ## 5. Plan de incrementos 3B
 
-Solo tras aprobar el texto normativo revisado. Cada incremento cierra sus pruebas y
-demuestra ausencia de regresiones. Todos, de I0 a I4T, son necesarios para declarar
+Solo tras aprobar el texto normativo revisado, con una excepción que el autor concedió el
+2026-11-21 al revisar la revisión 3: pueden adelantarse los trabajos preparatorios de I0 a
+I3 que no dependan de las dos precisiones de la revisión 4, conservados como candidatos
+pendientes de la aprobación normativa final. I4 e I4T no se inician antes de ella. Cada
+incremento cierra sus pruebas y demuestra ausencia de regresiones. Todos, de I0 a I4T, son necesarios para declarar
 concluida la capacidad en 1.2.2.
 
 | Inc. | Contenido | Depende de | Criterio de aceptación |
@@ -315,10 +381,10 @@ concluida la capacidad en 1.2.2.
 | I1 | Dirección por parámetro y su códec; puntos sobre regiones condicionadas; validez puntual separada de la continuación | I0 | las obligaciones del contrato §6.6; criterios 1a y 4a |
 | I2 | Estado en las propiedades y marca del sistema | I0 | estilo intacto; marca independiente de zoom, grosor, color y tipo de línea; ninguna unión a través de una banda |
 | I3 | Longitud entre posiciones y total, con subtotales y bandas | I1 | H10 y P2 intactos; ninguna banda omitida |
-| I4 | Intersecciones locales, de objetivo y de pares, con el selector de marco de rama y la versión nueva del ledger; locus dependientes y anidados; reparación de F8 antes de cerrar el incremento | I1 | nunca `EMPTY` ni completitud; candidato en banda no publicado; una raíz local admisible alimenta construcciones; criterios 1a, 1b y 2a a 2d |
-| I4T | Herencia de la evidencia por las transformaciones; manejo geométrico; adaptadores de interfaz separados del kernel | I0, I4 | la imagen admite los mismos consumidores; contrato `COLLAPSED_IMAGE` intacto (criterio 5); ninguna polilínea como fuente |
+| I4 | Intersecciones locales, de objetivo y de pares, con el selector de marco de rama y la versión nueva del ledger; locus dependientes y anidados; reparación de F8 antes de cerrar el incremento | I1 | nunca `EMPTY` ni completitud; candidato en banda no publicado; una raíz local admisible alimenta construcciones; criterios 1a, 1b, 2a a 2d y 7a a 7e |
+| I4T | Herencia de la evidencia por las transformaciones; manejo geométrico; adaptadores de interfaz separados del kernel | I0, I4 | la imagen admite los mismos consumidores sobre sus propias celdas; contrato `COLLAPSED_IMAGE` intacto (criterio 5); resolución bajo semejanzas (criterios 8a a 8f); ninguna polilínea como fuente |
 
-Los criterios numerados son los del §14 del contrato candidato. I0 lleva además los
+Los criterios numerados son los de los §14 y §15 del contrato candidato. I0 lleva además los
 criterios 3a, 3b, 4b y 6, e I3 la parte de rutas del 4a.
 
 Fuera de 1.2.2: exportación semántica de regiones condicionadas; K2 y K1.
@@ -348,7 +414,10 @@ hecho que debe detectarse por contrato, hipótesis no demostrada, resultado admi
 esperado. Superar el banco no certifica nada. Resultados de la sonda externa
 `tools/benchmark/post-r1-locus/conditioned-use-probe.js` (evaluadores sintéticos de verdad
 conocida; 32 celdas iniciales, flecha 10⁻³, giro 0,35 rad, paso mínimo 2⁻²⁰); no es código
-de producto ni prototipo del kernel.
+de producto ni prototipo del kernel. Los casos C17 y C18 se ejecutan en una segunda sonda,
+`tools/benchmark/post-r1-locus/conditioned-use-precisions-probe.js`, que aplica en paralelo
+la regla de la revisión 3 y la de la revisión 4 y comprueba que cada caso discrimina: la
+primera falla y la segunda pasa.
 
 | Caso | Hecho a detectar por contrato | Hipótesis no demostrada | Resultado admitido | Fallo esperado | Sonda |
 |---|---|---|---|---|---|
@@ -368,3 +437,5 @@ de producto ni prototipo del kernel.
 | C14. Punto válido dentro de una banda | validez puntual y continuación son hechos distintos | — | punto definido, con la banda declarada; seguimiento y ruta rechazados con causa | invalidar el punto o moverlo a un vecino | por contrato §6.3, §6.4 |
 | C15. Dos raíces del mismo germen en una rama condicionada | sin rango no hay selector único | — | raíces publicadas sin token durable | asignar tokens por orden, índice o celda | por contrato §6.5 |
 | C16. Mismo conjunto de contradicciones en distinto orden | el contenido depende del conjunto | — | misma identidad de contenido y mismas celdas; contadores libres | identidad dependiente del orden | por contrato §7 |
+| C17. Desaparición y aparición en regiones separadas: una rama con dos regiones separadas por una ausencia; la recta `y = c` tiene una raíz de germen positivo en la primera (`c = 0,2`) o en la segunda (`c = 1,8`) | las dos raíces tienen el mismo selector de marco de rama y no son la misma raíz | H1 a H3 de los tramos entre el origen y la raíz | el token se retiene: raíz con asa local, punto dependiente indefinido, una sola entrada en el ledger; al volver a la primera región el token es actual | entregar el token a la raíz de la otra región; asignar un segundo token; que la evidencia elija | regla de la revisión 3: el punto salta a la segunda región. Regla de la revisión 4: retenido en un paso y tras un estado sin raíces, recuperado al volver. Con profundidades 32, 64 y 128 y con una banda confirmada entre origen y raíz, la raíz tiene el token o ninguno |
+| C18. Semejanza de razón mayor que 1: circunferencia unidad y dilatación | la cota de H4 de la fuente vale `ρ·δ` en la imagen y deja de cumplir la política | H4 en el mundo de la imagen | con `ρ·d ≤ δ`, celdas heredadas; con `ρ·d > δ`, celdas reclasificadas; banda en el paso mínimo; una banda de la fuente sigue siendo banda | publicar un tramo con flecha superior al límite; convertir una banda en tramo en una reducción | 128 tramos de flecha 3,01·10⁻⁴; razón 3: heredados (9,04·10⁻⁴); razón 4: copiar publica 128 tramos de 1,20·10⁻³, la regla publica 256 de 3,01·10⁻⁴, iguales a los de una travesía propia; razón 100 con paso mínimo 2⁻⁸: 256 bandas; salto de 0,5 a razón 10⁻⁴: la banda se conserva |
