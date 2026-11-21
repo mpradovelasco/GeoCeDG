@@ -2,8 +2,9 @@
 
 **CANDIDATO TÉCNICO — PENDIENTE DE REVISIÓN AUTORAL.** `selfApproved=false`. Registro único
 de progreso del encargo «Ejecución secuencial tras R1: reparaciones, modelo y uso
-condicionado de Locus V2» (instrucción autoral del 2026-11-21). No es un cierre de fase, no
-registra aprobación y no autoriza publicar en `main`.
+condicionado de Locus V2» y de su continuación «Revisión normativa post-R1, continuación de
+implementación y objetivo 1.2.2» (instrucciones autorales del 2026-11-21). No es un cierre
+de fase, no registra aprobación y no autoriza publicar en `main`.
 
 ## Plan y perímetro
 
@@ -11,7 +12,11 @@ registra aprobación y no autoriza publicar en `main`.
    estrechas y benchmark.
 2. Bloque 2 — modelo corregido (transporte del contorno del agujero) y evidencia portable.
 3. Bloque 3A — diseño completo del uso condicionado y paquete normativo para revisión.
-4. Bloque 3B — implementación de V: **no iniciada**; requiere aprobación del paquete 3A.
+4. Revisión normativa del paquete 3A con las decisiones D-V1 a D-V7 del autor, y
+   optimización D-V6 en línea separada.
+5. Bloque 3B — implementación de V: **no iniciada**; requiere aprobación del texto
+   normativo revisado.
+6. Candidato GeoCeDG 1.2.2: **no iniciado**; ninguna fuente de versión se ha tocado.
 
 Perímetro: kernel Java compartido (huella del slice, ledger, evaluador aislado, registro
 de identidad, productor de intersecciones, admisión de expresiones), mensajes, pruebas,
@@ -80,7 +85,64 @@ Experimentos disponibles: testimonio de raíz en la copia aislada (`evidence`), 
 externa de la travesía (`conditioned-use-probe.js`). Identidad del paquete: la del commit
 que contiene este registro; véase «Identidad del candidato».
 
+## Checkpoint 4 — revisión normativa, D-V6 y objetivo 1.2.2
+
+Estado: **paquete normativo revisado entregado para aprobación; D-V6 terminado; 3B y el
+candidato 1.2.2 sin iniciar**. Rama `maintenance/geocedg-1.2.2-post-r1`, creada desde
+`96a4137e0`, local y sin publicar. La rama anterior no se ha movido.
+
+Decisiones del autor incorporadas (D-V1 a D-V7): constan, con el lugar donde queda cada
+una, en el [registro de decisiones](post_r1_conditioned_use_author_decision_sheet.md). Son
+decisiones de producto; el ADR 0042 sigue `PROPOSED` y el contrato sigue siendo candidato.
+
+| Línea | Commit | Contenido |
+|---|---|---|
+| D-V6, código | `4cbe89a3e` | `StructureMemo` en `ReconstructionSliceFingerprint2D`, solo dentro de copias aisladas; `PostR1FingerprintStructureMemoTest` (2); escenario `profile` y series nuevas del arnés |
+| D-V6, registro | `266d0a85e` | [documento de rendimiento](../architecture/post_r1_locus_real_change_performance.md): perfil, atribución, alternativas excluidas, antes y después, hallazgo F8 |
+| Revisión normativa | `83cd56c4c` | ADR 0042 revisión 2, contrato `conditioned-use/v2-candidate`, diseño revisión 2 y registro de decisiones, con las diferencias respecto a `ab37fb5ff` |
+| Inventario | `1838c7211` | la prueba nueva entra en `post-r1-locus.shared` (211 identidades); descubrimiento compartido 6 942; pin del catálogo |
+
+D-V6, medido con el mismo arnés sobre `ab37fb5ff` y `4cbe89a3e`, actualización del grafo
+por cambio de `excCyl`: modelo original 1 696 → 605 ms de mediana (p95 1 705 → 627);
+variante transportada 2 132 → 719 ms (p95 2 162 → 723); a través del cambio de topología y
+tras pérdida y recuperación, máximos de 644 y 720 ms. Objetivo de menos de 1 s, también en
+p95: cumplido. Los contadores de revisiones, reconstrucciones y evaluaciones son idénticos
+antes y después. Sin caché compartida de resultados ni copias mutables compartidas.
+
+Hallazgo **F8**, previo y reproducible en la base `9ccefdcfe`: un locus anidado vivo pierde
+su definición cuando el conductor de un locus consumidor es entrada no conductora suya.
+Reproductor en el documento de rendimiento, §4. No triado ni tocado; propuesto dentro de
+I4 (punto P4 del registro de decisiones).
+
+Puntos que requieren decisión del autor: P1 (aprobación del texto normativo revisado), P2
+(marca del sistema), P3 (ubicación en el roadmap de la exportación semántica) y P4 (F8).
+El roadmap no se ha modificado.
+
 ## Verificación del candidato
+
+### Candidato de la continuación
+
+Candidato técnico verificado: `1838c721149bb6a4ad9088dff767cc64320cfb00`, árbol
+`52329d83632de0c6ffc609400aa1dad31d19da7a`, árbol de trabajo limpio. Política aplicada:
+ordinaria = CORE + FOCUSED. Todas las ejecuciones desde la raíz, con PowerShell 7.6.10.
+
+| Nivel | Comando | Código | Identidad de ejecución | Veredicto | Notas |
+|---|---|---|---|---|---|
+| `STATIC` | `tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts/agent/post-r1-locus-static-1838c721` | 0 | `verification-c364304a1a9647eb95843bd9bf3c2a12` | `ACCEPTED / COMPLETE` | 3 contratos; 6 diagnósticos |
+| FOCUSED: `PHASE` | `tools/agent/verify.ps1 -Profile PHASE -Phase POST-R1-LOCUS -LogDirectory artifacts/agent/post-r1-locus-phase-1838c721` | 0 | `verification-b4a84680006a4916b63234788d0fc0a0` | `ACCEPTED / COMPLETE` | 6 contratos, 5 productores; 211 identidades compartidas y 24 Desktop; 0 diagnósticos |
+| CORE: `INTEGRATION` | `tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts/agent/post-r1-locus-integration-1838c721` | 0 | `verification-09243cff866f47d5a029c5bcca545ac5` | `ACCEPTED / COMPLETE` | 18 contratos, 15 productores; 9 diagnósticos |
+
+Diagnósticos distintos de `DIAGNOSTIC_CLEAR`: los mismos dos permanentes que abajo.
+
+Otras comprobaciones de la continuación, con Gradle directo y no como perfil de aceptación:
+las pruebas compartidas de locus (1 935 casos) pasan con el modo de verificación del memo
+activado, que recalcula siempre y falla si un resumen reutilizado difiere. Los cuatro
+puntos de cobertura reducida de abajo siguen vigentes sin cambio: `FINAL` no ejecutado ni
+autorizado, `final.shared` y `final.desktop` sin refrescar, `INFRA_UNIT` completo no
+ejecutado, y el fallo previo de `PreG9BCu2AuthorModelConsumerTest`. No se formula
+`VERIFICATION_ESCALATION_REQUEST`.
+
+### Candidato de reparaciones
 
 Candidato técnico verificado: `ab37fb5fff0fadca13f4488eaff85d7917276c42`, árbol
 `bec152ae807e3d0cbc8bf9e0abbe685ccdd09c17`, árbol de trabajo limpio. Política aplicada:
@@ -131,7 +193,9 @@ mantenimiento del inventario para la próxima campaña exhaustiva.
 |---|---|---|
 | Base | `9ccefdcfe922d8c0e329bdeec30c12fc058de463` | `18dbb9bc4216a536b5b2fc3d17321737001cdd36` |
 | Candidato técnico `T` (reparaciones, modelo, paquete 3A, selección de fase) | `ab37fb5fff0fadca13f4488eaff85d7917276c42` | `bec152ae807e3d0cbc8bf9e0abbe685ccdd09c17` |
-| Registro `D` | el commit que contiene este fichero, descendiente exclusivamente documental de `T` | — |
+| Registro `D` de `T` | `96a4137e0`, descendiente exclusivamente documental de `T` | — |
+| Candidato técnico de la continuación `T2` (D-V6, paquete normativo revisado, inventario) | `1838c721149bb6a4ad9088dff767cc64320cfb00` | `52329d83632de0c6ffc609400aa1dad31d19da7a` |
+| Registro `D2` | el commit que contiene esta versión del fichero, descendiente exclusivamente documental de `T2` | — |
 
 Commits de `T` sobre la base, en orden: `3881d7340` (A), `bc878779d` (F7), `d111a2e55` (F6),
 `efed59bc8` (B), `417ab2c0f` (A′), `246f0bb2d` (B, copias aisladas), `49704eb7a` (modelo,
@@ -139,22 +203,32 @@ oráculo, pruebas Desktop y arnés), `2dd34f248` (escenario de evidencia), `79d5
 (aclaraciones normativas, documento de reparaciones y paquete 3A) y `ab37fb5ff` (selección
 de fase e inventario).
 
-El paquete 3A sometido a decisión es el contenido de `T`: ADR 0042, contrato candidato,
-diseño y hoja de decisiones. Una aprobación debe citar `ab37fb5ff`.
+Commits de `T2` sobre `D`: `4cbe89a3e`, `266d0a85e`, `83cd56c4c` y `1838c7211`.
 
-Rama local `maintenance/post-r1-locus-repairs-and-conditioned-use`, sin publicar. `main`
-local y `origin/main` siguen en la base.
+El paquete normativo sometido a decisión es el contenido de `T2`: ADR 0042 revisión 2,
+contrato `conditioned-use/v2-candidate`, diseño revisión 2 y registro de decisiones. Una
+aprobación debe citar `1838c7211` (el texto es el de `83cd56c4c`, sin cambio posterior). La
+revisión 1, de `ab37fb5ff`, queda sustituida.
+
+Ramas locales `maintenance/post-r1-locus-repairs-and-conditioned-use` (en `96a4137e0`) y
+`maintenance/geocedg-1.2.2-post-r1`, sin publicar. `main` local y `origin/main` siguen en
+la base. Ninguna etiqueta creada ni movida; versión de producto sin cambiar (1.2.1).
 
 ## Pendiente, siguiente acción y reanudación
 
-- **Pendiente del autor:** revisión de las reparaciones y del modelo (bloques 1 y 2);
-  decisiones D-V1 a D-V4 de la hoja de decisiones; revisión del texto de las aclaraciones
-  normativas estrechas; autorización de publicación si procede.
-- **No hecho:** bloque 3B. Publicación en `main`. `FINAL` (no autorizado, no necesario
-  bajo la política vigente).
-- **Reanudación:** con la aprobación del paquete 3A, reanudar en 3B por el incremento I0 del
-  [plan](../architecture/post_r1_locus_conditioned_use_design.md#5-plan-de-incrementos-3b),
-  comprobando antes la aprobación, el commit que cubre y si la base ha cambiado.
+- **Pendiente del autor:** P1 a P4 del registro de decisiones; revisión de las reparaciones
+  y del modelo (bloques 1 y 2) y de D-V6; revisión del texto de las aclaraciones normativas
+  estrechas; autorización de publicación si procede.
+- **No hecho:** bloque 3B (I0 a I4T). Candidato 1.2.2 (versión, empaquetado, humo de
+  app-image, notas). Publicación en `main`. `FINAL` (no autorizado, no necesario bajo la
+  política vigente).
+- **Reanudación exacta:** con la aprobación de P1, partir de la punta de
+  `maintenance/geocedg-1.2.2-post-r1`, comprobar la aprobación, el commit que cubre y si la
+  base ha cambiado, y empezar por el incremento I0 del
+  [plan](../architecture/post_r1_locus_conditioned_use_design.md#5-plan-de-incrementos-3b):
+  testimonio de evaluación y `LocusConditionedEvidence2D` en el kernel, sin cambiar
+  operaciones públicas. Orden: I0, I1, I2, I3, I4, I4T; después, el candidato 1.2.2.
 - **Conservado:** el original del modelo, la evidencia R1 y las salidas de benchmark en
-  `artifacts/benchmarks/post-r1-locus/` (ignoradas por Git). Un worktree de la base, usado
-  solo para medir el «antes», queda en el scratchpad de la sesión.
+  `artifacts/benchmarks/post-r1-locus/` (ignoradas por Git). Dos worktrees separados, de la
+  base y de `ab37fb5ff`, usados solo para medir el «antes», quedan en el scratchpad de la
+  sesión.
