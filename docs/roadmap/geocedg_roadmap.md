@@ -4538,3 +4538,28 @@ Esa línea no tiene todavía identificador, alcance ni autorización. `G9X1` y `
 reabren y conservan su estado. Referencias: §10 del
 [contrato candidato de uso condicionado](../../geocedg/specs/locus/candidates/post-r1-conditioned-use.md)
 y [registro de decisiones autorales](../validation/post_r1_conditioned_use_author_decision_sheet.md).
+
+## 2026-11-22 — Aprobación autoral del ADR 0042 y autorización del bloque 3B del uso condicionado de Locus V2
+
+Registro aditivo por decisión autoral de 2026-11-22 («APROBACIÓN AUTORAL — ADR 0042 Y USO
+CONDICIONADO DE LOCUS V2»). No altera fechas, aprobaciones ni resultados anteriores.
+
+- El autor aprueba el ADR 0042, revisión 4, y el contrato `conditioned-use/v4-candidate`,
+  texto del commit `9160d67d7586c91dd6ef09f4ebff603bab57036e`, como base normativa del uso
+  condicionado de Locus V2, con las decisiones D-V1 a D-V7 y las dos precisiones focales.
+  La mención «propuesto y pendiente de aprobación autoral» del registro de 2026-11-21
+  describe el estado de aquella fecha.
+- Autoriza ejecutar en secuencia los incrementos I0, I1, I2, I3, I4 e I4T en la rama
+  `maintenance/geocedg-1.2.2-post-r1` y, al completarlos, preparar el candidato funcional
+  GeoCeDG 1.2.2. Las enmiendas del contrato §12 se incorporan a las especificaciones
+  vigentes de forma progresiva, con el incremento que implementa cada una.
+- No abre ninguna fase ni subfase nueva de la hoja de ruta: es trabajo de mantenimiento de
+  la línea 1.2.x posterior a R1.
+- No autoriza la publicación en `main`, la etiqueta `v1.2.2`, una release ni la ejecución
+  de `FINAL`. Ningún incremento queda aprobado como producto: un resultado automatizado
+  aceptado no es aprobación autoral.
+
+Referencias:
+[registro de aprobación](../validation/post_r1_conditioned_use_author_approval_record.md),
+[ADR 0042](../adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md) y
+[registro de progreso](../validation/post_r1_locus_repairs_progress.md).

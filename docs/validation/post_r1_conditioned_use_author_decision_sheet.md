@@ -1,7 +1,10 @@
 # Uso condicionado de Locus V2 — registro de decisiones autorales y puntos abiertos
 
-**REVISIÓN 4 — TEXTO NORMATIVO PENDIENTE DE APROBACIÓN AUTORAL.** `selfApproved=false`.
-Este documento no aprueba nada. Registra las decisiones que el autor ya tomó el
+**REVISIÓN 4 — TEXTO NORMATIVO APROBADO POR EL AUTOR EL 2026-11-22.** `selfApproved=false`.
+La aprobación consta en el
+[registro de aprobación](post_r1_conditioned_use_author_approval_record.md), que es su única
+autoridad; los §4 a §6 de esta hoja describen la etapa anterior y quedan sustituidos por el
+§7. Este documento no aprueba nada. Registra las decisiones que el autor ya tomó el
 2026-11-21, dice dónde quedan recogidas y enumera lo único que sigue necesitando su
 decisión. La revisión 1 de esta hoja es la del commit `ab37fb5ff`, la revisión 2 la de
 `83cd56c4c` y la revisión 3 la de `57c495cce`.
@@ -149,3 +152,20 @@ y el commit que cubre, comprobar si la base ha cambiado y seguir el
 I0, I1, I2, I3, I4, I4T, y después el candidato funcional GeoCeDG 1.2.2, sin checkpoints
 autorales rutinarios intermedios. Siguen exigiendo decisión expresa del autor: publicar en
 `main`, crear `v1.2.2`, ejecutar `FINAL` y registrar cualquier aprobación autoral.
+
+## 7. Aprobación normativa de 2026-11-22
+
+Fuente: instrucción del autor «APROBACIÓN AUTORAL — ADR 0042 Y USO CONDICIONADO DE LOCUS
+V2», de 2026-11-22, transcrita en el
+[registro de aprobación](post_r1_conditioned_use_author_approval_record.md).
+
+| Asunto | Decisión del autor |
+|---|---|
+| Texto | aprobados el ADR 0042, revisión 4, y el contrato `conditioned-use/v4-candidate`, del commit `9160d67d7`, como base autorizada para implementar el uso condicionado |
+| Cuestiones anteriores | las ocho, resueltas; aprobadas D-V1 a D-V7 y las dos precisiones |
+| Implementación | bloque 3B completo, I0 a I4T en secuencia, sin consultas autorales rutinarias |
+| Validación | criterios 7a a 7e y 8a a 8f sobre el kernel real, no solo con la sonda externa |
+| Separación | evidencia condicionada, integridad constructiva, certificación rigurosa y completitud global siguen separadas |
+| F8 | la reparación y sus pruebas de regresión se conservan |
+| Después de I4T | candidato funcional GeoCeDG 1.2.2, con comprobaciones de Desktop, persistencia, rendimiento y app-image |
+| Límites | sin publicación en `main`, sin etiqueta `v1.2.2`, sin release y sin `FINAL` hasta una decisión expresa posterior; un resultado automatizado aceptado no es aprobación autoral del incremento |

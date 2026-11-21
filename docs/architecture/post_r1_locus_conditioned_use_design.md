@@ -1,8 +1,11 @@
 # GeoCeDG — Uso condicionado de Locus V2: diseño (bloque 3A, revisión 4)
 
-**DISEÑO PROPUESTO, REVISIÓN 4 — TEXTO NORMATIVO PENDIENTE DE APROBACIÓN AUTORAL. NADA DE V
-ESTÁ IMPLEMENTADO.** `selfApproved=false`.
-Decisión propuesta: [ADR 0042](../adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md).
+**DISEÑO, REVISIÓN 4 — TEXTO NORMATIVO APROBADO POR EL AUTOR EL 2026-11-22
+([registro](../validation/post_r1_conditioned_use_author_approval_record.md)); IMPLEMENTACIÓN
+AUTORIZADA POR INCREMENTOS I0 A I4T, NO APROBADA COMO PRODUCTO.** `selfApproved=false`. El
+estado de cada incremento consta en el
+[registro de progreso](../validation/post_r1_locus_repairs_progress.md).
+Decisión: [ADR 0042](../adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md).
 Texto normativo candidato: [contrato candidato](../../geocedg/specs/locus/candidates/post-r1-conditioned-use.md).
 Decisiones del autor y puntos abiertos: [registro de decisiones](../validation/post_r1_conditioned_use_author_decision_sheet.md).
 

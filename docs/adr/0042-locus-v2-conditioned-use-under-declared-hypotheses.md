@@ -1,9 +1,13 @@
 # ADR 0042 — Locus V2 conditioned use under declared hypotheses
 
-- Status: **PROPOSED, REVISION 4 — PENDING AUTHOR APPROVAL**. The product decisions D-V1 to
-  D-V7 below are fixed by the author; this text, which states them as a contract, is not
-  approved, and no implementation of the new semantics is authorized by it.
-  `selfApproved=false`.
+- Status: **ACCEPTED — ARCHITECTURE AUTHOR APPROVED (2026-11-22)**, revision 4 (author
+  instruction «APROBACIÓN AUTORAL — ADR 0042 Y USO CONDICIONADO DE LOCUS V2», 2026-11-22;
+  [approval record](../validation/post_r1_conditioned_use_author_approval_record.md)). The
+  approved text is that of commit `9160d67d7586c91dd6ef09f4ebff603bab57036e`. This is an
+  architectural decision. Its implementation, authorized as the increments I0, I1, I2, I3,
+  I4 and I4T, is not approved as product until the author reviews the functional GeoCeDG
+  1.2.2 candidate. The words «proposed» and «pending» in the sections below record the
+  stage at which each was written and are superseded by this status. `selfApproved=false`.
 - Date: 2026-11-21 (revision 1, commit `ab37fb5ff`; revision 2, commit `83cd56c4c`);
   revision 3 the same day (commit `57c495cce`), with the focal amendment that the author
   requested after reviewing revision 2; revision 4 the same day, with the two focal
@@ -222,5 +226,8 @@ in §15 of the candidate contract, and the adverse cases run in the design probe
 
 ## Status of the normative texts
 
-The amendments listed in §12 of the candidate contract are proposed texts. None is applied
-to the specifications by this ADR.
+The amendments listed in §12 of the contract are approved with it (2026-11-22). They are
+applied to the specifications progressively: each increment incorporates, before it closes,
+the amendments of what it implements, as a new versioned section; no approved section of an
+earlier phase is rewritten. The correspondence between increments and specifications is in
+the [approval record](../validation/post_r1_conditioned_use_author_approval_record.md), §5.

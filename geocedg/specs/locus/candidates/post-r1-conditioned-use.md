@@ -2,15 +2,19 @@
 
 | | |
 |---|---|
-| Status | **CANDIDATE, REVISION 4 — PROPOSED, PENDING AUTHOR APPROVAL. NOT NORMATIVE.** `selfApproved=false` |
-| Version | `conditioned-use/v4-candidate` (revision 3 is the text of commit `57c495cce`; revision 2 that of `83cd56c4c`; revision 1 that of `ab37fb5ff`) |
-| Decision | [ADR 0042](../../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md), proposed, with the author decisions D-V1 to D-V7, the focal amendment requested by the author on 2026-11-21 and the two focal precisions requested after the review of revision 3 |
+| Status | **NORMATIVE CONTRACT — AUTHOR APPROVED (2026-11-22); IMPLEMENTATION AUTHORIZED AS THE INCREMENTS I0 TO I4T, NOT YET APPROVED AS PRODUCT.** `selfApproved=false` |
+| Version | `conditioned-use/v4`: the text approved is `conditioned-use/v4-candidate`, revision 4, of commit `9160d67d7586c91dd6ef09f4ebff603bab57036e` (revision 3 is the text of commit `57c495cce`; revision 2 that of `83cd56c4c`; revision 1 that of `ab37fb5ff`) |
+| Decision | [ADR 0042](../../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md), accepted on 2026-11-22, with the author decisions D-V1 to D-V7, the focal amendment requested by the author on 2026-11-21 and the two focal precisions requested after the review of revision 3 |
+| Approval | [approval record](../../../../docs/validation/post_r1_conditioned_use_author_approval_record.md) of 2026-11-22 |
 | Design | [architecture and source analysis](../../../../docs/architecture/post_r1_locus_conditioned_use_design.md) |
 | Layer | Shared Java kernel (evidence, addresses, operations); derived rendering; Desktop adapters; export adapters |
 
-This file is a candidate contract. It becomes normative only by an express author decision,
-through amendments of the specifications named in §12. Until then every sentence below reads
-as «the proposal is that».
+This contract was approved by the author on 2026-11-22 as the normative basis of the
+conditioned use of Locus V2. The text of its sections is that of the approved commit; the
+words «candidate» and «proposal» in them record the stage at which they were written. The
+specifications named in §12 receive its amendments progressively, each with the increment
+that implements it; until a specification carries its amendment, this contract governs the
+matter. The approval of the text approves no implementation.
 
 ## 1. Scope, activation and non-scope
 
