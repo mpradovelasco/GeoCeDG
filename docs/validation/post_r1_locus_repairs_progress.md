@@ -2,8 +2,9 @@
 
 **CANDIDATO TÉCNICO — PENDIENTE DE REVISIÓN AUTORAL.** `selfApproved=false`. Registro único
 de progreso del encargo «Ejecución secuencial tras R1: reparaciones, modelo y uso
-condicionado de Locus V2» y de su continuación «Revisión normativa post-R1, continuación de
-implementación y objetivo 1.2.2» (instrucciones autorales del 2026-11-21). No es un cierre
+condicionado de Locus V2», de su continuación «Revisión normativa post-R1, continuación de
+implementación y objetivo 1.2.2» y de la respuesta del autor a la revisión 2 (instrucciones
+autorales del 2026-11-21). No es un cierre
 de fase, no registra aprobación y no autoriza publicar en `main`.
 
 ## Plan y perímetro
@@ -118,7 +119,63 @@ Puntos que requieren decisión del autor: P1 (aprobación del texto normativo re
 (marca del sistema), P3 (ubicación en el roadmap de la exportación semántica) y P4 (F8).
 El roadmap no se ha modificado.
 
+## Checkpoint 5 — enmienda focal, respuestas del autor y reparación F8
+
+Estado: **texto normativo corregido entregado para aprobación definitiva; F8 reparado; 3B
+y el candidato 1.2.2 sin iniciar**. Misma rama, local y sin publicar.
+
+Respuesta del autor a la revisión 2 (2026-11-21), registrada en el
+[registro de decisiones](post_r1_conditioned_use_author_decision_sheet.md), §2: valoración
+favorable, D-V1 a D-V7 mantenidas, D-V6 aceptado técnicamente, aprobación normativa
+pendiente de una enmienda focal de seis puntos, marca del sistema aprobada (rombo hueco de
+7 px), exportación semántica a registrar como requisito de línea futura, y triaje y
+reparación de F8 autorizados.
+
+| Línea | Commit | Contenido |
+|---|---|---|
+| Enmienda focal | `57c495cce` | ADR 0042 revisión 3, contrato `conditioned-use/v3-candidate`, diseño revisión 3 y registro de decisiones revisión 3. Los seis puntos, su diferencial y sus criterios de validación están en el §14 del contrato |
+| Roadmap (P3) | `58231d7d8` | registro aditivo fechado: la exportación semántica de regiones condicionadas es requisito de la línea futura de B-splines, representaciones derivadas y DXF. Ninguna fase ni subfase abierta |
+| F8 (P4) | `350b9d115` | guarda de macro-kernel en `LayerManager.replace`; `PostR1SliceCopyViewIsolationTest` (1) y `PostR1SliceCopyViewIsolationDesktopTest` (1); nota de diseño en el documento de reparaciones, §1.6 |
+| Inventario | `afb916e10` | las dos pruebas entran en las selecciones de fase (212 compartidas, 25 Desktop); descubrimientos 6 943 y 2 599; pin del catálogo |
+
+Resolución de los seis puntos, en una línea cada uno: (1) `CONDITIONED` nunca concede
+`RELAXED`; se preservan los requisitos positivos de la autoridad constructiva y no se
+propone ampliarlos. (2) La raíz sobre un tramo toma un selector de tipo propio con la rama
+como marco, sin rango; la región no recibe linaje y la partición nunca es identidad. (3) La
+identidad de contenido de la evidencia se separa del contador de publicación; la vigencia
+se decide por celdas. (4) La validez puntual se separa de la admisibilidad de continuación:
+un punto válido dentro de una banda está definido. (5) La razón cero conserva el contrato
+vigente de `COLLAPSED_IMAGE`. (6) `MARGIN_BOUNDED` solo prueba la separación de las raíces
+que la cota encierra; H2 queda entera.
+
+F8, causa demostrada: la carga de una copia aislada pasaba por la ruta de redefinición para
+las entradas anónimas repetidas y, desde ella, ordenaba la lista de dibujables de la vista
+viva; con la vista recorriendo esa lista, la excepción se descartaba en la ruta de carga de
+macros y la copia quedaba vacía. En Desktop el efecto era un
+`ConcurrentModificationException` al actualizar los dibujables. Ablación: sin la guarda
+fallan las dos pruebas nuevas. Detalle en el
+[documento de reparaciones, §1.6](../architecture/post_r1_locus_repairs.md#16-f8--la-carga-de-una-copia-aislada-no-toca-la-vista-viva).
+
 ## Verificación del candidato
+
+### Candidato de la enmienda focal y de F8
+
+Candidato técnico verificado: `afb916e10ce551df06c26000b7ab0ce671c64e3b`, árbol
+`b3a192b0ec48d9fab0067e7a2508f7ee89a2ae3f`, árbol de trabajo limpio. Política aplicada:
+ordinaria = CORE + FOCUSED. La verificación de `1838c7211` dejó de cubrir el candidato al
+cambiar código de producto (F8), por lo que se repitió entera sobre el commit nuevo.
+
+| Nivel | Comando | Código | Identidad de ejecución | Veredicto | Notas |
+|---|---|---|---|---|---|
+| `STATIC` | `tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts/agent/post-r1-locus-static-afb916e1` | 0 | `verification-f56427531ff94cdcadbd227984a714f5` | `ACCEPTED / COMPLETE` | 3 contratos; 6 diagnósticos |
+| FOCUSED: `PHASE` | `tools/agent/verify.ps1 -Profile PHASE -Phase POST-R1-LOCUS -LogDirectory artifacts/agent/post-r1-locus-phase-afb916e1` | 0 | `verification-0eeb268129534c03a7635fe111aca003` | `ACCEPTED / COMPLETE` | 6 contratos, 5 productores; 212 identidades compartidas y 25 Desktop; 0 diagnósticos |
+| CORE: `INTEGRATION` | `tools/agent/verify.ps1 -Profile INTEGRATION -LogDirectory artifacts/agent/post-r1-locus-integration-afb916e1` | 0 | `verification-8a4802967e8d465b8cb90177a27db277` | `ACCEPTED / COMPLETE` | 18 contratos, 15 productores; 9 diagnósticos |
+
+Diagnósticos distintos de `DIAGNOSTIC_CLEAR`: los mismos dos permanentes que abajo. Los
+cuatro puntos de cobertura reducida siguen vigentes sin cambio: `FINAL` no ejecutado ni
+autorizado, `final.shared` y `final.desktop` sin refrescar, `INFRA_UNIT` completo no
+ejecutado, y el fallo previo de `PreG9BCu2AuthorModelConsumerTest`. No se formula
+`VERIFICATION_ESCALATION_REQUEST`.
 
 ### Candidato de la continuación
 
@@ -195,7 +252,9 @@ mantenimiento del inventario para la próxima campaña exhaustiva.
 | Candidato técnico `T` (reparaciones, modelo, paquete 3A, selección de fase) | `ab37fb5fff0fadca13f4488eaff85d7917276c42` | `bec152ae807e3d0cbc8bf9e0abbe685ccdd09c17` |
 | Registro `D` de `T` | `96a4137e0`, descendiente exclusivamente documental de `T` | — |
 | Candidato técnico de la continuación `T2` (D-V6, paquete normativo revisado, inventario) | `1838c721149bb6a4ad9088dff767cc64320cfb00` | `52329d83632de0c6ffc609400aa1dad31d19da7a` |
-| Registro `D2` | el commit que contiene esta versión del fichero, descendiente exclusivamente documental de `T2` | — |
+| Registro `D2` de `T2` | `9e2454206`, descendiente exclusivamente documental de `T2` | — |
+| Candidato técnico de la enmienda focal y de F8 `T3` | `afb916e10ce551df06c26000b7ab0ce671c64e3b` | `b3a192b0ec48d9fab0067e7a2508f7ee89a2ae3f` |
+| Registro `D3` | el commit que contiene esta versión del fichero, descendiente exclusivamente documental de `T3` | — |
 
 Commits de `T` sobre la base, en orden: `3881d7340` (A), `bc878779d` (F7), `d111a2e55` (F6),
 `efed59bc8` (B), `417ab2c0f` (A′), `246f0bb2d` (B, copias aisladas), `49704eb7a` (modelo,
@@ -205,10 +264,13 @@ de fase e inventario).
 
 Commits de `T2` sobre `D`: `4cbe89a3e`, `266d0a85e`, `83cd56c4c` y `1838c7211`.
 
-El paquete normativo sometido a decisión es el contenido de `T2`: ADR 0042 revisión 2,
-contrato `conditioned-use/v2-candidate`, diseño revisión 2 y registro de decisiones. Una
-aprobación debe citar `1838c7211` (el texto es el de `83cd56c4c`, sin cambio posterior). La
-revisión 1, de `ab37fb5ff`, queda sustituida.
+Commits de `T3` sobre `D2`: `57c495cce`, `58231d7d8`, `350b9d115` y `afb916e10`.
+
+El paquete normativo sometido a aprobación definitiva es el de `T3`: ADR 0042 revisión 3,
+contrato `conditioned-use/v3-candidate`, diseño revisión 3 y registro de decisiones
+revisión 3. Una aprobación debe citar `afb916e10` (el texto normativo es el de
+`57c495cce`, sin cambio posterior). Las revisiones 1 (`ab37fb5ff`) y 2 (`83cd56c4c`)
+quedan sustituidas.
 
 Ramas locales `maintenance/post-r1-locus-repairs-and-conditioned-use` (en `96a4137e0`) y
 `maintenance/geocedg-1.2.2-post-r1`, sin publicar. `main` local y `origin/main` siguen en
@@ -216,18 +278,21 @@ la base. Ninguna etiqueta creada ni movida; versión de producto sin cambiar (1.
 
 ## Pendiente, siguiente acción y reanudación
 
-- **Pendiente del autor:** P1 a P4 del registro de decisiones; revisión de las reparaciones
-  y del modelo (bloques 1 y 2) y de D-V6; revisión del texto de las aclaraciones normativas
-  estrechas; autorización de publicación si procede.
+- **Pendiente del autor:** aprobación normativa definitiva del texto de la revisión 3;
+  revisión de las reparaciones y del modelo (bloques 1 y 2) y de F8; revisión del texto de
+  las aclaraciones normativas estrechas; autorización de publicación si procede.
 - **No hecho:** bloque 3B (I0 a I4T). Candidato 1.2.2 (versión, empaquetado, humo de
   app-image, notas). Publicación en `main`. `FINAL` (no autorizado, no necesario bajo la
   política vigente).
-- **Reanudación exacta:** con la aprobación de P1, partir de la punta de
+- **Reanudación exacta:** con la aprobación normativa, partir de la punta de
   `maintenance/geocedg-1.2.2-post-r1`, comprobar la aprobación, el commit que cubre y si la
   base ha cambiado, y empezar por el incremento I0 del
   [plan](../architecture/post_r1_locus_conditioned_use_design.md#5-plan-de-incrementos-3b):
   testimonio de evaluación y `LocusConditionedEvidence2D` en el kernel, sin cambiar
-  operaciones públicas. Orden: I0, I1, I2, I3, I4, I4T; después, el candidato 1.2.2.
+  operaciones públicas. Orden: I0, I1, I2, I3, I4, I4T; después, el candidato funcional
+  1.2.2, sin checkpoints autorales rutinarios intermedios (decisión del autor de
+  2026-11-21). Siguen exigiendo decisión expresa: publicar en `main`, crear `v1.2.2`,
+  ejecutar `FINAL` y registrar cualquier aprobación autoral.
 - **Conservado:** el original del modelo, la evidencia R1 y las salidas de benchmark en
   `artifacts/benchmarks/post-r1-locus/` (ignoradas por Git). Dos worktrees separados, de la
   base y de `ab37fb5ff`, usados solo para medir el «antes», quedan en el scratchpad de la
