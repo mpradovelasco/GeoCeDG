@@ -16,6 +16,8 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCell2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
 
 /**
  * Interprets between-position semantics and topology without integrating.
@@ -27,6 +29,123 @@ public final class LocusMetricRouteResolver2D {
 	 *
 	 * @return route resolution without any integration
 	 */
+	/** Published conditioned evidence of a branch of the source, or {@code null}. */
+	private java.util.function.Function<String, LocusConditionedEvidence2D> conditioned =
+			branchKey -> null;
+
+	/**
+	 * @param source reads the conditioned evidence that the producer of the source has
+	 *        published for a branch (ADR 0042); it never computes anything else
+	 */
+	public void setConditionedSource(
+			java.util.function.Function<String, LocusConditionedEvidence2D> source) {
+		conditioned = java.util.Objects.requireNonNull(source);
+	}
+
+	/**
+	 * Route between two positions addressed by parameter (ADR 0042; contract {@code
+	 * post-r1-conditioned-use.md}, section 8.3): both positions in one conditioned region
+	 * and the route inside it. A position inside a band is a valid position with no route.
+	 * A full cycle needs a region that covers the whole period with agreeing seam nodes; it
+	 * is declared closed-conditioned and proves no closure.
+	 */
+	private LocusMetricRoute2D resolveConditioned(BetweenPositionsMetricQuery query,
+			LocusDefinition2D definition, LocusBranch2D branch) {
+		LocusConditionedEvidence2D evidence = conditioned.apply(branch.getBranchKey());
+		if (evidence == null) {
+			return failure(query, definition, MetricRouteStatus.INVALID_QUERY,
+					MetricDiagnosticCode2D.POSITION_STALE,
+					"Revision-scoped component key is absent");
+		}
+		double from = query.getStart().getSemanticPosition().getProviderCanonicalParameter();
+		double to = query.getTarget().getSemanticPosition().getProviderCanonicalParameter();
+		LocusInterval2D region = evidence.regionOf(from);
+		LocusInterval2D other = evidence.regionOf(to);
+		if (region == null || other == null) {
+			LocusConditionedCell2D band = evidence.bandAt(region == null ? from : to);
+			return failure(query, definition, MetricRouteStatus.DISCONTINUITY_ENCOUNTERED,
+					MetricDiagnosticCode2D.POSITION_IN_BAND,
+					"A position inside a band or an unexplored cell has no route: "
+							+ (band == null ? "outside the conditioned evidence"
+									: band.getKind().name()));
+		}
+		if (region.getLower() != other.getLower() || region.getUpper() != other.getUpper()) {
+			return failure(query, definition, MetricRouteStatus.DISCONTINUITY_ENCOUNTERED,
+					MetricDiagnosticCode2D.POSITIONS_IN_DIFFERENT_REGIONS,
+					"The positions lie in different conditioned regions; between them: "
+							+ bandKinds(evidence, from, to));
+		}
+		LocusInterval2D domain = branch.getDeclaredDriverDomain();
+		boolean whole = branch.getExistenceStructure().getTopology()
+				== LocusExistenceStructure2D.DomainTopology.PERIODIC
+				&& region.getLower() == domain.getLower()
+				&& region.getUpper() == domain.getUpper() && evidence.seamNodesAgree();
+		String key = LocusMetricComponentKey2D.createConditionedRegion(definition, branch,
+				region, evidence.getContentIdentity());
+		List<MetricDiagnostic2D> declared = Collections.singletonList(new MetricDiagnostic2D(
+				MetricDiagnosticCode2D.EXISTENCE_NOT_CERTIFIED,
+				"Route on a conditioned region: validity, selection, continuity and "
+						+ "resolution are assumed on its spans (H1 to H4), not certified; "
+						+ evidence.getPolicyVersion()));
+		boolean increasing = movesIncreasing(query.getDirection(), branch);
+		if (from == to) {
+			if (!whole) {
+				return failure(query, definition, MetricRouteStatus.INVALID_QUERY,
+						MetricDiagnosticCode2D.TARGET_NOT_REACHABLE,
+						"FULL_CYCLE requires a conditioned region that covers the whole period");
+			}
+			return success(query, definition, branch, seamSegments(key, region, from, to,
+					increasing, query.getDirection(), MetricRouteSegmentRole.PERIODIC_CYCLE),
+					true, true, true, TraversalOutcome.TARGET_REACHED, declared);
+		}
+		if (increasing ? to > from : to < from) {
+			return success(query, definition, branch, Collections.singletonList(segment(key,
+					from, to, query.getDirection(), MetricRouteSegmentRole.DIRECT)),
+					true, false, true, TraversalOutcome.TARGET_REACHED, declared);
+		}
+		if (whole) {
+			return success(query, definition, branch, seamSegments(key, region, from, to,
+					increasing, query.getDirection(), MetricRouteSegmentRole.DIRECT),
+					true, true, true, TraversalOutcome.TARGET_REACHED, declared);
+		}
+		// The other way round leaves the region: through the band beyond its end.
+		LocusConditionedCell2D beyond = evidence.bandAt(increasing ? region.getUpper()
+				: region.getLower());
+		return failure(query, definition, MetricRouteStatus.TARGET_NOT_REACHABLE,
+				MetricDiagnosticCode2D.ROUTE_CROSSES_BAND,
+				"The route in the requested direction leaves the conditioned region"
+						+ (beyond == null ? " at an end of the declared domain"
+								: " through a band: " + beyond.getKind().name()));
+	}
+
+	private static List<LocusMetricRouteSegment2D> seamSegments(String key,
+			LocusInterval2D region, double from, double to, boolean increasing,
+			TraversalDirection direction, MetricRouteSegmentRole role) {
+		List<LocusMetricRouteSegment2D> segments = new ArrayList<>();
+		if (increasing) {
+			addIfNonZero(segments, segment(key, from, region.getUpper(), direction, role));
+			addIfNonZero(segments, segment(key, region.getLower(), to, direction, role));
+		} else {
+			addIfNonZero(segments, segment(key, from, region.getLower(), direction, role));
+			addIfNonZero(segments, segment(key, region.getUpper(), to, direction, role));
+		}
+		if (segments.isEmpty()) {
+			segments.add(segment(key, region.getLower(), region.getUpper(), direction, role));
+		}
+		return segments;
+	}
+
+	private static String bandKinds(LocusConditionedEvidence2D evidence, double from,
+			double to) {
+		java.util.Set<String> kinds = new java.util.TreeSet<>();
+		for (LocusConditionedCell2D cell : evidence.cellsBetween(from, to)) {
+			if (!cell.getKind().isSpan()) {
+				kinds.add(cell.getKind().name());
+			}
+		}
+		return kinds.isEmpty() ? "a certified interval" : String.join(", ", kinds);
+	}
+
 	public LocusMetricRoute2D resolve(BetweenPositionsMetricQuery query,
 			LocusDefinition2D definition) {
 		MetricPositionBinding2D start = query.getStart();
@@ -72,11 +191,17 @@ public final class LocusMetricRouteResolver2D {
 					MetricDiagnosticCode2D.BRANCH_MISSING,
 					"Constructive branch disappeared before route resolution");
 		}
+		String startComponent = requiredComponent(start);
+		String targetComponent = requiredComponent(target);
+		if (LocusMetricComponentKey2D.isDeclared(startComponent)
+				&& startComponent.equals(targetComponent)
+				&& (!startPosition.equals(targetPosition)
+						|| query.getSamePositionPolicy() != SamePositionPolicy.ZERO_LENGTH)) {
+			return resolveConditioned(query, definition, branch);
+		}
 		if (startPosition.equals(targetPosition)) {
 			return resolveSamePosition(query, definition, branch);
 		}
-		String startComponent = requiredComponent(start);
-		String targetComponent = requiredComponent(target);
 		if (!startComponent.equals(targetComponent)) {
 			return failure(query, definition,
 					MetricRouteStatus.DISCONTINUITY_ENCOUNTERED,

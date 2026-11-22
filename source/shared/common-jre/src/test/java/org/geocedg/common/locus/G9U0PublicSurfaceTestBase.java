@@ -222,13 +222,32 @@ abstract class G9U0PublicSurfaceTestBase extends BaseUnitTest {
 	static void assertNoTotalWithoutExistence(LocusMetricResult2D rich, String where) {
 		String message = where + ": " + rich.getComputationStatus() + " "
 				+ rich.getDiagnostics();
-		assertEquals(MetricComputationStatus.INVALID_QUERY, rich.getComputationStatus(),
-				message);
+		assertFalse(rich.isScalarAdmissible(), message);
+		if (rich.getComputationStatus() == MetricComputationStatus.SUCCESS) {
+			// ADR 0042 (locus-v2-metrics.md section 28.2): a branch without another total is
+			// measured over its conditioned regions. The value is declared conditioned, at
+			// most estimated, of incomplete geometric coverage and never scalar-admissible:
+			// it is still no total with the authority of an established existence.
+			assertTrue(rich.isConditionedEstimate(), message);
+			assertEquals(org.geocedg.common.kernel.locus.metric.MetricCoverage.INCOMPLETE,
+					rich.getCoverage(), message);
+			assertTrue(rich.getNumericTraversal().isEmpty(), message);
+			if (!rich.isConditionedSubtotal()) {
+				// A subtotal of certified pieces keeps their class; it lists what it omits.
+				assertTrue(rich.getGuaranteeClass() == MetricGuaranteeClass2D.ESTIMATED
+						|| rich.getGuaranteeClass() == MetricGuaranteeClass2D.NOT_ESTABLISHED
+						|| rich.getGuaranteeClass() == MetricGuaranteeClass2D.UNCERTIFIED,
+						message);
+				assertTrue(rich.getErrorEvidence().getRigorousEnclosure().isEmpty(), message);
+			}
+			return;
+		}
 		assertEquals(MetricGuaranteeClass2D.NOT_ESTABLISHED, rich.getGuaranteeClass(),
 				message);
-		assertFalse(rich.isScalarAdmissible(), message);
-		assertTrue(rich.getDiagnostics().stream().anyMatch(diagnostic ->
-				diagnostic.getCode() == MetricDiagnosticCode2D.INCOMPLETE_AGGREGATE), message);
+		// Without a value: the aggregate is incomplete, a cell is unexplored, or the
+		// estimate of a conditioned region failed and keeps its own cause.
+		assertFalse(rich.getMetricValue().getFiniteValue().isPresent(), message);
+		assertFalse(rich.getDiagnostics().isEmpty(), message);
 	}
 
 	/**

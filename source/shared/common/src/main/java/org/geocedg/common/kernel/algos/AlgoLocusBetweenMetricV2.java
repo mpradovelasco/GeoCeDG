@@ -185,6 +185,9 @@ public final class AlgoLocusBetweenMetricV2 extends AlgoElement {
 							traversalPolicy.getDirection(), traversalPolicy.getBoundaryPolicy(),
 							traversalPolicy.getSamePositionPolicy(), policy);
 			ownerLease.getOwner().invalidateObsoleteRevision(revision);
+			// ADR 0042: positions addressed by parameter are measured along their conditioned
+			// region, with the evidence that the producer of the source publishes.
+			engine.setConditionedSource(source::getConditionedEvidence);
 			result.publishMetricResult(revision, engine.compute(query, definition,
 					capabilities, ownerLease.getOwner(),
 					LocusMetricIndexMode.LAZY_COMPONENT_REVISION,

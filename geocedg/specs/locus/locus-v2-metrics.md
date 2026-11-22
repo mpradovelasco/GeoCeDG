@@ -1,6 +1,6 @@
 # Locus V2 metric contract
 
-- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25, INCLUDING §25.12) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.6 AMENDMENT (§26, WITH §26.5 FROM AUTHOR DECISION H10 OF 2026-10-22) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**
+- Status: **G7 v1.0 NORMATIVE — PASS — AUTHOR APPROVED; POST-G9U1-A1 v1.1 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A2 v1.2 AMENDMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU1 v1.5 AMENDMENT (§25, INCLUDING §25.12) — ARCHITECTURE AUTHOR APPROVED WITH PRECISIONS N1–N5; PASS — AUTHOR APPROVED WITH THE CU1 CLOSEOUT (2026-10-20); PRE-G9B-CU2 v1.6 AMENDMENT (§26, WITH §26.5 FROM AUTHOR DECISION H10 OF 2026-10-22) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); CONDITIONED USE AMENDMENT (§28, ADR 0042) — AUTHOR APPROVED AS CONTRACT (2026-11-22), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT**
 - Version: `1.7`
 - P2 amendment §26.6: **SCIENTIFIC DECISION AUTHOR APPROVED (2026-11-17); historical initial implementation BLOCKED; final consolidation FOCAL VERIFIED (2026-11-18), global verification and product acceptance pending** ([bounded consolidation](../../../docs/architecture/geocedg-1.2.0-p2-final-consolidation.md)).
 - Approval date: 2026-08-13
@@ -1590,3 +1590,70 @@ loaded meanings. New scalar children reconstruct through the typed XML-only
 outputs independently of labels, document version and application defaults.
 The scope and validation design are recorded in the
 [1.2.0 design](../../../docs/architecture/geocedg-1.2.0-locus-design.md).
+
+## 28. Conditioned use amendment (ADR 0042): lengths on conditioned regions
+
+Amendment approved by the author on 2026-11-22 with
+[ADR 0042](../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md)
+and the [conditioned-use contract](candidates/post-r1-conditioned-use.md), §5.3, §8.3, §8.4
+and §12. Increment I3. Sections 1 to 27 are unchanged: §26.5 (H10) and §26.6 (P2) keep
+their eligibility, their values and their admissibility, and are independent of this mode,
+which adds only the cases that had no value.
+
+### 28.1 Length between two positions
+
+Two positions addressed by parameter
+([public surface](locus-v2-public-surface.md), conditioned use amendment) are measured when
+both lie in one conditioned region and the route in the requested direction stays inside
+it.
+
+- The value is the estimate of the stretch that the route travels, computed by the
+  estimator of §25 on the evaluator of the source. Its class is at most `ESTIMATED`. It is
+  never a rigorous enclosure, and its result records the diagnostic
+  `EXISTENCE_NOT_CERTIFIED` with the hypotheses H1 to H4 of the spans and the hypotheses of
+  the estimator.
+- A position inside a band or an unexplored cell is a valid position with no route:
+  `POSITION_IN_BAND`. Positions in two regions: `POSITIONS_IN_DIFFERENT_REGIONS`, with the
+  kinds of the bands between them. A route whose requested direction leaves the region:
+  `ROUTE_CROSSES_BAND`. None publishes a value.
+- Equal positions follow the existing same-position policies. A full cycle, and a route
+  across the seam, exist only on a region that covers the whole period of a periodic
+  provider with no band and with agreeing seam nodes; it is declared closed-conditioned and
+  proves no closure.
+- A position on a certified component and a position addressed by parameter have no common
+  route.
+- An evaluation that fails inside the stretch is a failure of the result, never a value:
+  the estimator does not interpolate across it.
+
+### 28.2 Total length
+
+A branch that is not `COMPLETE` and has neither the total of §26.5 nor that of §26.6 is
+measured over the conditioned evidence that its producer publishes.
+
+- Every cell of the domain must be classified: an `UNEXPLORED` cell gives no value, with
+  `UNEXPLORED_DOMAIN`.
+- The total accounts for every cell. A conditioned region contributes its estimate; a
+  certified component of the same branch contributes as before; an `ABSENT_BAND`
+  contributes nothing, under its hypothesis. No other band has a computed contribution or
+  a bound in this version: it is never dropped because it is narrow. The value is then a
+  **subtotal** over the regions, published with incomplete coverage and the diagnostic
+  `CONDITIONED_SUBTOTAL` that lists each omitted band with its kind and its interval.
+  What no certificate covers and no cell classifies is listed the same way, as
+  `UNCLASSIFIED`: the cell of minimum step at an end of a certificate, and an unresolved
+  coverage narrower than that step.
+- The class is at most `ESTIMATED`. The rich result carries the value.
+- A result is computed again when the producer publishes another content of the evidence:
+  its states are keyed by the content identity of the evidence they read.
+
+### 28.3 Scalar admission is not extended
+
+A length measured on conditioned regions, between positions or total, with or without
+omitted bands, has incomplete geometric coverage: existence and continuity are hypotheses
+there. It is published as a rich result and is **not scalar-admissible**. The scalar
+admissions of §25.4, §26.5 and §26.6 are unchanged, and the bypass of geometric
+completeness of §26.6 stays exclusive to its typed numeric traversal: in particular the
+cases that §26.6 keeps inadmissible (generic `NOT_CERTIFIED`, native tolerance bands,
+uncertain selection, a sampled success that does not establish continuity) stay without a
+scalar. Whether a conditioned length without omitted bands should feed ordinary formulas
+through the scalar adapter is a separate decision of admissibility, which this amendment
+does not take.

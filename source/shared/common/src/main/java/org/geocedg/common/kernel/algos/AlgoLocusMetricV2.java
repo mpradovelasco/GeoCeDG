@@ -150,6 +150,9 @@ public final class AlgoLocusMetricV2 extends AlgoElement {
 		try {
 			ownerLease.getOwner().invalidateObsoleteRevision(revision);
 			LocusMetricQuery2D currentQuery = queryForRevision(revision);
+			// ADR 0042: a branch without another total is measured over its conditioned
+			// regions, with the evidence that the producer of the source publishes.
+			engine.setConditionedSource(source::getConditionedEvidence);
 			LocusMetricResult2D candidate = engine.compute(currentQuery, definition,
 					capabilities, ownerLease.getOwner(), indexMode,
 					source.getMetricInstrumentation(), currentConsumerIdentity());

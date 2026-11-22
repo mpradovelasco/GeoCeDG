@@ -40,6 +40,26 @@ public final class LocusMetricComponentKey2D {
 	 *
 	 * @return deterministic revision-scoped key of a declared piece
 	 */
+	/**
+	 * @param componentKey revision-scoped key of a binding or of a route segment
+	 * @return whether the key names a declared piece, not a certified component
+	 */
+	public static boolean isDeclared(String componentKey) {
+		return componentKey != null && componentKey.contains("|d=");
+	}
+
+	/**
+	 * Builds the key of one conditioned region (ADR 0042): the key of a declared piece with
+	 * the content identity of the evidence that publishes the region, so that a state built
+	 * for one content is never read for another. It is revision evidence, never an identity.
+	 *
+	 * @return deterministic key of the region in that content
+	 */
+	public static String createConditionedRegion(LocusDefinition2D definition,
+			LocusBranch2D branch, LocusInterval2D region, String contentIdentity) {
+		return createDeclared(definition, branch, 0, region) + "|region|" + contentIdentity;
+	}
+
 	public static String createDeclared(LocusDefinition2D definition,
 			LocusBranch2D branch, int pieceIndex, LocusInterval2D piece) {
 		return branch.getBranchKey() + "|r=" + definition.getSemanticRevision()

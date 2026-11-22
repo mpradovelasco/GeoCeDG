@@ -49,5 +49,20 @@ public enum MetricDiagnosticCode2D {
 	 * whose existence and continuity are not certified, because the construction is outside
 	 * class v3; informational, it never certifies.
 	 */
-	EXISTENCE_NOT_CERTIFIED
+	EXISTENCE_NOT_CERTIFIED,
+	/**
+	 * ADR 0042 (contract post-r1-conditioned-use.md, sections 5.3 and 8.4): the value is a
+	 * subtotal over the conditioned regions; the bands that it omits are listed.
+	 */
+	CONDITIONED_SUBTOTAL,
+	/** A cell of the requested domain was not classified within the work limit. */
+	UNEXPLORED_DOMAIN,
+	/** A failure band lies in the requested domain of a consumer without a subtotal. */
+	FAILURE_BAND_IN_DOMAIN,
+	/** The route in the requested direction leaves its conditioned region through a band. */
+	ROUTE_CROSSES_BAND,
+	/** A position inside a band or an unexplored cell is valid and has no route. */
+	POSITION_IN_BAND,
+	/** The two positions lie in different conditioned regions. */
+	POSITIONS_IN_DIFFERENT_REGIONS
 }

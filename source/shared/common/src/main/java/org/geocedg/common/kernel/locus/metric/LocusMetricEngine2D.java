@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
@@ -23,6 +24,9 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.DomainTopology;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.ConstructionFidelity;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCell2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCellKind2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
 
 /**
  * Internal semantic metric service composing route, component and aggregation
@@ -47,6 +51,135 @@ public final class LocusMetricEngine2D {
 			LocusMetricInstrumentation2D instrumentation) {
 		return compute(query, definition, capabilities, sharedOwner, indexMode,
 				instrumentation, "");
+	}
+
+	/** Published conditioned evidence of a branch of the source, or {@code null}. */
+	private java.util.function.Function<String, LocusConditionedEvidence2D> conditioned =
+			branchKey -> null;
+
+	/**
+	 * Gives the engine the conditioned evidence that the producer of its source publishes
+	 * (ADR 0042; contract {@code post-r1-conditioned-use.md}, sections 8.3 and 8.4). Without
+	 * a source every query behaves as before.
+	 *
+	 * @param source evidence of a branch of the current revision, or {@code null}
+	 */
+	public void setConditionedSource(
+			java.util.function.Function<String, LocusConditionedEvidence2D> source) {
+		conditioned = Objects.requireNonNull(source);
+		routeResolver.setConditionedSource(source);
+	}
+
+	/**
+	 * Conditioned total of the branches that have no other total (section 8.4): the sum of
+	 * the estimates of the conditioned regions and of the contributions of the certified
+	 * components. An absence band contributes nothing, under its hypothesis. Every other
+	 * band has no computed contribution and no bound: it is never dropped, the value is a
+	 * subtotal and the bands are listed. An unexplored cell leaves the domain unclassified
+	 * and there is no value.
+	 *
+	 * @return the total, the subtotal, or the refusal
+	 */
+	private LocusMetricResult2D conditionedTotal(TotalLocusMetricQuery query,
+			LocusDefinition2D definition, LocusMetricCapabilityHierarchy2D capabilities,
+			LocusMetricSharedOwner2D owner, LocusMetricIndexMode indexMode,
+			LocusMetricInstrumentation2D instrumentation, String consumerToken,
+			Map<String, List<LocusInterval2D>> declared,
+			Map<String, LocusConditionedEvidence2D> evidences) {
+		List<LocusMetricContribution2D> contributions = new ArrayList<>();
+		List<String> omitted = new ArrayList<>();
+		for (LocusBranch2D branch : definition.getBranches()) {
+			List<LocusInterval2D> pieces = declared.get(branch.getBranchKey());
+			LocusConditionedEvidence2D evidence = evidences.get(branch.getBranchKey());
+			if (pieces != null) {
+				for (int index = 0; index < pieces.size(); index++) {
+					CapabilityState selected = conditionedState(definition, branch,
+							pieces.get(index), LocusMetricComponentKey2D.createDeclared(
+									definition, branch, index, pieces.get(index)),
+							query.getPolicy(), capabilities, owner, indexMode,
+							instrumentation, consumerToken);
+					if (selected == null) {
+						return incompleteTotal(query, definition);
+					}
+					contributions.add(selected.capability.evaluateCompleteComponent(
+							selected.state, query.getPolicy(), instrumentation));
+				}
+				continue;
+			}
+			if (evidence != null) {
+				for (LocusConditionedCell2D cell : evidence.getCells()) {
+					if (cell.getKind() == LocusConditionedCellKind2D.UNEXPLORED) {
+						return invalidQuery(query, definition,
+								MetricDiagnosticCode2D.UNEXPLORED_DOMAIN,
+								"A cell of the requested domain was not classified within the "
+										+ "work limit of " + evidence.getPolicyVersion(),
+								Optional.empty());
+					}
+					if (!cell.getKind().isSpan()
+							&& cell.getKind() != LocusConditionedCellKind2D.ABSENT_BAND) {
+						omitted.add(branch.getBranchKey() + " " + cell.getKind().name()
+								+ " [" + cell.getLower() + ", " + cell.getUpper() + "]");
+					}
+				}
+				// What no certificate covers and no cell classifies is never dropped either:
+				// the cell of minimum step at an end of a certificate, and an unresolved
+				// coverage narrower than it.
+				for (LocusExistenceStructure2D.Coverage item
+						: branch.getExistenceStructure().getCoverage()) {
+					if (item.getState() != CoverageState.UNRESOLVED
+							&& item.getNature().certifies()) {
+						continue;
+					}
+					double covered = item.getInterval().getLower();
+					for (LocusConditionedCell2D cell : evidence.cellsBetween(
+							item.getInterval().getLower(), item.getInterval().getUpper())) {
+						if (cell.getLower() > covered) {
+							omitted.add(branch.getBranchKey() + " UNCLASSIFIED [" + covered
+									+ ", " + cell.getLower() + "]");
+						}
+						covered = Math.max(covered, cell.getUpper());
+					}
+					if (covered < item.getInterval().getUpper()) {
+						omitted.add(branch.getBranchKey() + " UNCLASSIFIED [" + covered + ", "
+								+ item.getInterval().getUpper() + "]");
+					}
+				}
+				for (LocusInterval2D region : evidence.getRegions()) {
+					LocusInterval2D piece = new LocusInterval2D(region.getLower(),
+							region.getUpper(), true, true);
+					CapabilityState selected = conditionedState(definition, branch, piece,
+							LocusMetricComponentKey2D.createConditionedRegion(definition,
+									branch, piece, evidence.getContentIdentity()),
+							query.getPolicy(), capabilities, owner, indexMode,
+							instrumentation, consumerToken);
+					if (selected == null) {
+						return incompleteTotal(query, definition);
+					}
+					contributions.add(selected.capability.evaluateCompleteComponent(
+							selected.state, query.getPolicy(), instrumentation));
+				}
+			}
+			for (int index = 0;
+					index < branch.getValidDomainComponents().size(); index++) {
+				String componentKey = LocusMetricComponentKey2D.create(
+						definition, branch, index);
+				CapabilityState selected = state(definition, branch,
+						branch.getValidDomainComponents().get(index), componentKey,
+						query.getPolicy(), capabilities, owner, indexMode, instrumentation,
+						consumerToken);
+				contributions.add(selected.capability.evaluateCompleteComponent(
+						selected.state, query.getPolicy(), instrumentation));
+			}
+		}
+		LocusMetricResult2D total = aggregator.aggregateTotal(query, contributions);
+		if (total.getComputationStatus() != MetricComputationStatus.SUCCESS
+				|| omitted.isEmpty()) {
+			return total.asConditioned(Collections.emptyList());
+		}
+		return total.asConditioned(Collections.singletonList(new MetricDiagnostic2D(
+				MetricDiagnosticCode2D.CONDITIONED_SUBTOTAL,
+				"Subtotal over the conditioned regions; bands without a contribution or a "
+						+ "bound, not included: " + String.join("; ", omitted))));
 	}
 
 	/**
@@ -115,6 +248,7 @@ public final class LocusMetricEngine2D {
 		// A branch that is not COMPLETE has a total only when its construction is outside
 		// class v3: the conditioned estimate of its declared pieces (section 26.5).
 		Map<String, List<LocusInterval2D>> declared = new LinkedHashMap<>();
+		Map<String, LocusConditionedEvidence2D> evidences = new LinkedHashMap<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
 			if (branch.getExistenceStructure().getCompleteness()
 					== Completeness.COMPLETE) {
@@ -122,9 +256,21 @@ public final class LocusMetricEngine2D {
 			}
 			List<LocusInterval2D> pieces = declaredPieces(branch);
 			if (pieces.isEmpty()) {
-				return incompleteTotal(query, definition);
+				// Sections 26.5 and 26.6 are unchanged and independent. A branch that has
+				// neither total is measured over its conditioned regions (ADR 0042).
+				LocusConditionedEvidence2D evidence = conditioned.apply(
+						branch.getBranchKey());
+				if (evidence == null) {
+					return incompleteTotal(query, definition);
+				}
+				evidences.put(branch.getBranchKey(), evidence);
+				continue;
 			}
 			declared.put(branch.getBranchKey(), pieces);
+		}
+		if (!evidences.isEmpty()) {
+			return conditionedTotal(query, definition, capabilities, owner, indexMode,
+					instrumentation, consumerToken, declared, evidences);
 		}
 		List<LocusMetricContribution2D> contributions = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
@@ -218,6 +364,23 @@ public final class LocusMetricEngine2D {
 				String componentKey =
 						segment.getResolvedValidComponentKey();
 				CapabilityState selected = queryStates.get(componentKey);
+				if (LocusMetricComponentKey2D.isDeclared(componentKey)) {
+					// A route on a conditioned region: the estimate, under hypotheses, of the
+					// stretch that the segment travels, not of the whole region.
+					selected = conditionedRegionState(definition, branch, componentKey,
+							Math.min(segment.getStartCanonicalParameter(),
+									segment.getEndCanonicalParameter()),
+							Math.max(segment.getStartCanonicalParameter(),
+									segment.getEndCanonicalParameter()),
+							query.getPolicy(), capabilities, owner, indexMode, instrumentation,
+							consumerToken);
+					if (selected == null) {
+						return invalidQuery(query, definition,
+								MetricDiagnosticCode2D.POSITION_STALE,
+								"The conditioned region of the route is not current",
+								Optional.of(TraversalOutcome.TARGET_NOT_REACHABLE));
+					}
+				}
 				if (selected == null) {
 					LocusInterval2D component =
 							LocusMetricComponentKey2D.find(definition, branch,
@@ -232,7 +395,45 @@ public final class LocusMetricEngine2D {
 						instrumentation));
 			}
 		}
-		return aggregator.aggregateBetween(query, route, contributions);
+		LocusMetricResult2D between = aggregator.aggregateBetween(query, route,
+				contributions);
+		for (LocusMetricRouteSegment2D segment : route.getOrderedRouteSegments()) {
+			if (LocusMetricComponentKey2D.isDeclared(segment.getResolvedValidComponentKey())) {
+				// A route on a conditioned region: geometric coverage is not complete.
+				return between.asConditioned(Collections.emptyList());
+			}
+		}
+		return between;
+	}
+
+	/** State of the estimate of the conditioned region that a route segment names. */
+	private CapabilityState conditionedRegionState(LocusDefinition2D definition,
+			LocusBranch2D branch, String regionKey, double lower, double upper,
+			LocusMetricPolicy2D policy,
+			LocusMetricCapabilityHierarchy2D hierarchy, LocusMetricSharedOwner2D owner,
+			LocusMetricIndexMode indexMode, LocusMetricInstrumentation2D instrumentation,
+			String consumerToken) {
+		LocusConditionedEvidence2D evidence = conditioned.apply(branch.getBranchKey());
+		if (evidence == null) {
+			return null;
+		}
+		for (LocusInterval2D region : evidence.getRegions()) {
+			LocusInterval2D piece = new LocusInterval2D(region.getLower(), region.getUpper(),
+					true, true);
+			if (regionKey.equals(LocusMetricComponentKey2D.createConditionedRegion(definition,
+					branch, piece, evidence.getContentIdentity()))) {
+				if (!(region.getLower() <= lower && upper <= region.getUpper()
+						&& lower < upper)) {
+					return null;
+				}
+				return conditionedState(definition, branch,
+						new LocusInterval2D(lower, upper, true, true),
+						regionKey + "|" + Double.toHexString(lower) + ":"
+								+ Double.toHexString(upper),
+						policy, hierarchy, owner, indexMode, instrumentation, consumerToken);
+			}
+		}
+		return null;
 	}
 
 	private static CapabilityState state(LocusDefinition2D definition,

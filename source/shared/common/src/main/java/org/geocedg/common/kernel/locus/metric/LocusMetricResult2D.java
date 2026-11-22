@@ -230,6 +230,51 @@ public final class LocusMetricResult2D {
 	}
 
 	/**
+	 * Package-only publication of a length measured on conditioned regions (ADR 0042;
+	 * contract {@code post-r1-conditioned-use.md}, sections 5.3, 8.3 and 8.4): the same
+	 * value with incomplete geometric coverage and, for a subtotal, the diagnostic that
+	 * lists the omitted bands. Geometric coverage is not complete where existence and
+	 * continuity are hypotheses, so {@link #isScalarAdmissible()} refuses the value: the
+	 * scalar admission of sections 26.5 and 26.6 of the metric contract is not extended.
+	 */
+	LocusMetricResult2D asConditioned(List<MetricDiagnostic2D> omitted) {
+		return new LocusMetricResult2D(this, omitted);
+	}
+
+	private LocusMetricResult2D(LocusMetricResult2D source, List<MetricDiagnostic2D> omitted) {
+		numericTraversal = null;
+		metricValue = source.metricValue;
+		coverage = MetricCoverage.INCOMPLETE;
+		computationStatus = source.computationStatus;
+		rectifiability = source.rectifiability;
+		traversalOutcome = source.traversalOutcome;
+		routeEvidence = source.routeEvidence;
+		constructionFidelity = source.constructionFidelity;
+		evaluatorMethod = source.evaluatorMethod;
+		metricMethod = source.metricMethod;
+		representationRole = source.representationRole;
+		errorEvidence = source.errorEvidence;
+		unit = source.unit;
+		provenance = source.provenance;
+		contributions = source.contributions;
+		ArrayList<MetricDiagnostic2D> all = new ArrayList<>(source.diagnostics);
+		if (source.diagnostics.stream().noneMatch(d ->
+				d.getCode() == MetricDiagnosticCode2D.EXISTENCE_NOT_CERTIFIED)) {
+			all.add(new MetricDiagnostic2D(MetricDiagnosticCode2D.EXISTENCE_NOT_CERTIFIED,
+					"Measured on conditioned regions: existence and continuity are assumed "
+							+ "under the declared hypotheses, not certified"));
+		}
+		all.addAll(omitted);
+		diagnostics = immutableDiagnostics(all);
+	}
+
+	/** @return whether the value is a subtotal that omits listed conditioned bands */
+	public boolean isConditionedSubtotal() {
+		return diagnostics.stream().anyMatch(d ->
+				d.getCode() == MetricDiagnosticCode2D.CONDITIONED_SUBTOTAL);
+	}
+
+	/**
 	 * @return guarantee class of this result ({@code locus-v2-metrics.md} section 25.1)
 	 */
 	public MetricGuaranteeClass2D getGuaranteeClass() {
