@@ -144,6 +144,13 @@ final class GeoCeDGPointInteraction {
 				: spanish
 				? "El estado actual del documento no permite una restauración exacta"
 				: "Current document state does not permit exact restoration";
+		// A conditioned region ends at a band: the point stays defined where it is.
+		case CONTINUATION_REACHED_BAND -> spanish
+				? "El punto no puede continuar: la curva no tiene aquí existencia o continuidad comprobadas; se conserva la última posición válida"
+				: "The point cannot continue: existence or continuity of the curve is not checked here; the last valid position is kept";
+		case CONTINUATION_START_IN_BAND, TARGET_IN_ANOTHER_REGION -> spanish
+				? "El punto está en una zona de la curva sin continuidad comprobada y no puede seguirse desde aquí; puede redefinirse con otro parámetro"
+				: "The point lies where the continuity of the curve is not checked and cannot be followed from here; it can be redefined with another parameter";
 		case INVALID_SOURCE, AUTHORITY_NOT_ESTABLISHED -> spanish
 				? "La curva de origen ya no permite mover este punto"
 				: "The source curve no longer allows this point to move";

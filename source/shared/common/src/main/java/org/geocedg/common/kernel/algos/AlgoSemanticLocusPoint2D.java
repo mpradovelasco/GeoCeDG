@@ -6,6 +6,7 @@
 package org.geocedg.common.kernel.algos;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.geocedg.common.kernel.geos.GeoLocusV2;
@@ -17,12 +18,17 @@ import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusParameterAddressState2D;
+import org.geocedg.common.kernel.locus.LocusParameterPointResolver2D;
 import org.geocedg.common.kernel.locus.LocusPrincipalBranchSelector2D;
 import org.geocedg.common.kernel.locus.LocusPrincipalBranchState2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D.SeamSide;
 import org.geocedg.common.kernel.locus.LocusSemanticAddressState2D;
 import org.geocedg.common.kernel.locus.LocusSemanticPointCause2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCell2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
+import org.geocedg.common.kernel.locus.constructive.RelationIntegrity;
 import org.geocedg.common.kernel.locus.interaction.LocusPointPublication2D;
 import org.geocedg.common.kernel.locus.interaction.M08SnapshotPlacement2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPositionBinder2D;
@@ -112,17 +118,24 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		String branchState = branchInput.getTextString();
 		LocusSemanticAddressState2D.Decoded persistedState;
 		LocusPrincipalBranchState2D.Decoded principalState;
+		LocusParameterAddressState2D.Decoded parameterState;
 		try {
 			persistedState = LocusSemanticAddressState2D.decode(branchState);
 			principalState = persistedState == null
 					? LocusPrincipalBranchState2D.decode(branchState) : null;
+			parameterState = persistedState == null && principalState == null
+					? LocusParameterAddressState2D.decode(branchState) : null;
 		} catch (IllegalArgumentException exception) {
 			undefined(LocusSemanticPointCause2D.INVALID_ADDRESS);
 			return;
 		}
-		if (persistedState != null && ownsDedicatedInteractionInputs()) {
+		boolean explicitParameter = parameterState != null
+				&& !parameterState.isInputSelection();
+		if ((persistedState != null || explicitParameter)
+				&& ownsDedicatedInteractionInputs()) {
 			enforceDedicatedStatePresentation();
-		} else if (principalState != null && ownsDedicatedPrincipalBranchInput()) {
+		} else if ((principalState != null || parameterState != null && !explicitParameter)
+				&& ownsDedicatedPrincipalBranchInput()) {
 			enforceDedicatedPrincipalBranchPresentation();
 		}
 		if (!source.isDefined() || !parameterInput.toGeoElement().isDefined()) {
@@ -150,7 +163,8 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 			}
 		}
 		String branchKey = persistedState != null ? persistedState.getBranchKey()
-				: principalState != null ? principalState.getBranchKey() : branchState;
+				: principalState != null ? principalState.getBranchKey()
+						: parameterState != null ? parameterState.getBranchKey() : branchState;
 		if (sourceId == null || definition == null) {
 			undefined(LocusSemanticPointCause2D.INVALID_SOURCE);
 			return;
@@ -166,8 +180,14 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 			return;
 		}
 		LocusDriverDomainProvider2D provider = definition.getProvider();
-		LocusSemanticAddress2D persistedAddress = persistedState == null ? null
-				: persistedState.toSemanticAddress(sourceId);
+		if (parameterState != null
+				&& !parameterState.hasProviderVersion(provider.getProviderId())) {
+			undefined(LocusSemanticPointCause2D.INVALID_ADDRESS);
+			return;
+		}
+		LocusSemanticAddress2D persistedAddress = persistedState != null
+				? persistedState.toSemanticAddress(sourceId)
+				: explicitParameter ? parameterState.toParameterAddress(sourceId) : null;
 		double canonical = persistedAddress != null
 				? persistedAddress.getCanonicalParameter()
 				: principalAddress != null ? principalAddress.getCanonicalParameter()
@@ -186,31 +206,58 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		String retainedComponentLineage = persistedState != null
 				? persistedState.getComponentLineageKey()
 				: principalState != null ? principalState.getComponentLineageKey() : null;
-		ContinuousComponent component = containingComponent(branch, canonical, provider,
-				retainedComponentLineage);
-		if (component == null) {
-			return;
-		}
-		long lift = liftValue;
-		LocusSemanticAddress2D candidate = persistedAddress != null
-				? persistedAddress : principalAddress != null ? principalAddress
-				: new LocusSemanticAddress2D(sourceId, provider.getProviderId(),
-						branchKey, LocusComponentLineage2D.of(branch.getExistenceStructure(),
-								component), canonical,
-						lift, seamSide(provider, rawParameter, canonical, lift));
 		long rawBits = Double.doubleToLongBits(rawParameter == 0 ? 0 : rawParameter);
 		boolean sameAddressInputs = previousRawParameterBits == rawBits
 				&& branchKey.equals(previousBranchInput)
 				&& sourceId.equals(previousSourceId);
+		// A parameter address (contract post-r1-conditioned-use.md, section 6): persisted in
+		// its own codec, or the address of a plain branch key whose parameter no certified
+		// component contains. An address with a component selector is never rewritten into
+		// one: the same inputs that held a selector keep their existing cause.
+		boolean byParameter = parameterState != null;
+		ContinuousComponent component = null;
+		if (!byParameter) {
+			component = containingComponent(branch, canonical, provider,
+					retainedComponentLineage);
+			if (component == null) {
+				if (cause != LocusSemanticPointCause2D.OUTSIDE_COMPONENTS
+						|| retainedComponentLineage != null
+						|| sameAddressInputs && lastAcceptedAddress != null
+								&& !lastAcceptedAddress.isParameterAddress()
+						|| !isUncertifiedAt(branch, canonical)) {
+					return;
+				}
+				byParameter = true;
+			}
+		}
+		long lift = liftValue;
+		LocusSemanticAddress2D candidate = persistedAddress != null
+				? persistedAddress : principalAddress != null ? principalAddress
+				: byParameter ? LocusSemanticAddress2D.byParameter(sourceId,
+						provider.getProviderId(), branchKey, canonical, lift,
+						seamSide(provider, rawParameter, canonical, lift))
+				: new LocusSemanticAddress2D(sourceId, provider.getProviderId(),
+						branchKey, LocusComponentLineage2D.of(branch.getExistenceStructure(),
+								component), canonical,
+						lift, seamSide(provider, rawParameter, canonical, lift));
 		if (sameAddressInputs && lastAcceptedAddress != null
-				&& !lastAcceptedAddress.getComponentLineageKey().equals(
+				&& !Objects.equals(lastAcceptedAddress.getComponentLineageKey(),
 						candidate.getComponentLineageKey())) {
 			undefined(LocusSemanticPointCause2D.COMPONENT_CHANGED);
 			return;
 		}
 		MetricPositionBinding2D candidateBinding = initialBinding;
 		initialBinding = null;
-		if (candidateBinding == null) {
+		LocusSemanticPointCause2D unbound = LocusSemanticPointCause2D.POSITION_UNBOUND;
+		if (candidateBinding == null && byParameter) {
+			// Point validity: the evaluation at the parameter and the selections of the
+			// slice. No interval evidence is read (section 6.3).
+			LocusParameterPointResolver2D.Resolution resolution =
+					LocusParameterPointResolver2D.resolve(source, definition, branch,
+							candidate);
+			candidateBinding = resolution.getBinding();
+			unbound = resolution.getCause();
+		} else if (candidateBinding == null) {
 			candidateBinding = binder.bind(candidate.toMetricPosition(), definition);
 		} else if (candidateBinding.getSemanticRevision() != definition.getSemanticRevision()
 				|| !candidate.toMetricPosition().equals(candidateBinding.getSemanticPosition())) {
@@ -219,7 +266,7 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		if (!candidateBinding.isValid()) {
 			// The invalid binding is kept: it carries the typed cause of the failure.
 			positionBinding = candidateBinding;
-			undefined(LocusSemanticPointCause2D.POSITION_UNBOUND);
+			undefined(unbound);
 			return;
 		}
 		final org.geocedg.common.kernel.locus.LocusPoint2D evaluated = candidateBinding
@@ -313,9 +360,61 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		LocusDefinition2D definition = source.getSemanticDefinition();
 		return required != null && required.equals(semanticAddress) && definition != null
 				&& branchInput.isDefined() && parameterInput.toGeoElement().isDefined()
-				&& LocusSemanticAddressState2D.encode(required).equals(branchInput.getTextString())
+				&& encodeAddressState(required).equals(branchInput.getTextString())
 				&& persistedAddressMatchesInputs(definition.getProvider(), required,
 						parameterInput.getDouble());
+	}
+
+	/**
+	 * @param address address with a component selector, or parameter address
+	 * @return its hidden-input text, in the codec of its kind; a text of one codec is never
+	 *         read as a text of the other
+	 */
+	public static String encodeAddressState(LocusSemanticAddress2D address) {
+		return address.isParameterAddress() ? LocusParameterAddressState2D.encode(address)
+				: LocusSemanticAddressState2D.encode(address);
+	}
+
+	/**
+	 * @return the cell of the conditioned evidence already published by the source that
+	 *         contains the parameter of the current parameter address, as information: it
+	 *         never decides the definition of the point. {@code null} when the address has
+	 *         a component selector, when the point is unresolved or when the source has
+	 *         published no evidence for its revision
+	 */
+	public LocusConditionedCell2D getContainingConditionedCell() {
+		if (semanticAddress == null || !semanticAddress.isParameterAddress()) {
+			return null;
+		}
+		LocusConditionedEvidence2D evidence = source.getPublishedConditionedEvidence(
+				semanticAddress.getBranchKey());
+		if (evidence == null) {
+			return null;
+		}
+		List<LocusConditionedCell2D> cells = evidence.cellsContaining(
+				semanticAddress.getCanonicalParameter());
+		for (LocusConditionedCell2D cell : cells) {
+			if (!cell.getKind().isSpan()) {
+				return cell;
+			}
+		}
+		return cells.isEmpty() ? null : cells.get(0);
+	}
+
+	/**
+	 * Integrity of the incidence of the point on its source when the address is a parameter
+	 * address (contract {@code post-r1-conditioned-use.md}, section 8, common rule and
+	 * 8.1): the incidence holds by construction of the address, and it has no evidence of
+	 * its own under {@code locus-v2-constructive-authority.md}. Conditioned evidence is a
+	 * numerical verification under hypotheses: it is not a relaxed admission and never
+	 * raises an integrity.
+	 *
+	 * @return {@code NOT_ESTABLISHED} for a resolved parameter address; {@code null} for an
+	 *         address with a component selector, whose integrity this method does not state
+	 */
+	public RelationIntegrity getParameterIncidenceIntegrity() {
+		return semanticAddress != null && semanticAddress.isParameterAddress()
+				? RelationIntegrity.NOT_ESTABLISHED : null;
 	}
 
 	/** @return current-bound G7-compatible semantic position, or {@code null} */
@@ -353,8 +452,12 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		if (semanticAddress == null || source.getSemanticDefinition() == null) {
 			return null;
 		}
-		positionBinding = binder.bind(semanticAddress.toMetricPosition(),
-				source.getSemanticDefinition());
+		LocusDefinition2D definition = source.getSemanticDefinition();
+		LocusBranch2D branch = definition.getBranch(semanticAddress.getBranchKey());
+		positionBinding = semanticAddress.isParameterAddress() && branch != null
+				? LocusParameterPointResolver2D.resolve(source, definition, branch,
+						semanticAddress).getBinding()
+				: binder.bind(semanticAddress.toMetricPosition(), definition);
 		return positionBinding;
 	}
 
@@ -436,6 +539,18 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		return unqualified;
 	}
 
+	/**
+	 * @return whether the existence structure states no certified fact at the parameter: a
+	 *         certified nonexistence is never addressed by parameter
+	 */
+	private static boolean isUncertifiedAt(LocusBranch2D branch, double parameter) {
+		LocusExistenceStructure2D.Coverage coverage = branch.getExistenceStructure()
+				.getCoverageAt(parameter);
+		return coverage == null || coverage.getState()
+				== LocusExistenceStructure2D.CoverageState.UNRESOLVED
+				|| !coverage.getNature().certifies();
+	}
+
 	private static Long periodicLift(LocusDriverDomainProvider2D provider,
 			double raw, double canonical) {
 		if (!provider.isPeriodic()) {
@@ -514,17 +629,29 @@ public final class AlgoSemanticLocusPoint2D extends AlgoElement {
 		}
 		LocusSemanticAddressState2D.Decoded persistedState;
 		LocusPrincipalBranchState2D.Decoded principalState;
+		LocusParameterAddressState2D.Decoded parameterState;
 		try {
 			persistedState = LocusSemanticAddressState2D.decode(
 					branchInput.getTextString());
 			principalState = persistedState == null
 					? LocusPrincipalBranchState2D.decode(branchInput.getTextString())
 					: null;
+			parameterState = persistedState == null && principalState == null
+					? LocusParameterAddressState2D.decode(branchInput.getTextString())
+					: null;
 		} catch (IllegalArgumentException exception) {
 			return;
 		}
 		PersistentGeoId sourceId = source.getPersistentLocusId();
 		LocusDefinition2D definition = source.getSemanticDefinition();
+		if (parameterState != null) {
+			if (!parameterState.isInputSelection() && sourceId != null && definition != null
+					&& parameterState.hasProviderVersion(
+							definition.getProvider().getProviderId())) {
+				lastAcceptedAddress = parameterState.toParameterAddress(sourceId);
+			}
+			return;
+		}
 		if (persistedState != null && sourceId != null && definition != null
 				&& persistedState.hasProviderVersion(
 						definition.getProvider().getProviderId())) {

@@ -222,6 +222,10 @@ public final class IndividualForwardPointCreation2D {
 							!= Double.doubleToLongBits(address.getCanonicalParameter())) {
 				throw new Rejected(Failure.INVALID_FORWARD);
 			}
+			if (address.isParameterAddress()) {
+				// This protocol confirms a position of a certified component only.
+				throw new Rejected(Failure.COMPONENT_NOT_ESTABLISHED);
+			}
 			var component = LocusComponentSelectorResolver2D.resolve(address.getComponentLineageKey(),
 					branch.getExistenceStructure(), List.of(branch.getLineage()),
 					address.getCanonicalParameter());

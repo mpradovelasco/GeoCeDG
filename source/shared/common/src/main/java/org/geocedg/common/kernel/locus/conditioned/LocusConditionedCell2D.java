@@ -23,10 +23,19 @@ public final class LocusConditionedCell2D {
 	private final LocusConditionedSpanClass2D spanClass;
 	private final double chordDeviation;
 	private final String cause;
+	private final double[] nodePoints;
 
 	LocusConditionedCell2D(long lowerIndex, long upperIndex, double lower, double upper,
 			LocusConditionedCellKind2D kind, LocusConditionedSpanClass2D spanClass,
 			double chordDeviation, String cause) {
+		this(lowerIndex, upperIndex, lower, upper, kind, spanClass, chordDeviation, cause,
+				null);
+	}
+
+	LocusConditionedCell2D(long lowerIndex, long upperIndex, double lower, double upper,
+			LocusConditionedCellKind2D kind, LocusConditionedSpanClass2D spanClass,
+			double chordDeviation, String cause, double[] nodePoints) {
+		this.nodePoints = nodePoints == null ? null : nodePoints.clone();
 		this.lowerIndex = lowerIndex;
 		this.upperIndex = upperIndex;
 		this.lower = lower;
@@ -38,6 +47,16 @@ public final class LocusConditionedCell2D {
 		this.spanClass = spanClass;
 		this.chordDeviation = chordDeviation;
 		this.cause = cause == null ? "" : cause;
+	}
+
+	/**
+	 * @return for a span, the points traced at its three nodes, as {@code x, y} of the lower
+	 *         end, the midpoint and the upper end: the polyline of the resolution hypothesis
+	 *         H4. They are evidence of the revision: never an address, an identity or a
+	 *         geometry of the locus. {@code null} for a band
+	 */
+	public double[] getNodePoints() {
+		return nodePoints == null ? null : nodePoints.clone();
 	}
 
 	/** @return lower end, as an index of the traversal grid */

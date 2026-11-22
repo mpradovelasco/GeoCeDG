@@ -12,7 +12,12 @@ package org.geocedg.common.kernel.locus;
  * {@code locus-v2-point-interaction.md} section 17); it is never reassociated silently.
  */
 public enum LocusSemanticPointCause2D {
-	/** The address resolves in a certified component and binds: the point is defined. */
+	/**
+	 * The address resolves and binds: the point is defined. An address with a component
+	 * selector resolves in a certified component; a parameter address resolves by the
+	 * validity of its own evaluation (contract {@code post-r1-conditioned-use.md}, section
+	 * 6.3).
+	 */
 	RESOLVED,
 	/** The source locus, its semantic definition or identity, or the parameter is undefined. */
 	INVALID_SOURCE,
@@ -32,7 +37,10 @@ public enum LocusSemanticPointCause2D {
 	SELECTOR_UNRESOLVED,
 	/** The parameter lies in a point component, which a binary64 parameter never selects. */
 	POINT_COMPONENT,
-	/** The parameter lies in no certified component: a gap, a band or certified nonexistence. */
+	/**
+	 * The parameter lies in no certified component and no parameter address applies: a
+	 * certified nonexistence, or a component selector that the same inputs held before.
+	 */
 	OUTSIDE_COMPONENTS,
 	/** Several certified components contain the parameter within the domain tolerance. */
 	AMBIGUOUS_COMPONENT,
@@ -42,5 +50,17 @@ public enum LocusSemanticPointCause2D {
 	 */
 	COMPONENT_CHANGED,
 	/** The position does not bind in the revision; its typed binding carries the cause. */
-	POSITION_UNBOUND
+	POSITION_UNBOUND,
+	/** The parameter of a parameter address is outside the declared driver domain. */
+	PARAMETER_OUTSIDE_DOMAIN,
+	/**
+	 * The evaluation at the parameter of a parameter address is invalid or failed; its
+	 * typed binding carries the cause.
+	 */
+	EVALUATION_FAILED,
+	/**
+	 * A selecting dependency of the source has no established selection at the parameter of
+	 * a parameter address.
+	 */
+	SELECTION_NOT_ESTABLISHED
 }

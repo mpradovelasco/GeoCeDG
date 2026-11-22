@@ -25,7 +25,11 @@ public final class LocusSemanticAddressState2D {
 
 	/** @return deterministic opaque text for one reconstructible address */
 	public static String encode(LocusSemanticAddress2D address) {
-		Objects.requireNonNull(address);
+		if (Objects.requireNonNull(address).isParameterAddress()) {
+			// A parameter address has its own codec and is never written in this one.
+			throw new IllegalArgumentException(
+					"A parameter address has no component selector to encode");
+		}
 		return PREFIX + text(address.getBranchKey()) + "|"
 				+ text(address.getComponentLineageKey()) + "|"
 				+ text(address.getProviderVersion()) + "|"

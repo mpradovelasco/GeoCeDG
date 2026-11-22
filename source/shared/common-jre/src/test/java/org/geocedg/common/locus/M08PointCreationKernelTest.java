@@ -279,15 +279,19 @@ class M08PointCreationKernelTest extends G9U0PublicSurfaceTestBase {
 	}
 
 	@Test
-	void arbitraryScalarFormulaStillNeedsAComponentAndHasNoFallbackPermission() {
+	void arbitraryScalarFormulaHasNoComponentPermissionAndIsOfferedByParameterOnly() {
 		GeoLocusV2 source = createScalarLocus("L", "s", "R", "(s,exp(s))",
 				"{false,{-1,1,true,true}}");
 		assertTrue(source.getSemanticDefinition().getBranches().get(0).getExistenceStructure()
 				.getContinuousValidComponents().isEmpty());
 		String before = getApp().getXML();
 		try (var selection = LocusPointCreation2D.query(source, 0, 1, policy())) {
-			assertEquals(Route.REJECTED, selection.getRoute());
-			assertTrue(selection.getChoices().isEmpty());
+			// No protocol of a certified component has a permission here. Since ADR 0042 the
+			// request is offered as a parameter address on the conditioned region, which is
+			// no M08 permission and no fallback of one.
+			assertEquals(Route.CONDITIONED_PARAMETER_ADDRESS, selection.getRoute());
+			assertEquals(1, selection.getChoices().size());
+			assertTrue(selection.getChoices().get(0).getAddress().isParameterAddress());
 			assertNull(selection.getLocalSelection());
 			assertEquals(before, getApp().getXML());
 		}

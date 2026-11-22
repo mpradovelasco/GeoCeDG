@@ -51,6 +51,7 @@ import org.geocedg.common.kernel.locus.SemanticGeneratorDomainProvider1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorFamily1D;
 import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
 import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidenceOwner2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedSample2D;
 import org.geocedg.common.kernel.locus.conditioned.LocusConditionedTraversalPolicy2D;
 import org.geocedg.common.kernel.locus.constructive.AuthorityPolicy;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
@@ -437,6 +438,36 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	public LocusConditionedEvidence2D getConditionedEvidence(String branchKey) {
 		LocusConditionedEvidenceOwner2D owner = conditionedOwner(branchKey);
 		return owner == null ? null : owner.getPublished();
+	}
+
+	@Override
+	public LocusConditionedEvidence2D getPublishedConditionedEvidence(String branchKey) {
+		LocusDefinition2D definition = getLocus().isDefined()
+				? getLocus().getSemanticDefinition() : null;
+		return conditionedOwner == null || definition == null
+				|| conditionedDefinition != definition
+				|| !SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY.equals(branchKey)
+						? null : conditionedOwner.getPublished();
+	}
+
+	@Override
+	public LocusConditionedSample2D sampleConditioned(String branchKey,
+			double canonicalParameter) {
+		ReconstructibleLocusEvaluator2D current = evaluator;
+		LocusDefinition2D definition = getLocus().isDefined()
+				? getLocus().getSemanticDefinition() : null;
+		if (current == null || definition == null
+				|| definition.getEvaluatorCapability() != current
+				|| !SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY.equals(branchKey)
+				|| !current.isReconstructionFaithful()) {
+			return null;
+		}
+		return LocusCertificationScope2D.explore(() -> {
+			try (LocusEvaluationSession2D session =
+					LocusEvaluationSession2D.openServiceSession(false, 1)) {
+				return current.evaluateWithTestimony(canonicalParameter, session);
+			}
+		});
 	}
 
 	@Override

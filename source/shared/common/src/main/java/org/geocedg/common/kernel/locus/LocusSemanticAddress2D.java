@@ -34,11 +34,38 @@ public final class LocusSemanticAddress2D {
 	public LocusSemanticAddress2D(PersistentGeoId sourceLocusId,
 			String providerVersion, String branchKey, String componentLineageKey,
 			double canonicalParameter, long periodicLift, SeamSide seamSide) {
+		this(sourceLocusId, providerVersion, branchKey,
+				requireToken(componentLineageKey, "componentLineageKey"),
+				canonicalParameter, periodicLift, seamSide, false);
+	}
+
+	/**
+	 * Creates a parameter address: the address of a point at a parameter that no certified
+	 * component contains (ADR 0042; contract {@code post-r1-conditioned-use.md}, section
+	 * 6.1). It has no component selector, and it never acquires one silently; an address
+	 * with a component selector is never rewritten into a parameter address.
+	 *
+	 * @return address without a component selector
+	 */
+	public static LocusSemanticAddress2D byParameter(PersistentGeoId sourceLocusId,
+			String providerVersion, String branchKey, double canonicalParameter,
+			long periodicLift, SeamSide seamSide) {
+		return new LocusSemanticAddress2D(sourceLocusId, providerVersion, branchKey, null,
+				canonicalParameter, periodicLift, seamSide, true);
+	}
+
+	private LocusSemanticAddress2D(PersistentGeoId sourceLocusId,
+			String providerVersion, String branchKey, String componentLineageKey,
+			double canonicalParameter, long periodicLift, SeamSide seamSide,
+			boolean byParameter) {
+		if (byParameter != (componentLineageKey == null)) {
+			throw new IllegalArgumentException(
+					"Only a parameter address has no component selector");
+		}
 		this.sourceLocusId = Objects.requireNonNull(sourceLocusId);
 		this.providerVersion = requireToken(providerVersion, "providerVersion");
 		this.branchKey = requireToken(branchKey, "branchKey");
-		this.componentLineageKey = requireToken(componentLineageKey,
-				"componentLineageKey");
+		this.componentLineageKey = componentLineageKey;
 		if (!Double.isFinite(canonicalParameter)) {
 			throw new IllegalArgumentException(
 					"Semantic address parameter must be finite");
@@ -64,8 +91,17 @@ public final class LocusSemanticAddress2D {
 		return branchKey;
 	}
 
+	/** @return component selector, or {@code null} for a parameter address */
 	public String getComponentLineageKey() {
 		return componentLineageKey;
+	}
+
+	/**
+	 * @return whether this is a parameter address, which names its point by the parameter
+	 *         alone and has no component selector
+	 */
+	public boolean isParameterAddress() {
+		return componentLineageKey == null;
 	}
 
 	public double getCanonicalParameter() {
@@ -96,7 +132,7 @@ public final class LocusSemanticAddress2D {
 		return sourceLocusId.equals(address.sourceLocusId)
 				&& providerVersion.equals(address.providerVersion)
 				&& branchKey.equals(address.branchKey)
-				&& componentLineageKey.equals(address.componentLineageKey)
+				&& Objects.equals(componentLineageKey, address.componentLineageKey)
 				&& Double.doubleToLongBits(canonicalParameter)
 						== Double.doubleToLongBits(address.canonicalParameter)
 				&& periodicLift == address.periodicLift

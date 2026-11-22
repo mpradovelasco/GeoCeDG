@@ -435,10 +435,14 @@ public final class SemanticMetricEndpointResolver2D {
 					"Durable source, point and origin identities are required");
 		}
 		LocusSemanticAddress2D origin = inner.address;
-		LocusSemanticAddress2D address = new LocusSemanticAddress2D(sourceId,
-				origin.getProviderVersion(), origin.getBranchKey(),
-				origin.getComponentLineageKey(), origin.getCanonicalParameter(),
-				origin.getPeriodicLift(), origin.getSeamSide());
+		LocusSemanticAddress2D address = origin.isParameterAddress()
+				? LocusSemanticAddress2D.byParameter(sourceId, origin.getProviderVersion(),
+						origin.getBranchKey(), origin.getCanonicalParameter(),
+						origin.getPeriodicLift(), origin.getSeamSide())
+				: new LocusSemanticAddress2D(sourceId,
+						origin.getProviderVersion(), origin.getBranchKey(),
+						origin.getComponentLineageKey(), origin.getCanonicalParameter(),
+						origin.getPeriodicLift(), origin.getSeamSide());
 		String step = depth == 0 ? "|point=" + pointId.toExternalForm()
 				: "|step=" + INTERMEDIATE_STEP;
 		return Resolution.unique(family, version + "|addressed-source="

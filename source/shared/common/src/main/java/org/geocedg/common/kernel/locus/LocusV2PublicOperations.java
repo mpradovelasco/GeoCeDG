@@ -245,10 +245,23 @@ public final class LocusV2PublicOperations {
 			Construction construction, String label, GeoLocusV2 source,
 			GeoNumberValue parameter) {
 		requireAccess(construction);
-		LocusSemanticAddress2D selected = LocusPrincipalBranchSelector2D.select(
-				source, parameter.getDouble());
+		LocusSemanticAddress2D selected;
+		String state;
+		try {
+			selected = LocusPrincipalBranchSelector2D.select(source, parameter.getDouble());
+			state = LocusPrincipalBranchState2D.encode(selected);
+		} catch (IllegalArgumentException noComponent) {
+			// No certified component contains the parameter: the point is addressed by
+			// parameter (ADR 0042; contract post-r1-conditioned-use.md, sections 6.1 and
+			// 8.1) when the existence structure states no certified fact there.
+			state = parameterSelectionState(source, parameter.getDouble());
+			if (state == null) {
+				throw noComponent;
+			}
+			selected = null;
+		}
 		GeoText branch = new GeoText(construction);
-		branch.setTextString(LocusPrincipalBranchState2D.encode(selected));
+		branch.setTextString(state);
 		branch.setAuxiliaryObject(true);
 		branch.setEuclidianVisible(false);
 		branch.setRestrictedEuclidianVisibility(true);
@@ -284,6 +297,30 @@ public final class LocusV2PublicOperations {
 				candidate.getAddress());
 	}
 
+	/**
+	 * Creates an interaction-owned point at a parameter address proposed by the inverse
+	 * query of the conditioned regions (ADR 0042; contract {@code
+	 * post-r1-conditioned-use.md}, sections 6.1 and 8.9). The point is defined by the
+	 * validity of its own evaluation; its address has no component selector.
+	 *
+	 * @return ordinary point with interaction ownership and a parameter address
+	 */
+	public static GeoPoint createConditionedInteractivePoint(Construction construction,
+			String label, GeoLocusV2 source, LocusSemanticAddress2D address) {
+		requireAccess(construction);
+		LocusDefinition2D definition = source.getSemanticDefinition();
+		if (definition == null || construction != source.getConstruction()
+				|| !address.isParameterAddress() || source.getPersistentLocusId() == null
+				|| !source.getPersistentLocusId().equals(address.getSourceLocusId())
+				|| !definition.getProvider().getProviderId().equals(
+						address.getProviderVersion())
+				|| definition.getBranch(address.getBranchKey()) == null) {
+			throw new IllegalArgumentException(
+					"Parameter address does not belong to the current locus revision");
+		}
+		return createInteractivePointAtAddress(construction, label, source, address);
+	}
+
 	/** M08-S sealed publication; only an owning explicit commit can consume the choice. */
 	public static GeoPoint createSnapshotSemanticPoint(Construction construction,
 			String label, GeoLocusV2 source, M08SnapshotPlacement2D.Choice choice) {
@@ -306,6 +343,40 @@ public final class LocusV2PublicOperations {
 				choice.takePublicationAddress(source), choice);
 	}
 
+	/**
+	 * @return the input form of the parameter-address codec for the single branch of the
+	 *         source, or {@code null} when a parameter address does not apply: the source
+	 *         is not a valid deterministic locus with one branch, the parameter is outside
+	 *         its domain or in a point component, or a certificate covers the parameter
+	 */
+	private static String parameterSelectionState(GeoLocusV2 source, double rawParameter) {
+		LocusDefinition2D definition = source == null || !source.isDefined() ? null
+				: source.getSemanticDefinition();
+		if (definition == null || !Double.isFinite(rawParameter)
+				|| source.getPersistentLocusId() == null
+				|| definition.getDefinitionStatus()
+						!= LocusSemanticMetadata2D.DefinitionStatus.VALID
+				|| definition.getBranches().size() != 1) {
+			return null;
+		}
+		LocusDriverDomainProvider2D provider = definition.getProvider();
+		double canonical = provider.canonicalize(rawParameter);
+		LocusBranch2D branch = definition.getBranches().get(0);
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		if (!Double.isFinite(canonical) || !provider.contains(canonical)
+				|| structure.getPointComponentEnclosing(canonical) != null) {
+			return null;
+		}
+		LocusExistenceStructure2D.Coverage coverage = structure.getCoverageAt(canonical);
+		if (coverage != null && coverage.getState()
+				!= LocusExistenceStructure2D.CoverageState.UNRESOLVED
+				&& coverage.getNature().certifies()) {
+			return null;
+		}
+		return LocusParameterAddressState2D.encodeInputSelection(branch.getBranchKey(),
+				provider.getProviderId());
+	}
+
 	private static GeoPoint createInteractivePointAtAddress(Construction construction,
 			String label, GeoLocusV2 source, LocusSemanticAddress2D address) {
 		return createInteractivePointAtAddress(construction, label, source, address, null);
@@ -316,7 +387,7 @@ public final class LocusV2PublicOperations {
 			LocusPointPublication2D preparation) {
 		LocusDefinition2D definition = source.getSemanticDefinition();
 		GeoText branch = new GeoText(construction);
-		branch.setTextString(LocusSemanticAddressState2D.encode(address));
+		branch.setTextString(AlgoSemanticLocusPoint2D.encodeAddressState(address));
 		branch.setAuxiliaryObject(true);
 		branch.setEuclidianVisible(false);
 		branch.setRestrictedEuclidianVisibility(true);
@@ -430,6 +501,32 @@ public final class LocusV2PublicOperations {
 			moveGeneralInteractiveSemanticPoint(GeoPoint point, double targetX, double targetY,
 			LocusPointInteractionPolicy2D policy, LocusPointContinuation2D.Context context,
 			Runnable publicationGuard) {
+		return continueInteractiveSemanticPoint(point, context, publicationGuard,
+				(source, current) -> LocusPointContinuation2D.resolve(source, current, targetX,
+						targetY, policy, context));
+	}
+
+	/**
+	 * Follows an interaction-owned point with a parameter address to an explicit parameter
+	 * of its branch (ADR 0042; contract {@code post-r1-conditioned-use.md}, section 8.2).
+	 * The start and the target must lie in one conditioned region with no band between
+	 * them. A refusal is typed, publishes nothing and leaves the point defined at its
+	 * address; the same point gets a new parameter address only along a route.
+	 *
+	 * @return established continuation, or a typed refusal
+	 */
+	public static LocusPointContinuation2D.Result followInteractiveSemanticPointToParameter(
+			GeoPoint point, double targetParameter, LocusPointInteractionPolicy2D policy,
+			LocusPointContinuation2D.Context context) {
+		return continueInteractiveSemanticPoint(point, context, () -> { },
+				(source, current) -> LocusPointContinuation2D.resolveToParameter(source,
+						current, targetParameter, policy, context));
+	}
+
+	private static LocusPointContinuation2D.Result continueInteractiveSemanticPoint(
+			GeoPoint point, LocusPointContinuation2D.Context context,
+			Runnable publicationGuard, java.util.function.BiFunction<GeoLocusV2,
+					LocusSemanticAddress2D, LocusPointContinuation2D.Result> resolution) {
 		Objects.requireNonNull(publicationGuard);
 		Runnable requestGuard = () -> {
 			try {
@@ -458,8 +555,7 @@ public final class LocusV2PublicOperations {
 		}
 		LocusDefinition2D definition = parent.getSource().getSemanticDefinition();
 		long resolutionStarted = System.nanoTime();
-		var result = LocusPointContinuation2D.resolve(
-				parent.getSource(), parent.getCurrentSemanticAddress(), targetX, targetY, policy, context);
+		var result = resolution.apply(parent.getSource(), parent.getCurrentSemanticAddress());
 		result.recordResolutionNanos(System.nanoTime() - resolutionStarted);
 		if (result.isEstablished()) {
 			if (parent.getSource().getSemanticDefinition() != definition) {
@@ -529,7 +625,7 @@ public final class LocusV2PublicOperations {
 				if (preparation != null) {
 					parent.prepareContinuationBinding(preparation);
 				}
-				branch.setTextString(LocusSemanticAddressState2D.encode(address));
+				branch.setTextString(AlgoSemanticLocusPoint2D.encodeAddressState(address));
 				parameter.setValue(rawParameter(
 						parent.getSource().getSemanticDefinition(), address));
 				long dagStarted = System.nanoTime();
@@ -714,6 +810,12 @@ public final class LocusV2PublicOperations {
 		LocusBranch2D branch = definition.getBranch(address.getBranchKey());
 		if (branch == null) {
 			return false;
+		}
+		if (address.isParameterAddress()) {
+			// A parameter address needs no component: its point validity is decided when the
+			// point is computed (contract post-r1-conditioned-use.md, section 6.3).
+			return branch.getDeclaredDriverDomain().contains(address.getCanonicalParameter(),
+					0);
 		}
 		// A retained component selector resolves only through a demonstrated structural
 		// correspondence (locus-v2-existence-components.md section 15.6).

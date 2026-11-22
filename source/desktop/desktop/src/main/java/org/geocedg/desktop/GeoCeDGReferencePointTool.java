@@ -330,6 +330,8 @@ final class GeoCeDGReferencePointTool {
 		}
 		boolean historical = selection.getRoute() == GeoCeDGReferencePlacement.Route.R1_R6;
 		boolean individual = selection.getRoute() == GeoCeDGReferencePlacement.Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION;
+		boolean conditioned = selection.getRoute()
+				== GeoCeDGReferencePlacement.Route.CONDITIONED_PARAMETER_ADDRESS;
 		boolean several = selection.getChoices().size() > 1;
 		String title = several
 				? t("Several possible positions were found. Select one.",
@@ -342,10 +344,18 @@ final class GeoCeDGReferencePointTool {
 						+ "global coverage not established",
 						"Dirección forward individual; proximidad numérica no certificada; "
 						+ "cobertura global no establecida")
+				: conditioned ? t("Address by parameter on a conditioned region: existence and "
+						+ "continuity of the curve are not certified; the positions found are not "
+						+ "stated to be all",
+						"Dirección por parámetro sobre una región condicionada: la existencia y la "
+						+ "continuidad de la curva no están certificadas; no se afirma que las "
+						+ "posiciones halladas sean todas")
 				: t("R2/H1 verified local address; global uniqueness not established",
 						"Dirección local verificada R2/H1; unicidad global no establecida");
 		coverage.setText(historical ? t("Positions found by the search", "Posiciones halladas por la búsqueda")
 				: individual ? t("Position checked by direct evaluation", "Posición comprobada por evaluación directa")
+				: conditioned ? t("Position on a conditioned stretch (not certified)",
+						"Posición sobre un tramo condicionado (no certificado)")
 				: t("Position verified locally", "Posición verificada localmente"));
 		coverage.setToolTipText(guarantee);
 		updateStatus(several ? t("Select a branch and confirm", "Seleccione una rama y confirme")

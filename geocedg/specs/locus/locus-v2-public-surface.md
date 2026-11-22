@@ -1,6 +1,6 @@
 # Public Locus V2 command, tool and persistence surface
 
-- Status: **NORMATIVE / AUTHOR APPROVED; POST-G9U1-A2 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A3 AMENDMENT CANDIDATE — PENDING AUTHOR REVIEW; PRE-G9B-CU3 AMENDMENT (§21) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT**
+- Status: **NORMATIVE / AUTHOR APPROVED; POST-G9U1-A2 AMENDMENT — PASS — AUTHOR APPROVED; POST-G9U1-A3 AMENDMENT CANDIDATE — PENDING AUTHOR REVIEW; PRE-G9B-CU3 AMENDMENT (§21) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT**; **CONDITIONED USE AMENDMENT (ADR 0042) — AUTHOR APPROVED AS CONTRACT (2026-11-22), IMPLEMENTATION AUTHORIZED IN INCREMENTS, NOT YET APPROVED AS PRODUCT**
 - Phase: G9P design approved; productive G9U0 implementation is not authorized
 - Internal prerequisites: G6, G7 and G8 are author-approved
 - Related Accepted ADR: `docs/adr/0013-public-locus-v2-surface-and-token-selection.md`
@@ -871,3 +871,54 @@ and resolves the directions anew. A closure copy translates the binding to the
 copied witness while preserving the declaration's local identity.
 Traversal semantics and diagnostic states are defined by
 [Locus V2 existence components §18](locus-v2-existence-components.md#18-geocedg-120-constructive-cuts).
+
+## 2026-11-22 — Conditioned use amendment (ADR 0042): parameter address
+
+Amendment approved by the author on 2026-11-22 with
+[ADR 0042](../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md)
+and the [conditioned-use contract](candidates/post-r1-conditioned-use.md), §6 and §12. It is
+incorporated progressively; this section states what increment I1 implements. Every
+earlier section is unchanged, and every selector, token and address of this specification
+keeps its text and its meaning.
+
+**Codec.** A point at a parameter that no certified component contains is addressed by
+`(source locus identity, branch key, provider contract, canonical parameter, periodic lift,
+seam side)`, with no component selector. Its hidden-input codec is
+`geocedg-locus-parameter-address/v1`:
+
+```text
+geocedg-locus-parameter-address/v1|<hex branch>|<hex provider>|<hex bits>|<lift>|<SEAM>
+geocedg-locus-parameter-address/v1|<hex branch>|<hex provider>|input
+```
+
+The first form is explicit, for a point that owns its parameter (created by a gesture, moved
+by a continuation): the numeric input must reconstruct the address exactly. The second
+form states that the parameter, the lift and the seam side are those of the numeric input of
+the command, for `Point(L, u)` with a dependent number. The source identity is never in the
+text: it is the identity of the locus input. A text of this codec is never read as a text of
+`geocedg-locus-address/v1` or of `geocedg-locus-principal-selection/v1`, nor the reverse; an
+address with a component selector is never rewritten into a parameter address, and a
+parameter address never acquires a component selector silently. A malformed text leaves the
+point undefined with `INVALID_ADDRESS`. A sample, a cell, a node, an index or a coordinate is
+never part of an address. Reading by GeoCeDG 1.2.1 is not required.
+
+**Commands.** `Point(L, "branch", u)` and `Point(L, u)` keep their behaviour wherever a
+certified component contains `u`. Where none does, and the existence structure states no
+certified fact at `u`, the point is addressed by parameter: it is defined when the
+evaluation at `u` is valid and every selecting dependency of the source has an established
+selection there, and nothing else decides it. `Point(L, u)` then owns a hidden selector in
+the input form. The same inputs that held a component selector in the session keep their
+existing cause (`OUTSIDE_COMPONENTS`, `COMPONENT_CHANGED`) instead of becoming a parameter
+address. `Point(L, D)` and `Intersect(L, r, D)` by driver correspondence (§21) are unchanged
+and need a certified component.
+
+**Causes.** `LocusSemanticPointCause2D` gains `PARAMETER_OUTSIDE_DOMAIN`,
+`EVALUATION_FAILED` and `SELECTION_NOT_ESTABLISHED` for a parameter address;
+`POINT_COMPONENT` keeps its meaning. An undefined point never becomes a neighbouring point,
+and the same point is defined again when the same address evaluates.
+
+**Persistence within 1.2.2.** Save and reopen read the address back exactly; the
+conditioned evidence is recomputed and is never in the document. Copy gives the copy a new
+identity and remaps its source by the existing exact rules. Undo and redo restore the
+address, the identity and the definedness of each step. The identity of the point does not
+depend on coordinates, labels, sampling, or on any publication of the evidence.

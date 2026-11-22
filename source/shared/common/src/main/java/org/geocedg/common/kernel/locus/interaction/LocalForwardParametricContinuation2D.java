@@ -66,13 +66,26 @@ final class LocalForwardParametricContinuation2D {
 		private final long lift;
 		private final int evaluations;
 		private final Refusal refusal;
+		private final boolean excludedEnd;
 
 		private Proposal(double parameter, long lift, int evaluations, Refusal refusal) {
+			this(parameter, lift, evaluations, refusal, false);
+		}
+
+		private Proposal(double parameter, long lift, int evaluations, Refusal refusal,
+				boolean excludedEnd) {
 			this.parameter = parameter;
 			this.lift = lift;
 			this.evaluations = evaluations;
 			this.refusal = refusal;
+			this.excludedEnd = excludedEnd;
 		}
+
+		/**
+		 * @return whether the refusal is the descent leaving its admissible interval through
+		 *         an end that the interval does not include
+		 */
+		boolean isAtExcludedEnd() { return excludedEnd; }
 
 		boolean isEstablished() { return refusal == null; }
 		Refusal getRefusal() { return refusal; }
@@ -88,7 +101,10 @@ final class LocalForwardParametricContinuation2D {
 
 	private final LocusDefinition2D definition;
 	private final LocusBranch2D branch;
+	/** Certified component of the argument, or {@code null} on a conditioned region. */
 	private final ContinuousComponent component;
+	/** Conditioned region of the argument, or {@code null} on a certified component. */
+	private final LocusInterval2D region;
 	private final LocusEvaluationSession2D session;
 	private final LocusDriverDomainProvider2D provider;
 	private final int maximumEvaluations;
@@ -101,11 +117,12 @@ final class LocalForwardParametricContinuation2D {
 	private int evaluations;
 
 	private LocalForwardParametricContinuation2D(LocusDefinition2D definition, LocusBranch2D branch,
-			ContinuousComponent component, double x, double y, int maximumEvaluations,
-			LocusEvaluationSession2D session) {
+			ContinuousComponent component, LocusInterval2D region, boolean closedRegion,
+			double x, double y, int maximumEvaluations, LocusEvaluationSession2D session) {
 		this.definition = definition;
 		this.branch = branch;
 		this.component = component;
+		this.region = region;
 		this.provider = definition.getProvider();
 		this.x = x;
 		this.y = y;
@@ -113,7 +130,60 @@ final class LocalForwardParametricContinuation2D {
 		this.session = session;
 		LocusInterval2D domain = provider.getDeclaredDomain();
 		this.period = provider.isPeriodic() ? domain.getUpper() - domain.getLower() : 0;
-		this.closed = period > 0 && component.isClosedPeriodic();
+		this.closed = period > 0 && (component != null ? component.isClosedPeriodic()
+				: closedRegion);
+	}
+
+	private double arcLength() {
+		return component != null ? component.getLength()
+				: region.getUpper() - region.getLower();
+	}
+
+	private LocusInterval2D arcInterval() {
+		return component != null ? component.getInterval() : region;
+	}
+
+	private boolean arcContains(double canonical) {
+		return component != null ? component.contains(canonical, 0)
+				: region.contains(canonical, 0);
+	}
+
+	private double arcCoordinate(double canonical) {
+		return component != null ? component.getArcCoordinate(canonical)
+				: arcContains(canonical) ? canonical - region.getLower() : Double.NaN;
+	}
+
+	/**
+	 * Proposes the continued argument of a parameter address inside its conditioned region
+	 * (ADR 0042; contract {@code post-r1-conditioned-use.md}, section 8.2): the same local
+	 * descent, with the region as the admissible interval. An end of the region next to a
+	 * band is never included and never crossed. The continuation is declared conditioned:
+	 * it assumes the hypotheses of the spans it moves along and certifies nothing.
+	 *
+	 * @param region admissible parameter interval; an end is closed only when it is an
+	 *        included end of the declared domain
+	 * @param closedRegion whether the region is the whole period of a periodic provider
+	 *        with agreeing seam nodes
+	 * @return a proposal, or a typed refusal; never {@code null}
+	 */
+	static Proposal advanceOnRegion(LocusDefinition2D definition,
+			LocusSemanticAddress2D current, LocusInterval2D region, boolean closedRegion,
+			double x, double y, LocusPointInteractionPolicy2D policy,
+			LocusEvaluationSession2D session) {
+		LocusBranch2D branch = definition.getBranch(current.getBranchKey());
+		if (branch == null || region == null) {
+			return new Proposal(Double.NaN, 0, 0, Refusal.BARRIER);
+		}
+		var continuation = new LocalForwardParametricContinuation2D(definition, branch, null,
+				region, closedRegion, x, y,
+				policy.getWorkBudget().getMaximumRefinementIterations(), session);
+		try {
+			return continuation.advance(current, policy);
+		} catch (Budget | LocusEvaluationSession2D.EvaluationWorkLimitException exhausted) {
+			return new Proposal(Double.NaN, 0, continuation.evaluations, Refusal.BUDGET);
+		} catch (ArithmeticException | IllegalArgumentException unrepresentable) {
+			return continuation.barrier();
+		}
 	}
 
 	/**
@@ -131,7 +201,8 @@ final class LocalForwardParametricContinuation2D {
 			return new Proposal(Double.NaN, 0, 0, Refusal.BARRIER);
 		}
 		var continuation = new LocalForwardParametricContinuation2D(definition, branch, component,
-				x, y, policy.getWorkBudget().getMaximumRefinementIterations(), session);
+				null, false, x, y, policy.getWorkBudget().getMaximumRefinementIterations(),
+				session);
 		try {
 			return continuation.advance(current, policy);
 		} catch (Budget | LocusEvaluationSession2D.EvaluationWorkLimitException exhausted) {
@@ -147,7 +218,7 @@ final class LocalForwardParametricContinuation2D {
 
 	private Proposal advance(LocusSemanticAddress2D current, LocusPointInteractionPolicy2D policy) {
 		double old = current.getCanonicalParameter();
-		double length = component.getLength();
+		double length = arcLength();
 		double radius = policy.getMaximumWorldDistance();
 		if (!(length > 0) || !Double.isFinite(length) || !(radius > 0) || !Double.isFinite(radius)) {
 			return barrier();
@@ -164,12 +235,13 @@ final class LocalForwardParametricContinuation2D {
 			lower = old - period / 2;
 			upper = old + period / 2;
 		} else {
-			LocusInterval2D interval = component.getInterval();
-			double coordinate = component.getArcCoordinate(old);
+			LocusInterval2D interval = arcInterval();
+			double coordinate = arcCoordinate(old);
 			if (Double.isNaN(coordinate)) {
 				return barrier();
 			}
-			start = component.isArc() ? component.getStart() + coordinate : old;
+			start = component != null && component.isArc()
+					? component.getStart() + coordinate : old;
 			lower = interval.isLowerClosed() ? interval.getLower() : Math.nextUp(interval.getLower());
 			upper = interval.isUpperClosed() ? interval.getUpper() : Math.nextDown(interval.getUpper());
 			includedLower = interval.isLowerClosed();
@@ -303,7 +375,7 @@ final class LocalForwardParametricContinuation2D {
 			// excluded fold or singular parameter and the half-period window of a closed
 			// component are not ends: the distance has no established minimum there.
 			if (!throughIncludedEnd) {
-				return barrier();
+				return new Proposal(Double.NaN, 0, evaluations, Refusal.BARRIER, true);
 			}
 		} else if (closed && (v <= lower || v >= upper) || !conditioned(v, lower, upper, h,
 				aheadDistance, distance, speed,
@@ -318,7 +390,7 @@ final class LocalForwardParametricContinuation2D {
 			return barrier();
 		}
 		long lift = current.getPeriodicLift();
-		if (period > 0 && (closed || component.crossesSeam())) {
+		if (period > 0 && (closed || component != null && component.crossesSeam())) {
 			lift = Math.addExact(lift, Math.round((v - canonical) / period)
 					- Math.round((start - old) / period));
 		}
@@ -425,15 +497,15 @@ final class LocalForwardParametricContinuation2D {
 	 */
 	private double coherent(double lifted) {
 		double canonical = canonical(lifted);
-		if (!Double.isFinite(canonical) || !component.contains(canonical, 0)) {
+		if (!Double.isFinite(canonical) || !arcContains(canonical)) {
 			return Double.NaN;
 		}
 		if (closed) {
 			return canonical;
 		}
-		double coordinate = component.getArcCoordinate(canonical);
-		return Math.abs(coordinate - (lifted - component.getInterval().getLower()))
-				<= component.getLength() / 2 ? canonical : Double.NaN;
+		double coordinate = arcCoordinate(canonical);
+		return Math.abs(coordinate - (lifted - arcInterval().getLower()))
+				<= arcLength() / 2 ? canonical : Double.NaN;
 	}
 
 	/**

@@ -91,17 +91,19 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 	void g04NonInjectivePeriodicAndDiscontinuousMappingsKeepTrueCoordinate() {
 		// PRE-G9B-CU2 declared conformity: a scalar state other than the true coordinate is
 		// outside class v3 (the scalar program is the direct affine certificate only), so
-		// since step T11 these loci are published NOT_ESTABLISHED and their semantic points,
-		// which need a certified component, are undefined. The true coordinate is still the
-		// coordinate input, and the declared domain still decides where nothing exists.
+		// since step T11 these loci are published NOT_ESTABLISHED. Since ADR 0042 their
+		// semantic points are addressed by parameter and defined by their own evaluation,
+		// with no certified component. The true coordinate is still the coordinate input,
+		// and the declared domain still decides where nothing exists.
 		add("s=0");
 		add("t=s^2");
 		add("Q=(t,0)");
 		add("D={false,{-2,2,true,true}}");
 		GeoLocusV2 nonInjective = add("L=LocusV2(Q,t,s,D)");
 		assertNotEstablishedOutsideClass(nonInjective);
-		assertFalse(add("Pn=Point(L,\"" + BRANCH + "\",-1)").isDefined());
-		assertFalse(add("Pp=Point(L,\"" + BRANCH + "\",1)").isDefined());
+		assertByParameter(add("Pn=Point(L,\"" + BRANCH + "\",-1)"), 1, 0);
+		assertByParameter(add("Pp=Point(L,\"" + BRANCH + "\",1)"), 1, 0);
+		assertNotEstablishedOutsideClass(nonInjective);
 		assertSame(requireLookup("s"), nonInjective.getParentAlgorithm()
 				.getInput(2));
 
@@ -112,7 +114,7 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 		GeoLocusV2 periodic = add("Lp=LocusV2(Qp,tp,sp,Dp)");
 		assertTrue(periodic.getSemanticDefinition().getProvider().isPeriodic());
 		assertNotEstablishedOutsideClass(periodic);
-		assertFalse(add("Pp0=Point(Lp,\"" + BRANCH + "\",0)").isDefined());
+		assertByParameter(add("Pp0=Point(Lp,\"" + BRANCH + "\",0)"), 0, 1);
 
 		add("sd=1");
 		add("td=1/sd");
@@ -124,7 +126,18 @@ class G9U0GeneratorSuiteTest extends G9U0PublicSurfaceTestBase {
 				discontinuous.getSemanticDefinition().getBranches().get(0)
 						.getExistenceStructure().getCoverage().stream()
 						.map(Coverage::getState).toList());
+		// A certified nonexistence is never addressed by parameter.
 		assertFalse(add("Pd=Point(Ld,\"" + BRANCH + "\",0)").isDefined());
+	}
+
+	private static void assertByParameter(org.geogebra.common.kernel.geos.GeoPoint point,
+			double x, double y) {
+		assertTrue(point.isDefined());
+		assertEquals(x, point.getInhomX(), 1e-12);
+		assertEquals(y, point.getInhomY(), 1e-12);
+		assertTrue(org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D
+				.requireSemanticParent(point).getCurrentSemanticAddress()
+				.isParameterAddress());
 	}
 
 	/**

@@ -693,6 +693,18 @@ of the driver, keeps the evidence.
 
 ### 19.4 Consumers
 
-Increment I0 adds no consumer: §15.8 is unchanged, and every consumer of this
-specification behaves as before. The consumer admissions of the contract, §8, are added to
-this section by the increments that implement them.
+§15.8 is unchanged for every consumer that requires a certified component, `COMPLETE` or
+`STRICT` integrity: it keeps failing closed with its existing cause. Beside the single
+exception that §15.8 names, the conditioned-use contract, §8, admits the consumers below on
+the part of a domain that no certificate covers. Each increment adds its consumers here.
+
+| Consumer | Admission | Increment |
+|---|---|---|
+| Isolated point, `Point(L, "branch", u)` and `Point(L, u)` | point validity at `u` and established selections; no interval evidence. Address by parameter ([public surface](locus-v2-public-surface.md), conditioned use amendment) | I1 |
+| Following, drag and creation by a request | spans of any class along the route, inside one conditioned region ([point interaction](locus-v2-point-interaction.md), conditioned use amendment) | I1 |
+
+A local result that meets its own premises is usable although completeness is
+`NOT_ESTABLISHED`. Under the constructive authority an incidence decided on a conditioned
+region has integrity `NOT_ESTABLISHED` unless the relation itself has the evidence that
+[`locus-v2-constructive-authority.md`](locus-v2-constructive-authority.md) requires:
+conditioned evidence never grants `RELAXED`.

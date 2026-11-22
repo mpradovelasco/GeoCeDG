@@ -1,7 +1,7 @@
 # Locus V2 semantic point interaction
 
 - Status: **R6 AND POST-G9U1-A6 NORMATIVE — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (§17) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); PRE-G9B-CU3 SCOPE NOTE (§18) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT**
-- Version: 2
+- Version: 2; **CONDITIONED USE AMENDMENT (ADR 0042) — AUTHOR APPROVED AS CONTRACT (2026-11-22), IMPLEMENTATION AUTHORIZED IN INCREMENTS, NOT YET APPROVED AS PRODUCT**
 - Phase: **G9U0-R6 + POST-G9U1-A6**
 - Architectural layer: shared Java kernel
 - Decision record:
@@ -505,3 +505,44 @@ of A2 is not evidence of unique continuation, of an argument-error bound, of a d
 or of STRICT incidence, and is never reported as such. No certified route, creation admission,
 persistence rule or intersection contract is weakened or extended, and no later phase is
 authorized.
+
+## 2026-11-22 — Conditioned use amendment (ADR 0042): continuation along a conditioned region
+
+Amendment approved by the author on 2026-11-22 with
+[ADR 0042](../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md)
+and the [conditioned-use contract](candidates/post-r1-conditioned-use.md), §6.3, §6.4, §8.2
+and §8.9. Increment I1. Every earlier section is unchanged: a point whose address has a
+component selector keeps every rule above.
+
+1. **Two facts.** The validity of a point and the admissibility of a continuation are
+   separate. A point with a parameter address is defined by its own evaluation and
+   selections; a following, a drag along the curve and a route need interval evidence
+   along their path.
+2. **Continuation.** A point with a parameter address continues only inside the
+   conditioned region that contains its parameter: the start and the target lie in one
+   region with no band between them. The continuation is the existing local forward
+   parametric continuation with the region as its admissible interval; it is declared
+   conditioned, records the spans it moved along and the content it read, and certifies
+   nothing. The point keeps its identity and publishes another parameter address. It never
+   jumps to another region, component or branch by proximity. A region that covers the
+   whole period of a periodic provider, with agreeing seam nodes, is followed across the
+   seam; no closure is proved by it.
+3. **Bands.** An end of a region next to a band is never included and never crossed: the
+   request is refused with `CONTINUATION_REACHED_BAND` and the kind of the cell, and the
+   same gesture continues with its next request. A point at a valid parameter inside a band
+   or an unexplored cell is defined and is not moved by a following:
+   `CONTINUATION_START_IN_BAND`. A target in another region is
+   `TARGET_IN_ANOTHER_REGION`. Each refusal publishes nothing and keeps the address, the
+   identity and the definition of the point. Giving the point another parameter explicitly
+   is a redefinition, not a continuation, and is always possible.
+4. **Evidence that changes.** A continuation is published only from current evidence: when
+   the producer confirms a contradiction at the proposed parameter, nothing is published
+   from the withdrawn cells.
+5. **Creation by a request.** Where no protocol of a certified component has a choice, the
+   inverse query proposes parameter addresses on the conditioned regions: one for each
+   stretch of a region that passes within the request radius, at the parameter that the
+   producer's evaluator places nearest. Several candidates are offered as choices and never
+   resolved by proximity; the candidates found are not stated to be all the preimages. The
+   point is created at the chosen address, with interaction ownership.
+6. **Constructive authority.** The existing rule holds: a general continuation is refused
+   in a document governed by a constructive authority record.

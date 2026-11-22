@@ -9,6 +9,7 @@ import java.util.List;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
+import org.geocedg.common.kernel.locus.LocusV2PublicOperations;
 import org.geocedg.common.kernel.spatial.identity.PersistentGeoId;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityRegistry;
 import org.geocedg.common.main.feature.RuntimeFeatureService;
@@ -21,7 +22,14 @@ import org.geogebra.common.kernel.geos.GeoPoint;
 public final class LocusPointCreation2D {
 
 	/** The selected existing kernel protocol, never an additional admission grade. */
-	public enum Route { R1_R6, R2_H1, INDIVIDUAL_FORWARD_ADDRESS_CREATION, REJECTED }
+	public enum Route {
+		R1_R6, R2_H1, INDIVIDUAL_FORWARD_ADDRESS_CREATION, REJECTED,
+		/**
+		 * A parameter address on a conditioned region (ADR 0042): proposed only when no
+		 * protocol of a certified component has a choice.
+		 */
+		CONDITIONED_PARAMETER_ADDRESS
+	}
 
 	/** Failures of the outer selection lifecycle; route failures retain their own types. */
 	public enum Failure {
@@ -56,6 +64,7 @@ public final class LocusPointCreation2D {
 		private final LocusPointInteractionCandidate2D historical;
 		private final M08SnapshotPlacement2D.Choice local;
 		private final IndividualForwardPointCreation2D.Choice forward;
+		private final LocusSemanticAddress2D conditioned;
 
 		private Choice(Selection owner, LocusPointInteractionCandidate2D historical,
 				M08SnapshotPlacement2D.Choice local) {
@@ -63,6 +72,7 @@ public final class LocusPointCreation2D {
 			this.historical = historical;
 			this.local = local;
 			this.forward = null;
+			this.conditioned = null;
 		}
 
 		private Choice(Selection owner, IndividualForwardPointCreation2D.Choice forward) {
@@ -70,10 +80,20 @@ public final class LocusPointCreation2D {
 			this.historical = null;
 			this.local = null;
 			this.forward = forward;
+			this.conditioned = null;
+		}
+
+		private Choice(Selection owner, LocusSemanticAddress2D conditioned) {
+			this.owner = owner;
+			this.historical = null;
+			this.local = null;
+			this.forward = null;
+			this.conditioned = conditioned;
 		}
 
 		public LocusSemanticAddress2D getAddress() {
-			return historical != null ? historical.getAddress()
+			return conditioned != null ? conditioned : historical != null
+					? historical.getAddress()
 					: local != null ? local.getAddress() : forward.getAddress();
 		}
 	}
@@ -85,7 +105,7 @@ public final class LocusPointCreation2D {
 	public static Selection query(GeoLocusV2 source, double x, double y,
 			LocusPointInteractionPolicy2D policy) {
 		requireSource(source);
-		return new Selection(source, null, x, y, policy);
+		return new Selection(source, null, x, y, policy).orConditioned(policy);
 	}
 
 	/** Reads Q transiently and requires its copied value to remain current until commit. */
@@ -96,7 +116,7 @@ public final class LocusPointCreation2D {
 			throw new Rejected(Failure.INVALID_REFERENCE);
 		}
 		return new Selection(source, reference, reference.getInhomX(),
-				reference.getInhomY(), policy);
+				reference.getInhomY(), policy).orConditioned(policy);
 	}
 
 	private static void requireSource(GeoLocusV2 source) {
@@ -211,6 +231,28 @@ public final class LocusPointCreation2D {
 			route = Route.R2_H1;
 			choices = local.getResult().getChoices().stream()
 					.map(candidate -> new Choice(this, null, candidate)).toList();
+		}
+
+		/**
+		 * When no protocol of a certified component has a choice, proposes the parameter
+		 * addresses that the inverse query finds on the conditioned regions of the source.
+		 * A stale selection and an exhausted budget are never replaced.
+		 */
+		private Selection orConditioned(LocusPointInteractionPolicy2D policy) {
+			if (route != Route.REJECTED || finished || !current()
+					|| Failure.STALE_SELECTION.name().equals(failure)
+					|| Failure.BUDGET_EXHAUSTED.name().equals(failure)) {
+				return this;
+			}
+			List<LocusSemanticAddress2D> addresses = ConditionedPointPlacement2D.candidates(
+					source, x, y, policy);
+			if (!addresses.isEmpty() && current()) {
+				route = Route.CONDITIONED_PARAMETER_ADDRESS;
+				failure = null;
+				choices = addresses.stream().map(address -> new Choice(this, address))
+						.toList();
+			}
+			return this;
 		}
 
 		private void queryForward(LocusPointInteractionPolicy2D policy,
@@ -354,6 +396,11 @@ public final class LocusPointCreation2D {
 				}
 				if (route == Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION) {
 					return forward.commit(label, choice.forward, finalGuard);
+				}
+				if (route == Route.CONDITIONED_PARAMETER_ADDRESS) {
+					finalGuard.run();
+					return LocusV2PublicOperations.createConditionedInteractivePoint(
+							source.getConstruction(), label, source, choice.conditioned);
 				}
 				throw new Rejected(Failure.PUBLICATION_NOT_AUTHORIZED);
 			} finally {

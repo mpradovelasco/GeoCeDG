@@ -20,6 +20,7 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusParameterAddressState2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.constructive.RelationIntegrityRecord;
@@ -242,7 +243,8 @@ public final class GeoCeDGDefinitionInspector {
 		appendField(app, details, "Definition.Provider", address.getProviderVersion(), "  ");
 		appendField(app, details, "Definition.Branch", address.getBranchKey(), "  ");
 		appendField(app, details, "Definition.Component",
-				address.getComponentLineageKey(), "  ");
+				address.isParameterAddress() ? LocusParameterAddressState2D.KIND
+						: address.getComponentLineageKey(), "  ");
 		appendField(app, details, "Definition.Parameter",
 				Double.toString(address.getCanonicalParameter()), "  ");
 		appendField(app, details, "Definition.PeriodicLift",

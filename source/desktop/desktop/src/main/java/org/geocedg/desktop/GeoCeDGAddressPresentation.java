@@ -12,6 +12,7 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusComponentSelectorResolver2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusParameterAddressState2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 
 /**
@@ -71,10 +72,12 @@ final class GeoCeDGAddressPresentation {
 				}
 			}
 			var structure = branch.getExistenceStructure();
-			var resolution = LocusComponentSelectorResolver2D.resolve(
-					address.getComponentLineageKey(), structure, List.of(branch.getLineage()),
-					address.getCanonicalParameter());
-			int section = resolution.getStatus().isResolved() ? structure
+			// A parameter address names no certified section.
+			var resolution = address.isParameterAddress() ? null
+					: LocusComponentSelectorResolver2D.resolve(
+							address.getComponentLineageKey(), structure, List.of(branch.getLineage()),
+							address.getCanonicalParameter());
+			int section = resolution != null && resolution.getStatus().isResolved() ? structure
 					.getContinuousValidComponents().indexOf(resolution.getComponent()) + 1 : 0;
 			if (section > 0) {
 				label.append(spanish ? "Tramo " : "Section ").append(section).append(SEPARATOR);
@@ -86,7 +89,8 @@ final class GeoCeDGAddressPresentation {
 
 	/** @return the complete technical identifier, for a tooltip or a diagnostic view */
 	static String technical(LocusSemanticAddress2D address) {
-		return address.getBranchKey() + " / " + address.getComponentLineageKey()
+		return address.getBranchKey() + " / " + (address.isParameterAddress()
+				? LocusParameterAddressState2D.KIND : address.getComponentLineageKey())
 				+ " / u=" + address.getCanonicalParameter();
 	}
 }

@@ -129,8 +129,14 @@ class PreG9BCu2ConditionedEstimateTest extends G9U0PublicSurfaceTestBase {
 		assertTrue(crossing.getIntersectionResult().getFiniteSolutions().isEmpty());
 		assertNotEquals(IntersectionSemanticMetadata2D.Completeness.COMPLETE,
 				crossing.getIntersectionResult().getCompletenessEvidence().getCompleteness());
+		// Since ADR 0042 an isolated point is addressed by parameter and defined by its own
+		// evaluation; it certifies nothing and changes no fact of the structure.
 		GeoPoint addressed = add("X=Point(L,\"" + BRANCH + "\",0.25)");
-		assertFalse(addressed.isDefined());
+		assertTrue(addressed.isDefined());
+		assertTrue(org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D
+				.requireSemanticParent(addressed).getCurrentSemanticAddress()
+				.isParameterAddress());
+		assertEquals(before, structure(sine).getSemanticSignature());
 		// Section 26.3: the estimate is never a rigorous input. A translation by the
 		// estimated length leaves the class; the same translation by a plain constant does
 		// not.

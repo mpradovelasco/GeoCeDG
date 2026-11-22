@@ -37,11 +37,12 @@ public final class LocusConditionedEvidence2D {
 	private final List<Double> contradictions;
 	private final List<LocusConditionedCell2D> cells;
 	private final int work;
+	private final boolean seamNodesAgree;
 	private final String contentIdentity;
 
 	LocusConditionedEvidence2D(String branchKey, long revision, String policyVersion,
 			double domainLower, double domainUpper, List<Double> contradictions,
-			List<LocusConditionedCell2D> cells, int work) {
+			List<LocusConditionedCell2D> cells, int work, boolean seamNodesAgree) {
 		this.branchKey = branchKey;
 		this.revision = revision;
 		this.policyVersion = policyVersion;
@@ -50,6 +51,7 @@ public final class LocusConditionedEvidence2D {
 		this.contradictions = Collections.unmodifiableList(new ArrayList<>(contradictions));
 		this.cells = Collections.unmodifiableList(new ArrayList<>(cells));
 		this.work = work;
+		this.seamNodesAgree = seamNodesAgree;
 		StringBuilder identity = new StringBuilder(IDENTITY_KIND).append('|')
 				.append(branchKey).append('|').append(revision).append('|')
 				.append(policyVersion).append('|');
@@ -115,6 +117,47 @@ public final class LocusConditionedEvidence2D {
 	/** @return {@link LocusEvidenceNature2D#NUMERICAL_UNDER_HYPOTHESES}: never certifies */
 	public LocusEvidenceNature2D getNature() {
 		return LocusEvidenceNature2D.NUMERICAL_UNDER_HYPOTHESES;
+	}
+
+	/**
+	 * @return whether the nodes at the two ends of the declared domain are valid, have the
+	 *         same established selections and coincide within the chord-deviation limit. On
+	 *         a periodic provider a single region that covers the whole period with this
+	 *         agreement is a closed-conditioned region (contract section 8.3); it proves no
+	 *         closure
+	 */
+	public boolean seamNodesAgree() {
+		return seamNodesAgree;
+	}
+
+	/**
+	 * @param parameter canonical parameter
+	 * @return the region that contains the parameter with no band and no unexplored cell
+	 *         at it, or {@code null}: a parameter at an end shared with a band is in none
+	 */
+	public LocusInterval2D regionOf(double parameter) {
+		if (!inOneRegion(parameter, parameter)) {
+			return null;
+		}
+		for (LocusInterval2D region : getRegions()) {
+			if (region.getLower() <= parameter && parameter <= region.getUpper()) {
+				return region;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param parameter canonical parameter
+	 * @return the first cell at the parameter that is not a span, or {@code null}
+	 */
+	public LocusConditionedCell2D bandAt(double parameter) {
+		for (LocusConditionedCell2D cell : cellsContaining(parameter)) {
+			if (!cell.getKind().isSpan()) {
+				return cell;
+			}
+		}
+		return null;
 	}
 
 	/**

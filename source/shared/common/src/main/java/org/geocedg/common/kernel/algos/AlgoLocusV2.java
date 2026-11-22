@@ -11,6 +11,7 @@ import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
 import org.geocedg.common.kernel.locus.V2RedefineContractSource;
 import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
 import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidenceOwner2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedSample2D;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -146,6 +147,28 @@ public abstract class AlgoLocusV2 extends AlgoElement
 	 * @return published content of the current revision, or {@code null}
 	 */
 	public LocusConditionedEvidence2D getConditionedEvidence(String branchKey) {
+		return null;
+	}
+
+	/**
+	 * @param branchKey branch of the published definition
+	 * @return the conditioned evidence that this producer has already published for the
+	 *         current revision, or {@code null}; it is never computed by this call
+	 */
+	public LocusConditionedEvidence2D getPublishedConditionedEvidence(String branchKey) {
+		return null;
+	}
+
+	/**
+	 * One evaluation of the producer's own evaluator with the testimony of its selecting
+	 * dependencies, for the point validity of a parameter address (contract section 6.3).
+	 *
+	 * @param branchKey branch of the published definition
+	 * @param canonicalParameter canonical driver parameter
+	 * @return evaluation with testimony, or {@code null} when this producer gives none
+	 */
+	public LocusConditionedSample2D sampleConditioned(String branchKey,
+			double canonicalParameter) {
 		return null;
 	}
 

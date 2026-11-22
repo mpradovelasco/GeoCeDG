@@ -17,6 +17,7 @@ import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusMetricResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
+import org.geocedg.common.kernel.locus.LocusParameterAddressState2D;
 import org.geocedg.common.kernel.locus.LocusPrincipalBranchState2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddressState2D;
 import org.geocedg.common.kernel.locus.V2RedefineContractSource;
@@ -336,7 +337,12 @@ public final class ConstructionGeoRedefineProvider
 		GeoElement parameter = parent.getParameterInput().toGeoElement();
 		try {
 			if (LocusSemanticAddressState2D.decode(branch.getTextString()) == null) {
-				return false;
+				// A parameter address in its explicit form is owned the same way (ADR 0042).
+				LocusParameterAddressState2D.Decoded byParameter =
+						LocusParameterAddressState2D.decode(branch.getTextString());
+				if (byParameter == null || byParameter.isInputSelection()) {
+					return false;
+				}
 			}
 		} catch (IllegalArgumentException exception) {
 			return false;
@@ -386,7 +392,13 @@ public final class ConstructionGeoRedefineProvider
 		GeoText branch = parent.getBranchInput();
 		try {
 			if (LocusPrincipalBranchState2D.decode(branch.getTextString()) == null) {
-				return false;
+				// The input form of a parameter address is the selector of Point(L,u) where
+				// no certified component contains the parameter (ADR 0042).
+				LocusParameterAddressState2D.Decoded byParameter =
+						LocusParameterAddressState2D.decode(branch.getTextString());
+				if (byParameter == null || !byParameter.isInputSelection()) {
+					return false;
+				}
 			}
 		} catch (IllegalArgumentException exception) {
 			return false;

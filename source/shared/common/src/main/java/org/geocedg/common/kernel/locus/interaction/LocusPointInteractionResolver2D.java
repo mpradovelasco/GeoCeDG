@@ -1050,7 +1050,7 @@ public final class LocusPointInteractionResolver2D {
 				LocusSemanticAddress2D second = candidates.get(secondIndex)
 						.getAddress();
 				if (first.getBranchKey().equals(second.getBranchKey())
-						&& first.getComponentLineageKey().equals(
+						&& java.util.Objects.equals(first.getComponentLineageKey(),
 								second.getComponentLineageKey())
 						&& first.getPeriodicLift() == second.getPeriodicLift()
 						&& !first.equals(second)
@@ -1184,6 +1184,10 @@ public final class LocusPointInteractionResolver2D {
 	 */
 	private static String resolvedCurrentKey(LocusSemanticAddress2D current,
 			LocusBranch2D branch, double domainEpsilon) {
+		if (current.isParameterAddress()) {
+			// A parameter address retains no component selector.
+			return null;
+		}
 		LocusComponentSelectorResolver2D.Resolution resolution =
 				LocusComponentSelectorResolver2D.resolve(current.getComponentLineageKey(),
 						branch.getExistenceStructure(),

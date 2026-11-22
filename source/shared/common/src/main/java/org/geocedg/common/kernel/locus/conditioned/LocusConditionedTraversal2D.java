@@ -197,8 +197,15 @@ public final class LocusConditionedTraversal2D {
 		for (double each : contradictions) {
 			set.add(each);
 		}
+		LocusConditionedSample2D first = nodes.grid.get(0L);
+		LocusConditionedSample2D last = nodes.grid.get(gridSize);
+		boolean seam = first != null && last != null && charged.contains(0L)
+				&& charged.contains(gridSize) && first.isValid() && last.isValid()
+				&& first.hasEstablishedSelections() && first.hasSameSelections(last)
+				&& Math.hypot(last.getX() - first.getX(), last.getY() - first.getY())
+						<= policy.getMaximumChordDeviation();
 		return new LocusConditionedEvidence2D(branchKey, revision, policy.getVersion(),
-				domainLower, domainUpper, set, leaves, charged.size());
+				domainLower, domainUpper, set, leaves, charged.size(), seam);
 	}
 
 	private void classify(long lower, long upper, ArrayDeque<long[]> queue,
@@ -319,9 +326,10 @@ public final class LocusConditionedTraversal2D {
 			LocusConditionedSample2D last) {
 		switch (finding) {
 		case SPAN:
-			return leaf(lower, upper, LocusConditionedCellKind2D.SPAN,
-					spanClass(lower, upper, first, mid, last),
-					chordDeviation(first, mid, last), "");
+			return new LocusConditionedCell2D(lower, upper, parameter(lower), parameter(upper),
+					LocusConditionedCellKind2D.SPAN, spanClass(lower, upper, first, mid, last),
+					chordDeviation(first, mid, last), "", new double[] {first.getX(),
+							first.getY(), mid.getX(), mid.getY(), last.getX(), last.getY()});
 		case ABSENT:
 			return leaf(lower, upper, LocusConditionedCellKind2D.ABSENT_BAND, null,
 					Double.NaN, first.getCause());

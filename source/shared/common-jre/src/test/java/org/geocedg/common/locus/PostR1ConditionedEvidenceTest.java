@@ -382,6 +382,26 @@ final class PostR1ConditionedEvidenceTest {
 	}
 
 	@Test
+	void aJumpAlongTheChordLeavesNoTraceAndIsNotDetected() {
+		// Declared limit (contract section 4): the criteria of the policy are the chord
+		// deviation and the turning between nodes. A jump whose direction is that of the
+		// curve changes neither: the cell is a span under H3, and the bench says so.
+		LocusConditionedEvidence2D evidence = traverse(t -> valid(t + (t >= 0.75 ? 1 : 0),
+				2 * (t + (t >= 0.75 ? 1 : 0)), "a", 1));
+		assertPartition(evidence);
+		assertTrue(bands(evidence).isEmpty());
+		assertTrue(evidence.inOneRegion(0.7, 0.8));
+		// The same jump across the curve is isolated to the minimum step.
+		LocusConditionedEvidence2D across = traverse(t -> valid(t, 2 * t
+				+ (t >= 0.75 ? 1 : 0), "a", 1));
+		assertFalse(bands(across).isEmpty());
+		assertFalse(across.inOneRegion(0.7, 0.8));
+		for (LocusConditionedCell2D band : bands(across)) {
+			assertEquals(LocusConditionedCellKind2D.DISCONTINUITY_BAND, band.getKind());
+		}
+	}
+
+	@Test
 	void noCellIsPublishedInsideACertifiedCoverage() {
 		// A certificate of the revision covers [0.25, 0.5]: its ends are nodes of the grid.
 		int[] inside = {0};

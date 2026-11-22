@@ -356,7 +356,7 @@ public final class M08SnapshotPlacement2D {
 				return null;
 			}
 			var branch = definition.getBranch(address.getBranchKey());
-			if (branch == null) {
+			if (branch == null || address.isParameterAddress()) {
 				return null;
 			}
 			var component = LocusComponentSelectorResolver2D.resolve(address.getComponentLineageKey(),

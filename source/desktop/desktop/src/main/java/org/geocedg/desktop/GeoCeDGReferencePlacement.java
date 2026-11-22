@@ -15,7 +15,11 @@ import org.geogebra.desktop.main.AppD;
 
 /** Desktop compatibility adapter; routing and publication are kernel-owned. */
 final class GeoCeDGReferencePlacement implements AutoCloseable {
-	enum Route { R1_R6, R2_H1, INDIVIDUAL_FORWARD_ADDRESS_CREATION, REJECTED }
+	enum Route {
+		R1_R6, R2_H1, INDIVIDUAL_FORWARD_ADDRESS_CREATION, REJECTED,
+		/** A parameter address on a conditioned region (ADR 0042). */
+		CONDITIONED_PARAMETER_ADDRESS
+	}
 	static final class Rejected extends IllegalStateException {
 		private static final long serialVersionUID = 1L;
 		Rejected(String code) { super(code); }

@@ -5,6 +5,7 @@
 package org.geocedg.common.kernel.locus.interaction;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.geocedg.common.kernel.algos.AlgoSemanticLocusPoint2D;
@@ -13,11 +14,17 @@ import org.geocedg.common.kernel.locus.CertifiedAffineLocus2D;
 import org.geocedg.common.kernel.locus.LocusComponentSelectorResolver2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusParameterPointResolver2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D.SeamSide;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.PiecewisePolynomialLocus2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCell2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCellKind2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidenceUse2D;
 import org.geocedg.common.kernel.locus.NativeTransactionalState2D.UnsupportedReason;
 import org.geocedg.common.kernel.locus.intersection.LocalContinuationEvidence2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricPositionBinder2D;
@@ -83,7 +90,17 @@ public final class LocusPointContinuation2D {
 	public enum Status {
 		CONTINUATION_ESTABLISHED, NO_CONTINUATION_ESTABLISHED, INVALID_SOURCE,
 		AUTHORITY_NOT_ESTABLISHED, COMPONENT_NOT_ESTABLISHED, FIXED_POINT,
-		BUDGET_EXHAUSTED, FORWARD_REJECTED, CONTINUATION_STOPPED, UNSUPPORTED_HOST_STATE
+		BUDGET_EXHAUSTED, FORWARD_REJECTED, CONTINUATION_STOPPED, UNSUPPORTED_HOST_STATE,
+		/**
+		 * The point is at a valid parameter inside a band or an unexplored cell of the
+		 * conditioned evidence: it is defined and has no continuation (ADR 0042; contract
+		 * {@code post-r1-conditioned-use.md}, sections 6.4 and 8.2).
+		 */
+		CONTINUATION_START_IN_BAND,
+		/** The continuation along a conditioned region reached a band and stopped there. */
+		CONTINUATION_REACHED_BAND,
+		/** The target parameter lies in a conditioned region other than that of the point. */
+		TARGET_IN_ANOTHER_REGION
 	}
 
 	/** Transient local proof result; its address alone is durable. */
@@ -110,6 +127,8 @@ public final class LocusPointContinuation2D {
 		private long[] continuationWork = new long[6];
 		private int forwardEvaluations;
 		private UnsupportedReason nativeHostReason;
+		private LocusConditionedCellKind2D bandKind;
+		private LocusConditionedEvidenceUse2D evidenceUse;
 
 		private Result(Status status, LocusSemanticAddress2D address, String method,
 				long semanticEvaluations, long intervalPasses,
@@ -150,8 +169,24 @@ public final class LocusPointContinuation2D {
 		 */
 		public boolean isRecoverableRefusal() {
 			return status == Status.NO_CONTINUATION_ESTABLISHED || status == Status.FORWARD_REJECTED
-					|| status == Status.BUDGET_EXHAUSTED || status == Status.COMPONENT_NOT_ESTABLISHED;
+					|| status == Status.BUDGET_EXHAUSTED || status == Status.COMPONENT_NOT_ESTABLISHED
+					|| status == Status.CONTINUATION_START_IN_BAND
+					|| status == Status.CONTINUATION_REACHED_BAND
+					|| status == Status.TARGET_IN_ANOTHER_REGION;
 		}
+		/**
+		 * @return kind of the cell that refused a conditioned continuation, or {@code null}
+		 */
+		public LocusConditionedCellKind2D getBandKind() { return bandKind; }
+		/**
+		 * @return the spans of the conditioned evidence that an established conditioned
+		 *         continuation moved along, with the content it read; {@code null} for a
+		 *         continuation on a certified component. The continuation assumes their
+		 *         hypotheses and certifies nothing
+		 */
+		public LocusConditionedEvidenceUse2D getConditionedEvidenceUse() { return evidenceUse; }
+		/** @return whether the continuation moved along a conditioned region */
+		public boolean isConditioned() { return evidenceUse != null; }
 		public LocusPointInteractionResult2D getHistoricalResult() { return historical; }
 		/** Local lifted-parameter bound, including both representatives' interval errors. */
 		public double getMaximumParameterChange() { return maximumParameterChange; }
@@ -257,6 +292,10 @@ public final class LocusPointContinuation2D {
 						.getGeo(current.getSourceLocusId()) != source
 				|| !current.getProviderVersion().equals(definition.getProvider().getProviderId())) {
 			return refused(Status.INVALID_SOURCE);
+		}
+		if (current.isParameterAddress()) {
+			return resolveConditioned(source, definition, current, x, y, Double.NaN, policy,
+					context);
 		}
 		Object capability = definition.getEvaluatorCapability();
 		boolean historical = capability instanceof PiecewisePolynomialLocus2D
@@ -403,6 +442,176 @@ public final class LocusPointContinuation2D {
 			} catch (ProofBudgetExceeded | LocusEvaluationSession2D.EvaluationWorkLimitException exception) {
 				return new Result(Status.BUDGET_EXHAUSTED, null, "",
 						session.getTotalChargedMisses(), passes[0], null).workMetrics(work);
+			}
+		}
+	}
+
+	/** Method of a continuation along a conditioned region. */
+	public static final String CONDITIONED_METHOD = "CONDITIONED_REGION_CONTINUATION";
+
+	/**
+	 * Follows a point with a parameter address to an explicit parameter of its branch
+	 * (contract {@code post-r1-conditioned-use.md}, section 8.2). The start and the target
+	 * must lie in one conditioned region with no band between them; a refusal is typed and
+	 * leaves the point defined at its address. Giving a point another parameter without a
+	 * route is a redefinition, which this method is not.
+	 *
+	 * @param source locus of the address
+	 * @param current current parameter address of the point
+	 * @param targetParameter target driver parameter
+	 * @param policy interaction policy, for its work budget
+	 * @param context gesture context, or {@code null}
+	 * @return established continuation with its prepared binding, or a typed refusal
+	 */
+	public static Result resolveToParameter(GeoLocusV2 source, LocusSemanticAddress2D current,
+			double targetParameter, LocusPointInteractionPolicy2D policy, Context context) {
+		LocusDefinition2D definition = source.getSemanticDefinition();
+		if (current == null || definition == null || !source.isDefined()
+				|| definition.getDefinitionStatus() != DefinitionStatus.VALID
+				|| !Double.isFinite(targetParameter) || !current.isParameterAddress()
+				|| !current.getSourceLocusId().equals(source.getPersistentLocusId())
+				|| !current.getProviderVersion().equals(definition.getProvider().getProviderId())) {
+			return refused(Status.INVALID_SOURCE);
+		}
+		return resolveConditioned(source, definition, current, Double.NaN, Double.NaN,
+				targetParameter, policy, context);
+	}
+
+	private static Result band(Status status, LocusConditionedCell2D cell) {
+		Result result = refused(status);
+		result.bandKind = cell == null ? null : cell.getKind();
+		return result;
+	}
+
+	/**
+	 * Continuation of a parameter address along its conditioned region: by the request
+	 * {@code (x, y)}, or to an explicit target parameter when that is finite.
+	 */
+	private static Result resolveConditioned(GeoLocusV2 source, LocusDefinition2D definition,
+			LocusSemanticAddress2D current, double x, double y, double target,
+			LocusPointInteractionPolicy2D policy, Context context) {
+		if (source.getConstruction().getSpatialIdentityRegistry().getDocumentAuthorityRecord() != null) {
+			return refused(Status.AUTHORITY_NOT_ESTABLISHED);
+		}
+		var branch = definition.getBranch(current.getBranchKey());
+		LocusConditionedEvidence2D evidence = branch == null ? null
+				: source.getConditionedEvidence(current.getBranchKey());
+		double old = current.getCanonicalParameter();
+		if (evidence == null || evidence.cellsContaining(old).isEmpty()) {
+			return refused(Status.COMPONENT_NOT_ESTABLISHED);
+		}
+		LocusInterval2D region = evidence.regionOf(old);
+		if (region == null) {
+			return band(Status.CONTINUATION_START_IN_BAND, evidence.bandAt(old));
+		}
+		var provider = definition.getProvider();
+		LocusInterval2D domain = branch.getDeclaredDriverDomain();
+		boolean periodic = provider.isPeriodic();
+		boolean whole = periodic && region.getLower() == domain.getLower()
+				&& region.getUpper() == domain.getUpper() && evidence.seamNodesAgree();
+		var budget = policy.getWorkBudget();
+		try (var session = LocusEvaluationSession2D.hardBoundedForSnapshot(
+				budget.getMaximumSemanticEvaluations(), budget.getMaximumSemanticEvaluations(),
+				budget.getMaximumEvaluatorCompositionDepth())) {
+			try {
+				double parameter;
+				long lift = current.getPeriodicLift();
+				int forwardEvaluations = 0;
+				if (Double.isFinite(target)) {
+					parameter = provider.canonicalize(target);
+					if (!Double.isFinite(parameter) || !domain.contains(parameter, 0)
+							|| evidence.cellsContaining(parameter).isEmpty()) {
+						return refused(Status.COMPONENT_NOT_ESTABLISHED);
+					}
+					if (evidence.regionOf(parameter) == null) {
+						return band(Status.CONTINUATION_REACHED_BAND, evidence.bandAt(parameter));
+					}
+					if (!evidence.inOneRegion(old, parameter)) {
+						return refused(Status.TARGET_IN_ANOTHER_REGION);
+					}
+				} else {
+					// An end of the region next to a band is never included; an end of the
+					// declared domain is included as the domain includes it.
+					LocusInterval2D admissible = whole ? region : new LocusInterval2D(
+							region.getLower(), region.getUpper(),
+							!periodic && region.getLower() == domain.getLower()
+									&& domain.isLowerClosed(),
+							!periodic && region.getUpper() == domain.getUpper()
+									&& domain.isUpperClosed());
+					LocalForwardParametricContinuation2D.Proposal[] forward = {null};
+					LocusEvaluationSession2D.runWithNestedServiceParent(session,
+							LocusEvaluationSession2D.newSliceScope(), () -> forward[0] =
+									LocalForwardParametricContinuation2D.advanceOnRegion(definition,
+											current, admissible, whole, x, y, policy, session));
+					if (!forward[0].isEstablished()) {
+						Result refusal;
+						if (forward[0].getRefusal()
+								== LocalForwardParametricContinuation2D.Refusal.BUDGET) {
+							refusal = refused(Status.BUDGET_EXHAUSTED);
+						} else if (forward[0].isAtExcludedEnd()) {
+							// The cell beyond the end that the descent pointed out of.
+							double lower = Math.nextDown(region.getLower());
+							double upper = Math.nextUp(region.getUpper());
+							LocusConditionedCell2D beyond = old - region.getLower()
+									<= region.getUpper() - old ? evidence.bandAt(region.getLower())
+											: evidence.bandAt(region.getUpper());
+							if (beyond == null) {
+								beyond = lower >= domain.getLower() ? evidence.bandAt(lower)
+										: upper <= domain.getUpper() ? evidence.bandAt(upper) : null;
+							}
+							refusal = band(Status.CONTINUATION_REACHED_BAND, beyond);
+						} else {
+							refusal = refused(Status.NO_CONTINUATION_ESTABLISHED);
+						}
+						refusal.forwardEvaluations = forward[0].getEvaluations();
+						return refusal;
+					}
+					parameter = forward[0].getParameter();
+					lift = forward[0].getLift();
+					forwardEvaluations = forward[0].getEvaluations();
+					if (Double.doubleToLongBits(parameter) != Double.doubleToLongBits(
+							provider.canonicalize(parameter))
+							|| !whole && !evidence.inOneRegion(old, parameter)) {
+						return band(Status.CONTINUATION_REACHED_BAND, evidence.bandAt(parameter));
+					}
+				}
+				SeamSide seam = !periodic ? SeamSide.NOT_PERIODIC
+						: parameter == domain.getLower() ? lift == 0 ? SeamSide.LOWER_APPROACH
+								: SeamSide.UPPER_APPROACH : SeamSide.INTERIOR;
+				LocusSemanticAddress2D address = LocusSemanticAddress2D.byParameter(
+						current.getSourceLocusId(), current.getProviderVersion(),
+						current.getBranchKey(), parameter, lift, seam);
+				LocusParameterPointResolver2D.Resolution resolution =
+						LocusParameterPointResolver2D.resolve(source, definition, branch, address);
+				if (session.isWorkLimitExhausted()) {
+					throw new ProofBudgetExceeded();
+				}
+				LocusConditionedEvidence2D published = source.getConditionedEvidence(
+						current.getBranchKey());
+				List<LocusConditionedCell2D> used = whole && !evidence.inOneRegion(old, parameter)
+						? evidence.getCells() : evidence.cellsBetween(old, parameter);
+				LocusConditionedEvidenceUse2D use = new LocusConditionedEvidenceUse2D(evidence, used);
+				var binding = resolution.getBinding();
+				var point = binding.getEvaluatedPoint().orElse(null);
+				// A contradiction confirmed at the proposed parameter withdrew a cell of the
+				// route: nothing is published from evidence that is no longer current.
+				boolean accepted = source.getSemanticDefinition() == definition
+						&& resolution.isDefined() && point != null && published != null
+						&& use.isCurrent(published)
+						&& (Double.isFinite(target) || Math.hypot(point.getX() - x,
+								point.getY() - y) <= policy.getMaximumWorldDistance());
+				Result result = new Result(accepted ? Status.CONTINUATION_ESTABLISHED
+						: resolution.isDefined() && published != null && use.isCurrent(published)
+								? Status.FORWARD_REJECTED : Status.NO_CONTINUATION_ESTABLISHED,
+						accepted ? address : null, CONDITIONED_METHOD,
+						session.getTotalChargedMisses(), 0, null)
+						.prepared(source, definition, current, accepted ? binding : null, context);
+				result.forwardEvaluations = forwardEvaluations;
+				result.evidenceUse = accepted ? use : null;
+				return result;
+			} catch (ProofBudgetExceeded | LocusEvaluationSession2D.EvaluationWorkLimitException exception) {
+				return new Result(Status.BUDGET_EXHAUSTED, null, "",
+						session.getTotalChargedMisses(), 0, null);
 			}
 		}
 	}
