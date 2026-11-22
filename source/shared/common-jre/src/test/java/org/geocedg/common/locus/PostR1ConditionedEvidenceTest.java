@@ -434,12 +434,14 @@ final class PostR1ConditionedEvidenceTest {
 				List.of(new LocusInterval2D(0.3, 0.7, true, true)));
 		List<LocusInterval2D> cutRegions = cut.getRegions();
 		assertEquals(2, cutRegions.size());
-		assertTrue(cutRegions.get(0).getUpper() >= 0.3
-				&& cutRegions.get(0).getUpper() <= 0.3 + MINIMUM_STEP);
-		assertTrue(cutRegions.get(1).getLower() <= 0.7
-				&& cutRegions.get(1).getLower() >= 0.7 - MINIMUM_STEP);
+		// The cell of minimum step that contains an end of the certificate is not published:
+		// no cell overlaps the certified coverage.
+		assertTrue(cutRegions.get(0).getUpper() <= 0.3
+				&& cutRegions.get(0).getUpper() >= 0.3 - MINIMUM_STEP);
+		assertTrue(cutRegions.get(1).getLower() >= 0.7
+				&& cutRegions.get(1).getLower() <= 0.7 + MINIMUM_STEP);
 		for (LocusConditionedCell2D cell : cut.getCells()) {
-			assertFalse(cell.getLower() >= 0.3 && cell.getUpper() <= 0.7);
+			assertTrue(cell.getUpper() <= 0.3 || cell.getLower() >= 0.7);
 		}
 		assertTrue(cut.getWork() < 400);
 	}

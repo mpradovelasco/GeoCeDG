@@ -76,7 +76,14 @@ public final class LocusRenderData2D {
 		 * Exploratory evidence of an unresolved band is drawn with its own style, never
 		 * joined to a component and never exported (decision E-1).
 		 */
-		EXPLORATORY_EVIDENCE
+		EXPLORATORY_EVIDENCE,
+		/**
+		 * A conditioned region is drawn as one stroke with the style of the locus (ADR 0042;
+		 * contract {@code post-r1-conditioned-use.md}, section 9): its existence and
+		 * continuity are assumed under the declared hypotheses, not certified. The drawing is
+		 * never called complete because of it.
+		 */
+		CONDITIONED_REGION
 	}
 
 	/** Effective fidelity of the drawing of one component. */
@@ -219,6 +226,67 @@ public final class LocusRenderData2D {
 		}
 	}
 
+	/**
+	 * One conditioned region of a branch as it is drawn: a range of the conditioned
+	 * vertices. It is render data of one view and revision: never an address, an identity,
+	 * a component or evidence.
+	 */
+	public static final class ConditionedRegion {
+		private final String branchKey;
+		private final String componentKey;
+		private final double lower;
+		private final double upper;
+		private final int firstVertex;
+		private final int vertexCount;
+		private final ComponentFidelity fidelity;
+
+		ConditionedRegion(String branchKey, String componentKey, double lower, double upper,
+				int firstVertex, int vertexCount, ComponentFidelity fidelity) {
+			this.branchKey = Objects.requireNonNull(branchKey);
+			this.componentKey = Objects.requireNonNull(componentKey);
+			this.lower = lower;
+			this.upper = upper;
+			this.firstVertex = firstVertex;
+			this.vertexCount = vertexCount;
+			this.fidelity = Objects.requireNonNull(fidelity);
+		}
+
+		/** @return branch of the region */
+		public String getBranchKey() {
+			return branchKey;
+		}
+
+		/** @return render key of the region; revision-local and never an identity */
+		public String getComponentKey() {
+			return componentKey;
+		}
+
+		/** @return lower end of the region, as a canonical parameter */
+		public double getLower() {
+			return lower;
+		}
+
+		/** @return upper end of the region, as a canonical parameter */
+		public double getUpper() {
+			return upper;
+		}
+
+		/** @return index of the first conditioned vertex of the region */
+		public int getFirstVertex() {
+			return firstVertex;
+		}
+
+		/** @return number of conditioned vertices of the region */
+		public int getVertexCount() {
+			return vertexCount;
+		}
+
+		/** @return effective fidelity of the drawing of the region */
+		public ComponentFidelity getFidelity() {
+			return fidelity;
+		}
+	}
+
 	private final long semanticRevision;
 	private final LocusRenderPolicy2D policy;
 	private final List<Vertex> vertices;
@@ -226,6 +294,8 @@ public final class LocusRenderData2D {
 	private final List<ComponentFidelity> components;
 	private final int coarseningLevel;
 	private final List<Vertex> exploratoryVertices;
+	private final List<Vertex> conditionedVertices;
+	private final List<ConditionedRegion> conditionedRegions;
 
 	LocusRenderData2D(long semanticRevision, LocusRenderPolicy2D policy,
 			List<Vertex> vertices) {
@@ -236,6 +306,18 @@ public final class LocusRenderData2D {
 	LocusRenderData2D(long semanticRevision, LocusRenderPolicy2D policy,
 			List<Vertex> vertices, List<Mark> marks, List<ComponentFidelity> components,
 			int coarseningLevel, List<Vertex> exploratoryVertices) {
+		this(semanticRevision, policy, vertices, marks, components, coarseningLevel,
+				exploratoryVertices, Collections.emptyList(), Collections.emptyList());
+	}
+
+	LocusRenderData2D(long semanticRevision, LocusRenderPolicy2D policy,
+			List<Vertex> vertices, List<Mark> marks, List<ComponentFidelity> components,
+			int coarseningLevel, List<Vertex> exploratoryVertices,
+			List<Vertex> conditionedVertices, List<ConditionedRegion> conditionedRegions) {
+		this.conditionedVertices = Collections.unmodifiableList(
+				new ArrayList<>(conditionedVertices));
+		this.conditionedRegions = Collections.unmodifiableList(
+				new ArrayList<>(conditionedRegions));
 		this.semanticRevision = semanticRevision;
 		this.policy = policy;
 		this.vertices = Collections.unmodifiableList(new ArrayList<>(vertices));
@@ -267,6 +349,19 @@ public final class LocusRenderData2D {
 		return exploratoryVertices;
 	}
 
+	/**
+	 * @return vertices of the conditioned regions, each region in its own subpath, drawn
+	 *         with the style of the locus and never joined across a band (ADR 0042)
+	 */
+	public List<Vertex> getConditionedVertices() {
+		return conditionedVertices;
+	}
+
+	/** @return conditioned regions drawn, in branch and parameter order */
+	public List<ConditionedRegion> getConditionedRegions() {
+		return conditionedRegions;
+	}
+
 	/** @return typed marks in component order */
 	public List<Mark> getMarks() {
 		return marks;
@@ -288,7 +383,11 @@ public final class LocusRenderData2D {
 	 */
 	public Fidelity getFidelity() {
 		Fidelity worst = marks.isEmpty() ? Fidelity.COMPLETE : Fidelity.PARTIAL;
-		for (ComponentFidelity component : components) {
+		List<ComponentFidelity> all = new ArrayList<>(components);
+		for (ConditionedRegion region : conditionedRegions) {
+			all.add(region.getFidelity());
+		}
+		for (ComponentFidelity component : all) {
 			if (component.getFidelity() == Fidelity.FAILED) {
 				return Fidelity.FAILED;
 			}

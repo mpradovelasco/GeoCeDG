@@ -260,9 +260,12 @@ class NamePanelD extends JPanel implements ActionListener, ErrorHandler, FocusLi
 		if (app.getConfig()
 				instanceof org.geocedg.common.main.settings.config.AppConfigGeoCeDG) {
 			tfDefinition.setEditable(!isProductReadOnlyDefinition());
+			// GeoCeDG, ADR 0042: the properties state the conditioned grade of the object.
 			tfDefinition.setToolTipText(isProductReadOnlyDefinition()
-					? org.geocedg.desktop.GeoCeDGDefinitionInspector.readOnlyExplanation(app)
-					: null);
+					? org.geocedg.desktop.GeoCeDGDefinitionInspector.readOnlyExplanation(app,
+							geo.toGeoElement())
+					: org.geocedg.desktop.GeoCeDGDefinitionInspector.conditionedGrade(app,
+							geo.toGeoElement()));
 		}
 		if (app.isMacOS()) {
 			if (text.length() > 300) {

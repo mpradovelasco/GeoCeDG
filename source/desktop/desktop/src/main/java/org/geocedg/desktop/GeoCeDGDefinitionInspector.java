@@ -5,6 +5,8 @@
 
 package org.geocedg.desktop;
 
+import java.util.Map;
+
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -20,9 +22,14 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusComponentLineage2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusParameterAddressState2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCell2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCellKind2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedHypothesis2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedState2D;
 import org.geocedg.common.kernel.locus.constructive.RelationIntegrityRecord;
 import org.geocedg.common.kernel.locus.constructive.StructuralPointResolution;
 import org.geogebra.common.euclidian.DrawableND;
@@ -68,6 +75,41 @@ public final class GeoCeDGDefinitionInspector {
 		return GeoCeDGProfile.getText("Definition.ReadOnly", app.getLocale().getLanguage());
 	}
 
+	/**
+	 * Grade of an object under ADR 0042, in ordinary words, for the properties of the
+	 * object (contract {@code post-r1-conditioned-use.md}, section 9, point 3).
+	 *
+	 * @param app product app
+	 * @param geo inspected object
+	 * @return the localized statement that the object is conditioned, or that it is a result
+	 *         on a conditioned region; {@code null} for every other object
+	 */
+	public static String conditionedGrade(AppD app, GeoElement geo) {
+		if (geo instanceof GeoLocusV2 && LocusConditionedState2D.of((GeoLocusV2) geo) != null) {
+			return text(app, "Definition.Conditioned");
+		}
+		if (geo != null && geo.getParentAlgorithm() instanceof AlgoSemanticLocusPoint2D) {
+			LocusSemanticAddress2D address = ((AlgoSemanticLocusPoint2D) geo
+					.getParentAlgorithm()).getCurrentSemanticAddress();
+			if (address != null && address.isParameterAddress()) {
+				return text(app, "Definition.ConditionedResult");
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param app product app
+	 * @param geo inspected object
+	 * @return explanation of a read-only definition, with the conditioned grade of the
+	 *         object when it has one
+	 */
+	public static String readOnlyExplanation(AppD app, GeoElement geo) {
+		String grade = conditionedGrade(app, geo);
+		return grade == null ? readOnlyExplanation(app)
+				: grade + ". " + readOnlyExplanation(app);
+	}
+
 	static String semanticDetails(AppD app, GeoElement geo) {
 		StringBuilder details = new StringBuilder();
 		if (geo instanceof GeoLocusV2) {
@@ -82,6 +124,18 @@ public final class GeoCeDGDefinitionInspector {
 				address = parent.getSemanticAddress();
 			}
 			appendAddressDetails(app, address, current, details);
+			if (current && address.isParameterAddress()) {
+				// A result on a conditioned region states its grade the same way.
+				details.append("  ").append(text(app, "Definition.ConditionedResult"))
+						.append('\n');
+				LocusConditionedCell2D cell = parent.getContainingConditionedCell();
+				if (cell != null) {
+					appendField(app, details, "Definition.ConditionedCell", text(app,
+							"Definition.ConditionedKind." + cell.getKind().name()), "  ");
+				}
+				appendField(app, details, "Definition.Integrity",
+						String.valueOf(parent.getParameterIncidenceIntegrity()), "  ");
+			}
 		}
 		if (geo != null
 				&& geo.getParentAlgorithm() instanceof AlgoLocusDriverCorrespondencePoint2D) {
@@ -202,7 +256,53 @@ public final class GeoCeDGDefinitionInspector {
 					.append(branch.getExistenceStructure().getCompleteness())
 					.append('\n');
 		}
+		appendConditionedState(app, locus, details);
 		appendDrawingFidelity(app, locus, details);
+	}
+
+	/**
+	 * ADR 0042 (contract {@code post-r1-conditioned-use.md}, section 9, point 3): the grade
+	 * of a conditioned locus in ordinary words, with its regions and bands by kind, the
+	 * policy version and the hypotheses that every conditioned stretch leaves open.
+	 */
+	private static void appendConditionedState(AppD app, GeoLocusV2 locus,
+			StringBuilder details) {
+		LocusConditionedState2D state = LocusConditionedState2D.of(locus);
+		if (state == null) {
+			return;
+		}
+		details.append(text(app, "Definition.Conditioned")).append('\n');
+		for (LocusConditionedState2D.Branch branch : state.getBranches()) {
+			appendField(app, details, "Definition.Branch", branch.getBranchKey(), "  ");
+			appendField(app, details, "Definition.ConditionedPolicy",
+					branch.getPolicyVersion(), "    ");
+			appendField(app, details, "Definition.ConditionedRegions",
+					Integer.toString(branch.getRegions().size()), "    ");
+			for (LocusInterval2D region : branch.getRegions()) {
+				appendField(app, details, "Definition.ConditionedRegion", region.toString(),
+						"      ");
+			}
+			int bands = 0;
+			for (int count : branch.getBands().values()) {
+				bands += count;
+			}
+			appendField(app, details, "Definition.ConditionedBands", Integer.toString(bands),
+					"    ");
+			for (Map.Entry<LocusConditionedCellKind2D, Integer> band
+					: branch.getBands().entrySet()) {
+				details.append("      ").append(band.getValue()).append(" x ")
+						.append(text(app, "Definition.ConditionedKind."
+								+ band.getKey().name())).append('\n');
+			}
+		}
+		details.append("  ").append(text(app, "Definition.ConditionedHypotheses"))
+				.append('\n');
+		for (LocusConditionedHypothesis2D hypothesis : state.getHypotheses()) {
+			details.append("    ").append(text(app, "Definition.ConditionedHypothesis."
+					+ hypothesis.name())).append('\n');
+		}
+		details.append("  ").append(text(app, "Definition.ConditionedNotComplete"))
+				.append('\n');
 	}
 
 	/**

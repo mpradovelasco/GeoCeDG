@@ -29,6 +29,9 @@ import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
+import org.geocedg.common.kernel.locus.LocusPoint2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCell2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
 
 /** Small per-drawable cache of view-specific tessellations. */
 public final class LocusRenderCache2D {
@@ -53,7 +56,8 @@ public final class LocusRenderCache2D {
 	 */
 	public LocusRenderData2D getOrBuild(GeoLocusV2 locus,
 			LocusRenderPolicy2D policy) {
-		CacheKey key = new CacheKey(locus.getSemanticRevision(), policy);
+		CacheKey key = new CacheKey(locus.getSemanticRevision(), policy,
+				conditionedIdentity(locus));
 		LocusRenderData2D cached = entries.get(key);
 		if (cached != null) {
 			hits++;
@@ -152,6 +156,84 @@ public final class LocusRenderCache2D {
 		lastBuild = null;
 	}
 
+	/** Evidence key of the render handle of a conditioned region. */
+	public static final String CONDITIONED_REGION_KEY = "conditioned-region@";
+
+	/**
+	 * The content identities of the conditioned evidence that the locus publishes, which a
+	 * drawing of its regions reads: another content is another drawing (contract {@code
+	 * post-r1-conditioned-use.md}, section 7). Never an identity of the locus.
+	 */
+	private static String conditionedIdentity(GeoLocusV2 locus) {
+		LocusDefinition2D definition = locus.isDefined() ? locus.getSemanticDefinition()
+				: null;
+		if (definition == null) {
+			return "";
+		}
+		StringBuilder identity = new StringBuilder();
+		for (LocusBranch2D branch : definition.getBranches()) {
+			LocusConditionedEvidence2D evidence = locus.getConditionedEvidence(
+					branch.getBranchKey());
+			if (evidence != null) {
+				identity.append(evidence.getContentIdentity()).append(';');
+			}
+		}
+		return identity.toString();
+	}
+
+	/**
+	 * Render handle of one conditioned region for the tessellator: the extent of the region
+	 * with evaluated ends. It is never part of an existence structure and states no fact:
+	 * its nature is none, and its key is revision-local.
+	 */
+	private static ContinuousComponent regionHandle(LocusInterval2D region,
+			LocusConditionedEvidence2D evidence) {
+		return new ContinuousComponent(new LocusInterval2D(region.getLower(),
+				region.getUpper(), true, true),
+				CONDITIONED_REGION_KEY + Double.toHexString(region.getLower()),
+				evidence.getPolicyVersion(),
+				LocusExistenceStructure2D.Maximality.LOCAL_CERTIFIED_SUBINTERVAL,
+				evidence.getNature().name());
+	}
+
+	/**
+	 * The stroke of one region through the nodes of the published content, when the chord
+	 * deviation at the nodes of every span of the region is within the visual tolerance of
+	 * the view. The nodes are evaluations of the producer inside the spans; a view that
+	 * needs a finer stroke is tessellated from the evaluator instead.
+	 *
+	 * @return vertices of the region, or {@code null} when the view needs a finer stroke
+	 */
+	private static List<LocusRenderData2D.Vertex> nodeStroke(
+			LocusConditionedEvidence2D evidence, LocusInterval2D region,
+			LocusRenderPolicy2D policy) {
+		double scale = Math.max(Math.abs(policy.getXScale()), Math.abs(policy.getYScale()));
+		double tolerance = policy.getVisualTolerancePixels();
+		List<LocusRenderData2D.Vertex> vertices = new ArrayList<>();
+		for (LocusConditionedCell2D cell : evidence.cellsBetween(region.getLower(),
+				region.getUpper())) {
+			double[] nodes = cell.getNodePoints();
+			if (!cell.getKind().isSpan() || cell.getLower() < region.getLower()
+					|| cell.getUpper() > region.getUpper()) {
+				continue;
+			}
+			if (nodes == null || !(cell.getChordDeviation() * scale <= tolerance)
+					|| vertices.size() + 3 > policy.getVertexBudget() / 2) {
+				return null;
+			}
+			double middle = cell.getLower() + (cell.getUpper() - cell.getLower()) / 2;
+			if (vertices.isEmpty()) {
+				vertices.add(new LocusRenderData2D.Vertex(new LocusPoint2D(nodes[0],
+						nodes[1]), cell.getLower(), true));
+			}
+			vertices.add(new LocusRenderData2D.Vertex(new LocusPoint2D(nodes[2], nodes[3]),
+					middle, false));
+			vertices.add(new LocusRenderData2D.Vertex(new LocusPoint2D(nodes[4], nodes[5]),
+					cell.getUpper(), false));
+		}
+		return vertices.size() < 2 ? null : vertices;
+	}
+
 	private static LocusRenderData2D build(GeoLocusV2 locus,
 			LocusRenderPolicy2D policy) {
 		List<LocusRenderData2D.Vertex> vertices = new ArrayList<>();
@@ -191,8 +273,53 @@ public final class LocusRenderCache2D {
 		List<LocusComponentTessellator2D> tessellators = new ArrayList<>();
 		List<Mark> declarations = new ArrayList<>();
 		List<LocusRenderData2D.Vertex> exploratory = new ArrayList<>();
+		// Conditioned regions (ADR 0042): one stroke per region, tessellated for the view
+		// from the evaluator inside the region and never across a band. A branch with
+		// conditioned evidence draws its regions; its exploratory evidence is not drawn.
+		List<LocusComponentTessellator2D> conditioned = new ArrayList<>();
+		List<LocusRenderData2D.Vertex> nodeVertices = new ArrayList<>();
+		List<LocusRenderData2D.ConditionedRegion> nodeStrokes = new ArrayList<>();
+		List<String> regionBranches = new ArrayList<>();
+		List<LocusInterval2D> regionExtents = new ArrayList<>();
+		List<String> regionKeys = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
-			appendExploratoryEvidence(locus, branch, session, exploratory, declarations);
+			LocusConditionedEvidence2D evidence = locus.getConditionedEvidence(
+					branch.getBranchKey());
+			if (evidence == null) {
+				appendExploratoryEvidence(locus, branch, session, exploratory, declarations);
+				continue;
+			}
+			for (LocusInterval2D region : evidence.getRegions()) {
+				ContinuousComponent handle = regionHandle(region, evidence);
+				String key = LocusComponentTessellator2D.componentKey(branch.getBranchKey(),
+						handle.getEvidenceKey());
+				List<LocusRenderData2D.Vertex> nodes = nodeStroke(evidence, region, policy);
+				if (nodes != null) {
+					// The nodes of the published content already meet the tolerance of this
+					// view: they are evaluations of the producer, drawn without new ones.
+					nodeStrokes.add(new LocusRenderData2D.ConditionedRegion(
+							branch.getBranchKey(), key, region.getLower(), region.getUpper(),
+							nodeVertices.size(), nodes.size(), new ComponentFidelity(key,
+									Fidelity.COMPLETE, List.of(), nodes.size())));
+					nodeVertices.addAll(nodes);
+					declarations.add(new Mark(MarkKind.CONDITIONED_REGION, key,
+							region.getLower() + (region.getUpper() - region.getLower()) / 2,
+							"region " + region
+									+ "; existence and continuity under hypotheses ("
+									+ evidence.getPolicyVersion() + ")"));
+					continue;
+				}
+				conditioned.add(new LocusComponentTessellator2D(locus, definition,
+						branch.getBranchKey(), branch.getExistenceStructure(), handle, policy,
+						session));
+				regionBranches.add(branch.getBranchKey());
+				regionExtents.add(region);
+				regionKeys.add(key);
+				declarations.add(new Mark(MarkKind.CONDITIONED_REGION, key,
+						region.getLower() + (region.getUpper() - region.getLower()) / 2,
+						"region " + region + "; existence and continuity under hypotheses ("
+								+ evidence.getPolicyVersion() + ")"));
+			}
 		}
 		for (LocusBranch2D branch : definition.getBranches()) {
 			LocusExistenceStructure2D structure = branch.getExistenceStructure();
@@ -211,6 +338,8 @@ public final class LocusRenderCache2D {
 								+ point.getPositionState()));
 			}
 		}
+		int certified = tessellators.size();
+		tessellators.addAll(conditioned);
 		int budget = policy.getVertexBudget();
 		for (int level = 0; level <= LocusComponentTessellator2D.COARSEST_LEVEL; level++) {
 			List<LocusComponentTessellator2D.Outcome> outcomes = new ArrayList<>();
@@ -230,7 +359,23 @@ public final class LocusRenderCache2D {
 				outcomes.add(outcome);
 			}
 			if (fits) {
-				return assemble(locus, policy, outcomes, declarations, level, exploratory);
+				List<LocusRenderData2D.Vertex> regionVertices = new ArrayList<>(nodeVertices);
+				List<LocusRenderData2D.ConditionedRegion> regions =
+						new ArrayList<>(nodeStrokes);
+				for (int index = certified; index < outcomes.size(); index++) {
+					LocusComponentTessellator2D.Outcome outcome = outcomes.get(index);
+					regions.add(new LocusRenderData2D.ConditionedRegion(
+							regionBranches.get(index - certified),
+							regionKeys.get(index - certified),
+							regionExtents.get(index - certified).getLower(),
+							regionExtents.get(index - certified).getUpper(),
+							regionVertices.size(), outcome.getVertices().size(),
+							outcome.getFidelity()));
+					regionVertices.addAll(outcome.getVertices());
+					declarations.addAll(outcome.getMarks());
+				}
+				return assemble(locus, policy, outcomes.subList(0, certified), declarations,
+						level, exploratory, regionVertices, regions);
 			}
 		}
 		throw new IllegalStateException("The coarsest level always assembles");
@@ -304,7 +449,9 @@ public final class LocusRenderCache2D {
 
 	private static LocusRenderData2D assemble(GeoLocusV2 locus, LocusRenderPolicy2D policy,
 			List<LocusComponentTessellator2D.Outcome> outcomes, List<Mark> declarations,
-			int level, List<LocusRenderData2D.Vertex> exploratory) {
+			int level, List<LocusRenderData2D.Vertex> exploratory,
+			List<LocusRenderData2D.Vertex> conditioned,
+			List<LocusRenderData2D.ConditionedRegion> regions) {
 		List<LocusRenderData2D.Vertex> vertices = new ArrayList<>();
 		List<Mark> marks = new ArrayList<>();
 		List<ComponentFidelity> components = new ArrayList<>();
@@ -315,7 +462,7 @@ public final class LocusRenderCache2D {
 		}
 		marks.addAll(declarations);
 		return new LocusRenderData2D(locus.getSemanticRevision(), policy, vertices, marks,
-				components, level, exploratory);
+				components, level, exploratory, conditioned, regions);
 	}
 
 	/**
@@ -374,10 +521,12 @@ public final class LocusRenderCache2D {
 	private static final class CacheKey {
 		private final long revision;
 		private final LocusRenderPolicy2D policy;
+		private final String conditioned;
 
-		CacheKey(long revision, LocusRenderPolicy2D policy) {
+		CacheKey(long revision, LocusRenderPolicy2D policy, String conditioned) {
 			this.revision = revision;
 			this.policy = policy;
+			this.conditioned = conditioned;
 		}
 
 		@Override
@@ -386,12 +535,14 @@ public final class LocusRenderCache2D {
 				return false;
 			}
 			CacheKey that = (CacheKey) other;
-			return revision == that.revision && policy.equals(that.policy);
+			return revision == that.revision && policy.equals(that.policy)
+					&& conditioned.equals(that.conditioned);
 		}
 
 		@Override
 		public int hashCode() {
-			return 31 * Long.hashCode(revision) + policy.hashCode();
+			return 31 * (31 * Long.hashCode(revision) + policy.hashCode())
+					+ conditioned.hashCode();
 		}
 	}
 }

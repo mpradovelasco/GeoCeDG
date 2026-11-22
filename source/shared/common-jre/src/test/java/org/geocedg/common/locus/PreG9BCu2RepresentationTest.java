@@ -658,24 +658,28 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 	}
 
 	/**
-	 * V-B07-4 (decision E-1, approved): exploratory evidence is drawn in its own vertex list,
-	 * with the mark {@code EXPLORATORY_EVIDENCE} and a partial drawing fidelity, only inside
-	 * the unresolved bands of the published certificate, never in a subpath of a certified
-	 * component, and it is never exported. A locus outside class v3 (V-LVL-1) draws nothing
-	 * else; the unlabelled second output of the critical configuration draws its local
-	 * component and, apart, the evidence of the band around the coincident root.
+	 * V-B07-4 (decision E-1, approved) as ADR 0042 amends it: where the producer publishes
+	 * conditioned evidence, the unresolved bands of the published certificate are drawn as
+	 * conditioned regions, in their own vertex list, with the mark {@code CONDITIONED_REGION}
+	 * and a partial drawing fidelity, only inside those bands, never in a subpath of a
+	 * certified component, and they are never exported. The dotted exploratory evidence is
+	 * no longer drawn there. A locus outside class v3 (V-LVL-1) draws nothing else; the
+	 * unlabelled second output of the critical configuration draws its local component and,
+	 * apart, what is drawn of the band around the coincident root.
 	 */
 	@Test
-	void exploratoryEvidenceIsDrawnApartAndOnlyInsideItsBands() {
+	void theUnresolvedBandsAreDrawnApartAndOnlyInsideThem() {
 		add("s=0");
 		add("X=(s,s^2)");
 		add("D={false,{-2,2,true,true}}");
 		add("lx=LocusV2(X,s,D)");
 		LocusRenderData2D outside = render(locus("lx"), policy(40));
 		assertTrue(outside.getVertices().isEmpty());
-		assertFalse(outside.getExploratoryVertices().isEmpty());
+		assertTrue(outside.getExploratoryVertices().isEmpty());
+		assertFalse(outside.getConditionedVertices().isEmpty());
 		assertEquals(Fidelity.PARTIAL, outside.getFidelity());
-		assertFalse(marks(outside, MarkKind.EXPLORATORY_EVIDENCE).isEmpty());
+		assertFalse(marks(outside, MarkKind.CONDITIONED_REGION).isEmpty());
+		assertTrue(marks(outside, MarkKind.EXPLORATORY_EVIDENCE).isEmpty());
 		assertExploratoryInsideBands("lx", outside);
 		List<Component> declaredComponents = adapt(locus("lx")).getComponents();
 		assertEquals(1, declaredComponents.size());
@@ -690,7 +694,6 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 		add("lr2=LocusV2(R2,N)");
 		LocusRenderData2D band = render(locus("lr2"), policy(40));
 		assertFalse(band.getVertices().isEmpty());
-		assertFalse(band.getExploratoryVertices().isEmpty());
 		assertExploratoryInsideBands("lr2", band);
 		LocusExistenceStructure2D structure = locus("lr2").getSemanticDefinition()
 				.getBranch(BRANCH).getExistenceStructure();
@@ -698,25 +701,28 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 		for (Vertex vertex : band.getVertices()) {
 			certified.add(vertex.getPoint().getX() + "," + vertex.getPoint().getY());
 		}
-		for (Vertex vertex : band.getExploratoryVertices()) {
+		List<Vertex> apart = new java.util.ArrayList<>(band.getExploratoryVertices());
+		apart.addAll(band.getConditionedVertices());
+		for (Vertex vertex : apart) {
 			assertFalse(certified.contains(vertex.getPoint().getX() + ","
 					+ vertex.getPoint().getY()), "never joined to a component");
 		}
 		long emitted = adapt(locus("lr2")).getComponents().stream()
 				.filter(Component::isEmitted).count();
 		assertEquals(structure.getContinuousValidComponents().size(), emitted,
-				"the evidence is never exported");
+				"the bands are never exported");
 	}
 
 	/**
-	 * V-B07-4 (decision E-1, the style): drawn on a recording graphics, the exploratory evidence
-	 * of a locus outside class v3 and of the unlabelled second output of the critical
-	 * configuration is its own path, drawn after the certified one with the object colour at
-	 * alpha 128 and the dotted stroke of the object's width, never with the opaque solid stroke
-	 * of a certified component, which the unlabelled output draws first.
+	 * V-B07-4 (decision E-1, the style) as ADR 0042 amends it (contract {@code
+	 * post-r1-conditioned-use.md}, section 9): drawn on a recording graphics, the conditioned
+	 * region of a locus outside class v3 is drawn with the opaque stroke of the object, with
+	 * its width and its line type, and never with the dotted translucent style of exploratory
+	 * evidence; the unlabelled second output of the critical configuration draws its
+	 * certified stroke first, solid.
 	 */
 	@Test
-	void exploratoryEvidenceIsDrawnDottedAndTranslucent() {
+	void aConditionedRegionIsDrawnWithTheStyleOfTheObject() {
 		add("s=0");
 		add("X=(s,s^2)");
 		add("D={false,{-2,2,true,true}}");
@@ -732,35 +738,22 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 			StyleRecorder graphics = new StyleRecorder();
 			new org.geocedg.common.euclidian.draw.DrawLocusV2(view, locus).draw(graphics);
 			int draws = graphics.colors.size();
-			assertTrue(draws >= 2, label + " draws " + draws);
+			assertTrue(draws >= 1, label + " draws " + draws);
 			int rgb = locus.getObjectColor().getARGB() | 0xFF000000;
-			// The last draw is the exploratory path, with its own paint and stroke.
-			org.geogebra.common.awt.GColor color = graphics.colors.get(draws - 1);
-			org.geogebra.common.awt.GBasicStroke stroke = graphics.strokes.get(draws - 1);
-			assertEquals(128, color.getAlpha(), label);
-			assertEquals(rgb, color.getARGB() | 0xFF000000, label);
-			assertTrue(stroke.getDashArray() != null, label + " a dotted stroke");
-			assertEquals(java.util.Arrays.toString(org.geogebra.common.euclidian.EuclidianStatic
-					.getStroke(stroke.getLineWidth(), org.geogebra.common.plugin
-							.EuclidianStyleConstants.LINE_TYPE_DOTTED).getDashArray()),
-					java.util.Arrays.toString(stroke.getDashArray()), label);
-			assertTrue(graphics.segments.get(draws - 1) > 0, label + " evidence drawn");
-			for (int index = 0; index < draws - 1; index++) {
-				assertEquals(rgb, graphics.colors.get(index).getARGB() | 0xFF000000, label);
-				assertTrue(graphics.colors.get(index).getAlpha() != 128, label);
-				assertEquals(stroke.getLineWidth(), graphics.strokes.get(index).getLineWidth(),
-						label + " the width of the object");
-			}
-			if ("lr2".equals(label)) {
-				assertTrue(graphics.segments.get(0) > 0, "the certified stroke of lr2 is drawn");
-				assertTrue(graphics.strokes.get(0).getDashArray() == null
-						|| graphics.strokes.get(0).getDashArray().length == 0,
-						"the certified stroke is solid");
+			// The first draw is the path of the certified components and of the regions.
+			assertEquals(rgb, graphics.colors.get(0).getARGB() | 0xFF000000, label);
+			assertEquals(255, graphics.colors.get(0).getAlpha(), label + " opaque");
+			assertTrue(graphics.segments.get(0) > 0, label + " stroke drawn");
+			assertTrue(graphics.strokes.get(0).getDashArray() == null
+					|| graphics.strokes.get(0).getDashArray().length == 0,
+					label + " the solid stroke of the object");
+			for (int index = 0; index < draws; index++) {
+				assertTrue(graphics.colors.get(index).getAlpha() != 128,
+						label + " no translucent exploratory style");
 			}
 		}
 	}
 
-	/** Records the paint and stroke of each shape drawn, and its number of path segments. */
 	private static final class StyleRecorder extends org.geogebra.common.awt.GGraphicsCommon {
 		private final List<org.geogebra.common.awt.GColor> colors =
 				new java.util.ArrayList<>();
@@ -853,7 +846,9 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 		LocusDefinition2D definition = locus(label).getSemanticDefinition();
 		LocusExistenceStructure2D structure = definition.getBranch(BRANCH)
 				.getExistenceStructure();
-		for (Vertex vertex : drawing.getExploratoryVertices()) {
+		List<Vertex> apart = new java.util.ArrayList<>(drawing.getExploratoryVertices());
+		apart.addAll(drawing.getConditionedVertices());
+		for (Vertex vertex : apart) {
 			double parameter = definition.getProvider().canonicalize(
 					vertex.getSemanticParameter());
 			Coverage coverage = structure.getCoverageAt(parameter);

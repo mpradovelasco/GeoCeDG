@@ -213,10 +213,15 @@ public final class LocusConditionedTraversal2D {
 		long middle = lower + (upper - lower) / 2;
 		List<Double> inside = contradictionsIn(parameter(lower), parameter(upper));
 		boolean canSplit = upper - lower >= 4;
-		if (canSplit && coverage(lower, upper) == PARTLY_COVERED) {
+		if (coverage(lower, upper) == PARTLY_COVERED) {
 			// The end of a certificate is located to the minimum step before any evaluation.
-			queue.add(new long[] { lower, middle });
-			queue.add(new long[] { middle, upper });
+			// The cell of minimum step that contains it is not published: that end is a
+			// boundary of the certificate, which governs it, and no cell overlaps a
+			// certified coverage.
+			if (canSplit) {
+				queue.add(new long[] { lower, middle });
+				queue.add(new long[] { middle, upper });
+			}
 			return;
 		}
 		LocusConditionedSample2D first = gridNode(lower);

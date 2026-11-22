@@ -6184,6 +6184,80 @@
       "es": "Punto estructural bajo la autoridad constructiva"
     },
     "Definition.Integrity": { "en": "Integrity", "es": "Integridad" },
+    "Definition.Conditioned": {
+      "en": "Conditioned — existence/continuity not certified",
+      "es": "Condicionado — existencia/continuidad no certificadas"
+    },
+    "Definition.ConditionedResult": {
+      "en": "Result on a conditioned region — existence/continuity of the curve not certified",
+      "es": "Resultado sobre una región condicionada — existencia/continuidad de la curva no certificadas"
+    },
+    "Definition.ConditionedRegions": {
+      "en": "Conditioned regions",
+      "es": "Regiones condicionadas"
+    },
+    "Definition.ConditionedRegion": { "en": "Region", "es": "Región" },
+    "Definition.ConditionedBands": { "en": "Bands", "es": "Bandas" },
+    "Definition.ConditionedPolicy": {
+      "en": "Traversal policy",
+      "es": "Política de recorrido"
+    },
+    "Definition.ConditionedCell": {
+      "en": "Stretch that contains the parameter",
+      "es": "Tramo que contiene el parámetro"
+    },
+    "Definition.ConditionedHypotheses": {
+      "en": "Declared hypotheses, assumed and not proved on each conditioned stretch",
+      "es": "Hipótesis declaradas, supuestas y no demostradas en cada tramo condicionado"
+    },
+    "Definition.ConditionedHypothesis.H1_VALIDITY": {
+      "en": "H1 validity: the traced point is defined at every parameter of the stretch",
+      "es": "H1 validez: el punto trazado está definido en todo parámetro del tramo"
+    },
+    "Definition.ConditionedHypothesis.H2_SELECTION": {
+      "en": "H2 selection: every selected root keeps, along the stretch, the selection established at its nodes",
+      "es": "H2 selección: toda raíz seleccionada conserva, a lo largo del tramo, la selección establecida en sus nodos"
+    },
+    "Definition.ConditionedHypothesis.H3_CONTINUITY": {
+      "en": "H3 continuity: the traced function is continuous on the stretch",
+      "es": "H3 continuidad: la función trazada es continua en el tramo"
+    },
+    "Definition.ConditionedHypothesis.H4_RESOLUTION": {
+      "en": "H4 resolution: the curve stays within the chord-deviation limit of the policy from the polyline of the nodes",
+      "es": "H4 resolución: la curva no se separa de la poligonal de los nodos más que el límite de flecha de la política"
+    },
+    "Definition.ConditionedKind.SPAN": {
+      "en": "conditioned stretch",
+      "es": "tramo condicionado"
+    },
+    "Definition.ConditionedKind.TRANSITION_BAND": {
+      "en": "transition band (validity changes)",
+      "es": "banda de transición (cambia la validez)"
+    },
+    "Definition.ConditionedKind.SELECTION_BAND": {
+      "en": "selection band (the selected root is not established or changes)",
+      "es": "banda de selección (la raíz seleccionada no está establecida o cambia)"
+    },
+    "Definition.ConditionedKind.DISCONTINUITY_BAND": {
+      "en": "discontinuity band (a jump or a cut is suspected)",
+      "es": "banda de discontinuidad (se sospecha un salto o un corte)"
+    },
+    "Definition.ConditionedKind.FAILURE_BAND": {
+      "en": "failure band (an evaluation failed; not an absence)",
+      "es": "banda de fallo (una evaluación falló; no es una ausencia)"
+    },
+    "Definition.ConditionedKind.ABSENT_BAND": {
+      "en": "absence band (the point does not exist, under hypotheses)",
+      "es": "banda de ausencia (el punto no existe, bajo hipótesis)"
+    },
+    "Definition.ConditionedKind.UNEXPLORED": {
+      "en": "unexplored (the work limit ended first)",
+      "es": "sin explorar (se agotó antes el límite de trabajo)"
+    },
+    "Definition.ConditionedNotComplete": {
+      "en": "A drawing that looks closed or whole is not stated to be complete. Only a certificate removes these hypotheses.",
+      "es": "Un dibujo que parece cerrado o entero no se declara completo. Solo un certificado elimina estas hipótesis."
+    },
     "Definition.Cause": { "en": "Cause", "es": "Causa" },
     "Definition.Membership": {
       "en": "Membership of P in L",

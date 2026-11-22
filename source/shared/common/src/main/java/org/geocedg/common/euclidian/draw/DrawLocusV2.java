@@ -5,8 +5,15 @@
 
 package org.geocedg.common.euclidian.draw;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidenceOwner2D;
+import org.geogebra.common.awt.AwtFactory;
+import org.geogebra.common.awt.GColor;
+import org.geogebra.common.awt.GGeneralPath;
 import org.geogebra.common.awt.GBasicStroke;
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.awt.GRectangle;
@@ -28,6 +35,11 @@ public final class DrawLocusV2 extends Drawable {
 	private GBasicStroke exploratoryStroke;
 	private GShape exploratoryShape;
 	private boolean certifiedVertices;
+	/** Half diagonal, in pixels, of the system mark of a conditioned region: 7 px across. */
+	private static final double CONDITIONED_MARK_HALF = 3.5;
+	/** Screen anchors, as {@code x, y} pairs, of the marks of the visible regions. */
+	private double[] conditionedMarks = new double[0];
+	private boolean reporting;
 	private boolean visible;
 	private boolean labelVisible;
 
@@ -56,11 +68,14 @@ public final class DrawLocusV2 extends Drawable {
 		}
 		path.resetWithThickness(locus.getLineThickness());
 		strokedShape = null;
-		LocusRenderData2D data = renderCache.getOrBuild(locus,
-				LocusRenderPolicy2D.from(view));
+		LocusRenderData2D data = build();
 		labelVisible = locus.isLabelVisible();
 		boolean labelPositionSet = false;
-		for (LocusRenderData2D.Vertex vertex : data.getVertices()) {
+		// The certified components and the conditioned regions are one path with the style
+		// of the locus; each region is its own subpath, never joined across a band.
+		List<LocusRenderData2D.Vertex> drawn = new ArrayList<>(data.getVertices());
+		drawn.addAll(data.getConditionedVertices());
+		for (LocusRenderData2D.Vertex vertex : drawn) {
 			LocusPoint2D point = vertex.getPoint();
 			double x = view.toScreenCoordXd(point.getX());
 			double y = view.toScreenCoordYd(point.getY());
@@ -96,10 +111,121 @@ public final class DrawLocusV2 extends Drawable {
 		} else {
 			labelVisible = false;
 		}
-		certifiedVertices = !data.getVertices().isEmpty();
+		certifiedVertices = !drawn.isEmpty();
+		updateConditionedMarks(data);
 		updateExploratoryPath(data);
 		visible = view.intersects(path.getGeneralPath()) || exploratoryPath != null
 				&& view.intersects(exploratoryPath.getGeneralPath());
+	}
+
+	/**
+	 * Render data of the view, after telling the producer of the locus the parameters at
+	 * which the drawing found an evaluation that a conditioned region excludes (contract
+	 * {@code post-r1-conditioned-use.md}, section 7, point 4). The drawing decides nothing:
+	 * the producer evaluates each parameter itself, and only a content that it publishes is
+	 * drawn again.
+	 */
+	private LocusRenderData2D build() {
+		LocusRenderPolicy2D policy = LocusRenderPolicy2D.from(view);
+		LocusRenderData2D data = renderCache.getOrBuild(locus, policy);
+		if (reporting) {
+			return data;
+		}
+		reporting = true;
+		try {
+			for (int round = 0; round < 3; round++) {
+				boolean published = false;
+				for (LocusRenderData2D.Mark mark : data.getMarks()) {
+					if (mark.getKind() != LocusRenderData2D.MarkKind.EVALUATION_GAP
+							&& mark.getKind() != LocusRenderData2D.MarkKind.COMPUTATIONAL_GAP
+							|| Double.isNaN(mark.getParameter())) {
+						continue;
+					}
+					for (LocusRenderData2D.ConditionedRegion region
+							: data.getConditionedRegions()) {
+						if (region.getComponentKey().equals(mark.getComponentKey())) {
+							published |= locus.reportConditionedContradiction(
+									region.getBranchKey(), mark.getParameter())
+									== LocusConditionedEvidenceOwner2D.ReportOutcome.CONFIRMED;
+						}
+					}
+				}
+				if (!published) {
+					break;
+				}
+				data = renderCache.getOrBuild(locus, policy);
+			}
+		} finally {
+			reporting = false;
+		}
+		return data;
+	}
+
+	/**
+	 * System mark of the conditioned regions (contract section 9, point 4): one anchor per
+	 * region with a visible stroke, at the middle vertex of the visible part.
+	 */
+	private void updateConditionedMarks(LocusRenderData2D data) {
+		List<Double> anchors = new ArrayList<>();
+		for (LocusRenderData2D.ConditionedRegion region : data.getConditionedRegions()) {
+			List<double[]> onScreen = new ArrayList<>();
+			for (int index = 0; index < region.getVertexCount(); index++) {
+				LocusPoint2D point = data.getConditionedVertices().get(
+						region.getFirstVertex() + index).getPoint();
+				double x = view.toScreenCoordXd(point.getX());
+				double y = view.toScreenCoordYd(point.getY());
+				if (isOnScreen(x, y)) {
+					onScreen.add(new double[] {x, y});
+				}
+			}
+			if (onScreen.size() >= 2) {
+				double[] middle = onScreen.get(onScreen.size() / 2);
+				anchors.add(middle[0]);
+				anchors.add(middle[1]);
+			}
+		}
+		conditionedMarks = new double[anchors.size()];
+		for (int index = 0; index < conditionedMarks.length; index++) {
+			conditionedMarks[index] = anchors.get(index);
+		}
+	}
+
+	/** @return screen anchors of the system marks, as {@code x, y} pairs; a copy */
+	public double[] getConditionedMarkAnchors() {
+		return conditionedMarks.clone();
+	}
+
+	/**
+	 * Draws the system mark of each visible conditioned region: a hollow rhombus of 7
+	 * pixels, outlined with the colour of the object by a solid stroke of one pixel. It is
+	 * independent of the line style, the thickness and the zoom, has no hit area, is not
+	 * serialized and is neither geometry nor evidence; it is not an arrow and states no
+	 * orientation, certification or completeness.
+	 */
+	private void drawConditionedMarks(GGraphics2D graphics) {
+		if (conditionedMarks.length == 0) {
+			return;
+		}
+		GBasicStroke outline = AwtFactory.getPrototype().newBasicStroke(1,
+				GBasicStroke.CAP_BUTT, GBasicStroke.JOIN_MITER);
+		GColor background = view.getBackgroundCommon();
+		for (int index = 0; index + 1 < conditionedMarks.length; index += 2) {
+			double x = conditionedMarks[index];
+			double y = conditionedMarks[index + 1];
+			GGeneralPath rhombus = AwtFactory.getPrototype().newGeneralPath();
+			rhombus.moveTo(x, y - CONDITIONED_MARK_HALF);
+			rhombus.lineTo(x + CONDITIONED_MARK_HALF, y);
+			rhombus.lineTo(x, y + CONDITIONED_MARK_HALF);
+			rhombus.lineTo(x - CONDITIONED_MARK_HALF, y);
+			rhombus.closePath();
+			if (background != null) {
+				graphics.setColor(background);
+				graphics.fill(rhombus);
+			}
+			graphics.setColor(getObjectColor());
+			graphics.setStroke(outline);
+			graphics.draw(rhombus);
+		}
 	}
 
 	/**
@@ -151,6 +277,7 @@ public final class DrawLocusV2 extends Drawable {
 			graphics.setStroke(exploratoryStroke);
 			exploratoryPath.draw(graphics);
 		}
+		drawConditionedMarks(graphics);
 		if (labelVisible) {
 			graphics.setFont(view.getFontLine());
 			graphics.setPaint(locus.getLabelColor());

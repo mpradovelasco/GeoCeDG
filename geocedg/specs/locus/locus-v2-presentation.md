@@ -2,7 +2,9 @@
 
 - Status: **NORMATIVE / AUTHOR APPROVED** (version 1); **PRE-G9B-CU2 VERSION 2
   AMENDMENT ("PRE-G9B-CU2 amendment (version 2)" below) — ARCHITECTURE AUTHOR
-  APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**
+  APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**;
+  **CONDITIONED USE AMENDMENT (ADR 0042) — AUTHOR APPROVED AS CONTRACT (2026-11-22),
+  IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT**
 - Version: 2
 - Owners: GeoCeDG project owner
 - Roadmap gate: G9U0-R2 planning/design `PASS — AUTHOR APPROVED`;
@@ -278,3 +280,51 @@ expressions, scripts and unsupported structures reject the ordinary style
 block before application. The versioned V2 block is validated independently.
 Applying either block preserves the existing construction graph, identities
 and history. [CU4-R1](../../../docs/validation/pre_g9b_cu4_r1_candidate_report.md)
+
+## 2026-11-22 — Conditioned use amendment (ADR 0042): conditioned regions
+
+Amendment approved by the author on 2026-11-22 with
+[ADR 0042](../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md)
+and the [conditioned-use contract](candidates/post-r1-conditioned-use.md), §9, §10.1 and
+§12. Increment I2. The style contract and the render continuity contract above are
+unchanged.
+
+1. **Style.** The colour, thickness, line type and every other visual attribute of a locus
+   remain the user's. No style is imposed on a conditioned region and none identifies it.
+2. **Stroke.** A branch whose producer publishes conditioned evidence draws each of its
+   conditioned regions as one stroke with the style of the locus, in its own subpath. The
+   stroke is made of evaluations of the producer inside the spans of the published
+   content: the nodes of the content where their chord deviation is within the visual
+   tolerance of the view, and a tessellation from the evaluator, inside the region, where
+   the view needs a finer stroke. No render segment crosses a band, an unexplored cell or
+   the end of a certified component, and a region is never joined to a component. The
+   dotted exploratory evidence of version 2 is not drawn for such a branch; it remains the
+   drawing of an unresolved band whose producer publishes no conditioned evidence. A
+   region is drawn closed only as the contract, §8.3, allows.
+3. **Declared fidelity.** Each region drawn is declared by a mark `CONDITIONED_REGION` of
+   the render data, and the fidelity of a drawing with such a mark is never `COMPLETE`: a
+   drawing that looks closed or whole is never called complete.
+4. **System mark.** A hollow rhombus of 7 pixels, drawn by the system, identifies each
+   conditioned region that has a visible stroke, at the middle vertex of its visible part.
+   It is an overlay in screen pixels of fixed size, outlined by a solid stroke of one pixel
+   with the colour of the object and filled with the background of the view. It has no hit
+   area, is independent of the line style, the thickness and the zoom, is not serialized,
+   and is neither geometry, parametrization, identity, length nor evidence. It is not an
+   arrow and states no orientation; it never denotes certification or completeness. It is
+   drawn with the locus, so a picture export of a view shows it as the view does.
+5. **State in the properties.** The properties of the object state the grade in ordinary
+   words, localized: «Conditioned — existence/continuity not certified». On request the
+   definition inspector lists, per branch, the policy version, the conditioned regions,
+   the bands by kind and the hypotheses H1 to H4 that every conditioned stretch leaves
+   open, with the statement that only a certificate removes them. A result on a
+   conditioned region, such as a point addressed by parameter, states it the same way,
+   with the kind of the stretch that contains it and its integrity. No developer
+   diagnostic is needed to read them.
+6. **Publications of the evidence.** The render cache is keyed by the revision, the render
+   policy and the content identity of the conditioned evidence: another content is another
+   drawing. The drawing decides no geometric fact. Where it finds an evaluation that a
+   region excludes it reports the parameter to the producer, which evaluates it itself;
+   only a content that the producer publishes is drawn again.
+7. **Selection.** A conditioned stroke selects the object as any stroke does. Hit-testing
+   never creates an address: a point created by a request on the curve is created through
+   the inverse query and then addressed by parameter.

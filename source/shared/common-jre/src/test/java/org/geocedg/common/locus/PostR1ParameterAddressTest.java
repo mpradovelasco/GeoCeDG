@@ -106,9 +106,11 @@ final class PostR1ParameterAddressTest extends G9U0PublicSurfaceTestBase {
 		assertEquals(0.25, address.getCanonicalParameter(), 0);
 		assertEquals(BRANCH, address.getBranchKey());
 		assertEquals(locus.getPersistentLocusId(), address.getSourceLocusId());
-		// Point validity needs no interval evidence: none was computed for it.
-		assertNull(locus.getPublishedConditionedEvidence(BRANCH));
-		assertNull(algorithm.getContainingConditionedCell());
+		// Point validity needs no interval evidence; the cell that contains the parameter
+		// is information only, available once the content is published.
+		assertNotNull(locus.getConditionedEvidence(BRANCH));
+		assertEquals(LocusConditionedCellKind2D.SPAN,
+				algorithm.getContainingConditionedCell().getKind());
 		// Nothing is certified by defining the point.
 		assertEquals(LocusExistenceStructure2D.Completeness.NOT_ESTABLISHED, locus
 				.getSemanticDefinition().getBranch(BRANCH).getExistenceStructure()
@@ -528,7 +530,6 @@ final class PostR1ParameterAddressTest extends G9U0PublicSurfaceTestBase {
 		SpatialIdentityRegistry registry = reopened.getKernel().getConstruction()
 				.getSpatialIdentityRegistry();
 		GeoLocusV2 loaded = (GeoLocusV2) reopened.getKernel().lookupLabel("L");
-		assertNull(loaded.getPublishedConditionedEvidence(BRANCH));
 		int index = 0;
 		for (String label : List.of("A", "B", "C")) {
 			GeoPoint point = (GeoPoint) reopened.getKernel().lookupLabel(label);

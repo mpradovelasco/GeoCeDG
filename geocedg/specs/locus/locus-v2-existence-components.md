@@ -637,7 +637,9 @@ is a fifth typed structure beside the four levels of §15.1 and is none of them:
   (`conditioned-traversal/v1`), on demand, as an immutable content;
 - it partitions into typed cells the part of the declared driver domain of a branch that no
   certified component and no certified nonexistence covers, with ends that are dyadic
-  fractions of that domain; a cell inside a certified coverage is never published;
+  fractions of that domain; no cell overlaps a certified coverage, and the cell of minimum
+  step that contains an end of a certificate is not published, because that end is a
+  boundary of the certificate, which governs it;
 - a maximal run of adjacent spans is a *conditioned region*. A region is not a component of
   §15.2: it has no lineage, no ordinal identity and no persisted form, and it is never
   identity material under §15.6;
