@@ -332,6 +332,50 @@ ausente allí; en el checkout principal pasa.
    hecha con I4 no es concluyente porque la máquina estaba cargada, y se repite con el
    candidato.
 
+## Checkpoint 8 — candidato funcional GeoCeDG 1.2.2
+
+Candidato técnico, **no aprobado por el autor, no publicado y sin etiqueta**: commit
+`b2c5aad355d955d684512f6e08f986c200e25bb3`, árbol
+`1b750d574240ca448de112cd858cccf094bab23b`, sobre el registro `c6c6c7602` del bloque 3B.
+
+- **Contenido.** Versión 1.2.2 en `packaging/windows/package.yml` con fecha de versión
+  `2026-11-22`, **provisional**: la fecha de versión la designa el autor. Pines del
+  contrato estático; cuatro pruebas de Desktop que fijan la versión; guías ES y EN con la
+  versión vigente y la sección nueva 6.9 sobre el uso condicionado;
+  [documento de rendimiento, §7](../architecture/post_r1_locus_real_change_performance.md).
+  Sin cambio de geometría, algoritmos, serialización, dependencias ni `upgrade_uuid`
+  respecto a `0f02c8f21`.
+- **Verificación ordinaria sobre `b2c5aad35`.** `STATIC`
+  `verification-130b611c356b462ca9fb89549ac209d7`, `PHASE POST-R1-LOCUS`
+  `verification-c9b4beb3cb1346b79c3ad735d9890fd4`, `INTEGRATION`
+  `verification-2b6e6b612f7e412195921b8e824430bd`; las tres `ACCEPTED / COMPLETE`, código
+  0. `FINAL` no se ejecutó: no está autorizado.
+- **Empaquetado.** Paquetes NC construidos desde el candidato limpio con
+  `tools/release/build-windows-package.ps1 -Target All -DistributionProfile NC` en
+  `artifacts/packaging/windows-1.2.2-nc-candidate` (ignorado por Git);
+  `source_revision` de la app-image igual al candidato. ZIP
+  `50147389f1f0dca28c5189cf85ee2e7969f25ae992a5e7c4b8d81be248a38000`, MSI
+  `3ee9af0aa63bdd9ba83e0d4ae0bc9090e8b86a4120117211d622418f714ca35f`, EXE
+  `a45adbd0109e1c29031d2db36f8e4aa3b79ee49deb97a56d33c58da6584537d5`. `PACKAGING` con
+  toolchain y artefactos: `verification-e85784e657744ce5a50eae7a69daadf1`,
+  `ACCEPTED / COMPLETE`.
+- **Desktop y persistencia.** Regresión completa de Desktop sobre `d5589c271` (I4T): 1568
+  pruebas, con el único fallo previo conocido y el diagnóstico que solo falla en un
+  worktree. `PostR1ConditionedIntersectionDesktopTest` y `PostR1ConditionedPointDesktopTest`
+  cubren, sobre el modelo del autor, la creación, la retención del token, la imagen por
+  semejanza y la relectura del documento nativo.
+- **Humo de la app-image.** Un observador externo, fuera del repositorio y con
+  preferencias aisladas, cargó los JAR de la app-image del candidato (no se lanzó el
+  ejecutable ni se instaló el MSI): título `GeoCeDG 1.2.2`; `w_2` con dos regiones;
+  `Intersect` con un segmento, una raíz con token nuevo en un libro de versión 7 y su punto
+  definido; `Rotate` con las 176 celdas heredadas sin evaluar ninguna; documento nativo
+  guardado y releído con el mismo libro, el mismo token y el punto definido.
+  `LocusLength` entre dos puntos de la región devuelve un número **sin definir**: la
+  longitud condicionada es un resultado rico y no es admisible como escalar (hallazgo 2).
+- **Rendimiento.** Grafo de 0,59 a 0,78 s por cambio real de `excCyl`; evidencia de 0,39 a
+  0,47 s por lugar con hueco y revisión. El objetivo de D-V6 se cumple para el grafo y no
+  para el total con la evidencia consumida por el dibujo (hallazgo 7).
+
 ## Verificación del candidato
 
 ### Candidato de las precisiones focales y del trabajo preparatorio de I0
@@ -495,13 +539,13 @@ la base. Ninguna etiqueta creada ni movida; versión de producto sin cambiar (1.
   aprobado: un resultado automatizado aceptado no es aprobación autoral); revisión de las
   reparaciones y del modelo (bloques 1 y 2) y de F8; los hallazgos anteriores; designación
   de la fecha de versión; autorización de publicación si procede.
-- **No hecho:** candidato funcional 1.2.2 (versión, guías, empaquetado, humo de app-image y
-  medición de rendimiento), que es el paso siguiente. Publicación en `main`, etiqueta
-  `v1.2.2`, release y `FINAL`: no autorizados.
-- **Reanudación exacta:** partir de `0f02c8f21` en `maintenance/geocedg-1.2.2-post-r1`,
-  comprobar que `main` sigue en `9ccefdcfe`, y preparar el candidato 1.2.2 como se preparó
-  1.2.1 (`packaging/windows/package.yml`, pin del contrato estático, pruebas de Desktop
-  que afirman la versión, guías), con `STATIC` y `PACKAGING`.
+- **No hecho:** lanzamiento del ejecutable empaquetado e instalación del MSI; `FINAL`;
+  publicación en `main`, etiqueta `v1.2.2` y release: ninguno autorizado.
+- **Reanudación exacta:** el candidato es `b2c5aad35`. Con una decisión expresa del autor
+  sobre el candidato exacto: fijar la fecha de versión que designe (cambia
+  `package.yml`, sus dos pines, las pruebas que la afirman y las guías, y por tanto el
+  commit y los paquetes), repetir `STATIC`, el empaquetado y `PACKAGING`, y solo entonces
+  avanzar `main`, etiquetar y publicar como se hizo con 1.2.1.
 - **Conservado:** el original del modelo, la evidencia R1 y las salidas de benchmark en
   `artifacts/benchmarks/post-r1-locus/` (ignoradas por Git). Dos worktrees separados, de la
   base y de `ab37fb5ff`, usados solo para medir el «antes», quedan en el scratchpad de la
