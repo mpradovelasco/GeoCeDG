@@ -682,7 +682,12 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		// its existence is not established. Since ADR 0042 its conditioned regions are
 		// searched (locus-v2-intersections.md, conditioned use amendment): the contact at
 		// the corner is not an isolated transverse root, and it is still not admissible.
+		assertEquals(1, unisolatedResult.getFiniteSolutions().size());
 		for (LocusIntersectionSolution2D solution : unisolatedResult.getFiniteSolutions()) {
+			assertEquals(ContactClass.TANGENT_ESTABLISHED,
+					solution.getClassification().getContactClass());
+			assertEquals(IdentityStatus.NOT_ESTABLISHED,
+					solution.getIdentity().getIdentityStatus());
 			assertFalse(unisolatedResult.findPointAdmissibleSolution(
 					solution.getIdentity().getRootToken()).isPresent(),
 					solution.getDiagnostics().toString());

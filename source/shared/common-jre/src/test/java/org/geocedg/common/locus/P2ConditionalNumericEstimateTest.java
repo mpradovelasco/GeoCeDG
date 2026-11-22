@@ -76,7 +76,17 @@ class P2ConditionalNumericEstimateTest extends PreG9bR3RedefineTestBase {
  @ParameterizedTest @ValueSource(ints={2,4})
  void knownNativeJumpsRemainInadmissible(int frequency) {
   add("s=Segment((0,0),(1,0))");add("P=Point(s)");add("nativeSine=sin("+frequency+"*pi*x(P))");add("Q=(x(P),nativeSine)");add("L=LocusV2(Q,P)");
-  LocusMetricResult2D r=metric("a","LocusLength(L)");assertNoTotalWithoutExistence(r,"native sine jumps");
+  LocusMetricResult2D r=metric("a","LocusLength(L)");
+  // ADR 0042: the total is the subtotal over the conditioned regions, never a scalar; the
+  // unresolved coverage around each native zero is listed as omitted, not measured.
+  assertConditionedTotalWithoutAuthority(r,"native sine jumps",true,MetricGuaranteeClass2D.ESTIMATED);
+  assertTrue(r.getDiagnostics().toString().contains("UNCLASSIFIED"),r.getDiagnostics().toString());
+  // The certified pieces between the native zeros are measured, each once: two per period.
+  assertEquals(2*frequency,r.getContributions().size());
+  double reference=0;int cells=1<<16;
+  for(int i=0;i<cells;i++){reference+=Math.hypot(1,frequency*Math.PI*Math.cos(frequency*Math.PI*(i+.5)/cells))/cells;}
+  assertEquals(reference,r.getMetricValue().getFiniteValue().orElseThrow(),1E-6);
+  assertFalse(((GeoNumeric)lookup("a")).isDefined());
   assertFalse(((GeoNumeric)add("b=2*a+1")).isDefined());
  }
  @Test void lossRecoveryAndFileKeepIdentityAndRecompute() {

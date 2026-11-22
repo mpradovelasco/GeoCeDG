@@ -160,11 +160,13 @@ class PreG9bR3X1RedefineWitnessTest extends PreG9bR3RedefineTestBase {
 		// established. Since ADR 0042 its conditioned regions are searched: a root found
 		// there is a root on a conditioned region with an identity of its own, which is
 		// never the token of the retained claim.
+		assertEquals(2, e.getIntersectionResult().getFiniteSolutions().size());
 		for (LocusIntersectionSolution2D root
 				: e.getIntersectionResult().getFiniteSolutions()) {
 			assertTrue(root.getDiagnostics().toString().contains("CONDITIONED_REGION_ROOT"),
 					root.getDiagnostics().toString());
 			assertFalse(token.equals(root.getIdentity().getRootToken()));
+			assertTrue(e.isPointAdmissible(root.getIdentity().getRootToken()));
 		}
 		assertTrue(e.getIntersectionResult().getDiagnostics().toString()
 				.contains("COVERAGE_NOT_ESTABLISHED"));

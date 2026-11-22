@@ -707,6 +707,17 @@ class PreG9BCu2RepresentationTest extends BaseUnitTest {
 			assertFalse(certified.contains(vertex.getPoint().getX() + ","
 					+ vertex.getPoint().getY()), "never joined to a component");
 		}
+		// The band around the coincident root is narrower than the minimum step of the
+		// policy conditioned-traversal/v1 (2^-20 of the period): no cell is published in
+		// it, so nothing is drawn apart there, and the drawing stays declared partial.
+		List<Coverage> unresolved = structure.getCoverage().stream().filter(item ->
+				item.getState() == CoverageState.UNRESOLVED).toList();
+		assertEquals(1, unresolved.size());
+		assertTrue(unresolved.get(0).getInterval().getUpper()
+				- unresolved.get(0).getInterval().getLower() < 2 * Math.PI / (1 << 20));
+		assertTrue(locus("lr2").getConditionedEvidence(BRANCH).getCells().isEmpty());
+		assertTrue(apart.isEmpty(), "nothing is drawn in a band without a cell");
+		assertEquals(Fidelity.PARTIAL, band.getFidelity());
 		long emitted = adapt(locus("lr2")).getComponents().stream()
 				.filter(Component::isEmitted).count();
 		assertEquals(structure.getContinuousValidComponents().size(), emitted,

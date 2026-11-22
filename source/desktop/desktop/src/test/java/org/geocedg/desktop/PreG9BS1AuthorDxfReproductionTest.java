@@ -225,6 +225,8 @@ class PreG9BS1AuthorDxfReproductionTest {
 		assertEquals(0, locusPreflight.getInvalidCount());
 		assertEquals(1, locusPreflight.getApproximateCount());
 		assertEquals(1, locusPreflight.getModel().getEntities().size());
+		// The certified component, of local coverage only, and the declared omission.
+		assertEquals(2, locusPreflight.getIncompleteSemanticCoverageCount());
 		assertTrue(locusPreflight.hasIncompleteSemanticCoverage());
 		assertTrue(locusPreflight.isSidecarRequired());
 		// ADR 0042 (dxf-curve-fidelity-and-approximation.md section 11): the conditioned

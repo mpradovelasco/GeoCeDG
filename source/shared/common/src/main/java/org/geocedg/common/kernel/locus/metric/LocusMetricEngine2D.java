@@ -88,6 +88,7 @@ public final class LocusMetricEngine2D {
 			Map<String, LocusConditionedEvidence2D> evidences) {
 		List<LocusMetricContribution2D> contributions = new ArrayList<>();
 		List<String> omitted = new ArrayList<>();
+		boolean absence = false;
 		for (LocusBranch2D branch : definition.getBranches()) {
 			List<LocusInterval2D> pieces = declared.get(branch.getBranchKey());
 			LocusConditionedEvidence2D evidence = evidences.get(branch.getBranchKey());
@@ -115,6 +116,7 @@ public final class LocusMetricEngine2D {
 										+ "work limit of " + evidence.getPolicyVersion(),
 								Optional.empty());
 					}
+					absence |= cell.getKind() == LocusConditionedCellKind2D.ABSENT_BAND;
 					if (!cell.getKind().isSpan()
 							&& cell.getKind() != LocusConditionedCellKind2D.ABSENT_BAND) {
 						omitted.add(branch.getBranchKey() + " " + cell.getKind().name()
@@ -159,17 +161,24 @@ public final class LocusMetricEngine2D {
 							selected.state, query.getPolicy(), instrumentation));
 				}
 			}
-			for (int index = 0;
-					index < branch.getValidDomainComponents().size(); index++) {
+			// The certified components of a branch that is not COMPLETE: the complete-only
+			// accessor of the branch is empty here by definition.
+			List<LocusInterval2D> certified = branch.getCertifiedContinuousValidComponents();
+			for (int index = 0; index < certified.size(); index++) {
 				String componentKey = LocusMetricComponentKey2D.create(
 						definition, branch, index);
 				CapabilityState selected = state(definition, branch,
-						branch.getValidDomainComponents().get(index), componentKey,
+						certified.get(index), componentKey,
 						query.getPolicy(), capabilities, owner, indexMode, instrumentation,
 						consumerToken);
 				contributions.add(selected.capability.evaluateCompleteComponent(
 						selected.state, query.getPolicy(), instrumentation));
 			}
+		}
+		if (contributions.isEmpty() && !absence) {
+			// Nothing was measured and nothing is absent under a hypothesis: a sum of no
+			// contribution is no length.
+			return incompleteTotal(query, definition);
 		}
 		LocusMetricResult2D total = aggregator.aggregateTotal(query, contributions);
 		if (total.getComputationStatus() != MetricComputationStatus.SUCCESS

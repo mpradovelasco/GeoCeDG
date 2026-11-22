@@ -128,18 +128,20 @@ final class PreG9bR3X1ExpressionPointPairMaterializationTest
 		add("Ex=(x(C)/2,exp(y(C)))");
 		add("ex=LocusV2(Ex,C)");
 		GeoLocusIntersectionResult rich = add("Rx=Intersect(d,ex)");
+		// The two crossings of the fixture, both on the conditioned region of the source.
+		assertEquals(2, rich.getIntersectionResult().getFiniteSolutions().size());
 		for (LocusIntersectionSolution2D root
 				: rich.getIntersectionResult().getFiniteSolutions()) {
 			assertTrue(root.getDiagnostics().toString().contains("CONDITIONED_REGION_ROOT"),
 					root.getDiagnostics().toString());
 		}
-		// No D2 slot: every binding of the ledger, if any, has a branch-frame side.
+		assertEquals(2, eligible(rich).size(), diagnostic(rich));
+		// No D2 slot: the two bindings of the ledger are pair bindings with a branch frame.
 		assertFalse(diagnostic(rich).contains("status=UNIQUE"), diagnostic(rich));
 		String ledger = rich.getTokenLedgerState();
 		assertFalse(ledger.contains("~P,"), ledger);
-		assertEquals(eligible(rich).isEmpty(), ledger.startsWith("4|"), ledger);
-		assertEquals(!eligible(rich).isEmpty(), ledger.startsWith("7|") && ledger.contains(
-				"~Q,"), ledger);
+		assertTrue(ledger.startsWith("7|"), ledger);
+		assertEquals(3, ledger.split("~Q,", -1).length, ledger);
 		assertTrue(diagnostic(rich).contains("COVERAGE_NOT_ESTABLISHED"), diagnostic(rich));
 		assertTrue(evaluator("ex").captureCertifiedProgram().isEmpty());
 	}

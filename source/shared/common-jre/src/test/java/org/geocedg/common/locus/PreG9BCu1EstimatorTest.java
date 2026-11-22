@@ -162,7 +162,11 @@ class PreG9BCu1EstimatorTest extends G9U0PublicSurfaceTestBase {
 		LocusMetricResult2D aliased = (richResultOf(add("M=LocusLength(L)")))
 				.getMetricResult();
 		// P2: a recognized operation beyond its proof-method range is not an H10 refusal.
-		assertNoTotalWithoutExistence(aliased, "public aliasing enclosure limit");
+		// ADR 0042: its conditioned region is measured and the estimate does not converge;
+		// the refusal keeps that cause.
+		assertTotalRefused(aliased, "public aliasing enclosure limit",
+				MetricComputationStatus.LIMIT_NOT_ESTABLISHED,
+				MetricDiagnosticCode2D.WORK_BUDGET_EXHAUSTED);
 		add("F=(x(P),floor(4*x(P)))");
 		GeoLocusV2 publicFloor = add("Lf=LocusV2(F,P)");
 		LocusMetricResult2D floored = (richResultOf(add("Mf=LocusLength(Lf)")))
