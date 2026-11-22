@@ -235,6 +235,11 @@ a las especificaciones con el incremento que implementa cada una.
 |---|---|---|---|
 | Registro de la aprobación | `2ee7aae26` | registro de aprobación; ADR 0042 `ACCEPTED`; contrato `conditioned-use/v4`; cabeceras del diseño y del registro de decisiones; registro aditivo en la hoja de ruta | `STATIC` `verification-d2744077338947a7b33ee2e2f6cf881b`, `ACCEPTED / COMPLETE` |
 | **I0** | `02b1d688f` (código, especificación, arnés), `4490d58fb` (inventario) | testimonio del evaluador real; lista cerrada de causas de ausencia; propietario de la evidencia en el productor y accesos en `GeoLocusV2`; ninguna celda dentro de una cobertura certificada; política v1 con límite de trabajo 1 024; escenario `conditioned` del arnés; `locus-v2-existence-components.md` 1.2, §19 | sobre `4490d58fb` (árbol `0e5adf81`): `STATIC` `verification-63e5bd05085542348374b113342fe26f`, `PHASE POST-R1-LOCUS` `verification-e9081ba52f334db9a6ff5c1a56f829de` (235 identidades compartidas y 25 de Desktop), `INTEGRATION` `verification-0104d11323c04f2cb5510c84f8c81c3d`; las tres `ACCEPTED / COMPLETE`, código 0 |
+| **I1** | `cbced7165` (código, especificaciones), `433091e99` (inventario) | dirección por parámetro y su códec `geocedg-locus-parameter-address/v1`; validez puntual separada de la admisibilidad de la continuación; seguimiento, arrastre y colocación por clic sobre regiones condicionadas; enmiendas de `locus-v2-public-surface.md`, `locus-v2-point-interaction.md` y §19.4 de existencia | sobre `433091e99` (árbol `486e8e89`): `STATIC` `verification-5fb01067b27e4dc49a9ac862a241686a`, `PHASE POST-R1-LOCUS` `verification-e9ee390c6cd64da6bf6f192751568495`, `INTEGRATION` `verification-4c5268a2c6bf4c19b13bc78982518c43`; las tres `ACCEPTED / COMPLETE`, código 0 |
+| **I2** | `a704a406c` (código, especificación), `45ab0157d` (inventario) | una región condicionada se dibuja como un trazo continuo con el estilo del objeto; marca de sistema (rombo hueco de 7 px); grado y explicación en las propiedades; enmienda de `locus-v2-presentation.md` | sobre `45ab0157d` (árbol `303c00cb`): `STATIC` `verification-358032b278104ce89254cfeb414145fc`, `PHASE POST-R1-LOCUS` `verification-fa0c456e389c41baa81ebe9fc5cef444`, `INTEGRATION` `verification-0966b2ebe7234c63b52a75939cb486d2`; las tres `ACCEPTED / COMPLETE`, código 0 |
+| **I3** | `3cf7c2994` (código, especificación), `c7e1f2a56` (inventario) | longitud entre dos posiciones de una región y longitud total sobre regiones condicionadas, con subtotales; `locus-v2-metrics.md` §28; la admisión escalar no se amplía | sobre `c7e1f2a56` (árbol `7abe3372`): `STATIC` `verification-37fb707973ed418e894865071ad1d2fe`, `PHASE POST-R1-LOCUS` `verification-a002cd94974a4b8695f7c9ce6eb7bddc`, `INTEGRATION` `verification-c494bf71f8ad46b8bd79d10296656a07`; las tres `ACCEPTED / COMPLETE`, código 0 |
+| **I4** | `637b5ee69` (código, especificaciones), `223e1d6de` (inventario), `048ec4edf` (corrección) | `Intersect` sobre regiones condicionadas; selector de marco de rama; libro de tokens versión 7 con origen y guarda de reutilización; pares; lugares dependientes y anidados; declaración en la exportación semántica | sobre `223e1d6de` (árbol `c9a25378`): `STATIC` `verification-53949bc6a1734ceda32cf2b88ec6d093`, `PHASE POST-R1-LOCUS` `verification-50398e1da5264506b9f19ac5614680d7`, `INTEGRATION` `verification-80480162e8b747f2b92ce583a4d03b53`; las tres `ACCEPTED / COMPLETE`, código 0. La corrección `048ec4edf` queda cubierta por la verificación de I4T |
+| **I4T** | `d5589c271` (código, especificación, pruebas), `0f02c8f21` (inventario) | la imagen por una semejanza hereda la evidencia condicionada celda a celda y la enuncia en su propio mundo; `locus-v2-similarity-transformations.md`, enmienda de uso condicionado | sobre `0f02c8f21` (árbol `165d6b0c`): `STATIC` `verification-47684adf4b90459091b0df73d8ec1b27`, `PHASE POST-R1-LOCUS` `verification-ee22fb8aa8cd49c8adbf14a23315f02e`, `INTEGRATION` `verification-e41bdd5c26a44ceea4c741664f1000c5`; las tres `ACCEPTED / COMPLETE`, código 0 |
 
 ### I0 — evidencia condicionada desde el productor real
 
@@ -263,9 +268,69 @@ a las especificaciones con el incremento que implementa cada una.
   evaluaciones y 0,41 a 0,50 s por revisión; `trHole`, una región de periodo completo, 257
   evaluaciones y 0,16 s. Coste nulo al arrastrar. El banco real destapó y corrigió el
   criterio de testimonio de la selección recta-cónica (allí descrito).
-- **Pendiente que I0 traslada.** El sobrecoste por revisión cuando la evidencia se consuma
-  (≈ 0,9 s en el modelo original) se trata en I2 con la exploración perezosa del
-  certificado.
+- **Pendiente que I0 trasladó.** El sobrecoste por revisión cuando la evidencia se consume
+  (≈ 0,9 s en el modelo original). La exploración perezosa del certificado prevista para I2
+  no se hizo, por su riesgo sobre la versión de la política y las firmas; el coste se mide
+  de nuevo y se informa con el candidato (hallazgo 7).
+
+### I1 a I4T — resumen por incremento
+
+Cada incremento se cerró del mismo modo: commit de código, commit de inventario creado en un
+worktree aparte sobre ese código (selecciones `post-r1-locus.*` ampliadas, descubrimiento y
+pin del catálogo), y `STATIC`, `PHASE POST-R1-LOCUS` e `INTEGRATION` sobre el commit de
+inventario. Las selecciones `final.*` no se refrescan. Regresión completa
+`org.geocedg.*`: compartida sin fallos; Desktop con el único fallo previo conocido,
+`PreG9BCu2AuthorModelConsumerTest.theCertificateIsTheSingleClosureAuthority` (falla ya en
+la base `9ccefdcfe`). En los worktrees falla además
+`G9U1Revision3AlgebraEditingDiagnostic`, que lee un archivo del autor ignorado por Git y
+ausente allí; en el checkout principal pasa.
+
+- **I1.** `PostR1ParameterAddressTest` (14) y `PostR1ConditionedPointDesktopTest` (1).
+  Criterios 1a (punto) y 4a. Tres pruebas anteriores pasan a afirmar el comportamiento
+  aprobado.
+- **I2.** `PostR1ConditionedPresentationTest` (6) y
+  `PostR1ConditionedPresentationDesktopTest` (1). Pintado de 7 a 10 ms sobre el modelo.
+- **I3.** `PostR1ConditionedMetricTest` (6). Una longitud sobre regiones condicionadas es
+  un resultado rico de cobertura `INCOMPLETE`, nunca admisible como escalar.
+- **I4.** `PostR1ConditionedIntersectionTest` (19), `PostR1ConditionedPairIntersectionTest`
+  (3) y `PostR1ConditionedDependentLocusTest` (3), con órdenes reales sobre el kernel.
+  Criterios 1a (raíz), 1b, 2a a 2d y 7a a 7e. La regresión de Desktop del incremento
+  detectó que un lugar con una componente certificada y una región condicionada dejaba de
+  codificarse en DXF, porque el codificador estricto rechazaba todo resultado sin entidad;
+  `048ec4edf` lo corrige (un componente declarado nunca bloquea la petición estricta) y
+  adapta `PreG9BS1AuthorDxfReproductionTest`.
+- **I4T.** `PostR1ConditionedSimilarityTest` (8) y
+  `PostR1ConditionedIntersectionDesktopTest` (1, sobre el modelo del autor: raíz con
+  token en el lugar con hueco, token retenido en la otra región, imagen heredada y
+  documento nativo releído). Criterios 5 y 8a a 8e; 8f es la suite de semejanza existente,
+  que pasa sin cambios.
+
+**Hallazgos que se trasladan al autor, sin decisión tomada:**
+
+1. *Salto a lo largo de la cuerda.* Un salto en la dirección de la cuerda no deja rastro en
+   la desviación ni en el giro y queda dentro de un tramo: es el límite declarado del
+   recorrido (contrato §4). Un criterio adicional cambiaría el contenido de la política
+   aprobada.
+2. *Admisión escalar.* No se amplía a las longitudes condicionadas
+   (`locus-v2-metrics.md` §28.3); es una decisión de admisibilidad aparte.
+3. *Aislamiento local de pares.* La capacidad de solo evaluación nunca lo establece, de modo
+   que ningún par con un lado condicionado podía recibir token. I4 añade la evidencia
+   numérica que el modelo ya tipificaba (`SAFEGUARDED_REGULAR_JACOBIAN`), declarada no
+   certificada.
+4. *Clave de par.* La clave no ordenada de un par de lugares coincide para (i, j) y (j, i)
+   cuando las dos fuentes comparten clave de rama y tienen varias componentes. Las regiones
+   reciben claves propias de cada lado; el caso de dos fuentes certificadas de varias
+   componentes no se ha reproducido ni tocado, porque cambiaría textos de identidad.
+5. *Costura periódica.* La guarda de reutilización no continúa una región a través de la
+   costura: una raíz que la cruza queda con el token retenido, que es el lado seguro.
+6. *Pruebas de conformidad anteriores.* Cuatro pruebas que afirmaban «ninguna raíz» o
+   «ningún token de par» sobre fuentes sin certificado afirman ahora el comportamiento
+   aprobado: la raíz se declara condicionada, no hay ranura D2 y el punto existente no se
+   reapunta. Se conserva el nombre `anUncertifiedExpressionIssuesNoPairToken`, citado por
+   la matriz de validación de R3-X1.
+7. *Coste.* La evidencia cuesta de 0,4 a 0,5 s por lugar con hueco y revisión; la medición
+   hecha con I4 no es concluyente porque la máquina estaba cargada, y se repite con el
+   candidato.
 
 ## Verificación del candidato
 
@@ -421,29 +486,22 @@ y su inventario, que quedan como candidatos pendientes de esa aprobación. Las r
 (`ab37fb5ff`), 2 (`83cd56c4c`) y 3 (`57c495cce`) quedan sustituidas.
 
 Ramas locales `maintenance/post-r1-locus-repairs-and-conditioned-use` (en `96a4137e0`) y
-`maintenance/geocedg-1.2.2-post-r1`, sin publicar. `main` local y `origin/main` siguen en
+`maintenance/geocedg-1.2.2-post-r1` (bloque 3B completo en `0f02c8f21`), sin publicar. `main` local y `origin/main` siguen en
 la base. Ninguna etiqueta creada ni movida; versión de producto sin cambiar (1.2.1).
 
 ## Pendiente, siguiente acción y reanudación
 
-- **Pendiente del autor:** aprobación normativa definitiva del texto de la revisión 4;
-  revisión de las reparaciones y del modelo (bloques 1 y 2) y de F8; revisión del texto de
-  las aclaraciones normativas estrechas; autorización de publicación si procede.
-- **No hecho:** el resto de I0 (testimonio del evaluador real, integración en el productor,
-  banco con el protocolo real y coste por revisión), I1 a I3, e I4 e I4T, que no se inician
-  antes de la aprobación normativa por decisión del autor. Candidato 1.2.2 (versión,
-  empaquetado, humo de app-image, notas). Publicación en `main`. `FINAL` (no autorizado, no necesario bajo la
-  política vigente).
-- **Reanudación exacta:** con la aprobación normativa, partir de la punta de
-  `maintenance/geocedg-1.2.2-post-r1`, comprobar la aprobación, el commit que cubre y si la
-  base ha cambiado, y continuar el incremento I0 del
-  [plan](../architecture/post_r1_locus_conditioned_use_design.md#5-plan-de-incrementos-3b)
-  desde el candidato preparatorio `ee1518a1e`: testimonio de evaluación leído del
-  evaluador real e integración de `LocusConditionedEvidence2D` en el productor, sin cambiar
-  operaciones públicas. Orden: I0, I1, I2, I3, I4, I4T; después, el candidato funcional
-  1.2.2, sin checkpoints autorales rutinarios intermedios (decisión del autor de
-  2026-11-21). Siguen exigiendo decisión expresa: publicar en `main`, crear `v1.2.2`,
-  ejecutar `FINAL` y registrar cualquier aprobación autoral.
+- **Pendiente del autor:** revisión de los incrementos I0 a I4T como producto (ninguno está
+  aprobado: un resultado automatizado aceptado no es aprobación autoral); revisión de las
+  reparaciones y del modelo (bloques 1 y 2) y de F8; los hallazgos anteriores; designación
+  de la fecha de versión; autorización de publicación si procede.
+- **No hecho:** candidato funcional 1.2.2 (versión, guías, empaquetado, humo de app-image y
+  medición de rendimiento), que es el paso siguiente. Publicación en `main`, etiqueta
+  `v1.2.2`, release y `FINAL`: no autorizados.
+- **Reanudación exacta:** partir de `0f02c8f21` en `maintenance/geocedg-1.2.2-post-r1`,
+  comprobar que `main` sigue en `9ccefdcfe`, y preparar el candidato 1.2.2 como se preparó
+  1.2.1 (`packaging/windows/package.yml`, pin del contrato estático, pruebas de Desktop
+  que afirman la versión, guías), con `STATIC` y `PACKAGING`.
 - **Conservado:** el original del modelo, la evidencia R1 y las salidas de benchmark en
   `artifacts/benchmarks/post-r1-locus/` (ignoradas por Git). Dos worktrees separados, de la
   base y de `ab37fb5ff`, usados solo para medir el «antes», quedan en el scratchpad de la
