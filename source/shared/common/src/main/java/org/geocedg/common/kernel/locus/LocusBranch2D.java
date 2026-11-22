@@ -12,11 +12,24 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
 
 /** Immutable semantic branch; valid-domain components do not define identity. */
 public final class LocusBranch2D {
+	/**
+	 * Prefix of the revision-local evidence key of the handle of a conditioned region. A
+	 * handle is no component of the existence structure and has no lineage (ADR 0042;
+	 * contract {@code post-r1-conditioned-use.md}, section 3.1).
+	 */
+	public static final String CONDITIONED_REGION_KEY = "conditioned-region@";
+	/**
+	 * Prefix of the frame of a root on a conditioned region: the branch, which is the finest
+	 * frame of the source that does not depend on the traversal (section 6.5, point 2).
+	 */
+	public static final String BRANCH_FRAME_PREFIX = "conditioned-use/branch-frame/v1/";
 	private final String branchKey;
 	private final LocusInterval2D declaredDriverDomain;
 	private final LocusExistenceStructure2D existenceStructure;
@@ -25,6 +38,8 @@ public final class LocusBranch2D {
 	private final LocusLineage2D lineage;
 	private final Set<BranchProperty> properties;
 	private final LocusQuality2D quality;
+	private final List<ContinuousComponent> searchRegions;
+	private final LocusConditionedEvidence2D searchEvidence;
 
 	/**
 	 * Creates a branch with explicit existence/continuity evidence. Since PRE-G9B-CU2 step
@@ -36,6 +51,15 @@ public final class LocusBranch2D {
 			LocusExistenceStructure2D existenceStructure,
 			Orientation orientation, String provenance, LocusLineage2D lineage,
 			Set<BranchProperty> properties, LocusQuality2D quality) {
+		this(branchKey, declaredDriverDomain, existenceStructure, orientation, provenance,
+				lineage, properties, quality, null);
+	}
+
+	private LocusBranch2D(String branchKey, LocusInterval2D declaredDriverDomain,
+			LocusExistenceStructure2D existenceStructure,
+			Orientation orientation, String provenance, LocusLineage2D lineage,
+			Set<BranchProperty> properties, LocusQuality2D quality,
+			LocusConditionedEvidence2D searchEvidence) {
 		if (branchKey == null || branchKey.trim().isEmpty()
 				|| provenance == null || provenance.trim().isEmpty()) {
 			throw new IllegalArgumentException("Stable branch key and provenance are required");
@@ -54,6 +78,106 @@ public final class LocusBranch2D {
 		this.lineage = Objects.requireNonNull(lineage);
 		this.properties = immutableProperties(properties);
 		this.quality = Objects.requireNonNull(quality);
+		this.searchEvidence = searchEvidence;
+		this.searchRegions = searchEvidence == null ? Collections.emptyList()
+				: regionHandles(searchEvidence);
+	}
+
+	/**
+	 * The search view of this branch for a consumer that looks for roots (ADR 0042; contract
+	 * {@code post-r1-conditioned-use.md}, sections 8.5 and 8.6): the same branch, with the
+	 * conditioned regions of the published content as places to search beside its certified
+	 * components. The view changes no fact of the branch: its existence structure, its
+	 * signature and its equality are those of the branch, and a region is a revision-local
+	 * handle that enters no identity.
+	 *
+	 * @param evidence published conditioned evidence of this branch, or {@code null}
+	 * @return the search view, or this branch when there is no region
+	 */
+	public LocusBranch2D withConditionedSearch(LocusConditionedEvidence2D evidence) {
+		if (evidence == null || evidence.getRegions().isEmpty()
+				|| !branchKey.equals(evidence.getBranchKey())) {
+			return searchEvidence == null ? this : new LocusBranch2D(branchKey,
+					declaredDriverDomain, existenceStructure, orientation, provenance,
+					lineage, properties, quality, null);
+		}
+		return new LocusBranch2D(branchKey, declaredDriverDomain, existenceStructure,
+				orientation, provenance, lineage, properties, quality, evidence);
+	}
+
+	/**
+	 * @return the certified components of the existence structure, in its order, followed
+	 *         in a search view by the handles of the conditioned regions. Without a search
+	 *         view it is the list of the existence structure
+	 */
+	public List<ContinuousComponent> getSearchComponents() {
+		if (searchRegions.isEmpty()) {
+			return existenceStructure.getContinuousValidComponents();
+		}
+		ArrayList<ContinuousComponent> all = new ArrayList<>(
+				existenceStructure.getContinuousValidComponents());
+		all.addAll(searchRegions);
+		return Collections.unmodifiableList(all);
+	}
+
+	/** @return the intervals of {@link #getSearchComponents()}, in the same order */
+	public List<LocusInterval2D> getSearchIntervals() {
+		if (searchRegions.isEmpty()) {
+			return componentIntervals();
+		}
+		ArrayList<LocusInterval2D> intervals = new ArrayList<>(componentIntervals());
+		for (ContinuousComponent region : searchRegions) {
+			intervals.add(region.getInterval());
+		}
+		return Collections.unmodifiableList(intervals);
+	}
+
+	/** @return the conditioned evidence of a search view, or {@code null} */
+	public LocusConditionedEvidence2D getSearchEvidence() {
+		return searchEvidence;
+	}
+
+	/** @return whether the component is the handle of a conditioned region */
+	public static boolean isConditionedRegion(ContinuousComponent component) {
+		return component != null
+				&& component.getEvidenceKey().startsWith(CONDITIONED_REGION_KEY);
+	}
+
+	/**
+	 * Frame under which the roots of a place to search are identified: the identity key of a
+	 * certified component, with its unchanged text, or the branch frame for the handle of a
+	 * conditioned region, which names the branch and nothing of the region.
+	 *
+	 * @param component one of {@link #getSearchComponents()}
+	 * @return frame of the roots on the component
+	 */
+	public String searchFrame(ContinuousComponent component) {
+		return isConditionedRegion(component) ? branchFrame(branchKey)
+				: LocusComponentLineage2D.identityKey(existenceStructure, component);
+	}
+
+	/** @return the branch frame of a branch key */
+	public static String branchFrame(String branchKey) {
+		return BRANCH_FRAME_PREFIX + branchKey.length() + ":" + branchKey;
+	}
+
+	/** @return whether the frame is a branch frame */
+	public static boolean isBranchFrame(String frame) {
+		return frame != null && frame.startsWith(BRANCH_FRAME_PREFIX);
+	}
+
+	private static List<ContinuousComponent> regionHandles(
+			LocusConditionedEvidence2D evidence) {
+		ArrayList<ContinuousComponent> handles = new ArrayList<>();
+		for (LocusInterval2D region : evidence.getRegions()) {
+			handles.add(new ContinuousComponent(new LocusInterval2D(region.getLower(),
+					region.getUpper(), true, true),
+					CONDITIONED_REGION_KEY + Double.toHexString(region.getLower()),
+					evidence.getPolicyVersion(),
+					LocusExistenceStructure2D.Maximality.LOCAL_CERTIFIED_SUBINTERVAL,
+					evidence.getNature().name()));
+		}
+		return Collections.unmodifiableList(handles);
 	}
 
 	public String getBranchKey() {
@@ -222,12 +346,12 @@ public final class LocusBranch2D {
 	LocusBranch2D bindExistenceToRevision(long revision) {
 		return new LocusBranch2D(branchKey, declaredDriverDomain,
 				existenceStructure.bindToRevision(revision), orientation, provenance,
-				lineage, properties, quality);
+				lineage, properties, quality, searchEvidence);
 	}
 
 	private List<LocusInterval2D> componentIntervals() {
 		ArrayList<LocusInterval2D> intervals = new ArrayList<>();
-		for (LocusExistenceStructure2D.ContinuousComponent component
+		for (ContinuousComponent component
 				: existenceStructure.getContinuousValidComponents()) {
 			intervals.add(component.getInterval());
 		}

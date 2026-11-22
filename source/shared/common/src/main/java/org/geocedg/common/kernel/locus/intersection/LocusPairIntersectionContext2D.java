@@ -93,12 +93,12 @@ public final class LocusPairIntersectionContext2D {
 
 	/** @return deterministic addresses for all valid first-source components */
 	public List<ComponentAddress> getFirstComponents() {
-		return components(firstDefinition);
+		return components(firstDefinition, true);
 	}
 
 	/** @return deterministic addresses for all valid second-source components */
 	public List<ComponentAddress> getSecondComponents() {
-		return components(secondDefinition);
+		return components(secondDefinition, false);
 	}
 
 	/** @return deterministic keys for the complete component product */
@@ -213,20 +213,29 @@ public final class LocusPairIntersectionContext2D {
 				"query-local two-source finite difference");
 	}
 
-	private static List<ComponentAddress> components(
-			LocusDefinition2D definition) {
+	/**
+	 * The places of one source where a pair is searched. A certified component keeps its
+	 * revision-scoped key. The handle of a conditioned region has a key of its own side:
+	 * two sources may share a branch key, and the unordered key of a pair of regions must
+	 * tell the pair (first region i, second region j) from (first region j, second region
+	 * i). No such key is identity.
+	 */
+	static List<ComponentAddress> components(LocusDefinition2D definition, boolean first) {
 		ArrayList<ComponentAddress> result = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
-			LocusExistenceStructure2D structure = branch.getExistenceStructure();
+			// The certified components and, in a search view, the conditioned regions,
+			// whose frame is the branch (ADR 0042, contract section 6.5, point 8).
 			List<LocusExistenceStructure2D.ContinuousComponent> components =
-					structure.getContinuousValidComponents();
+					branch.getSearchComponents();
 			for (int index = 0; index < components.size(); index++) {
 				result.add(new ComponentAddress(branch.getBranchKey(),
-						IntersectionCapabilityContext2D.componentKey(
-								branch.getBranchKey(), index),
+						LocusBranch2D.isConditionedRegion(components.get(index))
+								? branch.getBranchKey() + (first ? "/first-region-"
+										: "/second-region-") + index
+								: IntersectionCapabilityContext2D.componentKey(
+										branch.getBranchKey(), index),
 						components.get(index),
-						LocusComponentLineage2D.identityKey(structure,
-								components.get(index))));
+						branch.searchFrame(components.get(index))));
 			}
 		}
 		return Collections.unmodifiableList(result);

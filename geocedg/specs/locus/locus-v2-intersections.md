@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); PRE-G9B-CU3 AMENDMENT (VERSION 1.3) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE AUTHORITY AMENDMENT (VERSION 1.4, LAST SECTION, ONLY UNDER `constructive-authority/v1`) — AUTHOR APPROVED AS CONTRACT (2026-10-25), IMPLEMENTATION AUTHORIZED IN INCREMENTS E1 TO E4, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE ADMISSION POLICY V2 AMENDMENT (VERSION 1.5, LAST SECTION, `cu3-certified-admission/v2`, ONLY UNDER `constructive-authority/v1`) — NORMATIVE DECISIONS AUTHOR APPROVED (2026-10-26), IMPLEMENTATION AUTHORIZED BEHIND ITS VALIDITY GATE, NOT YET APPROVED AS PRODUCT; CU3-B2 REGULAR TANGENT CONTACT AMENDMENT (VERSION 1.6, LAST SECTION, ONLY UNDER `constructive-authority/v1`) — AUTHOR APPROVED AS CONTRACT (2026-10-28), IMPLEMENTATION AUTHORIZED (G-B2-2), NOT YET APPROVED AS PRODUCT** |
-| Version | `1.6` (`1.2` with bounded G9U0-R4 refinement, amended by `PRE-G9B-CU3` in `1.3`, by its constructive authority amendment in `1.4`, by its constructive admission policy v2 amendment in `1.5` and by its CU3-B2 regular tangent contact amendment in `1.6`) |
+| Status | **NORMATIVE / AUTHOR-APPROVED R1 BASE; G9U0-R4 DETERMINISTIC-SELECTION REFINEMENT — PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (A2.5) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); PRE-G9B-CU3 AMENDMENT (VERSION 1.3) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE AUTHORITY AMENDMENT (VERSION 1.4, LAST SECTION, ONLY UNDER `constructive-authority/v1`) — AUTHOR APPROVED AS CONTRACT (2026-10-25), IMPLEMENTATION AUTHORIZED IN INCREMENTS E1 TO E4, NOT YET APPROVED AS PRODUCT; CONSTRUCTIVE ADMISSION POLICY V2 AMENDMENT (VERSION 1.5, LAST SECTION, `cu3-certified-admission/v2`, ONLY UNDER `constructive-authority/v1`) — NORMATIVE DECISIONS AUTHOR APPROVED (2026-10-26), IMPLEMENTATION AUTHORIZED BEHIND ITS VALIDITY GATE, NOT YET APPROVED AS PRODUCT; CU3-B2 REGULAR TANGENT CONTACT AMENDMENT (VERSION 1.6, LAST SECTION, ONLY UNDER `constructive-authority/v1`) — AUTHOR APPROVED AS CONTRACT (2026-10-28), IMPLEMENTATION AUTHORIZED (G-B2-2), NOT YET APPROVED AS PRODUCT; CONDITIONED USE AMENDMENT (VERSION 1.7, LAST SECTION, ADR 0042) — AUTHOR APPROVED AS CONTRACT (2026-11-22), IMPLEMENTATION AUTHORIZED IN INCREMENT I4, NOT YET APPROVED AS PRODUCT** |
+| Version | `1.7` (`1.2` with bounded G9U0-R4 refinement, amended by `PRE-G9B-CU3` in `1.3`, by its constructive authority amendment in `1.4`, by its constructive admission policy v2 amendment in `1.5` by its CU3-B2 regular tangent contact amendment in `1.6` and by the conditioned use amendment of ADR 0042 in `1.7`) |
 | Phase | G8 planning, G8A, G8B-R1, G8B, G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global `PASS — AUTHOR APPROVED`; G9U0-R4 `PASS — AUTHOR APPROVED` after retained failed intermediate smokes and final four-root/reactivation re-smokes `PASS` |
 | Scope | Internal two-dimensional Locus V2 intersection semantics |
 | Product state | Experimental, internal, disabled by default |
@@ -1369,3 +1369,79 @@ readers reject version 6 closed. A `T` entry stores the germ and the persisted l
 revision evidence. Evaluations performed while a document is being loaded never run under a policy
 other than the persisted document authority, and reopening and saving an unedited document leaves
 the ledger state unchanged.
+
+## Conditioned use amendment (version 1.7, ADR 0042)
+
+Amendment approved by the author on 2026-11-22 with
+[ADR 0042](../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md)
+and the [conditioned-use contract](candidates/post-r1-conditioned-use.md), §6.5, §6.6, §8.5
+and §12. Increment I4. Every earlier section is unchanged: a root on a certified component
+keeps its selector, its phase and rank rules, its token and the text of its ledger entry,
+and a source that publishes no conditioned region is searched exactly as before.
+
+**Search.** The roots of `Intersect(L, target)` are sought on the certified components of
+the source and on the conditioned regions that its producer publishes
+([existence components](locus-v2-existence-components.md) §19). A region is a place to
+search and nothing else: it is no component of the existence structure, it has no lineage,
+and its revision-local key enters no identity. The search runs on the semantic evaluator
+of the source, never on drawing data. The content identity of the evidence that a search
+read is an input of the resolution: an update with the same inputs and the same content is
+not resolved again, and another content always is.
+
+**Evidence of a root.** A root on a region needs its isolating interval inside that region,
+a residual within tolerance, local isolation and, for a transverse root, its sign-change
+bracket, as §6 already requires on a component. A candidate whose isolating interval
+leaves its region is unresolved and is not published. On a periodic domain the excluded
+end is the parameter of the included end: it is searched once, at the included end. Each
+published root carries `CONDITIONED_REGION_ROOT` with the class of its span and the
+revision and content identity of the evidence. The support level is at most
+`VERIFIED_UNCERTIFIED`; completeness is `NOT_ESTABLISHED` whenever a region was searched,
+and the result is never `EMPTY`.
+
+**Admission.** Under `constructive-authority/v1` the admission of a root on a region is the
+unchanged re-qualification of [`locus-v2-constructive-authority.md`](locus-v2-constructive-authority.md)
+§7.4. Conditioned evidence is no enclosure and never grants `RELAXED`: without evidence of
+its own the root is published with admission `NOT_ESTABLISHED` and is not point-admissible.
+
+**Selector.** A root on a region takes a selector of its own kind:
+
+```text
+conditioned-use/branch-frame-root/v1/<frame><germ>
+frame = conditioned-use/branch-frame/v1/<branch key>
+germ  = the typed transverse current-root germ of §6.2, framed with that frame
+```
+
+It contains no component lineage and nothing of a region, cell, node, parameter,
+coordinate, index, order or generation. It has no rank: two or more current roots that
+share it are ambiguous and keep revision-local handles. A published root on a region
+without an established germ has no selector, and it leaves every branch-frame selector of
+its branch not known to be unique: none of them resolves a token in that result.
+
+**Binding, origin and reuse guard.** A result has at most one binding per branch-frame
+selector. The allocating publication records, with the selector and the token, the
+**origin** of the binding: the parameter address of the root at that publication. The
+origin is never updated and can only withhold. A current root resolves the token of its
+selector only when the selector is unique among the current published roots and, in the
+published content that the search read, the origin and the isolating interval of the root
+lie in one conditioned region. The resolution then reports
+`DETERMINISTIC_SELECTION_ESTABLISHED` and records, with `CONDITIONED_EVIDENCE_USED`, the
+range of spans between the origin and the root and the content identity. Parameters are
+compared in canonical order: a region is not continued across the seam of a periodic
+domain, which is the withholding side.
+
+**Withholding.** When the guard fails the token is not current. It is not given to the
+root, transferred, replaced or retired, and no other token is allocated for the selector
+while the binding exists: the root is published with a revision-local handle, identity
+`NOT_ESTABLISHED` and `BRANCH_FRAME_TOKEN_WITHHELD`, and is not point-admissible. An object
+that depends on the token is undefined with its existing cause and is defined again when a
+later state satisfies the guard. A binding without a claim is kept while a current root has
+its selector; when no root has it, the existing retention rule of §6.2 applies.
+
+**Change of frame.** A root that passes between a certified component and the uncertified
+part of its branch has another selector. The earlier token is not transferred; it is
+current again when the state returns, and a branch-frame binding keeps its origin through
+the passage.
+
+**Persistence.** A branch-frame binding is an entry of kind `B` of ledger version 7
+([public surface](locus-v2-public-surface.md), conditioned use amendment). Evidence is
+never stored.

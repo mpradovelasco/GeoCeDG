@@ -382,12 +382,29 @@ public final class SemanticCurveExportAdapter2D {
 			// PRE-G9B-CU2 step T11: a certified empty cover has nothing to export and nothing
 			// missing (D-CU2-8); a locus without any certified component whose existence is
 			// not established is declared, never a failure (V-DXF-2).
-			if (componentOrdinal == 0 && !isCertifiedEmpty(definition)) {
+			// ADR 0042 (contract post-r1-conditioned-use.md, section 10): a conditioned region
+			// is omitted from a semantic export, and each omission is declared with its
+			// regions and bands, beside the certified components that are exported.
+			if (componentOrdinal == 0 && !isCertifiedEmpty(definition)
+					|| hasConditionedRegions(locus, definition)) {
 				components.add(existenceNotEstablished(locus, sourceId, revision, scope,
 						definition));
 			}
 		}
 		return new SourceResult(sourceId, components, guard);
+	}
+
+	/** @return whether the producer publishes a conditioned region of a branch */
+	private static boolean hasConditionedRegions(GeoLocusV2 locus,
+			LocusDefinition2D definition) {
+		for (LocusBranch2D branch : definition.getBranches()) {
+			org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D evidence =
+					locus.getConditionedEvidence(branch.getBranchKey());
+			if (evidence != null && !evidence.getRegions().isEmpty()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/** @return whether every branch has a complete certificate without any component */
@@ -421,9 +438,39 @@ public final class SemanticCurveExportAdapter2D {
 				}
 			}
 		}
-		String message = "The existence of the Locus V2 is not established (" + bands
-				+ "): no certified component is exported, and its exploratory evidence"
-				+ " never is.";
+		// The conditioned regions that this export omits, and the bands between them.
+		StringBuilder conditioned = new StringBuilder();
+		if (geo instanceof GeoLocusV2) {
+			for (LocusBranch2D branch : definition.getBranches()) {
+				org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D
+						evidence = ((GeoLocusV2) geo).getConditionedEvidence(
+								branch.getBranchKey());
+				if (evidence == null) {
+					continue;
+				}
+				for (org.geocedg.common.kernel.locus.LocusInterval2D region
+						: evidence.getRegions()) {
+					conditioned.append("; ").append(branch.getBranchKey())
+							.append(" CONDITIONED_REGION [").append(region.getLower())
+							.append(", ").append(region.getUpper()).append(']');
+				}
+				for (org.geocedg.common.kernel.locus.conditioned.LocusConditionedCell2D cell
+						: evidence.getCells()) {
+					if (!cell.getKind().isSpan()) {
+						conditioned.append("; ").append(branch.getBranchKey()).append(' ')
+								.append(cell.getKind()).append(" [").append(cell.getLower())
+								.append(", ").append(cell.getUpper()).append(']');
+					}
+				}
+			}
+		}
+		String message = conditioned.length() == 0
+				? "The existence of the Locus V2 is not established (" + bands
+						+ "): no certified component is exported, and its exploratory evidence"
+						+ " never is."
+				: "The existence of the Locus V2 is not established (" + bands
+						+ "): its conditioned regions are omitted from this semantic export"
+						+ conditioned + ". Only certified components are exported.";
 		SourceExportOutcome outcome = new SourceExportOutcome(sourceId,
 				geo.getGeoClassType().name(), geo.getLabelSimple(), sourceRevision,
 				geo.isEuclidianVisible(), scope,

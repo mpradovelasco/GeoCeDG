@@ -89,3 +89,14 @@ specification adds no writer, no new public command and no persisted state.
 The `PRE-G9B-R6-plus-C` LaTeX tests remain the evidence of sections 2 to 4. Section 5 is
 validated by rows V-TEX-1 and V-TEX-2 of the
 [`CU2` validation matrix](../../../docs/validation/pre_g9b_cu2_validation_matrix.md).
+
+## 8. Conditioned use amendment (ADR 0042)
+
+Approved by the author as contract on 2026-11-22 with
+[ADR 0042](../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md);
+implementation authorized in increment I4, not yet approved as product. The semantic
+export to LaTeX uses the same adapter as the DXF export:
+[`dxf-curve-fidelity-and-approximation.md`](dxf-curve-fidelity-and-approximation.md) §11
+applies unchanged. Conditioned regions are omitted and declared with the reason
+`EXISTENCE_NOT_ESTABLISHED` and the list of regions and bands; certified components are
+exported as before.

@@ -41,6 +41,7 @@ public final class LocusConditionedEvidenceOwner2D {
 	private final double domainUpper;
 	private final LocusConditionedTraversalPolicy2D policy;
 	private final List<LocusInterval2D> certified;
+	private final List<String> inheritedSources;
 	private final TreeSet<Double> contradictions = new TreeSet<>();
 	private LocusConditionedTraversal2D.Nodes nodes;
 	private LocusConditionedSampler2D sampler;
@@ -69,6 +70,24 @@ public final class LocusConditionedEvidenceOwner2D {
 	public LocusConditionedEvidenceOwner2D(String branchKey, double domainLower,
 			double domainUpper, LocusConditionedTraversalPolicy2D policy,
 			List<LocusInterval2D> certified) {
+		this(branchKey, domainLower, domainUpper, policy, certified, List.of());
+	}
+
+	/**
+	 * @param branchKey branch that the evidence describes
+	 * @param domainLower lower end of the declared driver domain
+	 * @param domainUpper upper end of the declared driver domain
+	 * @param policy versioned policy
+	 * @param certified parameter intervals that a certificate of the revisions of this
+	 *        owner covers; the evidence publishes no cell inside them
+	 * @param inheritedSources content identities of the conditioned sources that the traced
+	 *        function reads; every published content records them
+	 */
+	public LocusConditionedEvidenceOwner2D(String branchKey, double domainLower,
+			double domainUpper, LocusConditionedTraversalPolicy2D policy,
+			List<LocusInterval2D> certified, List<String> inheritedSources) {
+		this.inheritedSources = Collections.unmodifiableList(
+				new ArrayList<>(inheritedSources));
 		this.branchKey = Objects.requireNonNull(branchKey);
 		this.domainLower = domainLower;
 		this.domainUpper = domainUpper;
@@ -144,7 +163,8 @@ public final class LocusConditionedEvidenceOwner2D {
 
 	private LocusConditionedEvidence2D publish(long revision) {
 		published = LocusConditionedTraversal2D.traverse(branchKey, revision, domainLower,
-				domainUpper, policy, contradictions, sampler, nodes, certified);
+				domainUpper, policy, contradictions, sampler, nodes, certified)
+				.withInheritedSources(inheritedSources);
 		publicationCounter++;
 		return published;
 	}

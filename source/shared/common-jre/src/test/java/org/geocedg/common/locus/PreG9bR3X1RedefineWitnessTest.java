@@ -155,11 +155,17 @@ class PreG9bR3X1RedefineWitnessTest extends PreG9bR3RedefineTestBase {
 		assertTrue(outcome.succeeded(), outcome.errors());
 		assertEquals(ids("C"), record("E").getDependencies());
 		GeoLocusIntersectionResult e = rich("e");
-		assertTrue(eligible(e).isEmpty());
 		// PRE-G9B-CU2 step T11, declared conformity: the expression point is outside class
-		// v3, so the redefined locus has no certified component and no root at all; its
-		// coverage is not established.
-		assertTrue(e.getIntersectionResult().getFiniteSolutions().isEmpty());
+		// v3, so the redefined locus has no certified component and its coverage is not
+		// established. Since ADR 0042 its conditioned regions are searched: a root found
+		// there is a root on a conditioned region with an identity of its own, which is
+		// never the token of the retained claim.
+		for (LocusIntersectionSolution2D root
+				: e.getIntersectionResult().getFiniteSolutions()) {
+			assertTrue(root.getDiagnostics().toString().contains("CONDITIONED_REGION_ROOT"),
+					root.getDiagnostics().toString());
+			assertFalse(token.equals(root.getIdentity().getRootToken()));
+		}
 		assertTrue(e.getIntersectionResult().getDiagnostics().toString()
 				.contains("COVERAGE_NOT_ESTABLISHED"));
 		// The claim stays dormant; the point is never moved to another root.

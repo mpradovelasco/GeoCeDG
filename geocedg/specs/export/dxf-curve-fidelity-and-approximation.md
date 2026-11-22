@@ -5,6 +5,7 @@
 | Status | **NORMATIVE / AUTHOR APPROVED** (version `1.0`); the version `1.1` amendment below is a `PRE-G9B-R6-plus-C` technical candidate pending author review |
 | Version | `1.2` (2026-10-21: certified topology of Locus V2 components, section 10, `PRE-G9B-CU2`); `1.1` (2026-10-04: units, hidden layers, explicit export area and sidecar schema version 2; author decisions `DQ-C2`, `DQ-C3`, `DQ-C11`, `DQ-C13`) |
 | `CU2` amendment status | Section 10: **ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
+| Conditioned use amendment status | Section 11 (ADR 0042): **AUTHOR APPROVED AS CONTRACT (2026-11-22), IMPLEMENTATION AUTHORIZED IN INCREMENT I4, NOT YET APPROVED AS PRODUCT** |
 | Phase | G9X1 design; implementation not authorized |
 | Scope | Read-only 2D DXF fidelity, approximation, preflight, and sidecar contract |
 | Hard dependencies | [G5 geometry export foundation](geometry-export-foundation.md) and approved internal G6-G8 semantic source contracts |
@@ -311,3 +312,24 @@ the evaluation status and diagnostic, which makes the output incomplete with the
 sidecar. At most sixteen gaps are cut in one component; beyond them, or when the approximation
 fails for any other reason, the component keeps the failure of the shared builder. A failure
 that no evaluation of the export reaches is not detected.
+
+## 11. Conditioned use amendment (ADR 0042): conditioned regions are omitted and declared
+
+Amendment approved by the author on 2026-11-22 with
+[ADR 0042](../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md)
+and the [conditioned-use contract](../locus/candidates/post-r1-conditioned-use.md), §10.
+Increment I4. Sections 1 to 10 are unchanged: certified components are exported as before.
+
+A semantic export of GeoCeDG 1.2.2 omits the conditioned regions of a Locus V2
+([existence components](../locus/locus-v2-existence-components.md) §19). The omission is
+declared, as §10 already declares a source without components: one outcome of fidelity
+`declared` and reason `EXISTENCE_NOT_ESTABLISHED`, whose message lists each omitted region
+as `CONDITIONED_REGION` with its parameter interval and each band between them with its kind
+and its interval, beside the outcomes of the certified components of the same source. The
+export is then incomplete and is not blocked. Exploratory evidence stays never exported, and
+a picture export of a view keeps exporting what the view draws.
+
+The semantic export of conditioned regions is future work of the line on derived
+representations, DXF import and extended DXF export (contract §10, point 3). In that line a
+spline, a polyline or another derived representation never silently replaces the
+authoritative CeDG object.

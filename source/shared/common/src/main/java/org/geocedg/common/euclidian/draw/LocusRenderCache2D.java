@@ -157,7 +157,8 @@ public final class LocusRenderCache2D {
 	}
 
 	/** Evidence key of the render handle of a conditioned region. */
-	public static final String CONDITIONED_REGION_KEY = "conditioned-region@";
+	public static final String CONDITIONED_REGION_KEY =
+			org.geocedg.common.kernel.locus.LocusBranch2D.CONDITIONED_REGION_KEY;
 
 	/**
 	 * The content identities of the conditioned evidence that the locus publishes, which a

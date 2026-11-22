@@ -32,6 +32,14 @@ public final class IntersectionRootDeterministicSelector2D
 			"g9u0-r4/deterministic-current-root/v1/";
 	private static final String PHASE_PREFIX =
 			"g9u0-r4/deterministic-current-root/v2/";
+	/**
+	 * Kind of the selector of a root on a conditioned region (ADR 0042; contract {@code
+	 * post-r1-conditioned-use.md}, section 6.5, point 2): the branch frame and the typed
+	 * transverse germ. It has no component lineage, no rank, and nothing of a region, cell,
+	 * node, parameter, coordinate, index, order or generation.
+	 */
+	private static final String BRANCH_FRAME_PREFIX =
+			"conditioned-use/branch-frame-root/v1/";
 	private static final String NON_PERIODIC_PHASE =
 			"ORIENTED_COMPONENT";
 	private static final String PERIODIC_PHASE =
@@ -61,12 +69,41 @@ public final class IntersectionRootDeterministicSelector2D
 		String component = requireText(componentLineage, "Component lineage");
 		String germ = requireText(currentRootGerm, "Current root germ");
 		if (!PublicTargetIntersectionCapability2D
-				.isCurrentPublicRootGermForComponent(germ, component)) {
+				.isCurrentPublicRootGermForComponent(germ, component)
+				|| org.geocedg.common.kernel.locus.LocusBranch2D.isBranchFrame(component)) {
 			throw new IllegalArgumentException(
 					"Selector requires a typed public transverse root germ");
 		}
 		return new IntersectionRootDeterministicSelector2D(BASE_PREFIX
 				+ framed(component) + framed(germ), component, germ, null);
+	}
+
+	/**
+	 * Builds the selector of a root on a conditioned region: its own versioned kind, the
+	 * branch frame and the germ framed with that frame.
+	 *
+	 * @param branchFrame frame of the source branch, as {@code LocusBranch2D.branchFrame}
+	 *        writes it
+	 * @return branch-frame selector, which never carries a rank
+	 */
+	public static IntersectionRootDeterministicSelector2D ofBranchFrame(
+			String branchFrame, String currentRootGerm) {
+		String frame = requireText(branchFrame, "Branch frame");
+		String germ = requireText(currentRootGerm, "Current root germ");
+		if (!org.geocedg.common.kernel.locus.LocusBranch2D.isBranchFrame(frame)
+				|| !PublicTargetIntersectionCapability2D
+						.isCurrentPublicRootGermForComponent(germ, frame)
+				|| FoldContactAnchor2D.isGerm(germ) || RegularTangentAnchor2D.isGerm(germ)) {
+			throw new IllegalArgumentException(
+					"A branch-frame selector requires the transverse germ of its frame");
+		}
+		return new IntersectionRootDeterministicSelector2D(BRANCH_FRAME_PREFIX
+				+ framed(frame) + framed(germ), frame, germ, null);
+	}
+
+	/** @return whether this is the selector of a root on a conditioned region */
+	public boolean isBranchFrame() {
+		return externalForm.startsWith(BRANCH_FRAME_PREFIX);
 	}
 
 	/**
@@ -122,6 +159,21 @@ public final class IntersectionRootDeterministicSelector2D
 			}
 			IntersectionRootDeterministicSelector2D parsed = of(component.value,
 					germ.value);
+			if (!parsed.externalForm.equals(value)) {
+				throw new IllegalArgumentException(
+						"Deterministic root selector is not canonical");
+			}
+			return parsed;
+		}
+		if (value.startsWith(BRANCH_FRAME_PREFIX)) {
+			Frame branchFrame = frame(value, BRANCH_FRAME_PREFIX.length());
+			Frame germ = frame(value, branchFrame.nextOffset);
+			if (germ.nextOffset != value.length()) {
+				throw new IllegalArgumentException(
+						"Deterministic root selector has trailing material");
+			}
+			IntersectionRootDeterministicSelector2D parsed = ofBranchFrame(
+					branchFrame.value, germ.value);
 			if (!parsed.externalForm.equals(value)) {
 				throw new IllegalArgumentException(
 						"Deterministic root selector is not canonical");

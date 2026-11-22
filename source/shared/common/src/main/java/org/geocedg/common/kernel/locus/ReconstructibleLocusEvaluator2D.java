@@ -119,6 +119,13 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	/** Authority of the owning document, captured for the copy when it was built (F6). */
 	private final AuthorityPolicy effectiveAuthority;
 	private final List<GeoElement> liveSlice = new ArrayList<>();
+	/**
+	 * The loci of the slice that do not follow the driver, live and copy, found once; and,
+	 * for each copy and branch, the content of the live evidence whose contradiction set
+	 * the copy last received.
+	 */
+	private List<GeoLocusV2[]> conditionedSources;
+	private final Map<String, String> conditionedSourceContents = new LinkedHashMap<>();
 	private final List<GeoElement> liveDriverRoots = new ArrayList<>();
 	private final LocusInstrumentation2D fidelityOwner;
 	private ReconstructionFidelity2D.Report fidelity;
@@ -258,6 +265,59 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	}
 
 	/**
+	 * Gives the copies of the conditioned sources of the slice the contradiction set that
+	 * their live originals have published (ADR 0042; contract {@code
+	 * post-r1-conditioned-use.md}, sections 7 and 8.8). Evidence is not shared between
+	 * copies: each copy computes its own content with its own evaluator, and confirms each
+	 * parameter itself. A source that follows the driver of this slice is another function
+	 * at each evaluation and receives nothing. Only published content is read: nothing is
+	 * computed on the live document here.
+	 */
+	private void receiveConditionedContradictions() {
+		if (conditionedSources == null) {
+			List<GeoLocusV2[]> sources = new ArrayList<>();
+			SpatialIdentityRegistry copies = isolatedConstruction.getSpatialIdentityRegistry();
+			for (GeoElement live : liveSlice) {
+				if (!(live instanceof GeoLocusV2)) {
+					continue;
+				}
+				PersistentGeoId id = live.getConstruction().getSpatialIdentityRegistry()
+						.getPersistentGeoId(live);
+				GeoElement copy = id == null ? null : copies.getGeo(id);
+				if (copy instanceof GeoLocusV2 && !copy.isChildOf(isolatedState)
+						&& !copy.isChildOf(isolatedCoordinate)) {
+					sources.add(new GeoLocusV2[] {(GeoLocusV2) live, (GeoLocusV2) copy});
+				}
+			}
+			conditionedSources = sources;
+		}
+		for (GeoLocusV2[] source : conditionedSources) {
+			LocusDefinition2D liveDefinition = source[0].isDefined()
+					? source[0].getSemanticDefinition() : null;
+			if (liveDefinition == null || !source[1].isDefined()) {
+				continue;
+			}
+			for (LocusBranch2D branch : liveDefinition.getBranches()) {
+				org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D
+						published = source[0].getPublishedConditionedEvidence(
+								branch.getBranchKey());
+				if (published == null || published.getContradictions().isEmpty()) {
+					continue;
+				}
+				String key = System.identityHashCode(source[1]) + "/" + branch.getBranchKey();
+				if (published.getContentIdentity().equals(
+						conditionedSourceContents.get(key))) {
+					continue;
+				}
+				for (Double parameter : published.getContradictions()) {
+					source[1].reportConditionedContradiction(branch.getBranchKey(), parameter);
+				}
+				conditionedSourceContents.put(key, published.getContentIdentity());
+			}
+		}
+	}
+
+	/**
 	 * @return the authority of the owning document under which this copy decides its
 	 *         relations, captured when the copy was built
 	 */
@@ -341,6 +401,7 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 					"RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED: " + fidelity);
 		}
 		try {
+			receiveConditionedContradictions();
 			LocusEvaluationSession2D.runWithNestedServiceParent(session, sliceScope, () -> {
 				applyCoordinate(canonicalParameter);
 				settleDepartures(() -> applyCoordinate(canonicalParameter));

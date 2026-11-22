@@ -36,6 +36,11 @@ public final class LocusIntersectionTokenLedger2D {
 	private static final String PAIR_FORMAT_VERSION = "5";
 	// Written only when an entry is fold-anchored (PRE-G9B-CU3 CU3-B1 design section 5).
 	private static final String FOLD_CONTACT_FORMAT_VERSION = "6";
+	// Written only when an entry is a binding with a branch frame (ADR 0042; contract
+	// post-r1-conditioned-use.md, section 6.5, point 9): the kinds of ledger v6, the kind B
+	// with its origin and the kind Q, a pair with the origins of its branch-frame sides.
+	// Every other entry keeps its text.
+	private static final String BRANCH_FRAME_FORMAT_VERSION = "7";
 	private static final String PHASE_FORMAT_VERSION = "3";
 	private static final String PREVIOUS_FORMAT_VERSION = "2";
 	private static final String LEGACY_FORMAT_VERSION = "1";
@@ -247,11 +252,15 @@ public final class LocusIntersectionTokenLedger2D {
 							|| periodicAllocationGroup(prior)
 									.filter(claimedPeriodicGroups::contains)
 									.isPresent());
-			if ((isClaimed(evaluation, prior) || quarantined)
+			// A branch-frame binding whose reuse guard failed is withheld, never retired:
+			// it keeps its selector, its origin and its token (section 6.5, point 6).
+			boolean withheld = evaluation.withheldBranchFrameTokens.contains(priorToken);
+			if ((isClaimed(evaluation, prior) || quarantined || withheld)
 					&& !evaluation.permanentlyRetiredTokens.contains(priorToken)
 					&& !copiedToCurrent
 					&& retainedSemanticKeys.add(retainedPrior.semanticKey())) {
-				Status retainedStatus = Status.CLAIMED_DORMANT;
+				Status retainedStatus = isClaimed(evaluation, prior) || !withheld
+						? Status.CLAIMED_DORMANT : Status.WITHHELD;
 				if (quarantined) {
 					retainedStatus = isClaimed(evaluation, prior)
 							? Status.CLAIMED_PERIODIC_QUARANTINE
@@ -717,7 +726,9 @@ public final class LocusIntersectionTokenLedger2D {
 
 	/** @return strict compact XML attribute value for this ledger */
 	public String exportState() {
-		String version = hasFoldContactEntries(current) || hasFoldContactEntries(copySource)
+		String version = hasBranchFrameEntries(current) || hasBranchFrameEntries(copySource)
+				? BRANCH_FRAME_FORMAT_VERSION
+				: hasFoldContactEntries(current) || hasFoldContactEntries(copySource)
 				? FOLD_CONTACT_FORMAT_VERSION
 				: hasPairEntries(current) || hasPairEntries(copySource)
 						? PAIR_FORMAT_VERSION : FORMAT_VERSION;
@@ -745,7 +756,9 @@ public final class LocusIntersectionTokenLedger2D {
 	 * @return comparison text independent of where the inputs of this result stand
 	 */
 	public String exportEvaluationNeutralState() {
-		String version = hasFoldContactEntries(current) || hasFoldContactEntries(copySource)
+		String version = hasBranchFrameEntries(current) || hasBranchFrameEntries(copySource)
+				? BRANCH_FRAME_FORMAT_VERSION
+				: hasFoldContactEntries(current) || hasFoldContactEntries(copySource)
 				? FOLD_CONTACT_FORMAT_VERSION
 				: hasPairEntries(current) || hasPairEntries(copySource)
 						? PAIR_FORMAT_VERSION : FORMAT_VERSION;
@@ -784,6 +797,30 @@ public final class LocusIntersectionTokenLedger2D {
 				binding.selector.isRegularTangentContact()).isPresent();
 	}
 
+	/** @return whether the entry is a branch-frame binding (ledger v7 kind B) */
+	private static boolean isBranchFrame(Entry entry) {
+		return entry.currentRootBinding.filter(binding -> binding.selector.isBranchFrame())
+				.isPresent();
+	}
+
+	/** @return whether the snapshot has a branch-frame binding, of kind B, of ledger v7 */
+	private static boolean hasBranchFrameEntries(Snapshot snapshot) {
+		if (snapshot != null) {
+			for (Entry entry : snapshot.entries) {
+				if (isBranchFrame(entry) || entry.pairOrigins.isPresent()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** @return whether the version writes the entry-kind discriminator of ledger v6 */
+	private static boolean hasEntryKinds(String version) {
+		return FOLD_CONTACT_FORMAT_VERSION.equals(version)
+				|| BRANCH_FRAME_FORMAT_VERSION.equals(version);
+	}
+
 	/** @return whether the snapshot has a contact entry, of kind F or T, of ledger v6 */
 	private static boolean hasFoldContactEntries(Snapshot snapshot) {
 		if (snapshot != null) {
@@ -800,7 +837,8 @@ public final class LocusIntersectionTokenLedger2D {
 	public void importState(String state) {
 		String[] fields = requireText(state, "Token-ledger state")
 				.split("\\|", -1);
-		if (fields.length != 4 || (!FOLD_CONTACT_FORMAT_VERSION.equals(fields[0])
+		if (fields.length != 4 || (!BRANCH_FRAME_FORMAT_VERSION.equals(fields[0])
+				&& !FOLD_CONTACT_FORMAT_VERSION.equals(fields[0])
 				&& !PAIR_FORMAT_VERSION.equals(fields[0])
 				&& !FORMAT_VERSION.equals(fields[0])
 				&& !PHASE_FORMAT_VERSION.equals(fields[0])
@@ -821,6 +859,12 @@ public final class LocusIntersectionTokenLedger2D {
 				&& !hasFoldContactEntries(parsedCopySource)) {
 			throw new IllegalArgumentException(
 					"Ledger v6 requires a contact entry");
+		}
+		if (BRANCH_FRAME_FORMAT_VERSION.equals(importedVersion)
+				&& !hasBranchFrameEntries(parsedCurrent)
+				&& !hasBranchFrameEntries(parsedCopySource)) {
+			throw new IllegalArgumentException(
+					"Ledger v7 requires a branch-frame entry");
 		}
 		if (parsedCurrent == null && parsedCopySource != null) {
 			throw new IllegalArgumentException(
@@ -889,6 +933,8 @@ public final class LocusIntersectionTokenLedger2D {
 				authorizedCopySuccessorBindings = new LinkedHashMap<>();
 		private final Map<String, Entry> authorizedCopyQuarantineEntries =
 				new LinkedHashMap<>();
+		private final java.util.Set<String> withheldBranchFrameTokens =
+				new LinkedHashSet<>();
 		private boolean finished;
 
 		private Evaluation(Material material, long nextIncarnation,
@@ -966,6 +1012,97 @@ public final class LocusIntersectionTokenLedger2D {
 			String token = stage(selected);
 			return new IntersectionRootAllocation2D(token,
 					selected.continuationKey.orElseThrow(), reused);
+		}
+
+		/**
+		 * Resolves the current root of a pair selector with a branch-frame side (ADR 0042;
+		 * contract {@code post-r1-conditioned-use.md}, section 6.5, point 8). Each
+		 * branch-frame side records its own origin at the allocation, and the reuse guard
+		 * must hold on each of them: failing it on one side withholds the token, which is
+		 * not given to the root, transferred, replaced or retired.
+		 *
+		 * @param firstOrigin origin on the first source of the selector, when that side is
+		 *        bound to a branch frame
+		 * @param secondOrigin the same for the second source of the selector
+		 * @param reuseGuard whether the recorded origins and the current root lie, on each
+		 *        branch-frame side, in one conditioned region of the published content
+		 * @return the allocation, or empty when the token of the selector is withheld
+		 */
+		public Optional<IntersectionRootAllocation2D> resolveBranchFramePairRoot(
+				String branchLineage, String continuationContract,
+				PairSemanticSlotSelector2D selector, PairRootAddressProof2D addressProof,
+				Optional<IntersectionBranchFrameOrigin2D> firstOrigin,
+				Optional<IntersectionBranchFrameOrigin2D> secondOrigin,
+				java.util.function.BiPredicate<Optional<IntersectionBranchFrameOrigin2D>,
+						Optional<IntersectionBranchFrameOrigin2D>> reuseGuard) {
+			ensureOpen();
+			String branch = requireText(branchLineage, "Pair branch lineage");
+			PairRootAllocationKey binding = new PairRootAllocationKey(
+					continuationContract, selector);
+			java.util.Objects.requireNonNull(addressProof);
+			java.util.Objects.requireNonNull(reuseGuard);
+			PairOrigins origins = new PairOrigins(firstOrigin, secondOrigin);
+			if (!addressProof.matchesSources(selector)
+					|| !selector.getSourcePairIdentity().equals(material.sourcePair)
+					|| !hasBranchFrameSide(selector) || !origins.matches(selector)
+					|| stagedPairBindings.containsKey(binding)) {
+				throw new IllegalArgumentException(
+						"Current pair proof contradicts its branch-frame binding");
+			}
+			Entry selected = startingPairBindings.get(binding);
+			boolean reused = selected != null;
+			if (selected == null) {
+				long incarnation = allocateIncarnation();
+				selected = allocatedPairEntry(branch, binding, addressProof,
+						incarnation, Status.ACTIVE, Optional.empty(), Optional.of(origins));
+			} else {
+				PairOrigins recorded = selected.pairOrigins.orElseThrow();
+				if (!selected.branchLineage.equals(branch)
+						|| !reuseGuard.test(recorded.first, recorded.second)) {
+					withheldBranchFrameTokens.add(startingPairToken(selected));
+					return Optional.empty();
+				}
+				selected = selected.withPairAddressProof(addressProof)
+						.withStatus(selected.status.isClaimed()
+								? Status.CLAIMED_ACTIVE : Status.ACTIVE);
+			}
+			String token = stage(selected);
+			return Optional.of(new IntersectionRootAllocation2D(token,
+					selected.continuationKey.orElseThrow(), reused));
+		}
+
+		/** Withholds the token of a pair selector whose current roots are ambiguous. */
+		public void withholdBranchFramePair(String continuationContract,
+				PairSemanticSlotSelector2D selector) {
+			ensureOpen();
+			Entry found = startingPairBindings.get(new PairRootAllocationKey(
+					continuationContract, java.util.Objects.requireNonNull(selector)));
+			if (found != null && found.pairOrigins.isPresent()) {
+				withheldBranchFrameTokens.add(startingPairToken(found));
+			}
+		}
+
+		/**
+		 * @return the recorded origins of the binding of a pair selector at the start of
+		 *         this evaluation, first source then second, or empty without a binding
+		 */
+		public Optional<List<Optional<IntersectionBranchFrameOrigin2D>>>
+				branchFramePairOrigins(String continuationContract,
+						PairSemanticSlotSelector2D selector) {
+			Entry found = startingPairBindings.get(new PairRootAllocationKey(
+					continuationContract, java.util.Objects.requireNonNull(selector)));
+			return found == null ? Optional.empty() : found.pairOrigins.map(origins ->
+					List.of(origins.first, origins.second));
+		}
+
+		/** @return the token under which the starting snapshot holds a pair entry */
+		private String startingPairToken(Entry current) {
+			for (Map.Entry<String, Entry> copied : pairCopyEntriesByOldToken.entrySet()) {
+				if (copied.getValue() == current) {
+					return copied.getKey();
+				}
+			}
+			return startingSnapshot.token(current);
 		}
 
 		/**
@@ -1341,6 +1478,140 @@ public final class LocusIntersectionTokenLedger2D {
 		}
 
 		/**
+		 * Resolves the current root of a branch-frame selector (ADR 0042; contract {@code
+		 * post-r1-conditioned-use.md}, section 6.5, points 4 to 6). A result has at most one
+		 * binding per branch-frame selector. A binding that exists is resolved only when the
+		 * reuse guard holds for its recorded origin; otherwise its token is withheld: it is
+		 * not given to the root, transferred, replaced or retired, and no other token is
+		 * allocated for the selector while the binding exists. The origin is recorded at the
+		 * allocation and is never updated.
+		 *
+		 * @param origin parameter address of the root, recorded only by an allocation
+		 * @param reuseGuard whether an origin and the current root lie in one conditioned
+		 *        region of the published content
+		 * @return the allocation, or empty when the token of the selector is withheld
+		 */
+		public Optional<IntersectionRootAllocation2D> resolveBranchFrameRoot(
+				String branchFrame, String continuationContract,
+				IntersectionRootDeterministicSelector2D selector,
+				IntersectionRootAddressProof2D addressProof,
+				IntersectionBranchFrameOrigin2D origin,
+				java.util.function.Predicate<IntersectionBranchFrameOrigin2D> reuseGuard) {
+			ensureOpen();
+			String branch = requireText(branchFrame, "Branch frame");
+			String contract = requireText(continuationContract,
+					"Continuation contract");
+			java.util.Objects.requireNonNull(addressProof);
+			java.util.Objects.requireNonNull(origin);
+			java.util.Objects.requireNonNull(reuseGuard);
+			if (!java.util.Objects.requireNonNull(selector).isBranchFrame()) {
+				throw new IllegalArgumentException("Not a branch-frame selector");
+			}
+			if (stagedByBinding.containsKey(
+					new CurrentRootAllocationKey(contract, selector))) {
+				throw new IllegalStateException(
+						"A branch-frame selector has one current root");
+			}
+			Entry selected = uniqueStartingAllocation(branch, contract, selector,
+					addressProof);
+			boolean reused = selected != null;
+			Entry prior = selected;
+			if (selected == null && authorizedCopySourceOwner != null) {
+				Entry copySource = uniqueAuthorizedCopyStartingAllocation(branch,
+						selector, addressProof);
+				if (copySource != null && copySource.branchFrameOrigin.isPresent()) {
+					prior = copySource;
+					selected = allocatedEntry(branch,
+							currentRootAllocationKey(contract, selector,
+									copySource.incarnation),
+							addressProof, copySource.incarnation, contract, selector)
+							.withBranchFrameOrigin(copySource.branchFrameOrigin.get())
+							.withStatus(copySource.status);
+					reused = true;
+				}
+			}
+			if (selected != null) {
+				if (!reuseGuard.test(selected.branchFrameOrigin.orElseThrow())) {
+					withheldBranchFrameTokens.add(startingSnapshot.token(prior));
+					return Optional.empty();
+				}
+				if (prior != selected) {
+					CurrentRootAllocationKey successorBinding =
+							selected.currentRootBinding.orElseThrow();
+					CurrentRootAllocationKey priorBinding =
+							authorizedCopySuccessorBindings.put(
+									startingSnapshot.token(prior), successorBinding);
+					if (priorBinding != null
+							&& !priorBinding.equals(successorBinding)) {
+						throw new IllegalStateException(
+								"One copied token cannot acquire two current selectors");
+					}
+				}
+				selected = selected.withAddressProof(addressProof)
+						.withStatus(selected.status.isClaimed()
+								? Status.CLAIMED_ACTIVE : Status.ACTIVE);
+			} else {
+				long incarnation = allocateIncarnation();
+				selected = allocatedEntry(branch,
+						currentRootAllocationKey(contract, selector, incarnation),
+						addressProof, incarnation, contract, selector)
+						.withBranchFrameOrigin(origin);
+			}
+			String token = stage(selected);
+			return Optional.of(new IntersectionRootAllocation2D(token,
+					selected.continuationKey.orElseThrow(), reused));
+		}
+
+		/**
+		 * Withholds the token of a branch-frame selector whose current roots are ambiguous:
+		 * the binding, if one exists, keeps its selector, its origin and its token.
+		 */
+		public void withholdBranchFrame(String continuationContract,
+				IntersectionRootDeterministicSelector2D selector) {
+			ensureOpen();
+			if (startingSnapshot == null) {
+				return;
+			}
+			Entry found = startingSnapshot.byBinding.get(new CurrentRootAllocationKey(
+					requireText(continuationContract, "Continuation contract"),
+					java.util.Objects.requireNonNull(selector)));
+			if (found != null && found.branchFrameOrigin.isPresent()) {
+				withheldBranchFrameTokens.add(startingSnapshot.token(found));
+			}
+		}
+
+		/**
+		 * Withholds the tokens of every branch-frame binding of the given frames: a
+		 * published root without a selector of its own leaves none of them known to be the
+		 * only root of its selector.
+		 */
+		public void withholdBranchFrames(java.util.Set<String> branchFrames) {
+			ensureOpen();
+			for (Entry entry : startingEntries) {
+				if (entry.branchFrameOrigin.isPresent()
+						&& branchFrames.contains(entry.branchLineage)) {
+					withheldBranchFrameTokens.add(startingSnapshot.token(entry));
+				}
+			}
+		}
+
+		/**
+		 * @return the recorded origin of the binding of a branch-frame selector at the start
+		 *         of this evaluation, or empty when the selector has no binding
+		 */
+		public Optional<IntersectionBranchFrameOrigin2D> branchFrameOrigin(
+				String continuationContract,
+				IntersectionRootDeterministicSelector2D selector) {
+			if (startingSnapshot == null) {
+				return Optional.empty();
+			}
+			Entry found = startingSnapshot.byBinding.get(new CurrentRootAllocationKey(
+					requireText(continuationContract, "Continuation contract"),
+					java.util.Objects.requireNonNull(selector)));
+			return found == null ? Optional.empty() : found.branchFrameOrigin;
+		}
+
+		/**
 		 * Issues a deterministic handle for a verified but non-identifiable root.
 		 * The handle never enters staged entries or persisted ledger state.
 		 *
@@ -1604,10 +1875,76 @@ public final class LocusIntersectionTokenLedger2D {
 	private static Entry allocatedPairEntry(String branch,
 			PairRootAllocationKey binding, PairRootAddressProof2D proof,
 			long incarnation, Status status, Optional<PairCopyEvidence> copyEvidence) {
+		return allocatedPairEntry(branch, binding, proof, incarnation, status,
+				copyEvidence, Optional.empty());
+	}
+
+	private static Entry allocatedPairEntry(String branch,
+			PairRootAllocationKey binding, PairRootAddressProof2D proof,
+			long incarnation, Status status, Optional<PairCopyEvidence> copyEvidence,
+			Optional<PairOrigins> origins) {
 		String key = pairRootAllocationKey(binding, incarnation);
 		return new Entry(branch + "/solution/" + key, branch, Optional.of(key),
 				null, incarnation, status, Optional.empty(), Optional.of(binding),
-				proof, copyEvidence);
+				proof, copyEvidence, Optional.empty(), origins);
+	}
+
+	/** @return whether a side of the pair selector is bound to a branch frame */
+	private static boolean hasBranchFrameSide(PairSemanticSlotSelector2D selector) {
+		return org.geocedg.common.kernel.locus.LocusBranch2D.isBranchFrame(
+				selector.getFirst().getComponentLineage())
+				|| org.geocedg.common.kernel.locus.LocusBranch2D.isBranchFrame(
+						selector.getSecond().getComponentLineage());
+	}
+
+	/**
+	 * Origins of a pair binding with a branch-frame side (ADR 0042; contract {@code
+	 * post-r1-conditioned-use.md}, section 6.5, point 8): one parameter address for each
+	 * side that is bound to a branch frame, in the order of the sources of the selector.
+	 */
+	private static final class PairOrigins {
+		private final Optional<IntersectionBranchFrameOrigin2D> first;
+		private final Optional<IntersectionBranchFrameOrigin2D> second;
+
+		private PairOrigins(Optional<IntersectionBranchFrameOrigin2D> first,
+				Optional<IntersectionBranchFrameOrigin2D> second) {
+			this.first = java.util.Objects.requireNonNull(first);
+			this.second = java.util.Objects.requireNonNull(second);
+		}
+
+		private boolean matches(PairSemanticSlotSelector2D selector) {
+			return first.isPresent() == org.geocedg.common.kernel.locus.LocusBranch2D
+					.isBranchFrame(selector.getFirst().getComponentLineage())
+					&& second.isPresent() == org.geocedg.common.kernel.locus.LocusBranch2D
+							.isBranchFrame(selector.getSecond().getComponentLineage());
+		}
+
+		private PairOrigins swapped() {
+			return new PairOrigins(second, first);
+		}
+
+		private String external() {
+			return first.map(IntersectionBranchFrameOrigin2D::toExternalForm).orElse("-")
+					+ ";" + second.map(IntersectionBranchFrameOrigin2D::toExternalForm)
+							.orElse("-");
+		}
+
+		private static PairOrigins parse(String value) {
+			String[] sides = value.split(";", -1);
+			if (sides.length != 2) {
+				throw new IllegalArgumentException("Malformed pair origins");
+			}
+			PairOrigins parsed = new PairOrigins(side(sides[0]), side(sides[1]));
+			if (!parsed.external().equals(value)) {
+				throw new IllegalArgumentException("Pair origins are not canonical");
+			}
+			return parsed;
+		}
+
+		private static Optional<IntersectionBranchFrameOrigin2D> side(String value) {
+			return "-".equals(value) ? Optional.empty()
+					: Optional.of(IntersectionBranchFrameOrigin2D.parse(value));
+		}
 	}
 
 	private static Entry copiedPairEntry(Entry source,
@@ -1617,10 +1954,16 @@ public final class LocusIntersectionTokenLedger2D {
 		// a missing association fails closed instead of linking to the original.
 		PairRootAllocationKey next = new PairRootAllocationKey(old.contract,
 				old.selector.remap(mapping, participants));
+		// The origins follow their sources when the copy orders them the other way.
+		Optional<PairOrigins> origins = source.pairOrigins.map(value ->
+				value.matches(next.selector) && mapping.getOrDefault(
+						old.selector.getFirst().getSourceId(), "").equals(
+								next.selector.getFirst().getSourceId())
+										? value : value.swapped());
 		return allocatedPairEntry(source.branchLineage, next,
 				source.pairAddressProof.remapSources(mapping), source.incarnation,
 				source.status, Optional.of(new PairCopyEvidence(old.selector,
-						source.pairAddressProof, mapping)));
+						source.pairAddressProof, mapping)), origins);
 	}
 
 	private static String pairRootAllocationKey(PairRootAllocationKey binding,
@@ -1989,7 +2332,9 @@ public final class LocusIntersectionTokenLedger2D {
 		CLAIMED_DORMANT("d", false, true, false),
 		PERIODIC_QUARANTINE("q", false, false, true),
 		CLAIMED_PERIODIC_QUARANTINE("r", false, true, true),
-		CLAIMED_PAIR_QUARANTINE("p", false, true, false);
+		CLAIMED_PAIR_QUARANTINE("p", false, true, false),
+		/** An unclaimed branch-frame binding whose token is withheld (ledger v7). */
+		WITHHELD("w", false, false, false);
 
 		private final String code;
 		private final boolean active;
@@ -2019,14 +2364,19 @@ public final class LocusIntersectionTokenLedger2D {
 		private static Status parse(String value, String version) {
 			for (Status status : values()) {
 				if (status.code.equals(value)) {
+					if (status == WITHHELD
+							&& !BRANCH_FRAME_FORMAT_VERSION.equals(version)) {
+						throw new IllegalArgumentException(
+								"A withheld binding requires ledger v7");
+					}
 					if (status == CLAIMED_PAIR_QUARANTINE
-							&& !FOLD_CONTACT_FORMAT_VERSION.equals(version)
+							&& !hasEntryKinds(version)
 							&& !PAIR_FORMAT_VERSION.equals(version)) {
 						throw new IllegalArgumentException(
 								"Pair quarantine requires the pair ledger format");
 					}
 					if (status != ACTIVE && !FORMAT_VERSION.equals(version)
-							&& !FOLD_CONTACT_FORMAT_VERSION.equals(version)
+							&& !hasEntryKinds(version)
 							&& !PAIR_FORMAT_VERSION.equals(version)) {
 						throw new IllegalArgumentException(
 								"Legacy token ledger cannot declare retained status");
@@ -2049,6 +2399,10 @@ public final class LocusIntersectionTokenLedger2D {
 		private final Optional<PairRootAllocationKey> pairRootBinding;
 		private final PairRootAddressProof2D pairAddressProof;
 		private final Optional<PairCopyEvidence> pairCopyEvidence;
+		/** Origin of a branch-frame binding: present exactly on the entries of kind B. */
+		private final Optional<IntersectionBranchFrameOrigin2D> branchFrameOrigin;
+		/** Origins of a pair binding with a branch-frame side: exactly on the kind Q. */
+		private final Optional<PairOrigins> pairOrigins;
 
 		private Entry(String solutionLineage, String branchLineage,
 				Optional<String> continuationKey,
@@ -2075,6 +2429,34 @@ public final class LocusIntersectionTokenLedger2D {
 				Optional<PairRootAllocationKey> pairRootBinding,
 				PairRootAddressProof2D pairAddressProof,
 				Optional<PairCopyEvidence> pairCopyEvidence) {
+			this(solutionLineage, branchLineage, continuationKey, addressProof, incarnation,
+					status, currentRootBinding, pairRootBinding, pairAddressProof,
+					pairCopyEvidence, Optional.empty(), Optional.empty());
+		}
+
+		private Entry(String solutionLineage, String branchLineage,
+				Optional<String> continuationKey,
+				IntersectionRootAddressProof2D addressProof, long incarnation,
+				Status status, Optional<CurrentRootAllocationKey> currentRootBinding,
+				Optional<PairRootAllocationKey> pairRootBinding,
+				PairRootAddressProof2D pairAddressProof,
+				Optional<PairCopyEvidence> pairCopyEvidence,
+				Optional<IntersectionBranchFrameOrigin2D> branchFrameOrigin,
+				Optional<PairOrigins> pairOrigins) {
+			this.branchFrameOrigin = java.util.Objects.requireNonNull(branchFrameOrigin);
+			this.pairOrigins = java.util.Objects.requireNonNull(pairOrigins);
+			if (pairOrigins.isPresent() && (!pairRootBinding.isPresent()
+					|| !pairOrigins.get().matches(pairRootBinding.get().selector))
+					|| !pairOrigins.isPresent() && pairRootBinding.filter(binding ->
+							hasBranchFrameSide(binding.selector)).isPresent()) {
+				throw new IllegalArgumentException(
+						"A pair binding records an origin exactly on its branch-frame sides");
+			}
+			if (status == Status.WITHHELD && !branchFrameOrigin.isPresent()
+					&& !pairOrigins.isPresent()) {
+				throw new IllegalArgumentException(
+						"Only a branch-frame binding is withheld");
+			}
 			this.solutionLineage = requireText(solutionLineage,
 					"Solution lineage");
 			this.branchLineage = requireText(branchLineage, "Branch lineage");
@@ -2112,7 +2494,21 @@ public final class LocusIntersectionTokenLedger2D {
 		private Entry withStatus(Status newStatus) {
 			return new Entry(solutionLineage, branchLineage, continuationKey,
 					addressProof, incarnation, newStatus, currentRootBinding,
-					pairRootBinding, pairAddressProof, pairCopyEvidence);
+					pairRootBinding, pairAddressProof, pairCopyEvidence, branchFrameOrigin,
+					pairOrigins);
+		}
+
+		/** @return the same scalar entry as a branch-frame binding with its origin */
+		private Entry withBranchFrameOrigin(IntersectionBranchFrameOrigin2D origin) {
+			if (!currentRootBinding.filter(binding -> binding.selector.isBranchFrame())
+					.isPresent()) {
+				throw new IllegalArgumentException(
+						"Only a branch-frame binding records an origin");
+			}
+			return new Entry(solutionLineage, branchLineage, continuationKey,
+					addressProof, incarnation, status, currentRootBinding,
+					pairRootBinding, pairAddressProof, pairCopyEvidence,
+					Optional.of(origin), pairOrigins);
 		}
 
 		private Entry withAddressProof(
@@ -2121,13 +2517,15 @@ public final class LocusIntersectionTokenLedger2D {
 				throw new IllegalArgumentException("Pair entry cannot use scalar proof");
 			}
 			return new Entry(solutionLineage, branchLineage, continuationKey,
-					newAddressProof, incarnation, status, currentRootBinding);
+					newAddressProof, incarnation, status, currentRootBinding,
+					Optional.empty(), null, Optional.empty(), branchFrameOrigin,
+					Optional.empty());
 		}
 
 		private Entry withPairAddressProof(PairRootAddressProof2D newProof) {
 			return new Entry(solutionLineage, branchLineage, continuationKey,
 					null, incarnation, status, Optional.empty(), pairRootBinding,
-					newProof, pairCopyEvidence);
+					newProof, pairCopyEvidence, Optional.empty(), pairOrigins);
 		}
 
 		private Entry withCurrentRootBinding(String contract,
@@ -2390,12 +2788,33 @@ public final class LocusIntersectionTokenLedger2D {
 				.append(snapshot.entries.size());
 		for (Entry entry : snapshot.entries) {
 			encoded.append('~');
-			if (FOLD_CONTACT_FORMAT_VERSION.equals(version)) {
-				// The entry-kind discriminator of ledger v6 (CU3-B1 design section 5).
-				encoded.append(entry.pairRootBinding.isPresent() ? "P,"
+			if (isBranchFrame(entry) != entry.branchFrameOrigin.isPresent()) {
+				throw new IllegalArgumentException(
+						"A branch-frame binding records its origin, and no other entry does");
+			}
+			if (hasEntryKinds(version)) {
+				// The entry-kind discriminator of ledger v6 (CU3-B1 design section 5), and
+				// the kind B of ledger v7.
+				if (isBranchFrame(entry) && !BRANCH_FRAME_FORMAT_VERSION.equals(version)) {
+					throw new IllegalArgumentException(
+							"Branch-frame entries require ledger v7");
+				}
+				if (entry.pairOrigins.isPresent()
+						&& !BRANCH_FRAME_FORMAT_VERSION.equals(version)) {
+					throw new IllegalArgumentException(
+							"Branch-frame pair entries require ledger v7");
+				}
+				encoded.append(entry.pairOrigins.isPresent() ? "Q,"
+						: entry.pairRootBinding.isPresent() ? "P,"
+						: isBranchFrame(entry) ? "B,"
 						: isFoldContact(entry) ? "F," : isRegularTangent(entry) ? "T," : "S,");
+			} else if (isBranchFrame(entry)) {
+				throw new IllegalArgumentException("Branch-frame entries require ledger v7");
 			} else if (isFoldContact(entry) || isRegularTangent(entry)) {
 				throw new IllegalArgumentException("Contact entries require ledger v6");
+			} else if (entry.pairOrigins.isPresent()) {
+				throw new IllegalArgumentException(
+						"Branch-frame pair entries require ledger v7");
 			} else if (PAIR_FORMAT_VERSION.equals(version)) {
 				encoded.append(entry.pairRootBinding.isPresent() ? "P," : "S,");
 			} else if (entry.pairRootBinding.isPresent()) {
@@ -2418,6 +2837,9 @@ public final class LocusIntersectionTokenLedger2D {
 								: entry.pairAddressProof.toExternalForm())).append(',')
 						.append(hex(entry.pairCopyEvidence.map(PairCopyEvidence::external)
 								.orElse("")));
+				if (entry.pairOrigins.isPresent()) {
+					encoded.append(',').append(hex(entry.pairOrigins.get().external()));
+				}
 				continue;
 			}
 			encoded
@@ -2435,6 +2857,11 @@ public final class LocusIntersectionTokenLedger2D {
 			} else if (!LEGACY_FORMAT_VERSION.equals(version)) {
 				throw new IllegalArgumentException(
 						"Unsupported token-ledger encoding version");
+			}
+			if (entry.branchFrameOrigin.isPresent()) {
+				// The origin is durable: the evaluation-neutral text keeps it.
+				encoded.append(',').append(hex(
+						entry.branchFrameOrigin.get().toExternalForm()));
 			}
 		}
 		return encoded.toString();
@@ -2458,15 +2885,28 @@ public final class LocusIntersectionTokenLedger2D {
 		for (int index = 0; index < count; index++) {
 			String[] entry = parts[index + 5].split(",", -1);
 			String kind = null;
-			if (PAIR_FORMAT_VERSION.equals(version)
-					|| FOLD_CONTACT_FORMAT_VERSION.equals(version)) {
+			Optional<IntersectionBranchFrameOrigin2D> origin = Optional.empty();
+			if (PAIR_FORMAT_VERSION.equals(version) || hasEntryKinds(version)) {
 				if (entry.length == 10 && "P".equals(entry[0])) {
 					entries.add(decodePairEntry(entry));
 					continue;
 				}
+				if (entry.length == 11 && "Q".equals(entry[0])
+						&& BRANCH_FRAME_FORMAT_VERSION.equals(version)) {
+					Entry pair = decodePairEntry(java.util.Arrays.copyOfRange(entry, 0, 10),
+							Optional.of(PairOrigins.parse(unhex(entry[10]))));
+					entries.add(pair);
+					continue;
+				}
 				kind = entry[0];
+				if ("B".equals(kind) && BRANCH_FRAME_FORMAT_VERSION.equals(version)
+						&& entry.length == 12) {
+					origin = Optional.of(IntersectionBranchFrameOrigin2D.parse(
+							unhex(entry[11])));
+					entry = java.util.Arrays.copyOfRange(entry, 0, 11);
+				}
 				if (entry.length != 11 || !("S".equals(kind) || ("F".equals(kind) || "T".equals(kind))
-						&& FOLD_CONTACT_FORMAT_VERSION.equals(version))) {
+						&& hasEntryKinds(version) || origin.isPresent())) {
 					throw new IllegalArgumentException("Malformed ledger entry variant");
 				}
 				entry = java.util.Arrays.copyOfRange(entry, 1, entry.length);
@@ -2508,6 +2948,13 @@ public final class LocusIntersectionTokenLedger2D {
 					addressProof,
 					parsePositiveLong(entry[1], "entry incarnation"),
 					Status.parse(entry[0], version), binding);
+			if (origin.isPresent() || isBranchFrame(decoded)) {
+				if (!origin.isPresent() || !isBranchFrame(decoded)) {
+					throw new IllegalArgumentException(
+							"Ledger entry kind disagrees with its root selector");
+				}
+				decoded = decoded.withBranchFrameOrigin(origin.get());
+			}
 			if (kind != null && ("F".equals(kind) != isFoldContact(decoded)
 					|| "T".equals(kind) != isRegularTangent(decoded))) {
 				throw new IllegalArgumentException(
@@ -2519,20 +2966,26 @@ public final class LocusIntersectionTokenLedger2D {
 	}
 
 	private static Entry decodePairEntry(String[] entry) {
+		return decodePairEntry(entry, Optional.empty());
+	}
+
+	private static Entry decodePairEntry(String[] entry, Optional<PairOrigins> origins) {
 		PairRootAllocationKey binding = new PairRootAllocationKey(unhex(entry[6]),
 				PairSemanticSlotSelector2D.parse(unhex(entry[7])));
 		String copy = unhex(entry[9]);
 		return new Entry(unhex(entry[3]), unhex(entry[4]),
 				Optional.of(unhex(entry[5])), null,
 				parsePositiveLong(entry[2], "pair incarnation"),
-				Status.parse(entry[1], PAIR_FORMAT_VERSION), Optional.empty(),
+				Status.parse(entry[1], origins.isPresent() ? BRANCH_FRAME_FORMAT_VERSION
+						: PAIR_FORMAT_VERSION), Optional.empty(),
 				Optional.of(binding), PairRootAddressProof2D.parse(unhex(entry[8])),
 				copy.isEmpty() ? Optional.empty()
-						: Optional.of(PairCopyEvidence.parse(copy)));
+						: Optional.of(PairCopyEvidence.parse(copy)), Optional.empty(),
+				origins);
 	}
 
 	private static boolean hasDeterministicBindingFields(String version) {
-		return FOLD_CONTACT_FORMAT_VERSION.equals(version)
+		return hasEntryKinds(version)
 				|| PAIR_FORMAT_VERSION.equals(version) || FORMAT_VERSION.equals(version)
 				|| PHASE_FORMAT_VERSION.equals(version)
 				|| PREVIOUS_FORMAT_VERSION.equals(version);

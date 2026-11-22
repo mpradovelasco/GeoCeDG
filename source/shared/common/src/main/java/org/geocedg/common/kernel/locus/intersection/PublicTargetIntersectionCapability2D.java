@@ -181,9 +181,9 @@ public final class PublicTargetIntersectionCapability2D
 			IntersectionCandidate2D candidate,
 			Optional<String> transverseGerm) {
 		// The germ cites the identity key of its component (PRE-G9B-CU2, E-3).
-		String lineage = LocusComponentLineage2D.identityKey(context.getDefinition()
-				.getBranch(candidate.getBranchKey()).getExistenceStructure(),
-				exactComponent(context, candidate));
+		// On a conditioned region it cites the branch frame (ADR 0042, section 6.5).
+		String lineage = context.getDefinition().getBranch(candidate.getBranchKey())
+				.searchFrame(exactComponent(context, candidate));
 		Optional<String> currentGerm = transverseGerm.map(germ ->
 				CURRENT_TRANSVERSE_GERM_PREFIX + framed(lineage) + framed(germ));
 		if (!currentGerm.isPresent()) {
@@ -225,9 +225,8 @@ public final class PublicTargetIntersectionCapability2D
 			IntersectionCapabilityContext2D context, IntersectionCandidate2D candidate,
 			FoldContactAnchor2D anchor, boolean finiteAuthority) {
 		Optional<String> germ = finiteAuthority ? Optional.of(anchor.germ(
-				LocusComponentLineage2D.identityKey(context.getDefinition()
-						.getBranch(candidate.getBranchKey()).getExistenceStructure(),
-						exactComponent(context, candidate)))) : Optional.empty();
+				context.getDefinition().getBranch(candidate.getBranchKey())
+						.searchFrame(exactComponent(context, candidate)))) : Optional.empty();
 		ArrayList<IntersectionDiagnostic2D> diagnostics =
 				new ArrayList<>(candidate.getDiagnostics());
 		if (germ.isPresent()) {
@@ -262,9 +261,8 @@ public final class PublicTargetIntersectionCapability2D
 			IntersectionCapabilityContext2D context, IntersectionCandidate2D candidate,
 			RegularTangentAnchor2D anchor, boolean finiteAuthority) {
 		Optional<String> germ = finiteAuthority ? Optional.of(anchor.germ(
-				LocusComponentLineage2D.identityKey(context.getDefinition()
-						.getBranch(candidate.getBranchKey()).getExistenceStructure(),
-						exactComponent(context, candidate)),
+				context.getDefinition().getBranch(candidate.getBranchKey())
+						.searchFrame(exactComponent(context, candidate)),
 				context.getTarget().getFamily().name())) : Optional.empty();
 		ArrayList<IntersectionDiagnostic2D> diagnostics =
 				new ArrayList<>(candidate.getDiagnostics());
@@ -433,7 +431,7 @@ public final class PublicTargetIntersectionCapability2D
 				candidate.getBranchKey());
 		if (branch != null) {
 			List<LocusExistenceStructure2D.ContinuousComponent> components =
-					branch.getExistenceStructure().getContinuousValidComponents();
+					branch.getSearchComponents();
 			for (int index = 0; index < components.size(); index++) {
 				if (candidate.getComponentKey().equals(
 						IntersectionCapabilityContext2D.componentKey(

@@ -1,6 +1,6 @@
 # Locus V2 extended 2D intersection semantics
 
-**Status: G8C1 AND G8C2 NORMATIVE — AUTHOR APPROVED**
+**Status: G8C1 AND G8C2 NORMATIVE — AUTHOR APPROVED; CONDITIONED USE AMENDMENT (LAST SECTION, ADR 0042) — AUTHOR APPROVED AS CONTRACT (2026-11-22), IMPLEMENTATION AUTHORIZED IN INCREMENT I4, NOT YET APPROVED AS PRODUCT**
 
 **Phase: G8C design, G8C1 and G8C2 `PASS — AUTHOR APPROVED`; G8 global
 `PASS — AUTHOR APPROVED`**
@@ -279,3 +279,48 @@ to every Locus V2 source of an extended target or of a locus pair: certified com
 phase frames, seam quarantine only on certified closed periodic components, point components
 never treated as arcs, and `EMPTY` or complete sets only with `COMPLETE` sources and the
 rigorous exclusion of their point components.
+
+## Conditioned use amendment (ADR 0042): two loci on conditioned regions
+
+Amendment approved by the author on 2026-11-22 with
+[ADR 0042](../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md)
+and the [conditioned-use contract](candidates/post-r1-conditioned-use.md), §6.5, point 8,
+and §8.6. Increment I4. Sections 1 to 8 and the scope note are unchanged; the roots of two
+certified components keep the D2 publication of ADR 0028, with its selector, its proof of
+uniqueness on the component product and its ledger entry.
+
+**Search.** Each source of `Intersect(L1, L2)` is searched on its certified components and
+on the conditioned regions that its producer publishes. A pair of places is a pair of
+components, of regions, or one of each. The key of a region in a pair is revision-local and
+names its side, so that the unordered key of two regions of sources that share a branch key
+is unique; no such key is identity. Completeness is `NOT_ESTABLISHED` whenever a root lies
+on a region, and each such root carries `CONDITIONED_REGION_ROOT`.
+
+**Evidence of a root.** A root with a side on a region needs its evidence on both sources.
+Its local isolation is the pair form of the safeguarded bracket of a transverse root on one
+source, of method `SAFEGUARDED_REGULAR_JACOBIAN`: on a parameter rectangle around the root,
+inside the place of the root on each source, the difference of the two curves, read in the
+coordinates of its Jacobian at the root, changes sign across each pair of opposite sides,
+and the Jacobian keeps its orientation at every sampled end. It is numerical evidence under
+the hypotheses of the spans, of guarantee `FLOATING_POINT_UNCERTIFIED`, and never a
+certified enclosure. A root too close to an end of its place for the rectangle, or whose
+contact is not transverse, has no established isolation and no selector.
+
+**Selector.** Each source side binds the lineage of its certified component, or the branch
+frame `conditioned-use/branch-frame/v1/<branch key>` of that source when the root lies on a
+region of it. The selector is the pair selector of §4 with those sides and the
+orientation-normalized transverse sign; its ledger contract is
+`conditioned-use/branch-frame-pair-germ/v1`. A pair with a branch-frame side has no rank:
+only a selector that is unique among the current published roots of the result allocates a
+token, and a published root on a region without a selector leaves the selectors of its two
+frames not known to be unique.
+
+**Origins and reuse guard.** Each branch-frame side records its own origin at the
+allocating publication, and the reuse guard of
+[`locus-v2-intersections.md`](locus-v2-intersections.md) (conditioned use amendment) must
+hold on each of them: failing it on one side withholds the token, which is not given to the
+root, transferred, replaced or retired. The binding is an entry of kind `Q` of ledger
+version 7.
+
+**Admission.** Under `constructive-authority/v1` a root with a side on a region has no
+enclosure of its own: its admission is `NOT_ESTABLISHED`, and it is not point-admissible.

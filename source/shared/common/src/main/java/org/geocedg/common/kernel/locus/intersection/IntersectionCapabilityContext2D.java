@@ -122,7 +122,7 @@ public final class IntersectionCapabilityContext2D {
 			return OptionalDouble.empty();
 		}
 		for (LocusExistenceStructure2D.ContinuousComponent component
-				: branch.getExistenceStructure().getContinuousValidComponents()) {
+				: branch.getSearchComponents()) {
 			if (component.getInterval().equals(componentExtent)) {
 				return ownSideOfExcludedEnd(definition.getProvider(), component, parameter,
 						upperEnd);
@@ -319,8 +319,7 @@ public final class IntersectionCapabilityContext2D {
 	public List<String> getAllComponentKeys() {
 		ArrayList<String> keys = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
-			List<LocusInterval2D> components =
-					branch.getCertifiedContinuousValidComponents();
+			List<LocusInterval2D> components = branch.getSearchIntervals();
 			for (int index = 0; index < components.size(); index++) {
 				keys.add(componentKey(branch.getBranchKey(), index));
 			}

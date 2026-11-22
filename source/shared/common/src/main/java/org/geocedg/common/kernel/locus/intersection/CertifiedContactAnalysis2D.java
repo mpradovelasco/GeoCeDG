@@ -1076,8 +1076,7 @@ final class CertifiedContactAnalysis2D {
 			if (branch == null) {
 				return null;
 			}
-			List<ContinuousComponent> components =
-					branch.getExistenceStructure().getContinuousValidComponents();
+			List<ContinuousComponent> components = branch.getSearchComponents();
 			for (int index = 0; index < components.size(); index++) {
 				if (!candidate.getComponentKey().equals(IntersectionCapabilityContext2D
 						.componentKey(candidate.getBranchKey(), index))) {

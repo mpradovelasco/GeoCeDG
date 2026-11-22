@@ -176,10 +176,18 @@ public final class AlgoLocusLocusIntersectionV2 extends AlgoElement {
 		LocusPairIntersectionQuery2D query = new LocusPairIntersectionQuery2D(
 				firstDefinition, secondDefinition,
 				constructiveIntersectionLineage, topologyContext, callerPolicy);
+		// ADR 0042 (contract post-r1-conditioned-use.md, section 8.6): each source is
+		// searched on its certified components and on its conditioned regions.
+		// The internal producers keep the certified components only.
+		LocusDefinition2D firstSearch = !publicCommand ? firstDefinition
+				: firstDefinition.withConditionedSearch(callerFirst::getConditionedEvidence);
+		LocusDefinition2D secondSearch = !publicCommand ? secondDefinition
+				: secondDefinition.withConditionedSearch(
+						callerSecond::getConditionedEvidence);
 		LocusDefinition2D canonicalFirst = query.isCallerOrderCanonical()
-				? firstDefinition : secondDefinition;
+				? firstSearch : secondSearch;
 		LocusDefinition2D canonicalSecond = query.isCallerOrderCanonical()
-				? secondDefinition : firstDefinition;
+				? secondSearch : firstSearch;
 		IntersectionSourceBinding2D binding =
 				new IntersectionSourceBinding2D(query);
 		result.beginIntersectionRevision(binding);
@@ -194,6 +202,13 @@ public final class AlgoLocusLocusIntersectionV2 extends AlgoElement {
 			LocusIntersectionResult2D candidate = solver.intersect(query,
 					canonicalFirst, canonicalSecond, binding, preferredCapability,
 					tokenSource, evaluation);
+			if (publicCommand && evaluation != null) {
+				candidate = org.geocedg.common.kernel.locus.intersection
+						.PublicConditionedPairRootIdentityResolver2D.resolve(candidate,
+								canonicalFirst, canonicalSecond, evaluation,
+								org.geocedg.common.kernel.locus.constructive.AuthorityPolicy
+										.of(cons).isConstructive());
+			}
 			LocusIntersectionResult2D current = publicCommand ? candidate
 					: continuation.continuePairRoots(lastContinuableResult,
 							candidate, query.getPolicy());

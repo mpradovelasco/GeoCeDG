@@ -49,6 +49,9 @@ import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDomainProvider1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorFamily1D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedAbsenceCause2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCell2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCellKind2D;
 import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
 import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidenceOwner2D;
 import org.geocedg.common.kernel.locus.conditioned.LocusConditionedSample2D;
@@ -117,6 +120,12 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 	/** Owner of the conditioned evidence of the published revision (ADR 0042). */
 	private LocusConditionedEvidenceOwner2D conditionedOwner;
 	private LocusDefinition2D conditionedDefinition;
+	private LocusConditionedTraversalPolicy2D conditionedPolicy =
+			LocusConditionedTraversalPolicy2D.v1();
+	/** Content identities of the conditioned sources that the current owner recorded. */
+	private List<String> conditionedInherited = List.of();
+	/** The loci that the traced point reads, found once: the dependencies are fixed. */
+	private List<GeoLocusV2> conditionedUpstream;
 
 	/**
 	 * Creates a public parent from its real serialized command inputs. Durable
@@ -491,6 +500,21 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		return owner.report(parameter);
 	}
 
+	/**
+	 * Traverses the following revisions of the conditioned evidence with another policy: a
+	 * decision configuration of benches and tests, which show that identities do not depend
+	 * on the depth of the traversal (contract {@code post-r1-conditioned-use.md}, section
+	 * 6.6). The product always traverses with {@code conditioned-traversal/v1}; the policy is
+	 * not persisted, and a policy is never a durable identity.
+	 *
+	 * @param policy the policy of the next traversals, or {@code null} for the product policy
+	 */
+	public void useConditionedTraversalPolicy(LocusConditionedTraversalPolicy2D policy) {
+		conditionedPolicy = policy == null ? LocusConditionedTraversalPolicy2D.v1() : policy;
+		conditionedDefinition = null;
+		conditionedOwner = null;
+	}
+
 	private LocusConditionedEvidenceOwner2D conditionedOwner(String branchKey) {
 		ReconstructibleLocusEvaluator2D current = evaluator;
 		LocusDefinition2D definition = getLocus().isDefined()
@@ -500,11 +524,21 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 				|| !SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY.equals(branchKey)) {
 			return null;
 		}
-		if (conditionedDefinition == definition) {
+		// The conditioned sources that the traced function reads (contract
+		// post-r1-conditioned-use.md, section 8.8): the content of this locus records
+		// theirs, and it is computed again when one of them publishes another content.
+		List<String> inherited = inheritedConditionedSources();
+		if (conditionedDefinition == definition && inherited.equals(conditionedInherited)) {
 			return conditionedOwner;
 		}
-		// A new revision discards the evidence and the contradiction set of the previous one.
+		// A new revision discards the evidence and the contradiction set of the previous
+		// one; another content of a source keeps the contradiction set of this revision.
+		final List<Double> carried = conditionedDefinition == definition
+				&& conditionedOwner != null
+				? new ArrayList<>(conditionedOwner.getPublished().getContradictions())
+				: List.of();
 		conditionedDefinition = definition;
+		conditionedInherited = inherited;
 		conditionedOwner = null;
 		LocusBranch2D branch = definition.getBranch(branchKey);
 		if (branch == null || !current.isReconstructionFaithful()) {
@@ -525,19 +559,84 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 			}
 		}
 		LocusConditionedEvidenceOwner2D owner = new LocusConditionedEvidenceOwner2D(
-				branchKey, domain.getLower(), domain.getUpper(),
-				LocusConditionedTraversalPolicy2D.v1(), certified);
+				branchKey, domain.getLower(), domain.getUpper(), conditionedPolicy,
+				certified, inherited);
+		// A locus driven by a point of a conditioned locus: the bands of the support are
+		// bands of the dependent, whose driver is not defined on them (section 8.8).
+		LocusConditionedEvidence2D supportEvidence = family
+				== SemanticGeneratorFamily1D.LOCUS_BRANCH_POINT && support instanceof GeoLocusV2
+				&& descriptor != null && descriptor.getSupportBranchKey() != null
+						? ((GeoLocusV2) support).getConditionedEvidence(
+								descriptor.getSupportBranchKey()) : null;
 		// A later report is evaluated by the same evaluator of the same revision. Inside a
 		// reconstruction-slice update the session is a child of the evaluating one.
-		owner.startRevision(definition.getSemanticRevision(), parameter ->
-				LocusCertificationScope2D.explore(() -> {
-					try (LocusEvaluationSession2D session =
-							LocusEvaluationSession2D.openServiceSession(false, 1)) {
-						return current.evaluateWithTestimony(parameter, session);
-					}
-				}));
+		owner.startRevision(definition.getSemanticRevision(), parameter -> {
+			LocusConditionedCell2D band = supportEvidence == null ? null
+					: supportEvidence.bandAt(parameter);
+			if (band != null) {
+				return band.getKind() == LocusConditionedCellKind2D.ABSENT_BAND
+						? LocusConditionedSample2D.absent(
+								LocusConditionedAbsenceCause2D.DEPENDENCY_UNDEFINED)
+						: LocusConditionedSample2D.failed("UPSTREAM_BAND:" + band.getKind());
+			}
+			return LocusCertificationScope2D.explore(() -> {
+				try (LocusEvaluationSession2D session =
+						LocusEvaluationSession2D.openServiceSession(false, 1)) {
+					return current.evaluateWithTestimony(parameter, session);
+				}
+			});
+		});
+		if (supportEvidence != null) {
+			// A band narrower than the cells of this traversal is met by no node: each band
+			// of the support is reported, and the owner confirms it with its own sampler.
+			for (LocusConditionedCell2D cell : supportEvidence.getCells()) {
+				if (!cell.getKind().isSpan()) {
+					owner.report(0.5 * (cell.getLower() + cell.getUpper()));
+				}
+			}
+		}
+		for (Double parameter : carried) {
+			owner.report(parameter);
+		}
 		conditionedOwner = owner;
 		return owner;
+	}
+
+	/**
+	 * @return the content identities of the conditioned evidence of the loci that the
+	 *         traced point reads, in a canonical order; empty when it reads none
+	 */
+	private List<String> inheritedConditionedSources() {
+		if (conditionedUpstream == null) {
+			List<GeoLocusV2> upstream = new ArrayList<>();
+			for (GeoElement predecessor : dependentPoint.toGeoElement().getAllPredecessors()) {
+				if (predecessor instanceof GeoLocusV2 && predecessor != getLocus()) {
+					upstream.add((GeoLocusV2) predecessor);
+				}
+			}
+			conditionedUpstream = upstream;
+		}
+		if (conditionedUpstream.isEmpty()) {
+			return List.of();
+		}
+		List<String> inherited = new ArrayList<>();
+		for (GeoLocusV2 source : conditionedUpstream) {
+			LocusDefinition2D sourceDefinition = source.isDefined()
+					? source.getSemanticDefinition() : null;
+			if (sourceDefinition == null) {
+				continue;
+			}
+			for (LocusBranch2D sourceBranch : sourceDefinition.getBranches()) {
+				LocusConditionedEvidence2D evidence = source.getConditionedEvidence(
+						sourceBranch.getBranchKey());
+				if (evidence != null) {
+					inherited.add(source.getLocusIdentity() + "/" + sourceBranch.getBranchKey()
+							+ "@" + evidence.getContentIdentity());
+				}
+			}
+		}
+		Collections.sort(inherited);
+		return inherited;
 	}
 
 	/**

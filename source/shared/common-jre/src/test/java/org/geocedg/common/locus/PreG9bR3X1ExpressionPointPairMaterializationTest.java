@@ -114,8 +114,13 @@ final class PreG9bR3X1ExpressionPointPairMaterializationTest
 
 	/**
 	 * PRE-G9B-CU2 step T11, declared conformity: the expression point is outside class v3,
-	 * so its locus has no certified component, its intersection has no root at all and its
-	 * coverage is not established; no pair token is issued.
+	 * so its locus has no certified component and its coverage is not established. Since
+	 * ADR 0042 its conditioned regions are searched ({@code
+	 * locus-v2-extended-intersections.md}, conditioned use amendment): a root found there is
+	 * declared a root on a conditioned region, the D2 publication certifies no slot for it,
+	 * and its only durable identity is a pair binding with a branch frame and its origin.
+	 * The name of the test is the one that the R3-X1 validation matrix cites (row D3): the
+	 * token that is never issued is the D2 pair token of a certified slot.
 	 */
 	@Test
 	void anUncertifiedExpressionIssuesNoPairToken() {
@@ -123,9 +128,18 @@ final class PreG9bR3X1ExpressionPointPairMaterializationTest
 		add("Ex=(x(C)/2,exp(y(C)))");
 		add("ex=LocusV2(Ex,C)");
 		GeoLocusIntersectionResult rich = add("Rx=Intersect(d,ex)");
-		assertTrue(rich.getIntersectionResult().getFiniteSolutions().isEmpty());
-		assertTrue(eligible(rich).isEmpty(), diagnostic(rich));
-		assertTrue(rich.getTokenLedgerState().startsWith("4|"), rich.getTokenLedgerState());
+		for (LocusIntersectionSolution2D root
+				: rich.getIntersectionResult().getFiniteSolutions()) {
+			assertTrue(root.getDiagnostics().toString().contains("CONDITIONED_REGION_ROOT"),
+					root.getDiagnostics().toString());
+		}
+		// No D2 slot: every binding of the ledger, if any, has a branch-frame side.
+		assertFalse(diagnostic(rich).contains("status=UNIQUE"), diagnostic(rich));
+		String ledger = rich.getTokenLedgerState();
+		assertFalse(ledger.contains("~P,"), ledger);
+		assertEquals(eligible(rich).isEmpty(), ledger.startsWith("4|"), ledger);
+		assertEquals(!eligible(rich).isEmpty(), ledger.startsWith("7|") && ledger.contains(
+				"~Q,"), ledger);
 		assertTrue(diagnostic(rich).contains("COVERAGE_NOT_ESTABLISHED"), diagnostic(rich));
 		assertTrue(evaluator("ex").captureCertifiedProgram().isEmpty());
 	}

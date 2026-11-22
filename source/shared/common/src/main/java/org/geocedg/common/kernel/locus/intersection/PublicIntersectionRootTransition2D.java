@@ -140,7 +140,7 @@ public final class PublicIntersectionRootTransition2D {
 			return false;
 		}
 		List<LocusExistenceStructure2D.ContinuousComponent> components =
-				branch.getExistenceStructure().getContinuousValidComponents();
+				branch.getSearchComponents();
 		for (int index = 0; index < components.size(); index++) {
 			LocusExistenceStructure2D.ContinuousComponent certified = components.get(index);
 			LocusInterval2D component = certified.getInterval();

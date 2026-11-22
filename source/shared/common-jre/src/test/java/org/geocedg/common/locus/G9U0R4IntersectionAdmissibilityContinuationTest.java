@@ -679,9 +679,16 @@ final class G9U0R4IntersectionAdmissibilityContinuationTest
 		LocusIntersectionResult2D unisolatedResult =
 				unisolated.getIntersectionResult();
 		// PRE-G9B-CU2 declared conformity: (v,abs(v)) is outside class v3 since step T11, so
-		// its existence is not established and the intersection has no root at all, still
-		// less an admissible one.
-		assertTrue(unisolatedResult.getFiniteSolutions().isEmpty());
+		// its existence is not established. Since ADR 0042 its conditioned regions are
+		// searched (locus-v2-intersections.md, conditioned use amendment): the contact at
+		// the corner is not an isolated transverse root, and it is still not admissible.
+		for (LocusIntersectionSolution2D solution : unisolatedResult.getFiniteSolutions()) {
+			assertFalse(unisolatedResult.findPointAdmissibleSolution(
+					solution.getIdentity().getRootToken()).isPresent(),
+					solution.getDiagnostics().toString());
+		}
+		assertEquals(Completeness.NOT_ESTABLISHED,
+				unisolatedResult.getCompletenessEvidence().getCompleteness());
 		assertTrue(unisolatedResult.getDiagnostics().stream().anyMatch(diagnostic ->
 				diagnostic.getCode() == DiagnosticCode.COVERAGE_NOT_ESTABLISHED),
 				unisolatedResult.getDiagnostics().toString());

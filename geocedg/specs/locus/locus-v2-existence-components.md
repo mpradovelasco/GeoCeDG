@@ -704,9 +704,33 @@ the part of a domain that no certificate covers. Each increment adds its consume
 |---|---|---|
 | Isolated point, `Point(L, "branch", u)` and `Point(L, u)` | point validity at `u` and established selections; no interval evidence. Address by parameter ([public surface](locus-v2-public-surface.md), conditioned use amendment) | I1 |
 | Following, drag and creation by a request | spans of any class along the route, inside one conditioned region ([point interaction](locus-v2-point-interaction.md), conditioned use amendment) | I1 |
+| Roots of `Intersect(L, target)` and `Intersect(L1, L2)` | isolating interval inside one region, residual, local isolation and transverse bracket; the token of a branch-frame selector only under its reuse guard ([intersections](locus-v2-intersections.md) and [extended intersections](locus-v2-extended-intersections.md), conditioned use amendments) | I4 |
 
 A local result that meets its own premises is usable although completeness is
 `NOT_ESTABLISHED`. Under the constructive authority an incidence decided on a conditioned
 region has integrity `NOT_ESTABLISHED` unless the relation itself has the evidence that
 [`locus-v2-constructive-authority.md`](locus-v2-constructive-authority.md) requires:
 conditioned evidence never grants `RELAXED`.
+
+### 19.5 Dependent and nested loci
+
+Contract §8.8. Increment I4.
+
+- **A locus driven by a point of a conditioned locus.** Its driver domain is the declared
+  domain of the support. A band of the support is a band of the dependent: its sampler
+  evaluates no parameter inside one, an `ABSENT_BAND` of the support is an absence and any
+  other band is a failure of the evaluation, and each band of the support is reported to
+  the owner of the dependent, which confirms it with its own sampler. The regions of the
+  support are therefore the pieces on which the driver is defined. The existence structure
+  of the dependent stays `NOT_ESTABLISHED` without a certificate of its own.
+- **A locus whose traced point reads a conditioned source** (a point, a root or a metric of
+  it). It computes its own evidence on its own function. Every published content records
+  the content identities of the conditioned evidence of the loci that the traced point
+  reads, and its own content identity names them: every span inherits the hypotheses of
+  those contents, and a result that read the content is not served after one of them
+  changes. Another content of a source keeps the contradiction set of the revision.
+- **Copies.** Evidence is not shared between a locus and its copy in an evaluation slice:
+  the copy computes its own content with its own evaluator. A copy that does not follow
+  the driver of the slice receives the contradiction set that its original has published,
+  and confirms each parameter itself; a copy that follows the driver is another function at
+  each evaluation and receives nothing. Only published content is read.

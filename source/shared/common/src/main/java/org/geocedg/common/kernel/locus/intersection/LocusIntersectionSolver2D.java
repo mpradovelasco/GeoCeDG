@@ -231,6 +231,12 @@ public final class LocusIntersectionSolver2D {
 					DiagnosticCode.CANDIDATE_REJECTED,
 					"At least one exhaustive candidate could not be verified"));
 		}
+		if (hasConditionedSearch(context.getDefinition())
+				&& completeness != Completeness.NOT_ESTABLISHED) {
+			// The roots found on a conditioned source are never known to be all its roots.
+			completeness = Completeness.NOT_ESTABLISHED;
+			completenessMethod = CompletenessMethod.NOT_ESTABLISHED;
+		}
 		GeometryKind publishedKind;
 		if (overlapKind) {
 			publishedKind = kind;
@@ -264,6 +270,30 @@ public final class LocusIntersectionSolver2D {
 				.canonicalize(candidate.getSemanticParameter());
 		if (!address.component.contains(canonical,
 				context.getDefinition().getProvider().getDomainEpsilon())) {
+			context.getInstrumentation().recordRejectedCandidate();
+			return Verification.unresolved();
+		}
+		boolean conditioned = LocusBranch2D.isConditionedRegion(address.component);
+		org.geocedg.common.kernel.locus.LocusInterval2D declared =
+				context.getDefinition().getProvider().getDeclaredDomain();
+		if (conditioned && context.getDefinition().getProvider().isPeriodic()
+				&& (candidate.getSemanticParameter() > declared.getUpper()
+						|| candidate.getSemanticParameter() == declared.getUpper()
+								&& !declared.isUpperClosed()
+						|| candidate.getSemanticParameter() < declared.getLower()
+						|| candidate.getSemanticParameter() == declared.getLower()
+								&& !declared.isLowerClosed())) {
+			// The excluded end of a periodic domain is the parameter of its included end:
+			// the search of that end already holds this root, and it is no second root.
+			return Verification.sameRootAtTheSeam();
+		}
+		if (conditioned && !(address.component.getInterval().getLower()
+				<= candidate.getIsolatingInterval().getLower()
+				&& candidate.getIsolatingInterval().getUpper()
+						<= address.component.getInterval().getUpper())) {
+			// A root needs evidence on a neighbourhood: an isolating interval that leaves
+			// its conditioned region meets a band, and the candidate stays unresolved
+			// (contract post-r1-conditioned-use.md, section 8.5).
 			context.getInstrumentation().recordRejectedCandidate();
 			return Verification.unresolved();
 		}
@@ -374,6 +404,10 @@ public final class LocusIntersectionSolver2D {
 				DiagnosticCode.CONTINUATION_ESTABLISHED,
 				"Independent semantic evaluation, normalized residual and target "
 						+ "membership verification passed"));
+		if (conditioned) {
+			diagnostics.add(conditionedRoot(context.getDefinition().getBranch(
+					candidate.getBranchKey()), canonical));
+		}
 		if (certifiedRoute) {
 			diagnostics.add(new IntersectionDiagnostic2D(
 					DiagnosticCode.CERTIFIED_EXISTENCE_ESTABLISHED,
@@ -386,6 +420,36 @@ public final class LocusIntersectionSolver2D {
 		return Verification.accepted(new LocusIntersectionSolution2D(identity,
 				revisionEvidence, evaluation.getPoint(), classification, lineage,
 				diagnostics));
+	}
+
+	/**
+	 * The declaration of a root on a conditioned region: the class of its span, and the
+	 * revision and the content identity of the evidence that it read. No class grants a
+	 * permission (contract post-r1-conditioned-use.md, sections 3.3 and 8.5).
+	 */
+	private static IntersectionDiagnostic2D conditionedRoot(LocusBranch2D branch,
+			double canonical) {
+		org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D evidence =
+				branch.getSearchEvidence();
+		String spanClass = "";
+		for (org.geocedg.common.kernel.locus.conditioned.LocusConditionedCell2D cell
+				: evidence.cellsContaining(canonical)) {
+			if (cell.getKind().isSpan()) {
+				spanClass = String.valueOf(cell.getSpanClass());
+				break;
+			}
+		}
+		return new IntersectionDiagnostic2D(DiagnosticCode.CONDITIONED_REGION_ROOT,
+				"Root on a conditioned region, span class " + spanClass + ": existence and "
+						+ "continuity between the nodes are the declared hypotheses H1 to H4, "
+						+ "not certified; evidence revision " + evidence.getRevision()
+						+ ", content " + evidence.getContentIdentity());
+	}
+
+	/** @return whether a branch of the definition is searched on conditioned regions */
+	private static boolean hasConditionedSearch(LocusDefinition2D definition) {
+		return definition.getBranches().stream().anyMatch(branch ->
+				branch.getSearchEvidence() != null);
 	}
 
 	private static String rejectionCheck(DiagnosticCode code) {
@@ -547,8 +611,7 @@ public final class LocusIntersectionSolver2D {
 	private static List<String> allComponents(LocusDefinition2D definition) {
 		ArrayList<String> keys = new ArrayList<>();
 		for (LocusBranch2D branch : definition.getBranches()) {
-			for (int index = 0; index < branch
-					.getCertifiedContinuousValidComponents().size(); index++) {
+			for (int index = 0; index < branch.getSearchIntervals().size(); index++) {
 				keys.add(IntersectionCapabilityContext2D.componentKey(
 						branch.getBranchKey(), index));
 			}
@@ -563,12 +626,13 @@ public final class LocusIntersectionSolver2D {
 			return null;
 		}
 		LocusExistenceStructure2D structure = branch.getExistenceStructure();
-		List<ContinuousComponent> components = structure.getContinuousValidComponents();
+		// The certified components and, in a search view, the conditioned regions.
+		List<ContinuousComponent> components = branch.getSearchComponents();
 		for (int index = 0; index < components.size(); index++) {
 			if (IntersectionCapabilityContext2D.componentKey(branchKey, index)
 					.equals(componentKey)) {
 				return new ComponentAddress(components.get(index),
-						LocusComponentLineage2D.identityKey(structure, components.get(index)),
+						branch.searchFrame(components.get(index)),
 						structure.isClosedPeriodic());
 			}
 		}
@@ -655,6 +719,10 @@ public final class LocusIntersectionSolver2D {
 
 		static Verification unresolved() {
 			return new Verification(null, false, null);
+		}
+
+		static Verification sameRootAtTheSeam() {
+			return new Verification(null, true, null);
 		}
 
 		static Verification rejected(DiagnosticCode rejection) {

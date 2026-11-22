@@ -202,7 +202,13 @@ public final class IntersectionSemanticMetadata2D {
 		UNSUPPORTED_OVERLAP, CONTRADICTED_BY_CERTIFIED_EVIDENCE,
 		CERTIFIED_EXISTENCE_ESTABLISHED, CONTACT_EVIDENCE_CLASSIFIED,
 		CONSTRUCTIVE_ADMISSION_NOT_ESTABLISHED, FOLD_CONTACT_ANCHORED, FOLD_CONTACT_LOST,
-		SUPERSEDED_BY_CERTIFIED_FOLD_PAIR, REGULAR_CONTACT_ANCHORED
+		SUPERSEDED_BY_CERTIFIED_FOLD_PAIR, REGULAR_CONTACT_ANCHORED,
+		/** A root on a conditioned region (ADR 0042, contract section 8.5). */
+		CONDITIONED_REGION_ROOT,
+		/** The cells of the conditioned evidence that a resolution used (section 6.5). */
+		CONDITIONED_EVIDENCE_USED,
+		/** The reuse guard of a branch-frame token failed: the token is withheld. */
+		BRANCH_FRAME_TOKEN_WITHHELD
 	}
 
 	private IntersectionSemanticMetadata2D() {

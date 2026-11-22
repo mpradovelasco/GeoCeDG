@@ -922,3 +922,37 @@ conditioned evidence is recomputed and is never in the document. Copy gives the 
 identity and remaps its source by the existing exact rules. Undo and redo restore the
 address, the identity and the definedness of each step. The identity of the point does not
 depend on coordinates, labels, sampling, or on any publication of the evidence.
+
+### Increment I4: results on conditioned regions and ledger version 7
+
+**Results.** `Intersect(L, target)` and `Intersect(L1, L2)` publish the roots that they
+find on conditioned regions ([intersections](locus-v2-intersections.md) and
+[extended intersections](locus-v2-extended-intersections.md), conditioned use amendments).
+A rich result states them with the diagnostics `CONDITIONED_REGION_ROOT`,
+`CONDITIONED_EVIDENCE_USED` and `BRANCH_FRAME_TOKEN_WITHHELD`. `Intersect(result, "token")`
+is unchanged: the token point is defined exactly while its token is current and its root
+is point-admissible, and undefined with its existing cause otherwise. A withheld token is
+not current.
+
+**Ledger version 7.** A ledger that holds a binding with a branch frame is written in
+format version `7`, which is version 6 with two more entry kinds and one more status:
+
+```text
+B,<the ten fields of an S entry>,<hex origin>
+Q,<the nine fields of a P entry>,<hex origins>
+origins = <first origin or ->;<second origin or ->
+origin = <hex canonical parameter bits>/<periodic lift>/<seam side>
+status w = an unclaimed binding with a branch frame whose token is withheld
+```
+
+A `B` entry is the binding of a `conditioned-use/branch-frame-root/v1` selector; a `Q`
+entry is the binding of a pair selector with a branch-frame side, whose origins follow the
+order of the sources of the selector, with `-` for a side on a certified component. The
+kind agrees with the selector, and an origin is present exactly on a branch-frame side:
+anything else is rejected closed. Every `S`, `P`, `F` and `T` entry keeps its text, no
+entry is rewritten into another kind, and a ledger without such a binding is written in the
+version that it had. A reader that does not know version 7 rejects the document closed;
+reading by GeoCeDG 1.2.1 is not required. The origin is an address: no cell, region, node,
+class or content identity is ever stored, and the evidence is recomputed on reopening.
+Undo, redo, save and reopen restore each binding, with its selector, its origin, its token
+and its status, and the definedness of every point that depends on it.

@@ -23,7 +23,9 @@ import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusDriverDomainProvider2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.LocusSemanticAddress2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Orientation;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ComputationStatus;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Currentness;
@@ -92,6 +94,12 @@ public final class PublicIntersectionRootIdentityResolver2D {
 			bySelector.computeIfAbsent(root.selector,
 					unused -> new ArrayList<>()).add(root);
 		}
+		// A published root on a conditioned region without a selector of its own (no
+		// established germ) leaves every branch-frame selector of its branch not known
+		// to be unique among the published roots (ADR 0042, section 6.5, point 4).
+		Set<String> unselectedFrames = unselectedBranchFrames(current, definition,
+				bySelector);
+		evaluation.withholdBranchFrames(unselectedFrames);
 		PriorPhaseIndex priorPhaseIndex = priorPhaseIndex(previous);
 		PersistedPhaseIndex persistedPhaseIndex = persistedPhaseIndex(
 				evaluation.persistedPhaseAllocations(continuationContract));
@@ -99,12 +107,26 @@ public final class PublicIntersectionRootIdentityResolver2D {
 		int resumed = 0;
 		int ambiguous = 0;
 		int discontinuous = 0;
+		int withheld = 0;
 		ArrayList<CurrentRoot> uniqueRoots = new ArrayList<>();
 		for (Map.Entry<IntersectionRootDeterministicSelector2D,
 				List<CurrentRoot>> entry : bySelector.entrySet()) {
 			List<LocusIntersectionTokenLedger2D.PersistedPhaseAllocation>
 					persistedPhase = persistedPhaseIndex.group(entry.getKey());
-			if (entry.getValue().size() == 1) {
+			if (entry.getKey().isBranchFrame() && (entry.getValue().size() > 1
+					|| unselectedFrames.contains(entry.getKey().getComponentLineage()))) {
+				// No rank on a conditioned region (ADR 0042; contract
+				// post-r1-conditioned-use.md, section 6.5, point 3): roots that share a
+				// branch-frame selector, or that are not known to be the only root of
+				// theirs, are ambiguous and keep revision-local handles. A binding of the
+				// selector is withheld, never retired.
+				evaluation.withholdBranchFrame(continuationContract, entry.getKey());
+				for (CurrentRoot root : entry.getValue()) {
+					resolved.set(root.solutionIndex,
+							failClosedSelectorCollision(root, evaluation));
+					ambiguous++;
+				}
+			} else if (entry.getValue().size() == 1) {
 				if (persistedPhase.isEmpty()) {
 					uniqueRoots.add(entry.getValue().get(0));
 				} else {
@@ -170,6 +192,21 @@ public final class PublicIntersectionRootIdentityResolver2D {
 					targetContract,
 					currentRoot.solution.getRevisionEvidence()
 							.getSemanticParameter());
+			if (currentRoot.selector.isBranchFrame()) {
+				LocusIntersectionSolution2D bound = resolveBranchFrame(currentRoot,
+						definition, continuationContract, addressProof, evaluation,
+						transition);
+				resolved.set(currentRoot.solutionIndex, bound);
+				IdentityStatus status = bound.getIdentity().getIdentityStatus();
+				if (status == IdentityStatus.NOT_ESTABLISHED) {
+					withheld++;
+				} else if (status == IdentityStatus.NEW_TOPOLOGICAL_SOLUTION) {
+					allocated++;
+				} else {
+					resumed++;
+				}
+				continue;
+			}
 			IntersectionRootAllocation2D allocation = evaluation.resolveCurrentRoot(
 					currentRoot.componentLineage, continuationContract,
 					currentRoot.selector, addressProof,
@@ -205,11 +242,19 @@ public final class PublicIntersectionRootIdentityResolver2D {
 			}
 		}
 		if (allocated == 0 && resumed == 0 && ambiguous == 0
-				&& discontinuous == 0) {
+				&& discontinuous == 0 && withheld == 0) {
 			return current;
 		}
 		ArrayList<IntersectionDiagnostic2D> diagnostics =
 				new ArrayList<>(current.getDiagnostics());
+		if (withheld != 0) {
+			diagnostics.add(new IntersectionDiagnostic2D(
+					DiagnosticCode.BRANCH_FRAME_TOKEN_WITHHELD,
+					"The token of " + withheld + " branch-frame selector(s) is withheld: "
+							+ "the origin of the binding and the current root do not lie in "
+							+ "one conditioned region; no token was given, transferred, "
+							+ "replaced or retired"));
+		}
 		if (resumed != 0) {
 			diagnostics.add(new IntersectionDiagnostic2D(
 					DiagnosticCode.DETERMINISTIC_SELECTION_ESTABLISHED,
@@ -248,6 +293,145 @@ public final class PublicIntersectionRootIdentityResolver2D {
 				current.getSupportLevel(), current.getNumericGuarantee(), resolved,
 				current.getOverlapEvidence(),
 				current.getUnresolvedCandidateComponentKeys(), work, diagnostics);
+	}
+
+	/**
+	 * Resolves the unique current root of a branch-frame selector (ADR 0042; contract {@code
+	 * post-r1-conditioned-use.md}, section 6.5, points 4 to 6). The ledger gives the token
+	 * of the selector only under the reuse guard: the origin of the binding and the
+	 * isolating interval of the root lie in one conditioned region of the published content
+	 * that the search read. Otherwise the token is withheld and the root is published with a
+	 * revision-local handle. The evidence withholds a token and never chooses one.
+	 */
+	private static LocusIntersectionSolution2D resolveBranchFrame(CurrentRoot root,
+			LocusDefinition2D definition, String continuationContract,
+			IntersectionRootAddressProof2D addressProof,
+			LocusIntersectionTokenLedger2D.Evaluation evaluation,
+			PublicIntersectionRootTransition2D.Transition transition) {
+		LocusIntersectionSolution2D solution = root.solution;
+		IntersectionRootRevisionEvidence2D evidence = solution.getRevisionEvidence();
+		LocusDriverDomainProvider2D provider = definition.getProvider();
+		LocusConditionedEvidence2D conditioned = definition.getBranch(
+				evidence.getBranchSnapshotKey()).getSearchEvidence();
+		double raw = evidence.getSemanticParameter();
+		double canonical = provider.canonicalize(raw);
+		double lower = Math.min(canonical, evidence.getIsolatingInterval().getLower());
+		double upper = Math.max(canonical, evidence.getIsolatingInterval().getUpper());
+		IntersectionBranchFrameOrigin2D here = originOf(provider, raw, canonical);
+		// Canonical parameters in canonical order: a region does not continue across the
+		// seam here, so a root carried over the seam is withheld, which is the safe side.
+		java.util.function.Predicate<IntersectionBranchFrameOrigin2D> guard = origin ->
+				conditioned != null
+						&& conditioned.inOneRegion(origin.getCanonicalParameter(), lower)
+						&& conditioned.inOneRegion(origin.getCanonicalParameter(), upper);
+		Optional<IntersectionBranchFrameOrigin2D> recorded = evaluation.branchFrameOrigin(
+				continuationContract, root.selector);
+		Optional<IntersectionRootAllocation2D> allocation =
+				evaluation.resolveBranchFrameRoot(root.componentLineage,
+						continuationContract, root.selector, addressProof, here, guard);
+		if (!allocation.isPresent()) {
+			String handle = evaluation.revisionLocalHandle(
+					IntersectionTokenLineage2D.forComponentLineage(
+							root.component.stableLineage, Optional.empty()), evidence);
+			IntersectionRootIdentity2D old = solution.getIdentity();
+			IntersectionRootIdentity2D identity = new IntersectionRootIdentity2D(
+					handle, old.getSourcePairIdentity(),
+					old.getConstructiveIntersectionLineage(),
+					old.getEstablishedBranchLineage(), old.getTopologyContext(),
+					Optional.empty(), IdentityStatus.NOT_ESTABLISHED);
+			IntersectionRootLineage2D lineage = new IntersectionRootLineage2D(
+					LineageEventKind.AMBIGUOUS_EVENT, Collections.emptyList(),
+					List.of(handle), Collections.emptyList(), false);
+			ArrayList<IntersectionDiagnostic2D> diagnostics =
+					withoutPreResolutionContinuation(solution.getDiagnostics());
+			diagnostics.add(new IntersectionDiagnostic2D(
+					DiagnosticCode.BRANCH_FRAME_TOKEN_WITHHELD,
+					"The token of the branch-frame selector is withheld: its origin "
+							+ recorded.map(IntersectionBranchFrameOrigin2D::getCanonicalParameter)
+									.map(String::valueOf).orElse("")
+							+ " and this root do not lie in one conditioned region of content "
+							+ (conditioned == null ? "" : conditioned.getContentIdentity())
+							+ "; the root keeps a revision-local handle"));
+			return new LocusIntersectionSolution2D(identity, evidence,
+					solution.getEvaluatedPoint(), solution.getClassification(), lineage,
+					diagnostics, solution.getPairEvidence());
+		}
+		boolean reused = allocation.get().isReused();
+		boolean continuityEstablished = transition.priorFor(solution)
+				.filter(prior -> prior.getIdentity().getRootToken()
+						.equals(allocation.get().getRootToken())).isPresent();
+		LocusIntersectionSolution2D bound = reidentify(solution, allocation.get(),
+				reused ? IdentityStatus.DETERMINISTIC_SELECTION_ESTABLISHED
+						: IdentityStatus.NEW_TOPOLOGICAL_SOLUTION,
+				reused ? LineageEventKind.UNCHANGED : LineageEventKind.APPEARED,
+				continuityEstablished ? List.of(allocation.get().getRootToken())
+						: Collections.emptyList(),
+				continuityEstablished,
+				reused ? "Unique branch-frame selector restored the durable root allocation "
+						+ "under its reuse guard: the unique root of its germ in the "
+						+ "conditioned region of its origin"
+						: "Unique branch-frame selector received a fresh opaque ledger "
+								+ "identity with its origin");
+		double origin = recorded.orElse(here).getCanonicalParameter();
+		ArrayList<IntersectionDiagnostic2D> diagnostics =
+				new ArrayList<>(bound.getDiagnostics());
+		diagnostics.add(new IntersectionDiagnostic2D(
+				DiagnosticCode.CONDITIONED_EVIDENCE_USED,
+				"Premises of the resolution: H1 to H3 of the spans of ["
+						+ Math.min(origin, lower) + ", " + Math.max(origin, upper)
+						+ "], between the origin of the binding and the root; evidence "
+						+ "revision " + conditioned.getRevision() + ", content "
+						+ conditioned.getContentIdentity()));
+		return new LocusIntersectionSolution2D(bound.getIdentity(),
+				bound.getRevisionEvidence(), bound.getEvaluatedPoint(),
+				bound.getClassification(), bound.getLineage(), diagnostics,
+				bound.getPairEvidence());
+	}
+
+	/**
+	 * @return the branch frames that have a published finite root on a conditioned region
+	 *         which has no selector among the current roots
+	 */
+	private static Set<String> unselectedBranchFrames(LocusIntersectionResult2D current,
+			LocusDefinition2D definition,
+			Map<IntersectionRootDeterministicSelector2D, List<CurrentRoot>> bySelector) {
+		Set<Integer> selected = new HashSet<>();
+		for (List<CurrentRoot> group : bySelector.values()) {
+			for (CurrentRoot root : group) {
+				selected.add(root.solutionIndex);
+			}
+		}
+		Set<String> frames = new HashSet<>();
+		for (int index = 0; index < current.getFiniteSolutions().size(); index++) {
+			if (selected.contains(index)) {
+				continue;
+			}
+			ComponentAddress address = component(definition,
+					current.getFiniteSolutions().get(index).getRevisionEvidence());
+			if (address != null && LocusBranch2D.isBranchFrame(address.stableLineage)) {
+				frames.add(address.stableLineage);
+			}
+		}
+		return frames;
+	}
+
+	/** @return the parameter address of a root, as the origin of a branch-frame binding */
+	static IntersectionBranchFrameOrigin2D originOf(LocusDriverDomainProvider2D provider,
+			double raw, double canonical) {
+		if (!provider.isPeriodic()) {
+			return new IntersectionBranchFrameOrigin2D(canonical, 0,
+					LocusSemanticAddress2D.SeamSide.NOT_PERIODIC);
+		}
+		LocusInterval2D domain = provider.getDeclaredDomain();
+		long lift = (long) Math.floor((raw - domain.getLower())
+				/ (domain.getUpper() - domain.getLower()));
+		LocusSemanticAddress2D.SeamSide seam = canonical != domain.getLower()
+				&& canonical != domain.getUpper()
+						? LocusSemanticAddress2D.SeamSide.INTERIOR
+						: raw == canonical && lift == 0
+								? LocusSemanticAddress2D.SeamSide.LOWER_APPROACH
+								: LocusSemanticAddress2D.SeamSide.UPPER_APPROACH;
+		return new IntersectionBranchFrameOrigin2D(canonical, lift, seam);
 	}
 
 	private static LocusIntersectionSolution2D failClosedSelectorCollision(
@@ -466,8 +650,11 @@ public final class PublicIntersectionRootIdentityResolver2D {
 							.isCurrentPublicRootGermForComponent(value,
 									component.stableLineage)).isPresent()) {
 				IntersectionRootDeterministicSelector2D selector =
-						IntersectionRootDeterministicSelector2D.of(
-								component.stableLineage, germ.get());
+						LocusBranch2D.isBranchFrame(component.stableLineage)
+								? IntersectionRootDeterministicSelector2D.ofBranchFrame(
+										component.stableLineage, germ.get())
+								: IntersectionRootDeterministicSelector2D.of(
+										component.stableLineage, germ.get());
 				roots.add(new CurrentRoot(index, solution, component, selector));
 			}
 		}
@@ -1095,17 +1282,19 @@ public final class PublicIntersectionRootIdentityResolver2D {
 			return null;
 		}
 		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		// The certified components and, in a search view, the conditioned regions.
 		List<LocusExistenceStructure2D.ContinuousComponent> components =
-				structure.getContinuousValidComponents();
+				branch.getSearchComponents();
 		for (int index = 0; index < components.size(); index++) {
 			if (IntersectionCapabilityContext2D.componentKey(
 					branch.getBranchKey(), index).equals(
 							evidence.getResolvedValidComponentKey())) {
 				LocusExistenceStructure2D.ContinuousComponent certified =
 						components.get(index);
-				// Identity key (E-3) and the single closure authority (PRE-G9B-CU2).
+				// Identity key (E-3) and the single closure authority (PRE-G9B-CU2); the
+				// branch frame for a conditioned region (ADR 0042).
 				return new ComponentAddress(
-						LocusComponentLineage2D.identityKey(structure, certified),
+						branch.searchFrame(certified),
 						branch.getBranchKey(), certified, branch.getOrientation(),
 						structure.isClosedPeriodic());
 			}

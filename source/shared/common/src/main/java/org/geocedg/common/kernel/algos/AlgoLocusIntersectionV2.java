@@ -194,7 +194,17 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 		// Post-R1 repair B (locus-v2-intersections.md section 10): an update whose complete
 		// semantic inputs are those of the current payload of this producer is not a
 		// recompute. The payload stays current, and no resolution starts.
+		// ADR 0042 (contract post-r1-conditioned-use.md, section 8.5): the roots are sought
+		// on the certified components and on the conditioned regions that the source
+		// publishes. The content identity of that evidence is an input of the resolution.
+		// The internal producers keep the certified components only.
+		LocusDefinition2D search = !publicCommand || definition == null
+				|| !source.isDefined() ? definition
+						: definition.withConditionedSearch(source::getConditionedEvidence);
 		String inputs = semanticInputs(definition, locusRevision);
+		if (inputs != null) {
+			inputs += conditionedInputs(search);
+		}
 		String ledgerBefore = inputs == null ? null : result.getTokenLedgerEquivalenceState();
 		if (isEquivalentUpdate(definition, inputs, ledgerBefore)) {
 			equivalentUpdateCount++;
@@ -264,11 +274,11 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 								evaluation::mint,
 								evaluation::revisionLocalHandle);
 				LocusIntersectionResult2D candidate = solver.intersect(query,
-						definition, captured, binding, preferredCapability,
+						search, captured, binding, preferredCapability,
 						tokenSource);
 				LocusIntersectionResult2D current = publicCommand
 						? publicIdentityResolver.resolve(lastContinuableResult,
-								candidate, definition, captured, policy, evaluation)
+								candidate, search, captured, policy, evaluation)
 						: continuation.continueRoots(lastContinuableResult,
 								candidate, policy);
 				publishWithLedger(binding, current, evaluation);
@@ -330,6 +340,18 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 						definition.getProvider().getParameterDescriptor()).getPolicyVersion()
 				+ "|target-state=" + ReconstructionSliceFingerprint2D.compute(targetClosure,
 						Collections.emptyList());
+	}
+
+	/** @return the content identities of the conditioned evidence that a search reads */
+	private static String conditionedInputs(LocusDefinition2D search) {
+		StringBuilder identities = new StringBuilder("|conditioned=");
+		for (org.geocedg.common.kernel.locus.LocusBranch2D branch : search.getBranches()) {
+			if (branch.getSearchEvidence() != null) {
+				identities.append(branch.getBranchKey()).append('@')
+						.append(branch.getSearchEvidence().getContentIdentity()).append(';');
+			}
+		}
+		return identities.toString();
 	}
 
 	private boolean isEquivalentUpdate(LocusDefinition2D definition, String inputs,

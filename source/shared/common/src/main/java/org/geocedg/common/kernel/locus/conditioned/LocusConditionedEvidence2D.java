@@ -38,11 +38,22 @@ public final class LocusConditionedEvidence2D {
 	private final List<LocusConditionedCell2D> cells;
 	private final int work;
 	private final boolean seamNodesAgree;
+	private final List<String> inheritedSources;
 	private final String contentIdentity;
 
 	LocusConditionedEvidence2D(String branchKey, long revision, String policyVersion,
 			double domainLower, double domainUpper, List<Double> contradictions,
 			List<LocusConditionedCell2D> cells, int work, boolean seamNodesAgree) {
+		this(branchKey, revision, policyVersion, domainLower, domainUpper, contradictions,
+				cells, work, seamNodesAgree, Collections.emptyList());
+	}
+
+	private LocusConditionedEvidence2D(String branchKey, long revision, String policyVersion,
+			double domainLower, double domainUpper, List<Double> contradictions,
+			List<LocusConditionedCell2D> cells, int work, boolean seamNodesAgree,
+			List<String> inheritedSources) {
+		this.inheritedSources = Collections.unmodifiableList(
+				new ArrayList<>(inheritedSources));
 		this.branchKey = branchKey;
 		this.revision = revision;
 		this.policyVersion = policyVersion;
@@ -59,7 +70,34 @@ public final class LocusConditionedEvidence2D {
 			identity.append(i == 0 ? "" : ",").append(Long.toHexString(
 					Double.doubleToLongBits(this.contradictions.get(i))));
 		}
+		for (String source : this.inheritedSources) {
+			identity.append("|inherits=").append(source);
+		}
 		this.contentIdentity = identity.toString();
+	}
+
+	/**
+	 * The same content with the record of the conditioned sources that the traced function
+	 * reads (contract {@code post-r1-conditioned-use.md}, section 8.8): every span inherits
+	 * the hypotheses of those contents, and the content identity names them, so that a
+	 * result that read this content is not served after one of them changes.
+	 *
+	 * @param sources the content identities of the conditioned evidence of each source
+	 * @return content that records the sources
+	 */
+	public LocusConditionedEvidence2D withInheritedSources(List<String> sources) {
+		return sources.isEmpty() && inheritedSources.isEmpty() ? this
+				: new LocusConditionedEvidence2D(branchKey, revision, policyVersion,
+						domainLower, domainUpper, contradictions, cells, work, seamNodesAgree,
+						sources);
+	}
+
+	/**
+	 * @return the content identities of the conditioned sources whose hypotheses every span
+	 *         of this content inherits; empty for a function that reads none
+	 */
+	public List<String> getInheritedSources() {
+		return inheritedSources;
 	}
 
 	/** @return branch that the evidence describes */

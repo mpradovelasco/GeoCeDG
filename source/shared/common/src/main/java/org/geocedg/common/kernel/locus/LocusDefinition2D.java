@@ -62,6 +62,32 @@ public final class LocusDefinition2D {
 		}
 	}
 
+	/**
+	 * The search view of this definition for a consumer that looks for roots (ADR 0042;
+	 * contract {@code post-r1-conditioned-use.md}, sections 8.5 and 8.6): the same identity,
+	 * revision, provider and evaluator, with the search view of each branch.
+	 *
+	 * @param evidence published conditioned evidence by branch key; a branch without one
+	 *        keeps its certified components only
+	 * @return the search view, or this definition when no branch has a region
+	 */
+	public LocusDefinition2D withConditionedSearch(
+			java.util.function.Function<String,
+					org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D>
+					evidence) {
+		java.util.ArrayList<LocusBranch2D> viewed = new java.util.ArrayList<>();
+		boolean changed = false;
+		for (LocusBranch2D branch : branches) {
+			LocusBranch2D view = branch.withConditionedSearch(
+					evidence.apply(branch.getBranchKey()));
+			changed |= view != branch;
+			viewed.add(view);
+		}
+		return !changed ? this : new LocusDefinition2D(locusIdentity, semanticRevision,
+				definitionStatus, provider, viewed, evaluator, determinism,
+				evaluatorSignature, instrumentation);
+	}
+
 	public String getLocusIdentity() {
 		return locusIdentity;
 	}
