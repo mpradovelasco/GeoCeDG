@@ -4563,3 +4563,28 @@ Referencias:
 [registro de aprobación](../validation/post_r1_conditioned_use_author_approval_record.md),
 [ADR 0042](../adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md) y
 [registro de progreso](../validation/post_r1_locus_repairs_progress.md).
+
+## 2026-11-22 — Autorización autoral de las correcciones posteriores a 3B de GeoCeDG 1.2.2
+
+Registro aditivo por decisión autoral de 2026-11-22 («GeoCeDG 1.2.2 — Autorización de
+correcciones posteriores a 3B»). No altera fechas, aprobaciones ni resultados anteriores.
+
+- El autor mantiene `2026-11-22` como fecha de versión de GeoCeDG 1.2.2.
+- El candidato funcional `b2c5aad355d955d684512f6e08f986c200e25bb3` queda recibido para
+  revisión técnica y no se aprueba ni se publica.
+- El autor autoriza el plan correctivo C0 a C7 del informe de revisión, con las decisiones
+  DN-1 (linaje estructural de componente en la identidad de pares, conforme a E-3), DN-2
+  (admisión escalar de una longitud sobre una ruta de una región condicionada, como
+  enmienda §28.3 de `locus-v2-metrics.md`) y DN-3 (memoización de evaluaciones anidadas por
+  instancia de evaluador), bajo las condiciones de su instrucción, y la preparación de un
+  candidato sucesor.
+- No abre ninguna fase ni subfase nueva de la hoja de ruta: es trabajo de mantenimiento de
+  la línea 1.2.x posterior a R1.
+- No autoriza la promoción a `main`, la etiqueta `v1.2.2`, una release, la ejecución de
+  `FINAL` ni la declaración `PASS — AUTHOR APPROVED` del candidato. Ningún paso queda
+  aprobado como producto: un resultado automatizado aceptado no es aprobación autoral.
+
+Referencias:
+[registro de la autorización](../validation/post_r1_1_2_2_corrections_author_authorization_record.md),
+[informe de revisión](../validation/post_r1_1_2_2_candidate_review_report.md) y
+[registro de progreso](../validation/post_r1_locus_repairs_progress.md).

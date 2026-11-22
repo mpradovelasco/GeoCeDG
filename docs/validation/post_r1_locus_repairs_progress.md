@@ -376,6 +376,30 @@ Candidato técnico, **no aprobado por el autor, no publicado y sin etiqueta**: c
   0,47 s por lugar con hueco y revisión. El objetivo de D-V6 se cumple para el grafo y no
   para el total con la evidencia consumida por el dibujo (hallazgo 7).
 
+## Checkpoint 9 — revisión del candidato y autorización de las correcciones C0 a C7
+
+- **Sexta instrucción del autor (2026-11-22).** Mantiene `2026-11-22` como fecha de
+  versión de GeoCeDG 1.2.2: deja de ser provisional y no exige reconstruir paquetes por ese
+  motivo. Recibe el cierre de I0 a I4T y el candidato `b2c5aad35` para revisión técnica,
+  sin aprobarlos, y pide un análisis complementario con tres objetivos de corrección.
+- **Informe.** [Informe de revisión técnica complementaria](post_r1_1_2_2_candidate_review_report.md):
+  dos defectos de identidad de pares ya presentes en 1.2.1 (asociación incorrecta de un
+  token al cambiar el ordinal de una componente; pérdida del resultado con varias
+  componentes por fuente), el bloqueo de la admisión escalar de la longitud condicionada, el
+  coste de un cambio real con la evidencia consumida, y la auditoría de pruebas, validación,
+  empaquetado y gobierno. Regresión compartida completa sobre `035806584`: 2 495 pruebas,
+  0 fallos.
+- **Séptima instrucción del autor (2026-11-22).** Autoriza el plan correctivo C0 a C7 con las
+  decisiones DN-1, DN-2 y DN-3 bajo condiciones:
+  [registro de la autorización](post_r1_1_2_2_corrections_author_authorization_record.md).
+  No autoriza `main`, la etiqueta `v1.2.2`, una release, `FINAL` ni la declaración
+  `PASS — AUTHOR APPROVED` del candidato.
+- **Candidato `b2c5aad35`.** No se acepta ni se publica; queda como antecedente del
+  candidato sucesor. Sus paquetes y sus verificaciones se conservan.
+- **Cierre de cada paso.** Como en el bloque 3B: commit de código, commit de inventario en
+  un worktree aparte, `STATIC`, `PHASE POST-R1-LOCUS` e `INTEGRATION` sobre el commit de
+  inventario, y avance de la rama solo con resultado aceptado.
+
 ## Verificación del candidato
 
 ### Candidato de las precisiones focales y del trabajo preparatorio de I0
@@ -535,17 +559,16 @@ la base. Ninguna etiqueta creada ni movida; versión de producto sin cambiar (1.
 
 ## Pendiente, siguiente acción y reanudación
 
-- **Pendiente del autor:** revisión de los incrementos I0 a I4T como producto (ninguno está
-  aprobado: un resultado automatizado aceptado no es aprobación autoral); revisión de las
-  reparaciones y del modelo (bloques 1 y 2) y de F8; los hallazgos anteriores; designación
-  de la fecha de versión; autorización de publicación si procede.
-- **No hecho:** lanzamiento del ejecutable empaquetado e instalación del MSI; `FINAL`;
-  publicación en `main`, etiqueta `v1.2.2` y release: ninguno autorizado.
-- **Reanudación exacta:** el candidato es `b2c5aad35`. Con una decisión expresa del autor
-  sobre el candidato exacto: fijar la fecha de versión que designe (cambia
-  `package.yml`, sus dos pines, las pruebas que la afirman y las guías, y por tanto el
-  commit y los paquetes), repetir `STATIC`, el empaquetado y `PACKAGING`, y solo entonces
-  avanzar `main`, etiquetar y publicar como se hizo con 1.2.1.
+- **Pendiente del autor:** revisión del candidato sucesor cuando se presente; revisión de
+  los incrementos I0 a I4T y de los pasos C0 a C7 como producto (ninguno está aprobado: un
+  resultado automatizado aceptado no es aprobación autoral); revisión de las reparaciones y
+  del modelo (bloques 1 y 2) y de F8; autorización de publicación si procede.
+- **No hecho:** `FINAL`; publicación en `main`, etiqueta `v1.2.2` y release: ninguno
+  autorizado.
+- **Reanudación exacta:** ejecutar en orden C0, C1, C2, C3, C4, C5, C6 (estudio) y C7 del
+  [informe](post_r1_1_2_2_candidate_review_report.md), §7, con las condiciones del
+  [registro de la autorización](post_r1_1_2_2_corrections_author_authorization_record.md).
+  La fecha de versión es `2026-11-22`.
 - **Conservado:** el original del modelo, la evidencia R1 y las salidas de benchmark en
   `artifacts/benchmarks/post-r1-locus/` (ignoradas por Git). Dos worktrees separados, de la
   base y de `ab37fb5ff`, usados solo para medir el «antes», quedan en el scratchpad de la
