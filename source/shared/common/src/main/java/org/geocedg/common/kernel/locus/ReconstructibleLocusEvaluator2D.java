@@ -19,15 +19,27 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
+import org.geocedg.common.kernel.algos.AlgoLocusDriverCorrespondencePoint2D;
+import org.geocedg.common.kernel.algos.AlgoLocusIntersectionPointV2;
+import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.ConstructionFidelity;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.EvaluationMethod;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.RepresentationRole;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedAbsenceCause2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedSample2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusSelectionTestimony2D;
 import org.geocedg.common.kernel.locus.constructive.AuthorityPolicy;
+import org.geocedg.common.kernel.locus.constructive.InheritedLineCircleSelection;
+import org.geocedg.common.kernel.locus.constructive.StructuralPointResolution;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
+import org.geocedg.common.kernel.locus.intersection.IntersectionRootRevisionEvidence2D;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D;
+import org.geocedg.common.kernel.locus.intersection.LocusIntersectionResult2D;
+import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricFunctionStructure2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricBoxEvidence2D;
 import org.geocedg.common.kernel.locus.metric.MetricComputationStatus;
@@ -42,7 +54,9 @@ import org.geogebra.common.kernel.PathParameter;
 import org.geogebra.common.kernel.SetRandomValue;
 import org.geogebra.common.kernel.algos.AlgoDependentPoint;
 import org.geogebra.common.kernel.algos.AlgoElement;
+import org.geogebra.common.kernel.algos.AlgoIntersect;
 import org.geogebra.common.kernel.algos.AlgoIntersectLineConic;
+import org.geogebra.common.kernel.algos.AlgoIntersectSingle;
 import org.geogebra.common.kernel.algos.ConstructionElement;
 import org.geogebra.common.kernel.arithmetic.ExpressionNode;
 import org.geogebra.common.kernel.arithmetic.ExpressionValue;
@@ -124,6 +138,8 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private SettlementOutcome settlement = SettlementOutcome.NOT_NEEDED;
 	private int settlementParameters;
 	private boolean selectionLost;
+	/** Selecting dependencies that the traced point reads, in construction order. */
+	private List<AlgoElement> selectingDependencies;
 
 	/** Builds one immutable identity-addressed construction slice. */
 	public ReconstructibleLocusEvaluator2D(Construction construction,
@@ -362,6 +378,224 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 					QUALITY, exception.getClass().getSimpleName() + ": "
 							+ exception.getMessage());
 		}
+	}
+
+	/**
+	 * Version of the testimony that {@link #evaluateWithTestimony} returns (contract {@code
+	 * post-r1-conditioned-use.md}, section 3.2).
+	 */
+	public static final String EVALUATION_TESTIMONY = "locus-evaluation-testimony/v1";
+
+	private static final String ROOT_ABSENT = "ROOT_ABSENT";
+
+	/**
+	 * Evaluates the slice at one canonical parameter and returns, with the evaluation, the
+	 * testimony of every selecting dependency that the driver-dependent part of the slice
+	 * reads: the token points of Locus V2 intersections, the inherited line-conic selections
+	 * and the structural points. The testimony is read from the evidence that the copy
+	 * computed for this evaluation; no additional resolution is started, and no root is
+	 * identified by index, proximity or order.
+	 *
+	 * <p>A failed evaluation is never an absence. An undefined traced point states a
+	 * conditioned absence only with a cause of the closed list {@link
+	 * LocusConditionedAbsenceCause2D}; a selection that is not established where the point
+	 * is undefined is a failure.</p>
+	 *
+	 * @param canonicalParameter canonical driver parameter
+	 * @param session evaluation session of the caller
+	 * @return evaluation with its testimony
+	 */
+	public synchronized LocusConditionedSample2D evaluateWithTestimony(
+			double canonicalParameter, LocusEvaluationSession2D session) {
+		LocusEvaluation2D evaluation = evaluate(null, null, canonicalParameter, session);
+		LocusSemanticMetadata2D.EvaluationStatus status = evaluation.getStatus();
+		if (!evaluation.isValid()
+				&& status != LocusSemanticMetadata2D.EvaluationStatus.DEPENDENCY_UNDEFINED) {
+			return LocusConditionedSample2D.failed(failureText(status.name(),
+					evaluation.getDiagnostic()));
+		}
+		List<LocusSelectionTestimony2D> testimony = new ArrayList<>();
+		String failure = null;
+		boolean rootAbsent = false;
+		for (AlgoElement dependency : selectingDependencies()) {
+			String identity = operationIdentity(dependency);
+			String refusal;
+			if (dependency instanceof AlgoLocusIntersectionPointV2) {
+				refusal = tokenTestimony((AlgoLocusIntersectionPointV2) dependency, identity,
+						testimony);
+			} else if (dependency instanceof AlgoIntersectLineConic) {
+				refusal = selectionTestimony((AlgoIntersectLineConic) dependency, identity,
+						testimony);
+			} else {
+				refusal = structuralTestimony(
+						(AlgoLocusDriverCorrespondencePoint2D) dependency, identity, testimony);
+			}
+			if (ROOT_ABSENT.equals(refusal)) {
+				rootAbsent = true;
+			} else if (refusal != null && failure == null) {
+				failure = refusal;
+			}
+		}
+		if (evaluation.isValid()) {
+			return LocusConditionedSample2D.valid(evaluation.getPoint().getX(),
+					evaluation.getPoint().getY(), testimony);
+		}
+		if (failure != null) {
+			return LocusConditionedSample2D.failed(failure);
+		}
+		return LocusConditionedSample2D.absent(rootAbsent
+				? LocusConditionedAbsenceCause2D.INTERSECTION_ROOT_ABSENT
+				: LocusConditionedAbsenceCause2D.DEPENDENCY_UNDEFINED);
+	}
+
+	/**
+	 * Testimony of one token point: its token, its admissibility in the result that the copy
+	 * published for this evaluation, and the distance in the source parameter to the nearest
+	 * other root of the same result.
+	 *
+	 * @return {@code null} when the selection is established, {@link #ROOT_ABSENT} when the
+	 *         result of the copy is current and publishes no root for the token, or the
+	 *         failure that leaves the selection not established
+	 */
+	private static String tokenTestimony(AlgoLocusIntersectionPointV2 dependency,
+			String identity, List<LocusSelectionTestimony2D> testimony) {
+		GeoLocusIntersectionResult rich = dependency.getRichInput();
+		String token = dependency.getSelectedRootToken();
+		LocusIntersectionResult2D result = rich != null && rich.isDefined()
+				? rich.getIntersectionResult() : null;
+		if (result == null || token == null || token.trim().isEmpty()
+				|| result.getComputationStatus()
+						!= IntersectionSemanticMetadata2D.ComputationStatus.SUCCESS) {
+			testimony.add(LocusSelectionTestimony2D.notEstablished(identity,
+					LocusSelectionTestimony2D.Kind.LOCUS_ROOT_TOKEN));
+			return "SELECTION_NOT_ESTABLISHED: intersection result of " + identity + " "
+					+ (result == null ? "unpublished" : result.getComputationStatus().name());
+		}
+		Optional<LocusIntersectionSolution2D> selected =
+				rich.findExactPointAdmissibleSolution(token);
+		if (selected.isPresent()) {
+			double own = selected.get().getRevisionEvidence().getSemanticParameter();
+			double separation = Double.NaN;
+			for (LocusIntersectionSolution2D other : result.getFiniteSolutions()) {
+				IntersectionRootRevisionEvidence2D evidence = other.getRevisionEvidence();
+				if (other == selected.get() || evidence == null) {
+					continue;
+				}
+				double distance = Math.abs(evidence.getSemanticParameter() - own);
+				if (Double.isNaN(separation) || distance < separation) {
+					separation = distance;
+				}
+			}
+			testimony.add(LocusSelectionTestimony2D.established(identity,
+					LocusSelectionTestimony2D.Kind.LOCUS_ROOT_TOKEN, token.trim(),
+					separation));
+			return null;
+		}
+		testimony.add(LocusSelectionTestimony2D.notEstablished(identity,
+				LocusSelectionTestimony2D.Kind.LOCUS_ROOT_TOKEN));
+		for (LocusIntersectionSolution2D published : result.getFiniteSolutions()) {
+			if (token.equals(published.getIdentity().getRootToken())) {
+				return "SELECTION_NOT_ESTABLISHED: root of " + identity
+						+ " published and not point-admissible";
+			}
+		}
+		if (!result.getUnresolvedCandidateComponentKeys().isEmpty()) {
+			return "SELECTION_NOT_ESTABLISHED: unresolved candidates in the result of "
+					+ identity;
+		}
+		return ROOT_ABSENT;
+	}
+
+	/**
+	 * Testimony of an inherited line-conic selection: the selection state that the inherited
+	 * rule holds after this evaluation and that an evaluator reproduces, which is the
+	 * compaction of the roots on the paths in raw order, the fixed permutation or the point
+	 * already incident with both objects. A tangent definition and a permutation that the
+	 * next computation would set by proximity are not established.
+	 */
+	private static String selectionTestimony(AlgoIntersectLineConic selection,
+			String identity, List<LocusSelectionTestimony2D> testimony) {
+		InheritedLineCircleSelection state = InheritedLineCircleSelection.read(selection);
+		if (state == null) {
+			testimony.add(LocusSelectionTestimony2D.notEstablished(identity,
+					LocusSelectionTestimony2D.Kind.LINE_CONIC_SELECTION));
+			return "SELECTION_NOT_ESTABLISHED: line-conic selection " + identity + " "
+					+ InheritedLineCircleSelection.NOT_RECONSTRUCTED;
+		}
+		testimony.add(LocusSelectionTestimony2D.established(identity,
+				LocusSelectionTestimony2D.Kind.LINE_CONIC_SELECTION, state.describe(),
+				Double.NaN));
+		return null;
+	}
+
+	/** Testimony of a structural point: its resolution and its integrity. */
+	private static String structuralTestimony(AlgoLocusDriverCorrespondencePoint2D point,
+			String identity, List<LocusSelectionTestimony2D> testimony) {
+		StructuralPointResolution resolution = point.getResolution();
+		if (resolution == null || !resolution.isDefined()) {
+			testimony.add(LocusSelectionTestimony2D.notEstablished(identity,
+					LocusSelectionTestimony2D.Kind.STRUCTURAL_POINT));
+			return "SELECTION_NOT_ESTABLISHED: structural point " + identity + " "
+					+ (resolution == null ? "unresolved" : String.valueOf(
+							resolution.getCause()));
+		}
+		testimony.add(LocusSelectionTestimony2D.established(identity,
+				LocusSelectionTestimony2D.Kind.STRUCTURAL_POINT,
+				"resolved/" + resolution.getIntegrity().name(), Double.NaN));
+		return null;
+	}
+
+	/**
+	 * @return selecting dependencies among the driver-dependent predecessors of the traced
+	 *         point, in construction order; fixed for the life of the copy
+	 */
+	private List<AlgoElement> selectingDependencies() {
+		if (selectingDependencies == null) {
+			GeoElement traced = isolatedDependentPoint.toGeoElement();
+			GeoElement driver = isolatedCoordinate != null ? isolatedCoordinate
+					: isolatedState;
+			List<GeoElement> read = new ArrayList<>(traced.getAllPredecessors());
+			read.add(traced);
+			Set<AlgoElement> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+			List<AlgoElement> found = new ArrayList<>();
+			for (GeoElement geo : read) {
+				AlgoElement parent = geo.getParentAlgorithm();
+				if (parent == null || driver == null || !geo.isChildOf(driver)) {
+					continue;
+				}
+				if (parent instanceof AlgoIntersectSingle) {
+					AlgoIntersect source = ((AlgoIntersectSingle) parent)
+							.getSourceIntersection();
+					if (source instanceof AlgoIntersectLineConic) {
+						parent = source;
+					}
+				}
+				if ((parent instanceof AlgoLocusIntersectionPointV2
+						|| parent instanceof AlgoIntersectLineConic
+						|| parent instanceof AlgoLocusDriverCorrespondencePoint2D)
+						&& seen.add(parent)) {
+					found.add(parent);
+				}
+			}
+			selectingDependencies = Collections.unmodifiableList(found);
+		}
+		return selectingDependencies;
+	}
+
+	/** Durable identity of a selecting operation of the copy: that of its first output. */
+	private String operationIdentity(AlgoElement dependency) {
+		GeoElement output = dependency.getOutputLength() == 0 ? null
+				: dependency.getOutput(0);
+		PersistentGeoId id = output == null ? null
+				: isolatedConstruction.getSpatialIdentityRegistry().getPersistentGeoId(output);
+		return id != null ? id.toExternalForm()
+				: "slice-operation/" + dependency.getConstructionIndex() + "/"
+						+ dependency.getID();
+	}
+
+	private static String failureText(String status, String diagnostic) {
+		String text = diagnostic == null ? "" : diagnostic.trim();
+		return text.isEmpty() ? status : status + ": " + text;
 	}
 
 	/**

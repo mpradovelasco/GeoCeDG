@@ -17,6 +17,8 @@ import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
 import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidenceOwner2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricInstrumentation2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricOwnerLease2D;
 import org.geocedg.common.kernel.locus.metric.LocusMetricSharedOwner2D;
@@ -161,6 +163,51 @@ public final class GeoLocusV2 extends GeoElement
 		AlgoElement parent = getParentAlgorithm();
 		return isDefined() && parent instanceof AlgoLocusV2
 				? ((AlgoLocusV2) parent).getExploratoryEvidence(branchKey) : null;
+	}
+
+	/**
+	 * Conditioned evidence of the part of one branch of the current definition that no
+	 * certificate covers (ADR 0042; contract {@code post-r1-conditioned-use.md}), owned by
+	 * the producer of the locus and computed once per revision, on demand. It never
+	 * certifies, is never part of the definition, of its revision or of its persistence.
+	 *
+	 * @param branchKey branch of the current definition
+	 * @return published content, or {@code null} when undefined or when the producer
+	 *         publishes none
+	 */
+	public LocusConditionedEvidence2D getConditionedEvidence(String branchKey) {
+		AlgoElement parent = getParentAlgorithm();
+		return isDefined() && parent instanceof AlgoLocusV2
+				? ((AlgoLocusV2) parent).getConditionedEvidence(branchKey) : null;
+	}
+
+	/**
+	 * @param branchKey branch of the current definition
+	 * @return counter of the publications of the conditioned evidence of the current
+	 *         revision: it orders them and wakes dependents, and is never an identity
+	 */
+	public long getConditionedPublicationCounter(String branchKey) {
+		AlgoElement parent = getParentAlgorithm();
+		return isDefined() && parent instanceof AlgoLocusV2
+				? ((AlgoLocusV2) parent).getConditionedPublicationCounter(branchKey) : 0;
+	}
+
+	/**
+	 * Reports to the producer a parameter at which an evaluation contradicts the kind of
+	 * its conditioned cell. The producer evaluates it itself. The caller owns the moment of
+	 * the update of the dependents: after a confirmed report it runs the normal cascade of
+	 * this locus outside any computation in progress.
+	 *
+	 * @param branchKey branch of the current definition
+	 * @param parameter reported canonical parameter
+	 * @return what the producer decided, or {@code null} when there is no evidence
+	 */
+	public LocusConditionedEvidenceOwner2D.ReportOutcome reportConditionedContradiction(
+			String branchKey, double parameter) {
+		AlgoElement parent = getParentAlgorithm();
+		return isDefined() && parent instanceof AlgoLocusV2
+				? ((AlgoLocusV2) parent).reportConditionedContradiction(branchKey, parameter)
+				: null;
 	}
 
 	public LocusInstrumentation2D getInstrumentation() {

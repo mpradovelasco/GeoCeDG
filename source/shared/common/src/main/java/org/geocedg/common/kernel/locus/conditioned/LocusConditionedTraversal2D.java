@@ -17,6 +17,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.geocedg.common.kernel.locus.LocusInterval2D;
+
 /**
  * Deterministic traversal that produces a {@link LocusConditionedEvidence2D} (candidate
  * contract {@code post-r1-conditioned-use.md}, sections 3, 5 and 7).
@@ -61,11 +63,13 @@ public final class LocusConditionedTraversal2D {
 	private final LocusConditionedSampler2D sampler;
 	private final Nodes nodes;
 	private final long gridSize;
+	private final double[][] certified;
 	private final Set<Object> charged = new HashSet<>();
 
 	private LocusConditionedTraversal2D(String branchKey, long revision, double domainLower,
 			double domainUpper, LocusConditionedTraversalPolicy2D policy,
-			Collection<Double> contradictions, LocusConditionedSampler2D sampler, Nodes nodes) {
+			Collection<Double> contradictions, LocusConditionedSampler2D sampler, Nodes nodes,
+			List<LocusInterval2D> certified) {
 		if (branchKey == null || branchKey.trim().isEmpty() || revision < 0) {
 			throw new IllegalArgumentException("Branch key and revision are required");
 		}
@@ -81,6 +85,11 @@ public final class LocusConditionedTraversal2D {
 		this.sampler = Objects.requireNonNull(sampler);
 		this.nodes = nodes;
 		this.gridSize = 1L << (policy.getMinimumStepDepth() + 1);
+		this.certified = new double[certified.size()][];
+		for (int index = 0; index < this.certified.length; index++) {
+			LocusInterval2D interval = Objects.requireNonNull(certified.get(index));
+			this.certified[index] = new double[] { interval.getLower(), interval.getUpper() };
+		}
 		TreeSet<Double> canonical = new TreeSet<>();
 		for (Double each : contradictions) {
 			canonical.add(canonicalParameter(each, domainLower, domainUpper));
@@ -108,14 +117,39 @@ public final class LocusConditionedTraversal2D {
 			double domainLower, double domainUpper, LocusConditionedTraversalPolicy2D policy,
 			Collection<Double> contradictions, LocusConditionedSampler2D sampler) {
 		return traverse(branchKey, revision, domainLower, domainUpper, policy,
-				contradictions, sampler, new Nodes());
+				contradictions, sampler, new Nodes(), List.of());
+	}
+
+	/**
+	 * Traverses the part of one branch that no certificate covers.
+	 *
+	 * @param branchKey branch that the evidence describes
+	 * @param revision revision of the definition
+	 * @param domainLower lower end of the declared driver domain
+	 * @param domainUpper upper end of the declared driver domain
+	 * @param policy versioned policy
+	 * @param contradictions canonical parameters with a confirmed contradiction; a set
+	 * @param sampler semantic evaluator of the producer
+	 * @param certified parameter intervals that a certificate of the revision covers, by a
+	 *        certified component or a certified nonexistence; they are a fact of the
+	 *        revision, and no cell is published inside them
+	 * @return the content that the function, the policy, the set and the certificates of
+	 *         the revision determine
+	 */
+	public static LocusConditionedEvidence2D traverse(String branchKey, long revision,
+			double domainLower, double domainUpper, LocusConditionedTraversalPolicy2D policy,
+			Collection<Double> contradictions, LocusConditionedSampler2D sampler,
+			List<LocusInterval2D> certified) {
+		return traverse(branchKey, revision, domainLower, domainUpper, policy,
+				contradictions, sampler, new Nodes(), certified);
 	}
 
 	static LocusConditionedEvidence2D traverse(String branchKey, long revision,
 			double domainLower, double domainUpper, LocusConditionedTraversalPolicy2D policy,
-			Collection<Double> contradictions, LocusConditionedSampler2D sampler, Nodes nodes) {
+			Collection<Double> contradictions, LocusConditionedSampler2D sampler, Nodes nodes,
+			List<LocusInterval2D> certified) {
 		return new LocusConditionedTraversal2D(branchKey, revision, domainLower, domainUpper,
-				policy, contradictions, sampler, nodes).run();
+				policy, contradictions, sampler, nodes, certified).run();
 	}
 
 	/**
@@ -143,6 +177,10 @@ public final class LocusConditionedTraversal2D {
 		boolean exhausted = false;
 		while (!queue.isEmpty()) {
 			long[] cell = queue.poll();
+			if (coverage(cell[0], cell[1]) == COVERED) {
+				// Certified by the revision: the certificate governs it, not this evidence.
+				continue;
+			}
 			if (!exhausted) {
 				try {
 					classify(cell[0], cell[1], queue, leaves);
@@ -168,6 +206,12 @@ public final class LocusConditionedTraversal2D {
 		long middle = lower + (upper - lower) / 2;
 		List<Double> inside = contradictionsIn(parameter(lower), parameter(upper));
 		boolean canSplit = upper - lower >= 4;
+		if (canSplit && coverage(lower, upper) == PARTLY_COVERED) {
+			// The end of a certificate is located to the minimum step before any evaluation.
+			queue.add(new long[] { lower, middle });
+			queue.add(new long[] { middle, upper });
+			return;
+		}
 		LocusConditionedSample2D first = gridNode(lower);
 		LocusConditionedSample2D last = gridNode(upper);
 		LocusConditionedSample2D mid = null;
@@ -198,6 +242,25 @@ public final class LocusConditionedTraversal2D {
 			}
 		}
 		leaves.add(leafOf(lower, upper, finding, first, mid, last));
+	}
+
+	private static final int UNCOVERED = 0;
+	private static final int PARTLY_COVERED = 1;
+	private static final int COVERED = 2;
+
+	private int coverage(long lower, long upper) {
+		double low = parameter(lower);
+		double high = parameter(upper);
+		int found = UNCOVERED;
+		for (double[] interval : certified) {
+			if (interval[0] <= low && high <= interval[1]) {
+				return COVERED;
+			}
+			if (Math.max(low, interval[0]) < Math.min(high, interval[1])) {
+				found = PARTLY_COVERED;
+			}
+		}
+		return found;
 	}
 
 	private Finding findingOf(LocusConditionedSample2D first, LocusConditionedSample2D mid,

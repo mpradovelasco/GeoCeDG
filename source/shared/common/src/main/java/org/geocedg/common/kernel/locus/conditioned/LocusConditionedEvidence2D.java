@@ -156,12 +156,20 @@ public final class LocusConditionedEvidence2D {
 		if (between.isEmpty()) {
 			return false;
 		}
+		LocusConditionedCell2D previous = null;
 		for (LocusConditionedCell2D cell : between) {
-			if (!cell.getKind().isSpan()) {
+			// A certified interval between two cells is not part of a region: the cells of
+			// one region are adjacent.
+			if (!cell.getKind().isSpan() || (previous != null
+					&& previous.getUpperIndex() != cell.getLowerIndex())) {
 				return false;
 			}
+			previous = cell;
 		}
-		return true;
+		double low = Math.min(first, second);
+		double high = Math.max(first, second);
+		return between.get(0).getLower() <= low
+				&& high <= between.get(between.size() - 1).getUpper();
 	}
 
 	/**

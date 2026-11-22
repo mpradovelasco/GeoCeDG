@@ -46,7 +46,7 @@ public final class InheritedLineCircleSelection {
 	 *         evaluator reproduces: a tangent definition or a permutation that the next
 	 *         computation sets by proximity
 	 */
-	static InheritedLineCircleSelection read(AlgoIntersectLineConic algorithm) {
+	public static InheritedLineCircleSelection read(AlgoIntersectLineConic algorithm) {
 		if (algorithm.getIntersectionPoints().length != 2) {
 			return null;
 		}

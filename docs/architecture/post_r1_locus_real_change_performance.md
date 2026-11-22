@@ -165,3 +165,52 @@ dibujables de la vista viva. Causa, reparación, alternativas, pruebas y ablaci�
    autor lo quisiera, la propuesta concreta sería un resultado de recorrido por revisión,
    propiedad del productor, leído por su certificado y su métrica; no se ha diseñado.
 3. La primera carga de un documento sigue siendo la más lenta (≈ 7,7 s con la JVM fría).
+
+## 6. Coste de la evidencia condicionada por revisión (incremento I0)
+
+Medición del incremento I0 del uso condicionado (ADR 0042), con el protocolo real: el
+testimonio del evaluador del slice y la política `conditioned-traversal/v1`. Escenario
+`conditioned` del arnés (`tools/benchmark/post-r1-locus/run-harness.ps1 -Scenario
+conditioned`), sobre el documento original y sobre el transportado; misma estación y mismas
+reservas que el §5 (sin ventana, una JVM, una serie corta: telemetría, nunca umbral).
+
+| Locus | Evaluaciones | Celdas | Regiones | Primera petición | Petición repetida |
+|---|---|---|---|---|---|
+| `w_2` | 353 a 373 | 176 a 186: 132 a 136 tramos, 40 a 46 ausencias, 4 bandas de transición | 2: `[-2,76; -1,82]` y `[1,82; 2,76]` | 0,41 a 0,50 s | 0 ms |
+| `a_3` | 377 a 385 | 188 a 192: 142 a 144 tramos, 40 a 46 ausencias, 4 bandas de transición | las mismas 2 | 0,43 a 0,48 s | 0 ms |
+| `trHole` (transportado) | 257 | 128 tramos | 1: el periodo completo | 0,16 s | 0 ms |
+| `o`, `o_1`, `e_2`, `s_2` | — | — | — | no publican evidencia: su certificado cubre el dominio | — |
+
+Lectura:
+
+1. **Se calcula una vez por revisión y solo si alguien la pide.** Mover `E_1` o `N` no
+   publica revisiones (reparaciones A y A′) y conserva la evidencia: coste nulo durante el
+   arrastre. En I0 ningún consumidor la pide, de modo que el coste de un cambio real de
+   `excCyl` no varía (670 a 780 ms en esta serie, sin pintura).
+2. **Cuando se consuma**, un cambio real añadirá el coste de la evidencia de cada locus
+   condicionado que se use o se dibuje: en el original ≈ 0,9 s para `w_2` y `a_3` juntos,
+   sobre los ≈ 0,7 s de la actualización del grafo. Ese sobrecoste es trabajo semántico
+   nuevo (unas 360 evaluaciones del slice por locus, ≈ 1,3 ms cada una). El certificado de
+   la misma revisión ya gasta una exploración de 32 muestras y 24 bisecciones por transición
+   que, para las bandas con evidencia condicionada, el dibujo deja de necesitar; hacerla
+   perezosa es la compensación natural y se decide en el incremento I2, que es donde el
+   dibujo empieza a consumir la evidencia. No se comparte ningún resultado entre productores
+   (D-V6).
+3. **Límite de trabajo.** Queda fijado en 1 024 evaluaciones por recorrido (≈ 1,3 s en el
+   peor caso con el coste por evaluación de este modelo). Los tres loci gastan entre 257 y
+   385. Lo que el límite no alcanza es `UNEXPLORED`, nunca un tramo.
+4. **Clase de los tramos.** Los de `w_2` y `a_3` son `RESOLUTION_ONLY`: su slice lee,
+   además del token de la raíz, una selección recta-cónica heredada, que no testifica
+   separación; un valor de separación ausente rebaja la clase (contrato §3.2) y no cambia
+   ningún permiso.
+
+Hallazgo del banco con el protocolo real, corregido antes de cerrar I0: el primer criterio
+de testimonio de una selección recta-cónica heredada exigía la permutación asentada
+(`ReconstructionFidelity2D.isSettled`). En el modelo esas selecciones están, correctamente,
+en el estado de compactación de su primera inicialización, que el evaluador reproduce. Con
+aquel criterio `w_2` y `a_3` daban solo bandas de fallo y celdas sin explorar, y `trHole`
+agotaba el límite de trabajo sin clasificar ninguna celda (2,6 s y 1,1 s por locus). El
+testimonio usa ahora el estado de selección que la norma ya define como reproducible
+(`locus-v2-certified-construction-model.md` §10.2: compactación, permutación fija o punto
+ya incidente); una definición tangente o una permutación pendiente, que el cálculo siguiente
+fijaría por proximidad, siguen sin estar establecidas.

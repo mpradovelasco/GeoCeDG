@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)]
-    [ValidateSet('variant', 'benchmark', 'evidence', 'profile')]
+    [ValidateSet('variant', 'benchmark', 'evidence', 'profile', 'conditioned')]
     [string]$Scenario,
     [string]$OutputDirectory,
     # Root of the checkout to run. Defaults to this repository; another checkout of an

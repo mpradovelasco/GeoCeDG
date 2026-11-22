@@ -61,13 +61,18 @@ public final class LocusConditionedTraversalPolicy2D {
 
 	/**
 	 * @return the first policy: 32 initial cells, minimum step {@code 2^-20}, chord deviation
-	 *         {@code 1e-3}, turning 0.35 rad. Margin threshold and work limit are the values
-	 *         of the preparatory candidate and are fixed when increment I0 closes with the
-	 *         measurements of the real protocol.
+	 *         {@code 1e-3} model units, turning 0.35 rad, margin threshold {@code 1e-3} in
+	 *         the parameter of the source of the selected root, and a work limit of 1024
+	 *         evaluations. The work limit was fixed when increment I0 closed, from the
+	 *         measurements of the real protocol on the regression model (257 to 385
+	 *         evaluations per locus and revision; {@code
+	 *         docs/architecture/post_r1_locus_real_change_performance.md}, section 6). The
+	 *         closed list of eligible absence causes of this version is {@link
+	 *         LocusConditionedAbsenceCause2D}.
 	 */
 	public static LocusConditionedTraversalPolicy2D v1() {
 		return new LocusConditionedTraversalPolicy2D(VERSION_1, 5, 20, 1e-3, 0.35, 1e-3,
-				2048);
+				1024);
 	}
 
 	/** @return version of the policy */

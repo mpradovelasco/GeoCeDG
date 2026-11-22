@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.DoubleFunction;
 
 import org.geocedg.common.kernel.locus.LocusEvidenceNature2D;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCell2D;
 import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCellKind2D;
 import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
@@ -378,6 +379,49 @@ final class PostR1ConditionedEvidenceTest {
 			assertEquals(fresh.getWork(), incremental.getWork());
 			assertEquals(fresh.getContentIdentity(), incremental.getContentIdentity());
 		}
+	}
+
+	@Test
+	void noCellIsPublishedInsideACertifiedCoverage() {
+		// A certificate of the revision covers [0.25, 0.5]: its ends are nodes of the grid.
+		int[] inside = {0};
+		LocusConditionedEvidence2D evidence = LocusConditionedTraversal2D.traverse("main", 1,
+				0, 1, POLICY, Collections.emptyList(), sampler(t -> {
+					inside[0] += t > 0.25 && t < 0.5 ? 1 : 0;
+					return circle(t);
+				}), List.of(new LocusInterval2D(0.25, 0.5, true, true)));
+		assertEquals(0, inside[0], "no evaluation inside the certified coverage");
+		for (LocusConditionedCell2D cell : evidence.getCells()) {
+			assertTrue(cell.getUpper() <= 0.25 || cell.getLower() >= 0.5);
+			assertEquals(LocusConditionedCellKind2D.SPAN, cell.getKind());
+		}
+		List<LocusInterval2D> regions = evidence.getRegions();
+		assertEquals(2, regions.size());
+		assertEquals(0.25, regions.get(0).getUpper(), 0);
+		assertEquals(0.5, regions.get(1).getLower(), 0);
+		// A certified interval between two cells is not part of a region.
+		assertTrue(evidence.inOneRegion(0.05, 0.2));
+		assertTrue(evidence.inOneRegion(0.6, 0.9));
+		assertFalse(evidence.inOneRegion(0.1, 0.9));
+		assertFalse(evidence.inOneRegion(0.2, 0.3));
+		assertFalse(evidence.inOneRegion(0.3, 0.4));
+
+		// Ends that are not nodes are located to the minimum step before any evaluation of
+		// the cells that they cut, and the content is the same with any order of reports.
+		LocusConditionedEvidence2D cut = LocusConditionedTraversal2D.traverse("main", 1, 0, 1,
+				POLICY, Collections.emptyList(),
+				sampler(PostR1ConditionedEvidenceTest::circle),
+				List.of(new LocusInterval2D(0.3, 0.7, true, true)));
+		List<LocusInterval2D> cutRegions = cut.getRegions();
+		assertEquals(2, cutRegions.size());
+		assertTrue(cutRegions.get(0).getUpper() >= 0.3
+				&& cutRegions.get(0).getUpper() <= 0.3 + MINIMUM_STEP);
+		assertTrue(cutRegions.get(1).getLower() <= 0.7
+				&& cutRegions.get(1).getLower() >= 0.7 - MINIMUM_STEP);
+		for (LocusConditionedCell2D cell : cut.getCells()) {
+			assertFalse(cell.getLower() >= 0.3 && cell.getUpper() <= 0.7);
+		}
+		assertTrue(cut.getWork() < 400);
 	}
 
 	@Test

@@ -5,8 +5,13 @@
 
 package org.geocedg.common.kernel.locus.conditioned;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
+
+import org.geocedg.common.kernel.locus.LocusInterval2D;
 
 /**
  * Producer-side owner of the conditioned evidence of one branch (candidate contract
@@ -35,6 +40,7 @@ public final class LocusConditionedEvidenceOwner2D {
 	private final double domainLower;
 	private final double domainUpper;
 	private final LocusConditionedTraversalPolicy2D policy;
+	private final List<LocusInterval2D> certified;
 	private final TreeSet<Double> contradictions = new TreeSet<>();
 	private LocusConditionedTraversal2D.Nodes nodes;
 	private LocusConditionedSampler2D sampler;
@@ -49,10 +55,30 @@ public final class LocusConditionedEvidenceOwner2D {
 	 */
 	public LocusConditionedEvidenceOwner2D(String branchKey, double domainLower,
 			double domainUpper, LocusConditionedTraversalPolicy2D policy) {
+		this(branchKey, domainLower, domainUpper, policy, List.of());
+	}
+
+	/**
+	 * @param branchKey branch that the evidence describes
+	 * @param domainLower lower end of the declared driver domain
+	 * @param domainUpper upper end of the declared driver domain
+	 * @param policy versioned policy
+	 * @param certified parameter intervals that a certificate of the revisions of this
+	 *        owner covers; the evidence publishes no cell inside them
+	 */
+	public LocusConditionedEvidenceOwner2D(String branchKey, double domainLower,
+			double domainUpper, LocusConditionedTraversalPolicy2D policy,
+			List<LocusInterval2D> certified) {
 		this.branchKey = Objects.requireNonNull(branchKey);
 		this.domainLower = domainLower;
 		this.domainUpper = domainUpper;
 		this.policy = Objects.requireNonNull(policy);
+		this.certified = Collections.unmodifiableList(new ArrayList<>(certified));
+	}
+
+	/** @return versioned policy of this owner */
+	public LocusConditionedTraversalPolicy2D getPolicy() {
+		return policy;
 	}
 
 	/**
@@ -118,7 +144,7 @@ public final class LocusConditionedEvidenceOwner2D {
 
 	private LocusConditionedEvidence2D publish(long revision) {
 		published = LocusConditionedTraversal2D.traverse(branchKey, revision, domainLower,
-				domainUpper, policy, contradictions, sampler, nodes);
+				domainUpper, policy, contradictions, sampler, nodes, certified);
 		publicationCounter++;
 		return published;
 	}

@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15, WITH THE PRECISIONS OF AUTHOR DECISIONS H10 AND V-CON-6 OF 2026-10-22 IN §15.7 AND §15.8, AND THE TYPED CHANGE OF DIMENSION AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 OF 2026-10-22 IN §15.4 AND §15.6) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**; **PRE-G9B-CU3 CONSUMER NOTE (§16) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT**; **CONSTRUCTIVE AUTHORITY CONSUMER NOTE (§17) — AUTHOR APPROVED AS CONTRACT (2026-10-25), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT** |
-| Version | `1.1` |
+| Status | **NORMATIVE — AUTHOR APPROVED** (v1.0); **PRE-G9B-CU2 v1.1 AMENDMENT (§15, WITH THE PRECISIONS OF AUTHOR DECISIONS H10 AND V-CON-6 OF 2026-10-22 IN §15.7 AND §15.8, AND THE TYPED CHANGE OF DIMENSION AUTHORIZED BY AUTHOR DECISION D-CU2-T13-R1 OF 2026-10-22 IN §15.4 AND §15.6) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**; **PRE-G9B-CU3 CONSUMER NOTE (§16) — DESIGN AUTHOR APPROVED (2026-10-24), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT**; **CONSTRUCTIVE AUTHORITY CONSUMER NOTE (§17) — AUTHOR APPROVED AS CONTRACT (2026-10-25), IMPLEMENTATION AUTHORIZED, NOT YET APPROVED AS PRODUCT**; **CONDITIONED EVIDENCE AMENDMENT (§19) — AUTHOR APPROVED AS CONTRACT WITH ADR 0042 (2026-11-22), IMPLEMENTATION AUTHORIZED IN INCREMENTS I0 TO I4T, NOT YET APPROVED AS PRODUCT** |
+| Version | `1.2` (`1.1` with the conditioned evidence of §19) |
 | Phase | `PRE-G9B-S1-R2`; amended by `PRE-G9B-CU2` (§15) |
 | Scope | Shared-kernel Locus V2 existence, continuity and completeness evidence |
 | Parent | [Locus V2 semantic contract](locus-v2-semantics.md) |
@@ -617,3 +617,82 @@ differ by `2π`, so the rotation has a closed continuous component. This proof
 uses the captured shape, the typed DAG and the metric structure. Scalar length
 values retain their own error guarantees. A different divisor object needs
 its own proof even when the displayed numeric values coincide.
+
+## 19. Conditioned evidence (version 1.2, ADR 0042)
+
+Amendment approved by the author on 2026-11-22 with
+[ADR 0042](../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md)
+and the [conditioned-use contract](candidates/post-r1-conditioned-use.md), whose §12 lists
+it. It is incorporated progressively: this section states what increment I0 implements, and
+each later increment adds its part. Where this section is silent the contract governs.
+Sections 1 to 18 are unchanged.
+
+### 19.1 Producer of the nature `NUMERICAL_UNDER_HYPOTHESES`
+
+The nature «numerical verification under stated hypotheses» of §15.1 has one producer for
+existence and continuity: the *conditioned evidence* of the conditioned-use contract, §3. It
+is a fifth typed structure beside the four levels of §15.1 and is none of them:
+
+- it is owned by the producer of the locus and published per revision and policy version
+  (`conditioned-traversal/v1`), on demand, as an immutable content;
+- it partitions into typed cells the part of the declared driver domain of a branch that no
+  certified component and no certified nonexistence covers, with ends that are dyadic
+  fractions of that domain; a cell inside a certified coverage is never published;
+- a maximal run of adjacent spans is a *conditioned region*. A region is not a component of
+  §15.2: it has no lineage, no ordinal identity and no persisted form, and it is never
+  identity material under §15.6;
+- it is derived, never persisted, never exported, never part of the semantic snapshot, of
+  the definition or of its revision, and it changes no fact of the existence structure:
+  `getCompleteness()`, the coverage and the certified components of a locus are the same
+  with and without it. A finite traversal never establishes level 3 or 4, as §15.1 says, and
+  no number of nodes changes a span into a certified component;
+- a producer that can be certified is certified as before. A branch that the certificate
+  covers completely, a slice whose reconstruction is not faithful and a declared domain that
+  is not finite publish no conditioned evidence.
+
+The four hypotheses that a span leaves open (validity, selection, continuity, resolution),
+the three evidence classes and the rule that no class grants a permission are those of the
+contract, §3.3 and §4.
+
+### 19.2 Testimony, absence and failure
+
+The evaluator of a reconstruction slice returns, with an evaluation, the testimony of every
+selecting dependency that the driver-dependent part of the slice reads
+(`locus-evaluation-testimony/v1`): for a token point of a Locus V2 intersection, the exact
+token, its admissibility in the result that the slice computed for that evaluation and the
+distance in the source parameter to the nearest other root of the same result; for an
+inherited line-conic selection, the selection state that an evaluator reproduces
+([`locus-v2-certified-construction-model.md`](locus-v2-certified-construction-model.md)
+§10.2); for a structural point of §16, its resolution and its integrity. The
+testimony is read from what the slice computed; no resolution is started for it, and no root
+is identified by index, proximity or order.
+
+An evaluation that failed is never evidence of absence. The closed list of eligible causes
+of a conditioned absence of `conditioned-traversal/v1` is:
+
+| Cause | Meaning |
+|---|---|
+| `DEPENDENCY_UNDEFINED` | the traced point is undefined, the evaluator found no computational failure and every selecting dependency has an established selection |
+| `INTERSECTION_ROOT_ABSENT` | a token point is undefined because the result that the slice computed succeeded, has no unresolved candidate and publishes no root for the token |
+
+Every other invalid evaluation — a computational failure, a work limit, an authority
+refusal, an unreproduced selection, an unfaithful slice, a root that is published and not
+point-admissible, a selection that is not established — is a failure, and its cell is a
+`FAILURE_BAND`. So is a cell whose nodes are absent with different causes. A conditioned
+absence is never `CERTIFIED_DOES_NOT_EXIST`.
+
+### 19.3 Lifecycle
+
+The content identity of a conditioned evidence is `(revision, policy version, contradiction
+set)`; its publication counter is another attribute, which orders the publications of one
+revision and is never an identity (contract §7). An observer only reports a parameter; the
+producer evaluates it with its own evaluator and publishes a new content when the
+contradiction is confirmed. A new revision of the definition discards the evidence and the
+contradiction set of the previous one. A change that publishes no revision, such as a move
+of the driver, keeps the evidence.
+
+### 19.4 Consumers
+
+Increment I0 adds no consumer: §15.8 is unchanged, and every consumer of this
+specification behaves as before. The consumer admissions of the contract, §8, are added to
+this section by the increments that implement them.

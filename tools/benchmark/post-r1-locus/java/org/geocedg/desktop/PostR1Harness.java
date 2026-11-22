@@ -29,6 +29,9 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusInstrumentation2D;
+import org.geocedg.common.kernel.locus.LocusInterval2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedCell2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionResult2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
 import org.geogebra.common.kernel.Construction;
@@ -72,6 +75,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * the original and on the transported document, with the work counters of every locus and an
  * in-process Flight Recorder sample of the event thread attributed, inclusively, to marker
  * frames of the kernel. Marks overlap and do not add up to the total.</li>
+ * <li>{@code conditioned}: increment I0 of the conditioned use (ADR 0042). On the original
+ * and on the transported document it reads the conditioned evidence that the producer of
+ * each locus publishes for its revision, with the real protocol (testimony of the slice,
+ * policy {@code conditioned-traversal/v1}): cells by kind, regions, evaluations and time of
+ * the first request, time of a repeated request, and, after each real change of {@code
+ * excCyl}, the time of the update of the graph, of the evidence of the new revision and of
+ * an off-screen paint.</li>
  * </ul>
  *
  * Latencies are telemetry of one machine and one short series. They are never a threshold.
@@ -80,7 +90,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
 		PreG9BR6PlusD1DocumentUnitsTest.DesktopLogger.class})
 @EnabledIfSystemProperty(named = "geocedg.postr1.harness",
-		matches = "variant|benchmark|evidence|profile")
+		matches = "variant|benchmark|evidence|profile|conditioned")
 class PostR1Harness {
 	private static final String ORIGINAL = "InterCilConoObliqueFinal_2.cedg";
 	private static final String PACKAGE = "models/regression/post-r1-locus-on-intersection";
@@ -103,6 +113,7 @@ class PostR1Harness {
 		String scenario = System.getProperty("geocedg.postr1.harness");
 		List<String> report = PreG9BR6PlusF3Fixtures.onEdt(() -> "variant".equals(scenario)
 				? variant(work, output) : "evidence".equals(scenario) ? evidence(work)
+						: "conditioned".equals(scenario) ? conditioned(work)
 						: "profile".equals(scenario) ? profile(work, output) : benchmark(work));
 		Files.write(output.resolve(scenario + ".txt"), report, StandardCharsets.UTF_8);
 		assertTrue(!report.isEmpty());
@@ -410,6 +421,99 @@ class PostR1Harness {
 			report.add(recovered.toString());
 		}
 		return report;
+	}
+
+	private static List<String> conditioned(Path work) throws Exception {
+		List<String> report = new ArrayList<>();
+		report.add("# conditioned evidence of each locus, real protocol. Times in ms.");
+		report.add("jvm=" + System.getProperty("java.vm.name") + " "
+				+ System.getProperty("java.version") + " os=" + System.getProperty("os.name")
+				+ " processors=" + Runtime.getRuntime().availableProcessors());
+		for (boolean transported : new boolean[] {false, true}) {
+			String document = transported ? "transport" : "original";
+			Path variant = PreG9BCu0Corpus.repositoryRoot().resolve(PACKAGE).resolve("derived")
+					.resolve(VARIANT);
+			AppGeoCeDG app = transported && Files.isRegularFile(variant)
+					? PreG9BCu0Corpus.open(copy(variant, work)) : open(work);
+			if (transported && !Files.isRegularFile(variant)) {
+				buildTransport(app);
+			}
+			EuclidianView view = app.getEuclidianView1();
+			((EuclidianViewD) view).getJPanel().setSize(VIEW_WIDTH, VIEW_HEIGHT);
+			view.updateSize();
+			view.setCoordSystem(VIEW_X_ZERO, VIEW_Y_ZERO, VIEW_SCALE, VIEW_SCALE);
+			paint(view);
+			for (int pass = 0; pass < 2; pass++) {
+				for (String label : LOCI) {
+					report.add(document + " | " + (pass == 0 ? "first" : "repeated")
+							+ " request | " + conditionedRow(app, label));
+				}
+			}
+			GeoNumeric eccentricity = (GeoNumeric) app.getKernel().lookupLabel("excCyl");
+			double value = eccentricity.getValue();
+			for (int index = 0; index < 6; index++) {
+				long start = System.nanoTime();
+				PreG9BCu0Corpus.setNumber(app, "excCyl", value + (index % 2 == 0 ? 0.05 : 0));
+				double dag = (System.nanoTime() - start) / 1e6;
+				StringBuilder row = new StringBuilder(document + " | excCyl change " + index
+						+ " | dag=" + String.format(Locale.ROOT, "%.0f", dag));
+				double evidence = 0;
+				for (String label : LOCI) {
+					long requested = System.nanoTime();
+					String cells = conditionedRow(app, label);
+					double millis = (System.nanoTime() - requested) / 1e6;
+					evidence += millis;
+					if (!cells.endsWith("none")) {
+						row.append(" | ").append(cells);
+					}
+				}
+				long painting = System.nanoTime();
+				paint(view);
+				row.append(" | evidence total=").append(String.format(Locale.ROOT, "%.0f",
+						evidence)).append(" paint=").append(String.format(Locale.ROOT, "%.0f",
+								(System.nanoTime() - painting) / 1e6));
+				report.add(row.toString());
+			}
+		}
+		return report;
+	}
+
+	/** One locus: revision, time of the request and content of its conditioned evidence. */
+	private static String conditionedRow(AppGeoCeDG app, String label) {
+		GeoElement geo = app.getKernel().lookupLabel(label);
+		if (!(geo instanceof GeoLocusV2) || ((GeoLocusV2) geo).getSemanticDefinition() == null) {
+			return label + ": none";
+		}
+		GeoLocusV2 locus = (GeoLocusV2) geo;
+		long start = System.nanoTime();
+		LocusConditionedEvidence2D evidence = locus.getConditionedEvidence("generator.main");
+		double millis = (System.nanoTime() - start) / 1e6;
+		if (evidence == null) {
+			return label + ": none";
+		}
+		Map<String, Integer> kinds = new TreeMap<>();
+		Map<String, Integer> classes = new TreeMap<>();
+		Map<String, Integer> causes = new TreeMap<>();
+		for (LocusConditionedCell2D cell : evidence.getCells()) {
+			kinds.merge(cell.getKind().name(), 1, Integer::sum);
+			if (cell.getSpanClass() != null) {
+				classes.merge(cell.getSpanClass().name(), 1, Integer::sum);
+			}
+			if (!cell.getKind().isSpan() && !cell.getCause().isEmpty()) {
+				String cause = cell.getCause();
+				causes.merge(cell.getKind().name() + ":" + cause.substring(0,
+						Math.min(70, cause.length())), 1, Integer::sum);
+			}
+		}
+		StringBuilder regions = new StringBuilder();
+		for (LocusInterval2D region : evidence.getRegions()) {
+			regions.append(String.format(Locale.ROOT, "[%.4f, %.4f] ", region.getLower(),
+					region.getUpper()));
+		}
+		return label + ": revision=" + evidence.getRevision() + " ms=" + String.format(
+				Locale.ROOT, "%.0f", millis) + " work=" + evidence.getWork() + " cells="
+				+ evidence.getCells().size() + " " + kinds + " classes=" + classes
+				+ " regions=" + regions.toString().trim() + " causes=" + causes;
 	}
 
 	private static void series(List<String> report, AppGeoCeDG app, String document,

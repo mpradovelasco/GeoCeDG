@@ -49,6 +49,9 @@ import org.geocedg.common.kernel.locus.ReconstructionSliceFingerprint2D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDescriptor1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorDomainProvider1D;
 import org.geocedg.common.kernel.locus.SemanticGeneratorFamily1D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidenceOwner2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedTraversalPolicy2D;
 import org.geocedg.common.kernel.locus.constructive.AuthorityPolicy;
 import org.geocedg.common.kernel.locus.intersection.ConstructionBoxModel2D;
 import org.geocedg.common.kernel.locus.intersection.HybridExistenceCertifier2D;
@@ -110,6 +113,9 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 			new IdentityHashMap<>();
 	private String certifiedSelection;
 	private List<LocusLineage2D> certificateLineage = List.of();
+	/** Owner of the conditioned evidence of the published revision (ADR 0042). */
+	private LocusConditionedEvidenceOwner2D conditionedOwner;
+	private LocusDefinition2D conditionedDefinition;
 
 	/**
 	 * Creates a public parent from its real serialized command inputs. Durable
@@ -418,6 +424,89 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		return current == null || certifiedEvaluator != evaluator
 				|| !SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY.equals(branchKey)
 						? null : current.getExploration();
+	}
+
+	/**
+	 * Conditioned evidence of the published revision (ADR 0042; contract {@code
+	 * post-r1-conditioned-use.md}, sections 3 and 7): computed once per revision, on demand,
+	 * by the reconstructible evaluator of that revision over the part of the declared domain
+	 * that the published certificate does not cover. A slice that is not faithful, a domain
+	 * that is not finite and a branch that the certificate covers completely publish none.
+	 */
+	@Override
+	public LocusConditionedEvidence2D getConditionedEvidence(String branchKey) {
+		LocusConditionedEvidenceOwner2D owner = conditionedOwner(branchKey);
+		return owner == null ? null : owner.getPublished();
+	}
+
+	@Override
+	public long getConditionedPublicationCounter(String branchKey) {
+		LocusConditionedEvidenceOwner2D owner = conditionedOwner(branchKey);
+		return owner == null ? 0 : owner.getPublicationCounter();
+	}
+
+	@Override
+	public LocusConditionedEvidenceOwner2D.ReportOutcome reportConditionedContradiction(
+			String branchKey, double parameter) {
+		LocusConditionedEvidenceOwner2D owner = conditionedOwner(branchKey);
+		if (owner == null) {
+			return null;
+		}
+		LocusConditionedEvidence2D published = owner.getPublished();
+		if (!(parameter >= published.getDomainLower()
+				&& parameter <= published.getDomainUpper())) {
+			return LocusConditionedEvidenceOwner2D.ReportOutcome.NOT_CONFIRMED;
+		}
+		return owner.report(parameter);
+	}
+
+	private LocusConditionedEvidenceOwner2D conditionedOwner(String branchKey) {
+		ReconstructibleLocusEvaluator2D current = evaluator;
+		LocusDefinition2D definition = getLocus().isDefined()
+				? getLocus().getSemanticDefinition() : null;
+		if (current == null || definition == null
+				|| definition.getEvaluatorCapability() != current
+				|| !SemanticGeneratorDescriptor1D.OUTPUT_BRANCH_KEY.equals(branchKey)) {
+			return null;
+		}
+		if (conditionedDefinition == definition) {
+			return conditionedOwner;
+		}
+		// A new revision discards the evidence and the contradiction set of the previous one.
+		conditionedDefinition = definition;
+		conditionedOwner = null;
+		LocusBranch2D branch = definition.getBranch(branchKey);
+		if (branch == null || !current.isReconstructionFaithful()) {
+			return null;
+		}
+		LocusInterval2D domain = branch.getDeclaredDriverDomain();
+		LocusExistenceStructure2D structure = branch.getExistenceStructure();
+		if (!Double.isFinite(domain.getLower()) || !Double.isFinite(domain.getUpper())
+				|| !(domain.getLower() < domain.getUpper())
+				|| structure.getCompleteness() == LocusExistenceStructure2D.Completeness.COMPLETE) {
+			return null;
+		}
+		List<LocusInterval2D> certified = new ArrayList<>();
+		for (LocusExistenceStructure2D.Coverage coverage : structure.getCoverage()) {
+			if (coverage.getState() != LocusExistenceStructure2D.CoverageState.UNRESOLVED
+					&& coverage.getNature().certifies()) {
+				certified.add(coverage.getInterval());
+			}
+		}
+		LocusConditionedEvidenceOwner2D owner = new LocusConditionedEvidenceOwner2D(
+				branchKey, domain.getLower(), domain.getUpper(),
+				LocusConditionedTraversalPolicy2D.v1(), certified);
+		// A later report is evaluated by the same evaluator of the same revision. Inside a
+		// reconstruction-slice update the session is a child of the evaluating one.
+		owner.startRevision(definition.getSemanticRevision(), parameter ->
+				LocusCertificationScope2D.explore(() -> {
+					try (LocusEvaluationSession2D session =
+							LocusEvaluationSession2D.openServiceSession(false, 1)) {
+						return current.evaluateWithTestimony(parameter, session);
+					}
+				}));
+		conditionedOwner = owner;
+		return owner;
 	}
 
 	/**

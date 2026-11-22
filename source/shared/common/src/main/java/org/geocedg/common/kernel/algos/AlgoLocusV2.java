@@ -9,6 +9,8 @@ import org.geocedg.common.kernel.geos.GeoLocusV2;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
 import org.geocedg.common.kernel.locus.V2RedefineContractSource;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidenceOwner2D;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.ConstructionDefaults;
 import org.geogebra.common.kernel.algos.AlgoElement;
@@ -130,6 +132,43 @@ public abstract class AlgoLocusV2 extends AlgoElement
 	 * @return evidence, or {@code null}
 	 */
 	public LocusExploratoryEvidence2D getExploratoryEvidence(String branchKey) {
+		return null;
+	}
+
+	/**
+	 * Conditioned evidence of the part of one branch of the published definition that no
+	 * certificate covers (ADR 0042; contract {@code post-r1-conditioned-use.md}, sections 3
+	 * and 7). It is revision evidence of nature {@code NUMERICAL_UNDER_HYPOTHESES}, owned by
+	 * the producer: derived, never persisted, never identity and never part of the
+	 * definition. Producers that publish none return {@code null}.
+	 *
+	 * @param branchKey branch of the published definition
+	 * @return published content of the current revision, or {@code null}
+	 */
+	public LocusConditionedEvidence2D getConditionedEvidence(String branchKey) {
+		return null;
+	}
+
+	/**
+	 * @param branchKey branch of the published definition
+	 * @return counter of the publications of the conditioned evidence of the current
+	 *         revision; it orders them and is never an identity
+	 */
+	public long getConditionedPublicationCounter(String branchKey) {
+		return 0;
+	}
+
+	/**
+	 * Receives the report of a parameter at which an observer saw an evaluation that the
+	 * kind of its cell excludes. The producer evaluates the parameter itself; the report
+	 * changes nothing unless the contradiction is confirmed.
+	 *
+	 * @param branchKey branch of the published definition
+	 * @param parameter reported canonical parameter
+	 * @return what the producer decided, or {@code null} when it publishes no evidence
+	 */
+	public LocusConditionedEvidenceOwner2D.ReportOutcome reportConditionedContradiction(
+			String branchKey, double parameter) {
 		return null;
 	}
 
