@@ -250,12 +250,106 @@ public final class GeoLocusIntersectionResult extends GeoElement
 					"Unexpected or duplicate public token-ledger state");
 		}
 		tokenLedger.importState(state);
+		if (cons.getSpatialIdentityRegistry().isRedefineRuntimePublicationStaged()) {
+			// The state is read while a redefinition rebuilds the construction: it was
+			// written with the declarations of before, and no frame of a place is kept.
+			tokenLedger.declarationsMayHaveChanged();
+		}
 		tokenLedgerRestoredFromXml = true;
 	}
 
 	/** @return canonical persisted ledger state for verification */
 	public String getTokenLedgerState() {
 		return tokenLedger.exportState();
+	}
+
+	/**
+	 * The search view of a source with the frames that this result keeps for the declared
+	 * pieces of its driver domain ({@code locus-v2-existence-components.md} section 20).
+	 * The roots on a declared piece are identified by what the piece declares; the frames
+	 * under which this result wrote its bindings before are kept for the pieces that they
+	 * named ({@link LocusIntersectionTokenLedger2D#resolveDeclaredFrame}).
+	 *
+	 * @param search current search view of the source, or {@code null}
+	 * @param scope durable scope of the source ({@link #declaredFrameScope})
+	 * @param pair whether this result is an intersection of two loci
+	 * @return the view with its kept frames, or the same view when it keeps none
+	 */
+	public org.geocedg.common.kernel.locus.LocusDefinition2D withDeclaredRootFrames(
+			org.geocedg.common.kernel.locus.LocusDefinition2D search, String scope,
+			boolean pair) {
+		if (search == null || scope == null) {
+			return search;
+		}
+		java.util.Map<String, java.util.Map<String, String>> kept = new java.util.HashMap<>();
+		for (org.geocedg.common.kernel.locus.LocusBranch2D branch : search.getBranches()) {
+			org.geocedg.common.kernel.locus.LocusExistenceStructure2D structure =
+					branch.getExistenceStructure();
+			java.util.List<org.geocedg.common.kernel.locus.LocusExistenceStructure2D
+					.ContinuousComponent> components =
+							structure.getContinuousValidComponents();
+			boolean wholeDomain = org.geocedg.common.kernel.locus.LocusComponentLineage2D
+					.isWholeDomain(structure);
+			java.util.Map<String, String> frames = new java.util.HashMap<>();
+			for (int index = 0; index < components.size(); index++) {
+				org.geocedg.common.kernel.locus.LocusExistenceStructure2D.ContinuousComponent
+						component = components.get(index);
+				String declared = org.geocedg.common.kernel.locus.LocusComponentLineage2D
+						.declaredFrame(structure, component);
+				boolean sole = org.geocedg.common.kernel.locus.LocusComponentLineage2D
+						.isSoleDeclaredPiece(component);
+				String written = pair
+						? org.geocedg.common.kernel.locus.intersection
+								.IntersectionCapabilityContext2D.componentKey(
+										branch.getBranchKey(), index)
+						: org.geocedg.common.kernel.locus.LocusComponentLineage2D
+								.identityKey(structure, component);
+				if (declared == null || sole && !wholeDomain) {
+					// No declared piece, or the only piece of its declaration divided by
+					// its certificate: a place, with the frame of always unless that frame
+					// is kept for a declared piece.
+					String place = tokenLedger.resolvePlaceFrame(scope, written);
+					if (!place.equals(written)) {
+						frames.put(org.geocedg.common.kernel.locus.LocusBranch2D
+								.PLACE_FRAME_KEY + written, place);
+					}
+					continue;
+				}
+				String frame = tokenLedger.resolveDeclaredFrame(scope,
+						search.getLocusIdentity(), branch.getBranchKey(), declared, written,
+						sole, pair);
+				if (!frame.equals(sole ? written : declared)) {
+					frames.put(declared, frame);
+				}
+			}
+			kept.put(branch.getBranchKey(), frames);
+		}
+		return search.withRootFrames(key -> kept.getOrDefault(key, java.util.Map.of()));
+	}
+
+	/**
+	 * Durable scope of a source for the frames of its declared pieces: its durable
+	 * identity at the root of its copy provenance, so that the closure copy of a
+	 * construction finds the frames that its original kept.
+	 *
+	 * @param source source locus
+	 * @return scope, or {@code null} while the source has no durable identity
+	 */
+	public String declaredFrameScope(org.geocedg.common.kernel.geos.GeoLocusV2 source) {
+		SpatialIdentityRegistry registry = cons.getSpatialIdentityRegistry();
+		PersistentGeoId id = registry.getPersistentGeoId(source);
+		GeoIdentityRecord record = id == null ? null : registry.getGeoRecord(id);
+		if (record == null) {
+			return null;
+		}
+		for (int step = 0; step < 64 && record.getCopySourceId() != null; step++) {
+			id = record.getCopySourceId();
+			record = registry.getGeoRecord(id);
+			if (record == null) {
+				break;
+			}
+		}
+		return id.toExternalForm();
 	}
 
 	/**

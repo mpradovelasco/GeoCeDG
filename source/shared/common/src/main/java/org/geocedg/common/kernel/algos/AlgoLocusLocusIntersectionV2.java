@@ -184,6 +184,19 @@ public final class AlgoLocusLocusIntersectionV2 extends AlgoElement {
 		LocusDefinition2D secondSearch = !publicCommand ? secondDefinition
 				: secondDefinition.withConditionedSearch(
 						callerSecond::getConditionedEvidence);
+		if (publicCommand) {
+			// The roots on a declared piece of a driver domain follow what the piece
+			// declares (spline-v2-pair-materialization.md section 11). A source and its
+			// own copy are two scopes.
+			String firstScope = result.declaredFrameScope(callerFirst);
+			String secondScope = result.declaredFrameScope(callerSecond);
+			if (firstScope != null && firstScope.equals(secondScope)) {
+				firstScope = callerFirst.getLocusIdentity();
+				secondScope = callerSecond.getLocusIdentity();
+			}
+			firstSearch = result.withDeclaredRootFrames(firstSearch, firstScope, true);
+			secondSearch = result.withDeclaredRootFrames(secondSearch, secondScope, true);
+		}
 		LocusDefinition2D canonicalFirst = query.isCallerOrderCanonical()
 				? firstSearch : secondSearch;
 		LocusDefinition2D canonicalSecond = query.isCallerOrderCanonical()

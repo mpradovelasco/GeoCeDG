@@ -50,9 +50,36 @@ public final class LocusIntersectionTokenLedger2D {
 			"g9s1-r1/ledger-pair-slot/v1/";
 	private static final String LEGACY_PUBLIC_SINGLETON_PREFIX =
 			"g9u0/g8c1-explicit-unique-local-root/v1/";
+	// Mark of the optional fifth field of the state: the frames that this ledger keeps for
+	// declared pieces of a driver domain (locus-v2-existence-components.md section 20).
+	// A state without such a frame has its four fields and its text of always.
+	private static final String DECLARED_FRAME_FIELD = "declared-frames/v1";
+	/** Suffix of the frame of a whole declared domain whose own frame names a piece. */
+	private static final String WHOLE_DOMAIN_SUFFIX = "/declared-whole";
+	/** Suffix of the frame of a place whose own frame names a declared piece. */
+	private static final String PLACE_SUFFIX = "/place";
 	private long nextIncarnation = 1;
 	private Snapshot current;
 	private Snapshot copySource;
+	/**
+	 * The frame that this ledger keeps for a declared piece, by the framed scope of its
+	 * source followed by what the piece declares: a frame under which the bindings of the
+	 * piece were written before the piece had a declarative frame of its own. It is a
+	 * name and no more; the piece keeps it wherever the declaration places it.
+	 */
+	private final java.util.TreeMap<String, String> declaredFrames =
+			new java.util.TreeMap<>();
+	/**
+	 * Whether this state was imported and nothing was observed on it yet: only then do the
+	 * places of a declaration stand as they stood when the state was written, and only
+	 * then is the frame of a place kept for the piece that the declaration has there.
+	 */
+	private boolean writtenFramesStand;
+	/**
+	 * The whole declared domain as the last request saw it, by framed scope and branch:
+	 * what it declared and its frame. Never persisted: the next request restores it.
+	 */
+	private final Map<String, String[]> wholeDomains = new java.util.HashMap<>();
 	private String authorizedCopySourceOwner;
 	private Map<String, String> authorizedPairSourceCopy = Map.of();
 	private Map<String, String> authorizedPairParticipantCopy = Map.of();
@@ -285,6 +312,191 @@ public final class LocusIntersectionTokenLedger2D {
 		authorizedPairParticipantCopy = Map.of();
 		current = next;
 		nextIncarnation = committedNextIncarnation;
+		writtenFramesStand = false;
+	}
+
+	/**
+	 * The frame of the intersection roots on a certified component of a declared piece
+	 * of a driver domain ({@code locus-v2-existence-components.md} section 20;
+	 * {@code spline-v2-pair-materialization.md} section 11). A piece is named by what it
+	 * declares. The whole declared domain, the only piece of its declaration, keeps the
+	 * frame of the whole domain, as before. The frames written before a piece had a
+	 * declarative frame are kept for the piece that they named, and only for it:
+	 *
+	 * <ul>
+	 * <li>on the first request after an import, the frame of a place under which a binding
+	 * of the state is active is kept for the piece that the declaration has at that place:
+	 * the state was written with that declaration;</li>
+	 * <li>the frame of the whole domain is kept for the piece that was the whole domain at
+	 * the previous request, when the declaration gains other pieces;</li>
+	 * <li>a frame that is kept for a piece names nothing else: a whole domain whose frame
+	 * is kept for another declaration has a frame of its own.</li>
+	 * </ul>
+	 *
+	 * No binding, token, incarnation or status changes here. A binding under a frame that
+	 * no current component has stays as it is, dormant, and is given to no other root.
+	 *
+	 * @param scope durable scope of the source, equal for a source and its closure copy
+	 * @param sourceIdentity identity of the source in the pair selectors of this ledger
+	 * @param branchKey branch of the component
+	 * @param declared declarative frame of the component
+	 * @param written frame of the component as it was written before: of its place among
+	 *        the components, or of the whole domain
+	 * @param wholeDomain whether the piece is the only one of its declaration
+	 * @param pair whether the bindings of this ledger are pair bindings
+	 * @return the frame under which the roots of the component are identified
+	 */
+	public String resolveDeclaredFrame(String scope, String sourceIdentity,
+			String branchKey, String declared, String written, boolean wholeDomain,
+			boolean pair) {
+		String owner = framed(requireText(scope, "Frame scope"));
+		String key = owner + requireText(declared, "Declared frame");
+		String place = owner + requireText(branchKey, "Branch key");
+		requireText(written, "Written frame");
+		String kept = declaredFrames.get(key);
+		if (kept != null) {
+			if (wholeDomain) {
+				wholeDomains.put(place, new String[] {declared, kept});
+			}
+			return kept;
+		}
+		if (wholeDomain) {
+			String frame = written;
+			while (keepsFrame(owner, frame)) {
+				frame += WHOLE_DOMAIN_SUFFIX;
+			}
+			wholeDomains.put(place, new String[] {declared, frame});
+			return frame;
+		}
+		if (writtenFramesStand && !keepsFrame(owner, written)
+				&& cites(sourceIdentity, written, pair, true)) {
+			declaredFrames.put(key, written);
+			return written;
+		}
+		String[] whole = wholeDomains.get(place);
+		if (whole != null && whole[0].equals(declared) && !keepsFrame(owner, whole[1])
+				&& cites(sourceIdentity, whole[1], pair, false)) {
+			declaredFrames.put(key, whole[1]);
+			return whole[1];
+		}
+		return declared;
+	}
+
+	/**
+	 * The frame of the roots on a component that is a place among the components of its
+	 * branch and no declared piece: the frame of always, unless this ledger keeps that
+	 * frame for a declared piece, which it then names and nothing else.
+	 *
+	 * @param scope durable scope of the source
+	 * @param written frame of the place
+	 * @return the frame under which the roots of the place are identified
+	 */
+	public String resolvePlaceFrame(String scope, String written) {
+		String owner = framed(requireText(scope, "Frame scope"));
+		String frame = requireText(written, "Written frame");
+		while (keepsFrame(owner, frame)) {
+			frame += PLACE_SUFFIX;
+		}
+		return frame;
+	}
+
+	/**
+	 * Declares that the declarations of the sources may differ from those with which this
+	 * state was written, as when it is read while a redefinition rebuilds the
+	 * construction: the frame of a place is then kept for no piece.
+	 */
+	public void declarationsMayHaveChanged() {
+		writtenFramesStand = false;
+	}
+
+	/** @return whether a frame is kept for a declared piece of the scope */
+	private boolean keepsFrame(String owner, String frame) {
+		for (Map.Entry<String, String> entry : declaredFrames.tailMap(owner).entrySet()) {
+			if (!entry.getKey().startsWith(owner)) {
+				break;
+			}
+			if (entry.getValue().equals(frame)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** @return whether a binding of the current snapshot is written under a frame */
+	private boolean cites(String sourceIdentity, String frame, boolean pair,
+			boolean activeOnly) {
+		if (current == null) {
+			return false;
+		}
+		for (Entry entry : current.entries) {
+			if (activeOnly && !entry.status.isActive()) {
+				continue;
+			}
+			if (pair != entry.pairRootBinding.isPresent()) {
+				continue;
+			}
+			if (!pair) {
+				if (entry.branchLineage.equals(frame)) {
+					return true;
+				}
+				continue;
+			}
+			PairSemanticSlotSelector2D selector = entry.pairRootBinding.get().selector;
+			for (PairSemanticSlotSelector2D.SourceDescriptor side : List.of(
+					selector.getFirst(), selector.getSecond())) {
+				if (side.getSourceId().equals(sourceIdentity)
+						&& side.getComponentLineage().equals(frame)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** @return the fifth field of the state, or empty when no frame is kept */
+	private String encodeDeclaredFrames() {
+		if (declaredFrames.isEmpty()) {
+			return "";
+		}
+		StringBuilder encoded = new StringBuilder("|").append(DECLARED_FRAME_FIELD)
+				.append('~').append(declaredFrames.size());
+		for (Map.Entry<String, String> entry : declaredFrames.entrySet()) {
+			encoded.append('~').append(hex(entry.getKey())).append('=')
+					.append(hex(entry.getValue()));
+		}
+		return encoded.toString();
+	}
+
+	private static java.util.TreeMap<String, String> decodeDeclaredFrames(String field) {
+		String[] parts = field.split("~", -1);
+		if (parts.length < 3 || !DECLARED_FRAME_FIELD.equals(parts[0])
+				|| parseNonNegativeInt(parts[1], "declared frame count")
+						!= parts.length - 2) {
+			throw new IllegalArgumentException("Malformed declared frames");
+		}
+		java.util.TreeMap<String, String> frames = new java.util.TreeMap<>();
+		for (int index = 2; index < parts.length; index++) {
+			int at = parts[index].indexOf('=');
+			if (at <= 0 || frames.put(requireText(unhex(parts[index].substring(0, at)),
+					"Declared frame key"), requireText(unhex(parts[index].substring(at + 1)),
+							"Declared frame")) != null) {
+				throw new IllegalArgumentException("Malformed declared frames");
+			}
+		}
+		if (new HashSet<>(frames.values()).size() != frames.size()) {
+			// Within one scope a frame names one piece; scopes never share a frame text
+			// with the same key prefix, so equal values of different scopes are told
+			// apart below.
+			java.util.Set<String> seen = new HashSet<>();
+			for (Map.Entry<String, String> entry : frames.entrySet()) {
+				Frame scope = readFrame(entry.getKey(), 0);
+				if (!seen.add(framed(scope.value) + entry.getValue())) {
+					throw new IllegalArgumentException(
+							"A kept frame names two declared pieces");
+				}
+			}
+		}
+		return frames;
 	}
 
 	private boolean isClaimed(Evaluation evaluation, Entry entry) {
@@ -333,6 +545,7 @@ public final class LocusIntersectionTokenLedger2D {
 
 	/** Makes claimed identities dormant after an unavailable current revision. */
 	public void observeUnavailable() {
+		writtenFramesStand = false;
 		authorizedCopySourceOwner = null;
 		authorizedPairSourceCopy = Map.of();
 		authorizedPairParticipantCopy = Map.of();
@@ -734,7 +947,7 @@ public final class LocusIntersectionTokenLedger2D {
 						? PAIR_FORMAT_VERSION : FORMAT_VERSION;
 		return version + "|" + nextIncarnation + "|"
 				+ encodeSnapshot(current, version) + "|"
-				+ encodeSnapshot(copySource, version);
+				+ encodeSnapshot(copySource, version) + encodeDeclaredFrames();
 	}
 
 	/**
@@ -764,7 +977,7 @@ public final class LocusIntersectionTokenLedger2D {
 						? PAIR_FORMAT_VERSION : FORMAT_VERSION;
 		return "evaluation-neutral/v1|" + version + "|" + nextIncarnation + "|"
 				+ encodeSnapshot(current, version, true) + "|"
-				+ encodeSnapshot(copySource, version);
+				+ encodeSnapshot(copySource, version) + encodeDeclaredFrames();
 	}
 
 	/**
@@ -837,7 +1050,8 @@ public final class LocusIntersectionTokenLedger2D {
 	public void importState(String state) {
 		String[] fields = requireText(state, "Token-ledger state")
 				.split("\\|", -1);
-		if (fields.length != 4 || (!BRANCH_FRAME_FORMAT_VERSION.equals(fields[0])
+		if (fields.length != 4 && fields.length != 5
+				|| (!BRANCH_FRAME_FORMAT_VERSION.equals(fields[0])
 				&& !FOLD_CONTACT_FORMAT_VERSION.equals(fields[0])
 				&& !PAIR_FORMAT_VERSION.equals(fields[0])
 				&& !FORMAT_VERSION.equals(fields[0])
@@ -847,6 +1061,8 @@ public final class LocusIntersectionTokenLedger2D {
 			throw new IllegalArgumentException("Unsupported token-ledger state");
 		}
 		String importedVersion = fields[0];
+		java.util.TreeMap<String, String> parsedFrames = fields.length == 5
+				? decodeDeclaredFrames(fields[4]) : new java.util.TreeMap<>();
 		long parsedNext = parsePositiveLong(fields[1], "next incarnation");
 		Snapshot parsedCurrent = decodeSnapshot(fields[2], importedVersion);
 		Snapshot parsedCopySource = decodeSnapshot(fields[3], importedVersion);
@@ -875,13 +1091,22 @@ public final class LocusIntersectionTokenLedger2D {
 			throw new IllegalArgumentException(
 					"Token-ledger high-water mark is not monotone");
 		}
+		java.util.TreeMap<String, String> previousFrames =
+				new java.util.TreeMap<>(declaredFrames);
+		declaredFrames.clear();
+		declaredFrames.putAll(parsedFrames);
 		String canonical = importedVersion + "|" + parsedNext + "|"
 				+ encodeSnapshot(parsedCurrent, importedVersion) + "|"
-				+ encodeSnapshot(parsedCopySource, importedVersion);
+				+ encodeSnapshot(parsedCopySource, importedVersion)
+				+ encodeDeclaredFrames();
 		if (!canonical.equals(state)) {
+			declaredFrames.clear();
+			declaredFrames.putAll(previousFrames);
 			throw new IllegalArgumentException(
 					"Token-ledger state is not canonically encoded");
 		}
+		wholeDomains.clear();
+		writtenFramesStand = true;
 		nextIncarnation = parsedNext;
 		current = parsedCurrent;
 		copySource = parsedCopySource;
@@ -894,6 +1119,10 @@ public final class LocusIntersectionTokenLedger2D {
 	/** Copies durable lineage only; revision-bound result evidence is excluded. */
 	public void set(LocusIntersectionTokenLedger2D other) {
 		importState(java.util.Objects.requireNonNull(other).exportState());
+		writtenFramesStand = other.writtenFramesStand;
+		for (Map.Entry<String, String[]> whole : other.wholeDomains.entrySet()) {
+			wholeDomains.put(whole.getKey(), whole.getValue().clone());
+		}
 	}
 
 	/** One isolated token attempt bound to an exact owner/query context. */

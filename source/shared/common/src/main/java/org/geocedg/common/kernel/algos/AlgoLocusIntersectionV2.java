@@ -201,6 +201,12 @@ public final class AlgoLocusIntersectionV2 extends AlgoElement {
 		LocusDefinition2D search = !publicCommand || definition == null
 				|| !source.isDefined() ? definition
 						: definition.withConditionedSearch(source::getConditionedEvidence);
+		if (publicCommand && search != null && source.isDefined()) {
+			// The roots on a declared piece of the driver domain follow what the piece
+			// declares (locus-v2-existence-components.md section 20).
+			search = result.withDeclaredRootFrames(search,
+					result.declaredFrameScope(source), false);
+		}
 		String inputs = semanticInputs(definition, locusRevision);
 		if (inputs != null) {
 			inputs += conditionedInputs(search);

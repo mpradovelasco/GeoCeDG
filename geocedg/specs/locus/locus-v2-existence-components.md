@@ -735,3 +735,117 @@ Contract §8.8. Increment I4.
   the driver of the slice receives the contradiction set that its original has published,
   and confirms each parameter itself; a copy that follows the driver is another function at
   each evaluation and receives nothing. Only published content is read.
+
+## 20. Declared pieces of a driver domain (GeoCeDG 1.2.2)
+
+Final corrective intervention of GeoCeDG 1.2.2, step C2: author authorization of
+2026-11-22, alternative α of the
+[contradiction record](../../../docs/validation/post_r1_1_2_2_c2_pair_identity_contradiction_record.md).
+It adds a rule; sections 8, 15.4 and 15.6 are unchanged. Its author-approval status is
+recorded only in the author-decision record of the intervention, never here.
+
+### 20.1 Terms
+
+- A **declared piece** is one element `{a, b, includeA, includeB}` of the scalar domain list
+  of a `LocusV2`: a portion of the parametric definition of the locus.
+- A **component** is a certified connected part of the existence structure (section 15.2).
+  A declared piece contains zero, one or several components.
+- A **place** is a position among the components of a branch, with the positional meaning
+  that [`spline-v2-pair-materialization.md`](../curves/spline-v2-pair-materialization.md)
+  approves for a pair slot: its content may change, and a change of its content is no
+  defect of identity.
+- The **whole declared domain** is the only piece of a list that declares one piece. It is
+  one place, as it has always been.
+
+### 20.2 Declarative identity of a piece
+
+A piece is named by what its list element declares, never by where the element stands:
+
+1. an element that is itself a durable object is named by its durable identity;
+2. any other element is named by the declaration of its two ends, where an end is
+   - a durable object, named by its durable identity,
+   - a literal, named by its exact value, or
+   - an anonymous dependent value, named by the operation that defines it over ends named
+     in the same way.
+
+A durable identity is taken at the root of its copy provenance, so that the closure copy of
+a construction declares the pieces of its original; when that would give two pieces of one
+list the same name, each object is itself. The inclusion flags are not part of the name.
+
+No index, order of enumeration, number of pieces, label, current value of a dependent
+object, coordinate, proximity, Java reference or history enters the name. A label is no
+identity: **a piece whose declaration reaches a named object without a durable identity has
+no declarative identity**, and neither has a piece whose declaration another piece of the
+list repeats. Such a piece is a place of its list, exactly as every piece was before this
+section. No new durable identity is introduced for it.
+
+### 20.3 Frame of the intersection roots
+
+The roots that `Intersect` finds on a certified component are identified under a frame. For
+a component of a piece that has a declarative identity and is one of several pieces, the
+frame is declarative: the branch, the name of the piece, and the component inside the piece.
+The only component of a piece is that piece. Several components of one piece are told apart
+as section 15.6 tells components apart, by the sources of their two ends, where an end that
+the piece itself imposes is the end of the piece whatever place the piece has; components
+that nothing structural tells apart are named by their ends.
+
+Every other component keeps the frame that it has always had: the identity key of section
+15.6 for the roots of one source, the key of its place for a side of a pair selector. That
+includes every component of a locus that declares no list, a piece without a declarative
+identity, and the whole declared domain.
+
+The declarative frame is read by the root identity of `Intersect` and by nothing else. The
+lineage keys of section 15.6, the component selectors, the points on a locus, every
+signature and the frame of a conditioned region (section 19) are unchanged. The name of a
+piece is carried by its components and by the components that a dependent locus or a
+similarity image composes from them; it is no fact of the certificate.
+
+### 20.4 Lifecycle
+
+| Event | Token of a root on a declared piece |
+|---|---|
+| The piece changes place in its list; pieces are declared before or after it | It names the same root |
+| The piece is replaced: its declaration is no longer in the list | It stays unresolved; it is given to no other root, whatever stands at its place |
+| The declaration of the piece returns | It names its root again |
+| The whole declared domain changes its ends | Unchanged meaning: the whole domain is one place |
+| The whole declared domain gains other pieces | It names the same root (20.5) |
+| A piece becomes the whole declared domain, or stops being it, with another declaration | It stays unresolved until its declaration returns |
+| A piece without a declarative identity moves, or its list is redefined | Positional meaning of a place, unchanged |
+| Rename, Undo, Redo, save and reopen, closure copy | As for every other token |
+
+A token names its root or stays unresolved. A change of place never gives it to another
+root.
+
+### 20.5 Frames kept for a piece
+
+A result keeps, for a declared piece, the frame under which it wrote the bindings of that
+piece before the piece had a declarative frame. A kept frame is a name and no more: the
+piece has it wherever the declaration places it, and it names nothing else.
+
+1. **A document written before this section.** On the first resolution after the state of
+   a result is read, the frame of a place under which a binding of that state is active is
+   kept for the piece that the declaration has at that place: the state was written with
+   that declaration. A binding that was not active is not adopted; it keeps its identity
+   and stays unresolved. Nothing is adopted when the state is read while a redefinition
+   rebuilds the construction, because that state was written with the declarations of
+   before.
+2. **The whole declared domain that gains pieces.** The frame of the whole domain is kept
+   for the piece that was the whole domain at the previous resolution. This association is
+   not persisted before it is made: across a rebuild of the construction it is not made,
+   and the tokens stay unresolved.
+3. **Uniqueness.** A frame that is kept for a piece names no other component: a whole
+   declared domain or a place whose own frame is kept for a piece has a frame of its own.
+
+No binding, token, incarnation or status changes when a frame is kept. The kept frames are
+persisted with the token ledger of the result as an optional fifth field,
+`declared-frames/v1~<count>~<key>=<frame>…`, read strictly. A ledger that keeps no frame
+has its four fields and its text of always, so that a document without declared pieces, or
+whose pieces are places, is written exactly as before.
+
+### 20.6 Declared limits
+
+- A piece governed by sliders or by other named objects without a durable identity is a
+  place. Redefining its list can change which piece stands at a place, as before.
+- The association of item 2 of 20.5 is lost across a rebuild of the construction.
+- A binding of an earlier document that was not active when the document was written is
+  never adopted.

@@ -768,9 +768,31 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		List<LocusInterval2D> components = descriptor.getValidComponents();
 		if (limitation != null || components.size() == 1
 				&& components.get(0).equals(descriptor.getDeclaredDomain())) {
+			return named(result);
+		}
+		return named(result.restrictedTo(components,
+				family.getProviderId() + "/declared-components"));
+	}
+
+	/**
+	 * The certificate with each component named by the piece of the scalar domain list
+	 * that declares it ({@code locus-v2-existence-components.md} section 20): the frame
+	 * of an intersection root follows the declared piece, never its place in the list. Any
+	 * other generator declares no piece, and nothing is named.
+	 */
+	private HybridExistenceCertifier2D.Result named(HybridExistenceCertifier2D.Result result) {
+		if (family != SemanticGeneratorFamily1D.SCALAR_STATE || domainInput == null) {
 			return result;
 		}
-		return result.restrictedTo(components, family.getProviderId() + "/declared-components");
+		try {
+			return result.withDeclaredPieces(
+					LocusV2DomainDescriptor.parse(domainInput).getValidComponents(),
+					org.geocedg.common.kernel.locus.LocusDeclaredPieceIdentity.of(domainInput,
+							cons.getSpatialIdentityRegistry()));
+		} catch (RuntimeException unnamed) {
+			// A declaration that cannot be named leaves the components unnamed.
+			return result;
+		}
 	}
 
 	/**

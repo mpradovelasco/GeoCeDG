@@ -20,6 +20,8 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.LineageTransition
 public final class LocusComponentLineage2D {
 	/** Key suffix of the closed periodic component of a branch, which has no boundary. */
 	private static final String CLOSURE = "/component/periodic-closure";
+	/** Mark of the frame of the roots on a declared piece of the driver domain. */
+	private static final String DECLARED_PIECE = "/declared-piece/";
 
 	private LocusComponentLineage2D() {
 		// Utility class.
@@ -91,6 +93,76 @@ public final class LocusComponentLineage2D {
 		return isWholeDomain(structure)
 				? create(structure.getBranchKey(), structure.getCanonicalDomain())
 				: of(structure, component);
+	}
+
+	/**
+	 * Declarative frame of the intersection roots on a component of a declared piece of
+	 * the driver domain ({@code locus-v2-existence-components.md} section 20): the branch,
+	 * what the piece declares, and the component inside the piece. The only component of a
+	 * piece is that piece. Several components of one piece are told apart as section 15.6
+	 * tells components apart, by the sources of their two ends, where an end that the piece
+	 * itself imposes is the end of the piece whatever place the piece has in the
+	 * declaration; components that nothing structural tells apart are named by their ends.
+	 * The place of the piece in its list, the number of pieces and the ends of the other
+	 * pieces never enter the text.
+	 *
+	 * @param structure certified structure of the branch
+	 * @param component one of its continuous components
+	 * @return the declarative frame, or {@code null} for a component of no declared piece
+	 */
+	public static String declaredFrame(LocusExistenceStructure2D structure,
+			ContinuousComponent component) {
+		String piece = component.getDeclaredPiece();
+		if (piece == null) {
+			return null;
+		}
+		String declaration = LocusDeclaredPieceIdentity.declaration(piece);
+		String frame = structure.getBranchKey() + DECLARED_PIECE + declaration.length() + ":"
+				+ declaration;
+		String within = withinPiece(component);
+		boolean alone = true;
+		for (ContinuousComponent other : structure.getContinuousValidComponents()) {
+			if (other != component && piece.equals(other.getDeclaredPiece())) {
+				alone = false;
+				if (within != null && within.equals(withinPiece(other))) {
+					within = null;
+				}
+			}
+		}
+		if (alone) {
+			return frame + "/piece";
+		}
+		LocusInterval2D interval = component.getInterval();
+		return frame + "/component/" + (within != null ? within
+				: Double.toHexString(interval.getLower()) + "/"
+						+ Double.toHexString(interval.getUpper()) + "/"
+						+ (interval.isLowerClosed() ? "closed" : "open") + "/"
+						+ (interval.isUpperClosed() ? "closed" : "open"));
+	}
+
+	/** @return whether the component lies in the only piece of its declaration */
+	public static boolean isSoleDeclaredPiece(ContinuousComponent component) {
+		return component.getDeclaredPiece() != null
+				&& LocusDeclaredPieceIdentity.isSole(component.getDeclaredPiece());
+	}
+
+	/** @return sources of the two ends inside a declared piece, or {@code null} */
+	private static String withinPiece(ContinuousComponent component) {
+		if (component.isClosedPeriodic()) {
+			return component.getLowerBoundary().getNature().certifies()
+					? "periodic-closure" : null;
+		}
+		LocusBoundary2D lower = component.getLowerBoundary();
+		LocusBoundary2D upper = component.getUpperBoundary();
+		if (!isStructural(lower) || !isStructural(upper)) {
+			return null;
+		}
+		return endInPiece(lower, "lower") + ";" + endInPiece(upper, "upper");
+	}
+
+	private static String endInPiece(LocusBoundary2D boundary, String side) {
+		return boundary.getKind() == LocusBoundary2D.Kind.DOMAIN_END ? "piece-end/" + side
+				: boundary.getSource().getSignature();
 	}
 
 	/**

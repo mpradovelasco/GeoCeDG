@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -40,6 +41,14 @@ public final class LocusBranch2D {
 	private final LocusQuality2D quality;
 	private final List<ContinuousComponent> searchRegions;
 	private final LocusConditionedEvidence2D searchEvidence;
+	/**
+	 * In a search view, the frame that the consumer keeps for a declared piece, by its
+	 * declarative frame ({@code locus-v2-existence-components.md} section 20). It is no
+	 * fact of the branch and enters neither its signature nor its equality.
+	 */
+	private final Map<String, String> rootFrames;
+	/** Prefix of the key of {@link #rootFrames} for a component of no declared piece. */
+	public static final String PLACE_FRAME_KEY = "place:";
 
 	/**
 	 * Creates a branch with explicit existence/continuity evidence. Since PRE-G9B-CU2 step
@@ -60,6 +69,16 @@ public final class LocusBranch2D {
 			Orientation orientation, String provenance, LocusLineage2D lineage,
 			Set<BranchProperty> properties, LocusQuality2D quality,
 			LocusConditionedEvidence2D searchEvidence) {
+		this(branchKey, declaredDriverDomain, existenceStructure, orientation, provenance,
+				lineage, properties, quality, searchEvidence, Map.of());
+	}
+
+	private LocusBranch2D(String branchKey, LocusInterval2D declaredDriverDomain,
+			LocusExistenceStructure2D existenceStructure,
+			Orientation orientation, String provenance, LocusLineage2D lineage,
+			Set<BranchProperty> properties, LocusQuality2D quality,
+			LocusConditionedEvidence2D searchEvidence, Map<String, String> rootFrames) {
+		this.rootFrames = Map.copyOf(rootFrames);
 		if (branchKey == null || branchKey.trim().isEmpty()
 				|| provenance == null || provenance.trim().isEmpty()) {
 			throw new IllegalArgumentException("Stable branch key and provenance are required");
@@ -99,10 +118,25 @@ public final class LocusBranch2D {
 				|| !branchKey.equals(evidence.getBranchKey())) {
 			return searchEvidence == null ? this : new LocusBranch2D(branchKey,
 					declaredDriverDomain, existenceStructure, orientation, provenance,
-					lineage, properties, quality, null);
+					lineage, properties, quality, null, rootFrames);
 		}
 		return new LocusBranch2D(branchKey, declaredDriverDomain, existenceStructure,
-				orientation, provenance, lineage, properties, quality, evidence);
+				orientation, provenance, lineage, properties, quality, evidence, rootFrames);
+	}
+
+	/**
+	 * The search view of this branch with the frames that a consumer keeps for the
+	 * declared pieces of its driver domain ({@code locus-v2-existence-components.md}
+	 * section 20): the frame under which that consumer wrote the bindings of a piece
+	 * before the piece had a declarative frame. The view changes no fact of the branch.
+	 *
+	 * @param frames kept frame by declarative frame; a piece without one has its own
+	 * @return the view, or this branch when nothing changes
+	 */
+	public LocusBranch2D withRootFrames(Map<String, String> frames) {
+		return rootFrames.equals(frames) ? this : new LocusBranch2D(branchKey,
+				declaredDriverDomain, existenceStructure, orientation, provenance, lineage,
+				properties, quality, searchEvidence, frames);
 	}
 
 	/**
@@ -152,8 +186,53 @@ public final class LocusBranch2D {
 	 * @return frame of the roots on the component
 	 */
 	public String searchFrame(ContinuousComponent component) {
-		return isConditionedRegion(component) ? branchFrame(branchKey)
-				: LocusComponentLineage2D.identityKey(existenceStructure, component);
+		if (isConditionedRegion(component)) {
+			return branchFrame(branchKey);
+		}
+		String declared = declaredRootFrame(component);
+		return declared != null ? declared
+				: placeFrame(LocusComponentLineage2D.identityKey(existenceStructure, component));
+	}
+
+	/**
+	 * @return the frame of a component that is a place and no declared piece: its frame of
+	 *         always, unless the view keeps that frame for a declared piece
+	 */
+	private String placeFrame(String written) {
+		return rootFrames.isEmpty() ? written
+				: rootFrames.getOrDefault(PLACE_FRAME_KEY + written, written);
+	}
+
+	/**
+	 * Lineage of a certified component as a side of a pair selector ({@code
+	 * spline-v2-pair-materialization.md} section 11): the frame of the declared piece in
+	 * which the component lies, or, for a component of no declared piece and for the whole
+	 * declared domain, the key that such a component has always had in a pair selector.
+	 *
+	 * @param component one of the certified components of this branch
+	 * @param writtenKey key of the component in the pair selectors written before
+	 * @return lineage of the component in a pair selector
+	 */
+	public String pairComponentLineage(ContinuousComponent component, String writtenKey) {
+		String declared = declaredRootFrame(component);
+		return declared != null ? declared : placeFrame(writtenKey);
+	}
+
+	/**
+	 * @return the frame of the roots on a component of a declared piece: the one that the
+	 *         view keeps for the piece, else the declarative frame of a piece among
+	 *         several; {@code null} for a component of no declared piece and for the whole
+	 *         declared domain without a kept frame, which keep the frame of always
+	 */
+	private String declaredRootFrame(ContinuousComponent component) {
+		String declared = LocusComponentLineage2D.declaredFrame(existenceStructure,
+				component);
+		if (declared == null) {
+			return null;
+		}
+		String kept = rootFrames.get(declared);
+		return kept != null ? kept
+				: LocusComponentLineage2D.isSoleDeclaredPiece(component) ? null : declared;
 	}
 
 	/** @return the branch frame of a branch key */
@@ -346,7 +425,7 @@ public final class LocusBranch2D {
 	LocusBranch2D bindExistenceToRevision(long revision) {
 		return new LocusBranch2D(branchKey, declaredDriverDomain,
 				existenceStructure.bindToRevision(revision), orientation, provenance,
-				lineage, properties, quality, searchEvidence);
+				lineage, properties, quality, searchEvidence, rootFrames);
 	}
 
 	private List<LocusInterval2D> componentIntervals() {

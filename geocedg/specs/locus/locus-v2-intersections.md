@@ -1445,3 +1445,28 @@ the passage.
 **Persistence.** A branch-frame binding is an entry of kind `B` of ledger version 7
 ([public surface](locus-v2-public-surface.md), conditioned use amendment). Evidence is
 never stored.
+
+## GeoCeDG 1.2.2: frame of the roots on a declared piece
+
+Final corrective intervention of GeoCeDG 1.2.2, step C2 (author authorization of
+2026-11-22, alternative α). Its author-approval status is recorded only in the
+author-decision record of the intervention, never here.
+
+The frame under which the public roots of `Intersect(L, target)` are identified on a
+certified component is the identity key of the component, as before, except on a component
+of a declared piece of the driver domain that has a declarative identity and is one of
+several pieces: there the frame is the declarative frame of
+[`locus-v2-existence-components.md`](locus-v2-existence-components.md) §20.3, or the frame
+that the result keeps for that piece (§20.5). The selector, its germ, the phase extension,
+the contact anchors and every rule of section 6 are unchanged and read that frame. The
+frame of a conditioned region stays the branch frame.
+
+**Persistence.** The frames that a result keeps for declared pieces are written after the
+four fields of the ledger state as a fifth field,
+`declared-frames/v1~<count>~<key>=<frame>…`, with hexadecimal key and frame, in the order of
+the keys, and are read strictly: an unknown mark, a wrong count, a repeated key or a frame
+kept for two pieces of one source is a malformed state. A state that keeps no frame is
+written with its four fields in every ledger version, so that no document without a kept
+frame changes its text. The token of a ledger entry is a function of the material, the
+lineage texts and the incarnation of the entry; the ledger computes it once per entry and
+its copies, which changes no token.

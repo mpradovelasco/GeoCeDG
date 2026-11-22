@@ -314,3 +314,45 @@ certified model; a rich-only pair is never undiagnosed. No weaker
 `DETERMINISTIC_LOCAL` policy is introduced. The
 [E0/E1 validation matrix](../../../docs/validation/pre_g9b_r2_e0_e1_validation_matrix.md)
 is the candidate traceability authority for this amendment.
+
+## 11. GeoCeDG 1.2.2 amendment: component lineage of a declared piece
+
+Final corrective intervention of GeoCeDG 1.2.2, step C2 (author authorization of
+2026-11-22, alternative α). It states what the *component lineage* of §2 is for a component
+of a declared piece of a driver domain; the scheme `pair-singleton-transverse-germ/v1`, the
+contract identifier, §3–§9 and §10 are unchanged. Its author-approval status is recorded
+only in the author-decision record of the intervention, never in this section.
+
+Until this amendment the component lineage of a side was the key of the place of the
+component among the components of its branch. For a list of declared pieces that key
+followed the place: when a redefinition of the list moved a piece to another place, the
+binding of a root on that piece named the root of whatever piece stood at the old place.
+
+The component lineage of a side is now:
+
+- for a component of a declared piece that has a declarative identity and is one of
+  several pieces, the declarative frame of
+  [`locus-v2-existence-components.md`](../locus/locus-v2-existence-components.md) §20.3,
+  or the frame that the result keeps for that piece (§20.5);
+- for every other component, the key of its place, as before. That includes the whole
+  declared domain, a piece without a declarative identity and every component of a source
+  that declares no list. The positional meaning of such a slot is the one that §5 and §6
+  approve, and it does not change.
+
+The durable lineage of a pair binding is the pair of the component lineages of its
+selector. For a component of no declared piece it is the text of always, so that no
+existing binding changes its text or its token.
+
+The declarative frame names what the list element declares: durable identities, literals
+and anonymous operations over them. It contains no index, place, count, label, current
+value of a dependent object, coordinate, box, proximity or history, and satisfies §2. A
+durable identity inside it is taken at the root of its copy provenance, so that the
+selector of an immediate closure copy has the component lineage of its original and the
+copy evidence of §7 corresponds without a further association.
+
+The lifecycle table of §6 applies with the selector so defined: a piece that changes place
+keeps its bindings, a piece that is replaced leaves them dormant and undefined, and its
+return reactivates the same point, identity and token. A frame kept for a piece is
+persisted with the ledger as the optional field of
+`locus-v2-existence-components.md` §20.5; a ledger that keeps none is written exactly as
+ledger v5.

@@ -88,6 +88,27 @@ public final class LocusDefinition2D {
 				evaluatorSignature, instrumentation);
 	}
 
+	/**
+	 * The search view of this definition with the frames that a consumer keeps for the
+	 * declared pieces of each branch ({@link LocusBranch2D#withRootFrames}).
+	 *
+	 * @param frames kept frames by branch key
+	 * @return the view, or this definition when nothing changes
+	 */
+	public LocusDefinition2D withRootFrames(
+			java.util.function.Function<String, java.util.Map<String, String>> frames) {
+		java.util.ArrayList<LocusBranch2D> viewed = new java.util.ArrayList<>();
+		boolean changed = false;
+		for (LocusBranch2D branch : branches) {
+			LocusBranch2D view = branch.withRootFrames(frames.apply(branch.getBranchKey()));
+			changed |= view != branch;
+			viewed.add(view);
+		}
+		return !changed ? this : new LocusDefinition2D(locusIdentity, semanticRevision,
+				definitionStatus, provider, viewed, evaluator, determinism,
+				evaluatorSignature, instrumentation);
+	}
+
 	public String getLocusIdentity() {
 		return locusIdentity;
 	}

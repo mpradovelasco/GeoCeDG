@@ -144,9 +144,33 @@ final class PublicSplinePairRootIdentityResolver2D {
 	private static PairSemanticSlotSelector2D selector(
 			LocusPairIntersectionContext2D context, ClassCertificate group) {
 		return PairSemanticSlotSelector2D.of(descriptor(context.getFirstDefinition(),
-				group.getFirstBranchKey(), group.getFirstComponentKey()),
+				group.getFirstBranchKey(), componentLineage(context.getFirstDefinition(),
+						context.getFirstComponents(), group.getFirstBranchKey(),
+						group.getFirstComponentKey())),
 				descriptor(context.getSecondDefinition(), group.getSecondBranchKey(),
-						group.getSecondComponentKey()), group.getGerm());
+						componentLineage(context.getSecondDefinition(),
+								context.getSecondComponents(), group.getSecondBranchKey(),
+								group.getSecondComponentKey())), group.getGerm());
+	}
+
+	/**
+	 * Component lineage of one side of the selector ({@code
+	 * spline-v2-pair-materialization.md} section 11). A component of a declared piece of
+	 * the driver domain is named by the frame of that piece, which follows what the piece
+	 * declares and never its place in the declaration. Any other component, and the whole
+	 * declared domain, keep the key that they have always had in a pair selector.
+	 */
+	private static String componentLineage(LocusDefinition2D definition,
+			List<LocusPairIntersectionContext2D.ComponentAddress> components,
+			String branchKey, String componentKey) {
+		LocusBranch2D branch = definition.getBranch(branchKey);
+		for (LocusPairIntersectionContext2D.ComponentAddress address : components) {
+			if (branch != null && address.getBranchKey().equals(branchKey)
+					&& address.getComponentKey().equals(componentKey)) {
+				return branch.pairComponentLineage(address.getComponent(), componentKey);
+			}
+		}
+		throw new IllegalArgumentException("Certified component no longer current");
 	}
 
 	private static SourceDescriptor descriptor(LocusDefinition2D definition,
@@ -206,8 +230,16 @@ final class PublicSplinePairRootIdentityResolver2D {
 				context.getSecondDefinition().getProvider().getSemanticSignature(),
 				pair.getSecond().getSemanticParameter());
 		IntersectionRootIdentity2D old = verified.getIdentity();
+		// The durable lineage of the pair is that of the components of its selector: for a
+		// component of no declared piece it is the text of always. The lineage of the
+		// identity stays the revision-scoped one that the admission compares.
+		String pairLineage = LocusPairIdentity2D.componentPair(
+				selector.getFirst().getBranchLineage(),
+				selector.getFirst().getComponentLineage(),
+				selector.getSecond().getBranchLineage(),
+				selector.getSecond().getComponentLineage());
 		IntersectionRootAllocation2D allocation = evaluation.resolveCurrentPairRoot(
-				old.getEstablishedBranchLineage(), CONTRACT, selector, proof);
+				pairLineage, CONTRACT, selector, proof);
 		IntersectionRootIdentity2D identity = new IntersectionRootIdentity2D(
 				allocation.getRootToken(), old.getSourcePairIdentity(),
 				old.getConstructiveIntersectionLineage(), old.getEstablishedBranchLineage(),

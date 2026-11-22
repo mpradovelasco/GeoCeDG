@@ -155,6 +155,12 @@ public final class LocusExistenceStructure2D {
 		private final LocusBoundary2D lowerBoundary;
 		private final LocusBoundary2D upperBoundary;
 		private final LocusEvidenceNature2D nature;
+		/**
+		 * Declarative identity of the declared piece of the driver domain in which the
+		 * component lies (section 20), or {@code null}. It is no fact of the certificate:
+		 * it enters no signature, and only the frame of the intersection roots reads it.
+		 */
+		private final String declaredPiece;
 
 		/**
 		 * Creates one revision-local continuous-valid component certificate recorded
@@ -175,6 +181,18 @@ public final class LocusExistenceStructure2D {
 				LocusInterval2D periodicDomain, double start, double end,
 				boolean fullLength, LocusBoundary2D lowerBoundary,
 				LocusBoundary2D upperBoundary, LocusEvidenceNature2D nature) {
+			this(interval, evidenceKey, boundaryEvidence, maximality, numericGuarantee,
+					periodicDomain, start, end, fullLength, lowerBoundary, upperBoundary,
+					nature, null);
+		}
+
+		private ContinuousComponent(LocusInterval2D interval, String evidenceKey,
+				String boundaryEvidence, Maximality maximality, String numericGuarantee,
+				LocusInterval2D periodicDomain, double start, double end,
+				boolean fullLength, LocusBoundary2D lowerBoundary,
+				LocusBoundary2D upperBoundary, LocusEvidenceNature2D nature,
+				String declaredPiece) {
+			this.declaredPiece = declaredPiece;
 			this.interval = Objects.requireNonNull(interval);
 			this.evidenceKey = requireText(evidenceKey, "Component evidence key");
 			this.boundaryEvidence = requireText(boundaryEvidence,
@@ -314,7 +332,29 @@ public final class LocusExistenceStructure2D {
 			}
 			return new ContinuousComponent(interval, evidenceKey, boundaryEvidence,
 					maximality, numericGuarantee, null, start, end, false, lower, upper,
-					proofNature);
+					proofNature, declaredPiece);
+		}
+
+		/**
+		 * The same component as a part of a declared piece of the driver domain ({@code
+		 * locus-v2-existence-components.md} section 20).
+		 *
+		 * @param identity declarative identity of the piece, or {@code null} for none
+		 * @return the same component with that declared piece
+		 */
+		public ContinuousComponent withDeclaredPiece(String identity) {
+			return Objects.equals(identity, declaredPiece) ? this
+					: new ContinuousComponent(interval, evidenceKey, boundaryEvidence,
+							maximality, numericGuarantee, periodicDomain, start, end,
+							fullLength, lowerBoundary, upperBoundary, nature, identity);
+		}
+
+		/**
+		 * @return declarative identity of the declared piece of the driver domain in which
+		 *         the component lies, or {@code null} when no piece is declared for it
+		 */
+		public String getDeclaredPiece() {
+			return declaredPiece;
 		}
 
 		/**
@@ -920,6 +960,41 @@ public final class LocusExistenceStructure2D {
 				certifiedFolds, completeness, certifierContract);
 	}
 
+	/**
+	 * The same evidence with each component named by the declared piece of the driver domain
+	 * that contains it ({@code locus-v2-existence-components.md} section 20). The pieces
+	 * are those of the declaration, with the declarative identity of each; a component that
+	 * no piece contains, or whose piece has no identity, is left unnamed. No fact of the
+	 * certificate and no signature changes.
+	 *
+	 * @param declared declared pieces of the driver domain
+	 * @param identities declarative identity of each piece, or {@code null} for none
+	 * @return the evidence with its components named
+	 */
+	public LocusExistenceStructure2D withDeclaredPieces(List<LocusInterval2D> declared,
+			List<String> identities) {
+		if (declared.size() != identities.size()) {
+			throw new IllegalArgumentException("One identity per declared piece");
+		}
+		List<ContinuousComponent> named = new ArrayList<>();
+		boolean changed = false;
+		for (ContinuousComponent component : components) {
+			String identity = null;
+			for (int index = 0; index < declared.size(); index++) {
+				if (insideOne(component.canonicalPieces(), List.of(declared.get(index)))) {
+					identity = identities.get(index);
+					break;
+				}
+			}
+			ContinuousComponent result = component.withDeclaredPiece(identity);
+			changed |= result != component;
+			named.add(result);
+		}
+		return !changed ? this : new LocusExistenceStructure2D(branchKey, canonicalDomain,
+				topology, semanticRevision, coverage, named, pointComponents,
+				singularParameters, certifiedFolds, completeness, certifierContract);
+	}
+
 	/** Records candidate structural events only within already unresolved coverage. */
 	public LocusExistenceStructure2D withUnresolvedCompositionEvents(
 			List<LocusUnresolvedCompositionEvent2D> events) {
@@ -1006,12 +1081,13 @@ public final class LocusExistenceStructure2D {
 			double end, LocusBoundary2D lower, LocusBoundary2D upper) {
 		String key = original.getEvidenceKey() + "/constructive-cut/"
 				+ lower.getSource().getSignature() + ";" + upper.getSource().getSignature();
-		return original.isArc()
+		return (original.isArc()
 				? ContinuousComponent.arc(canonicalDomain, start, end, start == end, lower,
 						upper, original.getMaximality(), original.getNature(), key)
 				: ContinuousComponent.interval(new LocusInterval2D(start, end,
 						lower.isBinaryEndIncluded(), upper.isBinaryEndIncluded()), lower, upper,
-						original.getMaximality(), original.getNature(), key);
+						original.getMaximality(), original.getNature(), key))
+				.withDeclaredPiece(original.getDeclaredPiece());
 	}
 
 	/**
@@ -1055,7 +1131,7 @@ public final class LocusExistenceStructure2D {
 					component.maximality, component.numericGuarantee,
 					component.periodicDomain, component.start, component.end,
 					component.fullLength, component.lowerBoundary, component.upperBoundary,
-					component.nature));
+					component.nature, component.declaredPiece));
 		}
 		return new LocusExistenceStructure2D(branchKey, support.canonicalDomain,
 				support.topology, 0, coverage, components, Collections.emptyList(),

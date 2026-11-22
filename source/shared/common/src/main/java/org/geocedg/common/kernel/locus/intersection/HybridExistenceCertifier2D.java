@@ -652,6 +652,24 @@ public final class HybridExistenceCertifier2D {
 					policySignature, diagnostic, closedWidth);
 		}
 
+		/**
+		 * The same certificate with each component named by the declared piece of the
+		 * driver domain that contains it ({@link LocusExistenceStructure2D
+		 * #withDeclaredPieces}); no fact of the certificate changes.
+		 *
+		 * @param declared declared pieces of the driver domain
+		 * @param identities declarative identity of each piece, or {@code null} for none
+		 * @return the certificate with its components named
+		 */
+		public Result withDeclaredPieces(List<LocusInterval2D> declared,
+				List<String> identities) {
+			LocusExistenceStructure2D named = structure.withDeclaredPieces(declared,
+					identities);
+			return named == structure ? this : new Result(named, exploration, roots,
+					exactEvidence, stationaryPoints, boxes, transitions, bands,
+					policySignature, diagnostic, closedWidth);
+		}
+
 		/** @return the same geometric evidence with the declared traversal partition */
 		public Result withConstructiveCuts(List<LocusTraversalCut2D> cuts) {
 			if (cuts.isEmpty()) {
