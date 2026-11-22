@@ -389,9 +389,131 @@ la pintura en pantalla es asíncrona y no se incluye. Una sola ejecución de cad
   que su coste no cambia. Pero la función que I4 entrega, intersecar un lugar condicionado,
   no es interactiva hoy sobre un lugar de este coste por evaluación.
 
+> **Corrección (intervención correctiva final, §11).** La atribución del tercer punto era
+> errónea. La serie «con esa longitud y una `Intersect`» se midió después de crear también
+> `cuT = LocusLength(w_2)`, la longitud total del lugar, y es ese consumidor el que añade
+> los ≈ 6,5–7 s. Medida por separado, la intersección añade en torno a 0,9 s. Las cifras
+> de la tabla son correctas; lo que estaba mal era a qué consumidor se atribuían.
+
 Reducirlo pide que los consumidores de un mismo lugar y revisión no repitan sus
 evaluaciones (certificado, recorrido, intersección y métrica piden muchas veces los mismos
 parámetros) o que la búsqueda de raíces parta de los nodos de la evidencia condicionada en
 vez de volver a muestrear. Ninguna de las dos cosas está autorizada ni diseñada: la decisión
 DN-3 cubre el memo por instancia de evaluador, que no alcanza a los consumidores del lugar
 vivo. Queda como hallazgo para el autor.
+
+## 11. Intervención correctiva final: coste de cada consumidor de un lugar condicionado
+
+[Autorización](../validation/post_r1_1_2_2_final_intervention_author_authorization_record.md)
+de 2026-11-22. **REGISTRO TÉCNICO — PENDIENTE DE REVISIÓN AUTORAL.**
+
+### 11.1 Qué se midió y cómo
+
+Escenario `intersect` del arnés (`run-harness.ps1 -Scenario intersect`, con `-Configuration`
+para una sola configuración). Cada configuración es una copia fresca del original con los
+consumidores de `w_2` que se nombran. Tras cuatro cambios de calentamiento, doce cambios
+reales de `excCyl` (+0,05 y vuelta), cada uno medido en tres partes: grafo de dependencias
+(que contiene a los consumidores), evidencia condicionada de todos los lugares y pintura
+fuera de pantalla. Se informa de la mediana y del percentil 95, de las evaluaciones del
+evaluador de `w_2` por cambio, de un árbol de llamadas muestreado por Flight Recorder y de
+un resumen de todo lo publicado. Sin ventana, Java 17 del proyecto, una máquina y una
+sesión: telemetría, no umbral.
+
+### 11.2 Corrección de la atribución de §10
+
+| Configuración | Total por cambio, mediana / p95 (ms) | Evaluaciones de `w_2` por cambio |
+|---|---|---|
+| Sin consumidores | 1 141 / 3 433 | 16 |
+| `LocusLength(w_2, P, Q)` y una fórmula | 1 505 / 1 600 | 337 |
+| **`LocusLength(w_2)`, longitud total** | **8 037 / 8 251** | **5 722** |
+| `Intersect(w_2, segmento)` | 2 011 / 2 068 | 792 |
+| La intersección y un punto sobre su raíz | 2 064 / 2 396 | 792 |
+| Todos juntos | 10 479 / 10 714 | 6 819 |
+
+Candidato de partida `a4b03d049`, en reposo. El p95 de la primera fila es su máximo: la
+serie tiene un cambio lento al principio.
+
+- **La intersección añade ≈ 0,87 s por cambio real**, no 6,5 s.
+- **La longitud total añade ≈ 6,9 s** y su número es indefinido: es un subtotal sobre las
+  regiones, que `locus-v2-metrics.md` publica en el resultado rico y no admite como número.
+- En §10, la serie «con esa longitud y una `Intersect`» contenía también la longitud
+  total. Mi atribución a la intersección fue una estimación no comprobada.
+
+### 11.3 Dónde está el coste de `Intersect`
+
+Muestras del hilo de eventos bajo `AlgoLocusIntersectionV2.compute`, serie de la
+intersección sola:
+
+| Parte | Proporción |
+|---|---|
+| Aislamiento de raíces (`ExtendedTargetIntersectionCapability2D.isolateComponent`) | 73 % |
+| — malla de muestreo de cada región | 43 % |
+| — refinamiento de los mínimos de la distancia (`refineAbsoluteMinimum`) | 26 % |
+| — refinamiento de los cambios de signo | 4 % |
+| Evidencia condicionada de `w_2`, que sin el consumidor se cuenta en la parte «evidencia» | 18 % |
+| Publicación con el libro de tokens | 3 % |
+| Resolución de identidad, análisis de contacto | 4 % |
+
+Son 776 evaluaciones de `w_2` más por cambio: dos regiones con una malla de 256
+subdivisiones cada una (514) y unas 260 de refinamiento. Cada evaluación de `w_2` cuesta
+alrededor de 1,2 ms porque su slice contiene una intersección pública sobre un lugar
+anidado, que muestrea a su vez unas 405 veces. El coste es, por tanto, **número de
+evaluaciones fijado por la política de aislamiento × coste de evaluar este lugar**. No hay
+cálculos repetidos dentro de la revisión que reutilizar: la malla de la intersección es
+uniforme en cada región y los nodos del recorrido condicionado son diádicos en el dominio,
+de modo que no coinciden.
+
+### 11.4 Dónde está el coste de la longitud total
+
+El 95 % está en construir el estado de la estimación condicionada de cada región
+(`LocusMetricEngine2D.conditionedTotal`): 5 722 evaluaciones por cambio, unas 2 850 por
+región, frente a 321 de la longitud entre dos puntos sobre el 40 % de una región. La
+estimación de la región entera refina hasta su presupuesto junto a los extremos, donde el
+lugar deja de existir.
+
+### 11.5 Qué se ha hecho
+
+El token de una entrada del libro de tokens es función de su material, sus textos de linaje
+y su encarnación. Se recalculaba, con un SHA-256 y varias cadenas, por cada entrada en cada
+confirmación y en cada búsqueda. En un lugar cuyo slice contiene una intersección pública
+eso ocurre en cada evaluación anidada (5 % de las muestras propias en `sha256Hex`, 3 % en
+`bytesToHex`). Ahora se calcula una vez por entrada y lo llevan sus copias, que no cambian
+ninguno de esos datos.
+
+| Configuración | Antes, mediana / p95 (ms) | Después, mediana / p95 (ms) | Mediana |
+|---|---|---|---|
+| Sin consumidores | 1 141 / 3 433 | 1 117 / 3 374 | −2 % |
+| Longitud entre dos puntos | 1 505 / 1 600 | 1 432 / 1 525 | −5 % |
+| Longitud total | 8 037 / 8 251 | 7 622 / 7 830 | −5 % |
+| `Intersect(w_2, segmento)` | 2 011 / 2 068 | 1 863 / 1 962 | −7 % |
+| Intersección y punto | 2 064 / 2 396 | 1 886 / 2 010 | −9 % |
+| Todos juntos | 10 479 / 10 714 | 9 327 / 9 448 | −11 % |
+
+El sobrecoste de la intersección pasa de ≈ 0,87 s a ≈ 0,75 s por cambio real (−14 %).
+Las evaluaciones por cambio son las mismas en todas las filas. Los resúmenes de lo
+publicado son idénticos antes y después en las tres primeras configuraciones; los de las
+que contienen la intersección se compararon aparte, sin el token, que nombra el objeto
+resultado de cada ejecución: son también idénticos en la serie regular, a través del
+mordisco del cono y en la pérdida con recuperación, y cada serie tiene un único token
+para su raíz.
+
+### 11.6 Qué no se ha hecho, y por qué
+
+Bajar más el coste de `Intersect` exige reducir el número de evaluaciones, y cada vía
+cambia lo que la búsqueda de raíces hace, no solo cuánto tarda:
+
+| Vía | Ahorro estimado | Qué cambia |
+|---|---|---|
+| Partir de los nodos de la evidencia condicionada en lugar de la malla uniforme | hasta 514 de 776 evaluaciones | La malla de descubrimiento: otras muestras, otras raíces posibles en casos adversos |
+| No buscar el mínimo de la distancia donde ya hay un cambio de signo | ≈ 90 por raíz transversal | Un contacto tangente en la misma ventana que un cruce dejaría de buscarse |
+| Sección áurea en lugar de búsqueda ternaria | ≈ la mitad del refinamiento | Los últimos bits de cada raíz refinada |
+| Longitud total: no estimar un subtotal que no es número | ≈ 6,5 s | `locus-v2-metrics.md` publica ese subtotal en el resultado rico |
+
+Las tres primeras relajan o alteran el aislamiento, que la autorización prohíbe tocar; la
+cuarta modifica un contrato de resultado y queda fuera del alcance. Ninguna se ha
+implementado. C6 tampoco.
+
+### 11.7 Límites
+
+Una máquina, una sesión, doce cambios por serie. La aplicación empaquetada usa Java 25 y
+una ventana real; sus tiempos se midieron aparte en el humo del ejecutable.

@@ -84,3 +84,13 @@ del ADR 0028 y no es objeto de este encargo.
 - C3, C4, C5 y C6 no dependen de C2 y continúan.
 - C7, el candidato sucesor, necesita la decisión del autor sobre C2 para poder afirmar que
   no contiene el defecto de identidad del escenario B.
+
+## 6. Resolución
+
+El autor eligió la alternativa α en su instrucción de 2026-11-22
+([registro](post_r1_1_2_2_final_intervention_author_authorization_record.md)), en el alcance
+mínimo necesario. Está implementada en el commit `ee2baa2b5`: el escenario B ya no se
+produce, y el escenario A conserva la semántica de ranura de D2. Una pieza gobernada por
+objetos sin identidad duradera sigue siendo una ranura posicional. Detalle y límites en el
+[informe final](post_r1_1_2_2_final_intervention_report.md). La rama
+`wip/post-3b-c2-structural-pair-lineage` no se ha promovido.

@@ -4588,3 +4588,26 @@ Referencias:
 [registro de la autorización](../validation/post_r1_1_2_2_corrections_author_authorization_record.md),
 [informe de revisión](../validation/post_r1_1_2_2_candidate_review_report.md) y
 [registro de progreso](../validation/post_r1_locus_repairs_progress.md).
+
+## 2026-11-22 — Autorización autoral de la intervención correctiva final de GeoCeDG 1.2.2
+
+Registro aditivo por decisión autoral de 2026-11-22 («GeoCeDG 1.2.2 — Autorización de
+intervención correctiva final y preparación del cierre»). No altera fechas, aprobaciones ni
+resultados anteriores.
+
+- El autor autoriza una última intervención correctiva acotada: resolver el paso C2 con la
+  alternativa α (identidad declarativa de las piezas declaradas), en el alcance mínimo
+  necesario, y diagnosticar y mejorar el coste de `Intersect` sobre loci condicionados.
+- El rendimiento D-V6 alcanzado con el paso C5 se acepta como referencia provisional; no se
+  autoriza implementar C6 solo por el objetivo histórico de un segundo.
+- Al completarla se prepara un único candidato final de GeoCeDG 1.2.2, con su informe.
+- No abre ninguna fase ni subfase nueva de la hoja de ruta: es trabajo de mantenimiento de
+  la línea 1.2.x posterior a R1.
+- No autoriza la promoción a `main`, la etiqueta `v1.2.2`, una release, la ejecución de
+  `FINAL` ni la declaración `PASS — AUTHOR APPROVED`. Ningún paso queda aprobado como
+  producto: un resultado automatizado aceptado no es aprobación autoral.
+
+Referencias:
+[registro de la autorización](../validation/post_r1_1_2_2_final_intervention_author_authorization_record.md),
+[informe final](../validation/post_r1_1_2_2_final_intervention_report.md) y
+[registro de progreso](../validation/post_r1_locus_repairs_progress.md).

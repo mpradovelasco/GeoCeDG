@@ -487,6 +487,54 @@ el objetivo de D-V6.
    de parámetro), pero el dibujo ya no señala esa banda. Fijado en una prueba; sin cambio de
    producto.
 
+## Checkpoint 11 — intervención correctiva final y candidato final
+
+Ejecución de la intervención autorizada el 2026-11-22
+([registro](post_r1_1_2_2_final_intervention_author_authorization_record.md)). Nada está
+aprobado como producto: un resultado automatizado aceptado no es aprobación autoral.
+Informe: [informe final](post_r1_1_2_2_final_intervention_report.md).
+
+| Paso | Commit | Qué entrega |
+|---|---|---|
+| Autorización | `9f0d10031` | registro de la instrucción del autor |
+| **C2** | `ee2baa2b5` | las raíces de `Intersect` sobre una pieza declarada se identifican por lo que la pieza declara (`locus-v2-existence-components.md` §20, `spline-v2-pair-materialization.md` §11): alternativa α en su alcance mínimo. Una pieza gobernada por objetos sin identidad duradera sigue siendo una ranura posicional |
+| Rendimiento | `c64d3d8bc`, `d96214af2` | el token de una entrada del libro se calcula una vez; escenario `intersect` del arnés, por consumidor |
+| Inventario | `bb341874b` | `PostR1DeclaredPieceIdentityTest` y `PostR1DeclaredPieceDesktopTest` en las selecciones `POST-R1-LOCUS` |
+
+### Candidato final `bb341874b5ada13aebce89c3aec4f7f998b26e16`
+
+Árbol `c6649825f28c4eabce97427b7f2477bde15e517e`. Versión 1.2.2, fecha `2026-11-22`.
+
+| Verificación | Resultado |
+|---|---|
+| `STATIC` | `verification-25453226beec415188f867c42786955f`, `ACCEPTED / COMPLETE`, código 0 |
+| `PHASE -Phase POST-R1-LOCUS` | `verification-131dd169fee94307b094fa9a27ec1d6b`, `ACCEPTED / COMPLETE`, código 0 |
+| `INTEGRATION` | `verification-334f2df480254c4694087264e38c0561`, `ACCEPTED / COMPLETE`, código 0 |
+| `PACKAGING` | `verification-e775785b7a0f484f9f28307a1bafaf2e`, `ACCEPTED / COMPLETE`, código 0. Un primer intento desde una unidad sustituida, `verification-d15c71464b164d94a40d5a1937a814f5`, fue rechazado por el núcleo del verificador y se repitió desde la ruta real |
+| Regresión compartida completa | 2 530 pruebas, 0 fallos, sobre el árbol inmediatamente anterior al commit, que difiere del candidato solo en comentarios |
+| Regresión Desktop completa | 1 570 pruebas, 1 fallo, sobre `d96214af2` (el candidato añade solo el inventario): `PreG9BCu2AuthorModelConsumerTest.theCertificateIsTheSingleClosureAuthority`, el fallo histórico de la base `9ccefdcf`, que sigue visible. Ninguna regresión nueva |
+| Paquetes | `artifacts/packaging/windows-1.2.2-nc-candidate-3` (ignorada), `source_revision` = `bb341874b`: ZIP `7b0f5075db016a3418a319825404add4dc49d751cb32febfef50ca6d2ba58338`, MSI `851b2f239c2cdce015ebeaf6dca2fe84e03a977791ac247842ee59d41495260d`, EXE `71ba0bae517b6023ce70b87562ec2221b1d758d82a9633a13c98e1d38ff45dce` |
+| Humo del ejecutable empaquetado | dos arranques del `GeoCeDG.exe` empaquetado con el modelo del autor: apertura, cambios de parámetros, `LocusLength(w_2, P, Q)` definido, intersección con punto dependiente, pérdida y recuperación en `excCyl = 4,2`, guardado, y segundo arranque con el token, la longitud y el punto idénticos bit a bit; app-image sin cambios |
+
+`FINAL` no se ejecutó. Nada publicado: `main` y `origin/main` siguen en `9ccefdcf`, sin
+etiqueta `v1.2.2`. Los instaladores no se instalaron.
+
+### Hallazgos de esta ejecución, para el autor
+
+- **La atribución del checkpoint 10 era errónea.** Los ≈ 6,5 s por cambio real no son de
+  `Intersect(w_2, segmento)` sino de `LocusLength(w_2)`, la longitud total, que estaba en
+  la misma serie. La intersección añade ≈ 0,87 s, y ≈ 0,75 s con el cambio de esta
+  intervención ([rendimiento, §11](../architecture/post_r1_locus_real_change_performance.md)).
+- **La longitud total de un lugar condicionado cuesta ≈ 6,5–7 s por cambio real** en este
+  modelo y su número es indefinido. No está en el alcance de la intervención y no se ha
+  tocado.
+- **Una redefinición de una lista literal no reconstruye la construcción**, y deja en el
+  libro la firma de proveedor con la revisión de definición anterior de la lista hasta la
+  siguiente lectura del documento. Es evidencia de revisión, no identidad; anterior a esta
+  intervención.
+- El trabajo de `wip/post-3b-c2-structural-pair-lineage` no se ha promovido; la rama queda
+  como estaba.
+
 ## Verificación del candidato
 
 ### Candidato de las precisiones focales y del trabajo preparatorio de I0
@@ -646,17 +694,15 @@ la base. Ninguna etiqueta creada ni movida; versión de producto sin cambiar (1.
 
 ## Pendiente, siguiente acción y reanudación
 
-- **Pendiente del autor:** la decisión sobre C2 (alternativas α a δ de su registro); si el
-  objetivo de 1 s de D-V6 se persigue en 1.2.2 y con qué palancas; qué hacer con el coste
-  de la intersección sobre un lugar condicionado; la revisión del candidato sucesor y de
-  los pasos C0 a C7 y de I0 a I4T como producto (ninguno está aprobado); la instalación del
-  MSI y del EXE; autorización de publicación si procede.
-- **No hecho:** C2; la segunda optimización; instalación de los instaladores; `FINAL`;
-  publicación en `main`, etiqueta `v1.2.2` y release: ninguno autorizado.
-- **Reanudación exacta:** el candidato sucesor parcial es `a4b03d049`. Con la decisión del
-  autor sobre C2: aplicar la alternativa elegida (la rama `wip/post-3b-c2-structural-pair-lineage`
-  contiene la γ), cerrar el paso como los demás y construir el candidato definitivo, con
-  su regresión completa, sus paquetes, `PACKAGING` y el arranque del ejecutable.
+- **Pendiente del autor:** la revisión del candidato final `bb341874b` y de todos los
+  pasos como producto (ninguno está aprobado); si la longitud total de un lugar
+  condicionado y el coste de `Intersect` se aceptan como limitaciones de 1.2.2; la
+  instalación del MSI y del EXE en un entorno aislado; `FINAL` y la publicación.
+- **No hecho:** instalación de los instaladores; `FINAL`; publicación en `main`, etiqueta
+  `v1.2.2` y release: ninguno autorizado. C6 no se implementó.
+- **Reanudación exacta:** el candidato final es `bb341874b`, con sus paquetes en
+  `artifacts/packaging/windows-1.2.2-nc-candidate-3`. No queda trabajo técnico abierto de
+  la intervención; lo siguiente es la decisión del autor.
 - **Conservado:** el original del modelo, la evidencia R1 y las salidas de benchmark en
   `artifacts/benchmarks/post-r1-locus/` (ignoradas por Git). Dos worktrees separados, de la
   base y de `ab37fb5ff`, usados solo para medir el «antes», quedan en el scratchpad de la
