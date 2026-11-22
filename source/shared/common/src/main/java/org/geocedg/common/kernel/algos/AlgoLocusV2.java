@@ -151,6 +151,16 @@ public abstract class AlgoLocusV2 extends AlgoElement
 	}
 
 	/**
+	 * @return the policy with which this producer traverses its conditioned evidence; a
+	 *         similarity image publishes under the policy of its source
+	 */
+	public org.geocedg.common.kernel.locus.conditioned.LocusConditionedTraversalPolicy2D
+			getConditionedTraversalPolicy() {
+		return org.geocedg.common.kernel.locus.conditioned.LocusConditionedTraversalPolicy2D
+				.v1();
+	}
+
+	/**
 	 * @param branchKey branch of the published definition
 	 * @return the conditioned evidence that this producer has already published for the
 	 *         current revision, or {@code null}; it is never computed by this call

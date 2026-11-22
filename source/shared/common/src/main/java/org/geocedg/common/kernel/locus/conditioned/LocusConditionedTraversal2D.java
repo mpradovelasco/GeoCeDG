@@ -153,6 +153,141 @@ public final class LocusConditionedTraversal2D {
 	}
 
 	/**
+	 * Inherits the evidence of a source under a similarity (candidate contract section 8.7,
+	 * "Resolution under a similarity"). A band or an unexplored cell is inherited with its
+	 * kind. A span is inherited with its ends, its class and the image of its nodes when the
+	 * ratio is not above 1, or when its lengths at its nodes, multiplied by the ratio, meet
+	 * the policy in the world of the image; otherwise, and whenever it contains a parameter
+	 * of the contradiction set of the image, it is classified anew by the ordinary rule on
+	 * the image function, with new nodes charged to the work limit of the image.
+	 *
+	 * @param source published evidence of the immediate source
+	 * @param revision revision of the definition of the image
+	 * @param ratio absolute ratio of the similarity
+	 * @param policy policy of the source, with its limits in the world of the image
+	 * @param contradictions contradiction set of the image
+	 * @param imageSampler semantic evaluator of the image
+	 * @param nodes nodes that the image evaluated; a cache
+	 * @param imageOfNodes image of the node points of a span
+	 * @return the cells of the image
+	 */
+	static LocusConditionedEvidence2D inherit(LocusConditionedEvidence2D source,
+			long revision, double ratio, LocusConditionedTraversalPolicy2D policy,
+			Collection<Double> contradictions, LocusConditionedSampler2D imageSampler,
+			Nodes nodes, java.util.function.UnaryOperator<double[]> imageOfNodes) {
+		if (!policy.getVersion().equals(source.getPolicyVersion())) {
+			throw new IllegalArgumentException(
+					"An image inherits under the policy version of its source");
+		}
+		if (!(ratio >= 0) || !Double.isFinite(ratio)) {
+			throw new IllegalArgumentException("A similarity has a finite ratio");
+		}
+		return new LocusConditionedTraversal2D(source.getBranchKey(), revision,
+				source.getDomainLower(), source.getDomainUpper(), policy, contradictions,
+				imageSampler, nodes, List.of()).runInherited(source, ratio, imageOfNodes);
+	}
+
+	private LocusConditionedEvidence2D runInherited(LocusConditionedEvidence2D source,
+			double ratio, java.util.function.UnaryOperator<double[]> imageOfNodes) {
+		ArrayDeque<long[]> queue = new ArrayDeque<>();
+		List<LocusConditionedCell2D> leaves = new ArrayList<>();
+		for (LocusConditionedCell2D cell : source.getCells()) {
+			if (!cell.getKind().isSpan()) {
+				// Whatever the ratio: a jump that falls below the limit at the scale of the
+				// image is not evidence of continuity.
+				leaves.add(new LocusConditionedCell2D(cell.getLowerIndex(),
+						cell.getUpperIndex(), cell.getLower(), cell.getUpper(), cell.getKind(),
+						null, cell.getChordDeviation(), cell.getCause()));
+				continue;
+			}
+			double[] points = cell.getNodePoints();
+			boolean kept = points != null
+					&& contradictionsIn(cell.getLower(), cell.getUpper()).isEmpty()
+					&& (ratio <= 1 || meetsPolicy(points, ratio));
+			if (kept) {
+				leaves.add(new LocusConditionedCell2D(cell.getLowerIndex(),
+						cell.getUpperIndex(), cell.getLower(), cell.getUpper(),
+						LocusConditionedCellKind2D.SPAN, cell.getSpanClass(),
+						ratio * cell.getChordDeviation(), "", imageOfNodes.apply(points)));
+			} else {
+				queue.add(new long[] { cell.getLowerIndex(), cell.getUpperIndex() });
+			}
+		}
+		boolean exhausted = false;
+		while (!queue.isEmpty()) {
+			long[] cell = queue.poll();
+			if (!exhausted) {
+				try {
+					classify(cell[0], cell[1], queue, leaves);
+					continue;
+				} catch (WorkExhausted limit) {
+					exhausted = true;
+				}
+			}
+			leaves.add(leaf(cell[0], cell[1], LocusConditionedCellKind2D.UNEXPLORED, null,
+					Double.NaN, "work limit"));
+		}
+		leaves.sort(Comparator.comparingLong(LocusConditionedCell2D::getLowerIndex));
+		List<Double> set = new ArrayList<>();
+		for (double each : contradictions) {
+			set.add(each);
+		}
+		boolean seam = source.seamNodesAgree();
+		if (seam && ratio > 1) {
+			// The gap between the seam nodes is a length: it is read in the world of the
+			// image.
+			try {
+				LocusConditionedSample2D first = gridNode(0L);
+				LocusConditionedSample2D last = gridNode(gridSize);
+				seam = first.isValid() && last.isValid() && Math.hypot(
+						last.getX() - first.getX(), last.getY() - first.getY())
+						<= policy.getMaximumChordDeviation();
+			} catch (WorkExhausted limit) {
+				seam = false;
+			}
+		}
+		return new LocusConditionedEvidence2D(branchKey, revision, policy.getVersion(),
+				domainLower, domainUpper, set, leaves, charged.size(), seam);
+	}
+
+	/**
+	 * @return whether a span with these node points meets the length criteria of the policy
+	 *         when every length is multiplied by the ratio; the turning is invariant
+	 */
+	private boolean meetsPolicy(double[] points, double ratio) {
+		double deviation = ratio * distanceToSegment(points[2], points[3], points[0],
+				points[1], points[4], points[5], false);
+		if (!(deviation <= policy.getMaximumChordDeviation())) {
+			return false;
+		}
+		double chord = ratio * Math.hypot(points[4] - points[0], points[5] - points[1]);
+		double ux = points[2] - points[0];
+		double uy = points[3] - points[1];
+		double vx = points[4] - points[2];
+		double vy = points[5] - points[3];
+		double turning = (ux == 0 && uy == 0) || (vx == 0 && vy == 0) ? 0
+				: Math.abs(Math.atan2(ux * vy - uy * vx, ux * vx + uy * vy));
+		return !(chord > policy.getMaximumChordDeviation()
+				&& turning > policy.getMaximumTurning());
+	}
+
+	/**
+	 * Decides whether a valid evaluation contradicts the resolution of a span in the world
+	 * of the cell: its distance to the polyline of the nodes exceeds the limit of the
+	 * policy. It reads the node points that the cell records, and decides nothing else.
+	 */
+	static boolean exceedsResolution(LocusConditionedCell2D cell, double x, double y,
+			LocusConditionedTraversalPolicy2D policy) {
+		double[] points = cell.getKind().isSpan() ? cell.getNodePoints() : null;
+		if (points == null) {
+			return false;
+		}
+		return Math.min(distanceToSegment(x, y, points[0], points[1], points[2], points[3],
+				true), distanceToSegment(x, y, points[2], points[3], points[4], points[5],
+						true)) > policy.getMaximumChordDeviation();
+	}
+
+	/**
 	 * @param parameter parameter to normalize
 	 * @param domainLower lower end of the declared driver domain
 	 * @param domainUpper upper end of the declared driver domain

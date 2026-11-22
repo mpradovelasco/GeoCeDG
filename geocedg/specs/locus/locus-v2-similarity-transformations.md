@@ -1,6 +1,6 @@
 # Locus V2 2D similarity transformations
 
-- Status: **NORMATIVE — DESIGN PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE (LAST SECTION) — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)**
+- Status: **NORMATIVE — DESIGN PASS — AUTHOR APPROVED; PRE-G9B-CU2 SCOPE NOTE — ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24); CONDITIONED USE AMENDMENT (LAST SECTION, ADR 0042) — AUTHOR APPROVED AS CONTRACT (2026-11-22), IMPLEMENTATION AUTHORIZED IN INCREMENT I4T, NOT YET APPROVED AS PRODUCT**
 - Phase: **G9U0-R5**
 - Implementation: **PASS — AUTHOR APPROVED**
 - Semantic base: accepted
@@ -357,3 +357,62 @@ source (`locus-v2-existence-components.md` §15): coverage, maximality, complete
 transported lineage, the closure authority, arcs with their one-sided ends, and point
 components with their parameter enclosure, whose position enclosure is transformed. The image
 never recomputes or widens the topology of its source.
+
+## Conditioned use amendment (ADR 0042): inherited conditioned evidence
+
+Amendment approved by the author on 2026-11-22 with
+[ADR 0042](../../../docs/adr/0042-locus-v2-conditioned-use-under-declared-hypotheses.md)
+and the [conditioned-use contract](candidates/post-r1-conditioned-use.md), §8.7 and §12.
+Increment I4T. Sections 1 to 15 and the scope note are unchanged: the image is the source
+evaluator composed with the similarity, it keeps the canonical parameter, the declared
+domain, the branches and the orientation of its source, and it is never computed from a
+tessellation.
+
+**Inheritance.** The image inherits the conditioned evidence of its immediate source
+([existence components](locus-v2-existence-components.md) §19) cell by cell, as it inherits
+the existence structure, and states it against the policy of its source with the limits in
+its own world. Let `ρ` be the absolute ratio: 1 for a translation, a rotation and a
+reflection, `abs(k)` for a dilation.
+
+- A band or an unexplored cell of the source is a cell of the image with the same kind,
+  whatever the ratio: a jump that falls below the limit at the scale of the image is not
+  evidence of continuity.
+- `ρ ≤ 1`, ratio zero included: every span is inherited with its ends, its class and the
+  images of its nodes; its chord deviation is multiplied by `ρ`. Nothing is evaluated,
+  merged or coarsened.
+- `ρ > 1`: every span is checked again with its lengths at its nodes multiplied by `ρ`. A
+  span that passes is inherited. A span that fails is classified anew by the ordinary rule
+  on the image function inside that cell: it is subdivided until the checks pass, or to
+  the minimum step, where it is a `DISCONTINUITY_BAND`. The new nodes are evaluated through
+  the source evaluator and charged to the work limit of the image; a cell that the work
+  does not reach is `UNEXPLORED`, never a span. The image never publishes a span whose
+  chord deviation at its nodes exceeds the limit in its own world.
+- The image of an image applies the rule to its immediate source, and never coarsens.
+
+**Identity and lifecycle.** The content identity of the evidence of the image is `(traced
+function of the image, policy version, content identity of the source evidence, contradiction
+set of the image)`. The traced function is identified by the state of the similarity, so
+equal states give equal contents whatever the order in which the ratio took its values;
+publication counters are free. A new revision of the image discards its contradiction set.
+A contradiction of H1, H2 or H3 is a contradiction of the source cell: a report on the
+image is given first to the producer of the source, and so is an evaluation that is not
+valid, or does not keep its selection, at a node that the image added inside a span of the
+source. When that producer confirms it, the source publishes another content, its
+dependents follow, and the image inherits it. A contradiction of a length criterion in the
+world of the image belongs to the contradiction set of the image.
+
+**Consumers.** Every consumer of the image reads the cells of the image: points addressed
+by parameter, following, lengths, intersections and drawing behave on the image as the
+conditioned use amendments of their contracts say for any locus. The regions of the image
+are contained in those of its source: the image admits nothing that the source refuses,
+and may refuse what the source admits where a cell was classified anew. The `abs(k)`
+covariance of lengths of §7 is unchanged; it relates lengths and does not require the
+estimates of the image and of the source to come from the same cells. A transformed query
+creates its own selectors and tokens (§8); none is copied from the source query.
+
+**Ratio zero.** §5.4, §6, §7 and §8 govern on a conditioned source as on a certified one.
+The image of a source whose existence is not established has the property
+`COLLAPSED_IMAGE` although it has no certified component. Its cells are those of the
+source; an existing point keeps its address, evaluates at the centre and recovers its
+position when the ratio is nonzero again; the lengths are the zero values of the metric
+contract; and a target through the collapsed point is the existing non-isolated case.

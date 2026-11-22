@@ -704,6 +704,7 @@ the part of a domain that no certificate covers. Each increment adds its consume
 |---|---|---|
 | Isolated point, `Point(L, "branch", u)` and `Point(L, u)` | point validity at `u` and established selections; no interval evidence. Address by parameter ([public surface](locus-v2-public-surface.md), conditioned use amendment) | I1 |
 | Following, drag and creation by a request | spans of any class along the route, inside one conditioned region ([point interaction](locus-v2-point-interaction.md), conditioned use amendment) | I1 |
+| Similarity image of a locus | inherits the cells of its source and states them in its own world ([similarity transformations](locus-v2-similarity-transformations.md), conditioned use amendment) | I4T |
 | Roots of `Intersect(L, target)` and `Intersect(L1, L2)` | isolating interval inside one region, residual, local isolation and transverse bracket; the token of a branch-frame selector only under its reuse guard ([intersections](locus-v2-intersections.md) and [extended intersections](locus-v2-extended-intersections.md), conditioned use amendments) | I4 |
 
 A local result that meets its own premises is usable although completeness is

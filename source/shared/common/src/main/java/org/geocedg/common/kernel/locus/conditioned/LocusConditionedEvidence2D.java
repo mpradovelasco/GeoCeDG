@@ -39,6 +39,7 @@ public final class LocusConditionedEvidence2D {
 	private final int work;
 	private final boolean seamNodesAgree;
 	private final List<String> inheritedSources;
+	private final String functionIdentity;
 	private final String contentIdentity;
 
 	LocusConditionedEvidence2D(String branchKey, long revision, String policyVersion,
@@ -52,6 +53,15 @@ public final class LocusConditionedEvidence2D {
 			double domainLower, double domainUpper, List<Double> contradictions,
 			List<LocusConditionedCell2D> cells, int work, boolean seamNodesAgree,
 			List<String> inheritedSources) {
+		this(branchKey, revision, policyVersion, domainLower, domainUpper, contradictions,
+				cells, work, seamNodesAgree, inheritedSources, null);
+	}
+
+	private LocusConditionedEvidence2D(String branchKey, long revision, String policyVersion,
+			double domainLower, double domainUpper, List<Double> contradictions,
+			List<LocusConditionedCell2D> cells, int work, boolean seamNodesAgree,
+			List<String> inheritedSources, String functionIdentity) {
+		this.functionIdentity = functionIdentity;
 		this.inheritedSources = Collections.unmodifiableList(
 				new ArrayList<>(inheritedSources));
 		this.branchKey = branchKey;
@@ -63,8 +73,12 @@ public final class LocusConditionedEvidence2D {
 		this.cells = Collections.unmodifiableList(new ArrayList<>(cells));
 		this.work = work;
 		this.seamNodesAgree = seamNodesAgree;
+		// The traced function of a producer is identified by its revision; that of a
+		// similarity image by the state of its similarity, so that equal states give equal
+		// contents whatever the order in which the ratio took its values (section 8.7).
 		StringBuilder identity = new StringBuilder(IDENTITY_KIND).append('|')
-				.append(branchKey).append('|').append(revision).append('|')
+				.append(branchKey).append('|').append(functionIdentity == null
+						? String.valueOf(revision) : "image=" + functionIdentity).append('|')
 				.append(policyVersion).append('|');
 		for (int i = 0; i < this.contradictions.size(); i++) {
 			identity.append(i == 0 ? "" : ",").append(Long.toHexString(
@@ -89,7 +103,23 @@ public final class LocusConditionedEvidence2D {
 		return sources.isEmpty() && inheritedSources.isEmpty() ? this
 				: new LocusConditionedEvidence2D(branchKey, revision, policyVersion,
 						domainLower, domainUpper, contradictions, cells, work, seamNodesAgree,
-						sources);
+						sources, functionIdentity);
+	}
+
+	/**
+	 * The same content as the evidence of a similarity image (section 8.7, point 5): its
+	 * content identity is {@code (traced function of the image, policy version, content
+	 * identity of the source evidence, contradiction set of the image)}.
+	 *
+	 * @param imageFunction identity of the traced function of the image, the similarity
+	 *        included
+	 * @param sources the content identity of the evidence of the immediate source
+	 * @return content of the image
+	 */
+	LocusConditionedEvidence2D asImage(String imageFunction, List<String> sources) {
+		return new LocusConditionedEvidence2D(branchKey, revision, policyVersion,
+				domainLower, domainUpper, contradictions, cells, work, seamNodesAgree,
+				sources, java.util.Objects.requireNonNull(imageFunction));
 	}
 
 	/**

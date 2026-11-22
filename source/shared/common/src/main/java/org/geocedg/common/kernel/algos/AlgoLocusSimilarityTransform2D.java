@@ -14,6 +14,7 @@ import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
 import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusExploratoryEvidence2D;
+import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusPointComponent2D;
 import org.geocedg.common.kernel.locus.LocusQuality2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.BranchProperty;
@@ -21,6 +22,12 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSimilarityEvaluator2D;
 import org.geocedg.common.kernel.locus.LocusSimilarityTransform2D;
 import org.geocedg.common.kernel.locus.LocusSimilarityTransform2D.Kind;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidence2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedEvidenceOwner2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedImageOwner2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedSample2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedSampler2D;
+import org.geocedg.common.kernel.locus.conditioned.LocusConditionedTraversalPolicy2D;
 import org.geogebra.common.kernel.Construction;
 import org.geogebra.common.kernel.commands.Commands;
 import org.geogebra.common.kernel.geos.GeoElement;
@@ -38,6 +45,11 @@ public final class AlgoLocusSimilarityTransform2D extends AlgoLocusV2 {
 	private final GeoElement[] parameters;
 	private LocusDefinition2D sourceSnapshot;
 	private LocusSimilarityTransform2D transformSnapshot;
+	/** Owners of the conditioned evidence of the published definition, by branch. */
+	private final java.util.Map<String, LocusConditionedImageOwner2D> conditionedOwners =
+			new java.util.HashMap<>();
+	private LocusDefinition2D conditionedDefinition;
+	private boolean conditionedCascade;
 
 	/** Creates one public parent from the exact ordinary command arguments. */
 	public AlgoLocusSimilarityTransform2D(Construction construction,
@@ -81,6 +93,165 @@ public final class AlgoLocusSimilarityTransform2D extends AlgoLocusV2 {
 				? source.getExploratoryEvidence(branchKey) : null;
 	}
 
+	/**
+	 * The image inherits the conditioned evidence of its source cell by cell and states it
+	 * against the policy in its own world (ADR 0042; contract {@code
+	 * post-r1-conditioned-use.md}, section 8.7; {@code
+	 * locus-v2-similarity-transformations.md}, conditioned use amendment). The image is
+	 * never computed from a tessellation of the source.
+	 */
+	@Override
+	public LocusConditionedEvidence2D getConditionedEvidence(String branchKey) {
+		LocusConditionedImageOwner2D owner = conditionedOwner(branchKey);
+		if (owner == null) {
+			return null;
+		}
+		LocusDefinition2D definition = conditionedDefinition;
+		LocusSimilarityTransform2D transform = transformSnapshot;
+		LocusConditionedEvidence2D evidence = owner.get(definition.getSemanticRevision(),
+				transform.getSemanticSignature(), transform.getLengthScale(),
+				conditionedSource(branchKey), conditionedSampler(branchKey, transform),
+				points -> imageOfNodes(points, transform));
+		followSourceConfirmation(owner);
+		return evidence;
+	}
+
+	@Override
+	public LocusConditionedEvidence2D getPublishedConditionedEvidence(String branchKey) {
+		LocusConditionedImageOwner2D owner = conditionedOwner(branchKey);
+		LocusConditionedEvidence2D published = owner == null ? null : owner.getPublished();
+		LocusConditionedEvidence2D inherited = published == null ? null
+				: source.getPublishedConditionedEvidence(branchKey);
+		// Only a content that still inherits the published content of the source.
+		return inherited != null && !published.getInheritedSources().isEmpty()
+				&& published.getInheritedSources().get(0).endsWith(
+						"@" + inherited.getContentIdentity()) ? published : null;
+	}
+
+	@Override
+	public LocusConditionedSample2D sampleConditioned(String branchKey,
+			double canonicalParameter) {
+		LocusSimilarityTransform2D transform = transformSnapshot;
+		if (transform == null || sourceSnapshot == null
+				|| sourceSnapshot != source.getSemanticDefinition()) {
+			return null;
+		}
+		return conditionedSampler(branchKey, transform).sample(canonicalParameter);
+	}
+
+	@Override
+	public long getConditionedPublicationCounter(String branchKey) {
+		LocusConditionedImageOwner2D owner = conditionedOwner(branchKey);
+		return owner == null ? 0 : owner.getPublicationCounter();
+	}
+
+	@Override
+	public LocusConditionedEvidenceOwner2D.ReportOutcome reportConditionedContradiction(
+			String branchKey, double parameter) {
+		LocusConditionedImageOwner2D owner = conditionedOwner(branchKey);
+		if (owner == null || getConditionedEvidence(branchKey) == null) {
+			return null;
+		}
+		LocusConditionedEvidenceOwner2D.ReportOutcome outcome = owner.report(parameter,
+				conditionedSource(branchKey), conditionedSampler(branchKey,
+						transformSnapshot));
+		followSourceConfirmation(owner);
+		return outcome;
+	}
+
+	@Override
+	public LocusConditionedTraversalPolicy2D getConditionedTraversalPolicy() {
+		return source.getParentAlgorithm() instanceof AlgoLocusV2
+				? ((AlgoLocusV2) source.getParentAlgorithm()).getConditionedTraversalPolicy()
+				: LocusConditionedTraversalPolicy2D.v1();
+	}
+
+	/** @return the owner of a branch of the published definition, or {@code null} */
+	private LocusConditionedImageOwner2D conditionedOwner(String branchKey) {
+		LocusDefinition2D definition = getLocus().isDefined()
+				? getLocus().getSemanticDefinition() : null;
+		if (definition == null || transformSnapshot == null || sourceSnapshot == null
+				|| sourceSnapshot != source.getSemanticDefinition()
+				|| definition.getBranch(branchKey) == null) {
+			return null;
+		}
+		if (conditionedDefinition != definition) {
+			// A new revision discards the evidence and the contradiction set of the image.
+			conditionedDefinition = definition;
+			conditionedOwners.clear();
+		}
+		return conditionedOwners.computeIfAbsent(branchKey, key ->
+				new LocusConditionedImageOwner2D(getConditionedTraversalPolicy()));
+	}
+
+	private LocusConditionedImageOwner2D.Source conditionedSource(String branchKey) {
+		return new LocusConditionedImageOwner2D.Source() {
+			@Override
+			public LocusConditionedEvidence2D evidence() {
+				return source.getConditionedEvidence(branchKey);
+			}
+
+			@Override
+			public LocusConditionedEvidenceOwner2D.ReportOutcome report(double parameter) {
+				// The producer of the source decides with its own evaluator; its dependents
+				// follow after this owner has published (followSourceConfirmation).
+				return source.getParentAlgorithm() instanceof AlgoLocusV2
+						? ((AlgoLocusV2) source.getParentAlgorithm())
+								.reportConditionedContradiction(branchKey, parameter) : null;
+			}
+
+			@Override
+			public String identity() {
+				return source.getLocusIdentity() + "/" + branchKey;
+			}
+		};
+	}
+
+	/** The source evaluator composed with the similarity, with the source testimony. */
+	private LocusConditionedSampler2D conditionedSampler(String branchKey,
+			LocusSimilarityTransform2D transform) {
+		return parameter -> {
+			LocusConditionedSample2D sample = source.sampleConditioned(branchKey, parameter);
+			if (sample == null) {
+				return LocusConditionedSample2D.failed("SOURCE_NOT_EVALUABLE");
+			}
+			if (!sample.isValid()) {
+				return sample;
+			}
+			LocusPoint2D image = transform.transform(new LocusPoint2D(sample.getX(),
+					sample.getY()));
+			return LocusConditionedSample2D.valid(image.getX(), image.getY(),
+					sample.getTestimony());
+		};
+	}
+
+	private static double[] imageOfNodes(double[] points,
+			LocusSimilarityTransform2D transform) {
+		double[] images = new double[points.length];
+		for (int index = 0; index + 1 < points.length; index += 2) {
+			LocusPoint2D image = transform.transform(new LocusPoint2D(points[index],
+					points[index + 1]));
+			images[index] = image.getX();
+			images[index + 1] = image.getY();
+		}
+		return images;
+	}
+
+	/**
+	 * A node that the image added contradicted a span of the source and its producer
+	 * confirmed it: the dependents of the source follow its new content.
+	 */
+	private void followSourceConfirmation(LocusConditionedImageOwner2D owner) {
+		if (owner.takeSourceConfirmed() && !conditionedCascade) {
+			conditionedCascade = true;
+			try {
+				source.updateCascade();
+			} finally {
+				conditionedCascade = false;
+			}
+		}
+	}
+
 	@Override
 	protected LocusDefinition2D createCandidate(long candidateRevision) {
 		LocusSimilarityEvaluator2D evaluator = new LocusSimilarityEvaluator2D(
@@ -90,8 +261,13 @@ public final class AlgoLocusSimilarityTransform2D extends AlgoLocusV2 {
 			EnumSet<BranchProperty> properties = sourceBranch.getProperties().isEmpty()
 					? EnumSet.noneOf(BranchProperty.class)
 					: EnumSet.copyOf(sourceBranch.getProperties());
-			if (transformSnapshot.isCollapsed() && !sourceBranch.getExistenceStructure()
-					.getContinuousValidComponents().isEmpty()) {
+			// A collapsed image of a source that may have a valid address: one with a
+			// certified component, or one whose existence is not established (contract
+			// post-r1-conditioned-use.md, section 8.7, "Finite ratio zero").
+			if (transformSnapshot.isCollapsed() && (!sourceBranch.getExistenceStructure()
+					.getContinuousValidComponents().isEmpty()
+					|| sourceBranch.getExistenceStructure().getCompleteness()
+							!= LocusExistenceStructure2D.Completeness.COMPLETE)) {
 				properties.add(BranchProperty.COLLAPSED_IMAGE);
 			}
 			LocusQuality2D quality = new LocusQuality2D(

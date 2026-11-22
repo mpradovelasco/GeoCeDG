@@ -500,6 +500,11 @@ public final class AlgoDependentPointLocusV2 extends AlgoLocusV2 {
 		return owner.report(parameter);
 	}
 
+	@Override
+	public LocusConditionedTraversalPolicy2D getConditionedTraversalPolicy() {
+		return conditionedPolicy;
+	}
+
 	/**
 	 * Traverses the following revisions of the conditioned evidence with another policy: a
 	 * decision configuration of benches and tests, which show that identities do not depend
