@@ -1,12 +1,16 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)]
-    [ValidateSet('variant', 'benchmark', 'evidence', 'profile', 'conditioned')]
+    [ValidateSet('variant', 'benchmark', 'evidence', 'profile', 'conditioned', 'total')]
     [string]$Scenario,
     [string]$OutputDirectory,
     # Root of the checkout to run. Defaults to this repository; another checkout of an
     # earlier commit can be measured with the same harness sources.
-    [string]$CheckoutRoot
+    [string]$CheckoutRoot,
+    # Mode of the memo of nested evaluations in the test JVM: 'off' computes every request
+    # and is the oracle of a run with 'on'; 'verify' recomputes and compares.
+    [ValidateSet('on', 'off', 'verify')]
+    [string]$NestedEvaluationMemo = 'on'
 )
 
 # Post-R1 reproducible harness runner. Runs one scenario of
@@ -60,6 +64,7 @@ $arguments = @(
     "-PpostR1HarnessSources=$sources",
     "-PpostR1Scenario=$Scenario",
     "-PpostR1Output=$Output",
+    "-PpostR1NestedMemo=$NestedEvaluationMemo",
     '--console=plain'
 )
 

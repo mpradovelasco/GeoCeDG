@@ -116,6 +116,13 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	private final GeoElement isolatedSupport;
 	private final double[][] certifiedAffineCoefficients;
 	private final long sliceScope = LocusEvaluationSession2D.newSliceScope();
+	/**
+	 * Memo of the nested evaluations that the services of this copy request (decision
+	 * DN-3): owned by this evaluator instance, read only by the service sessions of its own
+	 * slice updates, gone with it. {@code null} when the memo is off.
+	 */
+	private final LocusNestedEvaluationMemo2D nestedMemo =
+			LocusNestedEvaluationMemo2D.create();
 	/** Authority of the owning document, captured for the copy when it was built (F6). */
 	private final AuthorityPolicy effectiveAuthority;
 	private final List<GeoElement> liveSlice = new ArrayList<>();
@@ -380,6 +387,11 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 	 * @return copy intersections that a point query took out of their first initialization
 	 *         and that the evaluator settled at that parameter
 	 */
+	/** @return the memo of nested evaluations of this instance, or {@code null} when off */
+	public LocusNestedEvaluationMemo2D getNestedEvaluationMemo() {
+		return nestedMemo;
+	}
+
 	public synchronized int getDepartedSelections() {
 		return departedSelections.size();
 	}
@@ -402,7 +414,8 @@ public final class ReconstructibleLocusEvaluator2D implements LocusEvaluator2D,
 		}
 		try {
 			receiveConditionedContradictions();
-			LocusEvaluationSession2D.runWithNestedServiceParent(session, sliceScope, () -> {
+			LocusEvaluationSession2D.runWithNestedServiceParent(session, sliceScope,
+					nestedMemo, () -> {
 				applyCoordinate(canonicalParameter);
 				settleDepartures(() -> applyCoordinate(canonicalParameter));
 			});

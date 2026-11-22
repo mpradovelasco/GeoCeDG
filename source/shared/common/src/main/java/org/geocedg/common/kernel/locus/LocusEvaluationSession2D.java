@@ -41,6 +41,8 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 
 	private final Core core;
 	private final long scope;
+	/** Memo of the evaluator instance whose slice this child session serves, or null. */
+	private final LocusNestedEvaluationMemo2D nestedMemo;
 	private final boolean memoizationEnabled;
 	private final int maximumEntries;
 	private final Map<LocusSemanticKey2D, LocusEvaluation2D> cache;
@@ -72,6 +74,13 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 
 	private LocusEvaluationSession2D(Core core, long scope,
 			boolean memoizationEnabled, int maximumEntries) {
+		this(core, scope, memoizationEnabled, maximumEntries, null);
+	}
+
+	private LocusEvaluationSession2D(Core core, long scope,
+			boolean memoizationEnabled, int maximumEntries,
+			LocusNestedEvaluationMemo2D nestedMemo) {
+		this.nestedMemo = scope == 0 ? null : nestedMemo;
 		if (maximumEntries < 1) {
 			throw new IllegalArgumentException("A semantic session must be bounded");
 		}
@@ -190,7 +199,7 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 			return new LocusEvaluationSession2D(memoize, entries);
 		}
 		return new LocusEvaluationSession2D(frame.parent.core, frame.scope,
-				memoize, entries);
+				memoize, entries, frame.memo);
 	}
 
 	/** @return a new unique slice scope for one evaluator instance */
@@ -204,9 +213,20 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 	 */
 	public static void runWithNestedServiceParent(LocusEvaluationSession2D parent,
 			long scope, Runnable work) {
+		runWithNestedServiceParent(parent, scope, null, work);
+	}
+
+	/**
+	 * Runs one slice update of an evaluator instance: the service sessions opened on this
+	 * thread for {@code scope} are children of {@code parent} and read and fill the memo of
+	 * that evaluator instance (decision DN-3). The memo is never the memo of another
+	 * evaluator: its owner passes it here and nowhere else.
+	 */
+	public static void runWithNestedServiceParent(LocusEvaluationSession2D parent,
+			long scope, LocusNestedEvaluationMemo2D memo, Runnable work) {
 		Objects.requireNonNull(parent);
 		Objects.requireNonNull(work);
-		ServiceFrame frame = new ServiceFrame(parent, scope, Thread.currentThread());
+		ServiceFrame frame = new ServiceFrame(parent, scope, Thread.currentThread(), memo);
 		synchronized (SERVICE_FRAMES) {
 			SERVICE_FRAMES.push(frame);
 		}
@@ -240,6 +260,7 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 				definition.getLocusIdentity(), definition.getSemanticRevision(),
 				branch.getBranchKey(), canonicalParameter);
 		if (closed) {
+			core.contextEvents++;
 			lastDiagnostic = diagnostic(Kind.CLOSED_SESSION,
 					"A disposed semantic evaluation session cannot be reused", key);
 			return LocusEvaluation2D.invalid(EvaluationStatus.EVALUATION_FAILED,
@@ -248,6 +269,7 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 		Long coherentRevision = coherentRevisions.get(key.getLocusIdentity());
 		if (coherentRevision != null
 				&& coherentRevision.longValue() != key.getSemanticRevision()) {
+			core.contextEvents++;
 			lastDiagnostic = diagnostic(Kind.INCOHERENT_REVISION,
 					"One session cannot mix semantic revisions for "
 							+ key.getLocusIdentity(), key);
@@ -279,8 +301,18 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 			core.nestedMisses++;
 		}
 		definition.getInstrumentation().recordSessionMiss();
+		// The request is charged above whether or not the memo of the evaluator instance
+		// answers it: the memo saves the computation, never a unit of the work budget.
+		LocusEvaluation2D stored = nestedMemo == null ? null : nestedMemo.get(key);
+		if (stored != null && !nestedMemo.isVerifying()) {
+			if (memoizationEnabled) {
+				putBounded(key, stored);
+			}
+			return stored;
+		}
 		ScopedKey active = new ScopedKey(scope, key);
 		if (!core.activeKeys.add(active)) {
+			core.contextEvents++;
 			cycles++;
 			lastDiagnostic = diagnostic(Kind.CYCLE_REENTRY,
 					"Semantic evaluator re-entry cycle", key);
@@ -290,6 +322,7 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 
 		core.activeStack.push(active);
 		ownActiveDepth++;
+		long contextEvents = core.contextEvents;
 		LocusEvaluation2D result;
 		try {
 			result = definition.compute(branch, canonicalParameter, this);
@@ -297,6 +330,15 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 			ownActiveDepth--;
 			core.activeStack.pop();
 			core.activeKeys.remove(active);
+		}
+		if (nestedMemo != null && contextEvents == core.contextEvents && !core.exhausted) {
+			// Only a result that no re-entry, incoherent revision or exhausted limit of
+			// this evaluation context touched is a function of its key alone.
+			if (stored != null) {
+				nestedMemo.verify(key, stored, result);
+			} else {
+				nestedMemo.put(key, result);
+			}
 		}
 		if (memoizationEnabled) {
 			putBounded(key, result);
@@ -438,6 +480,8 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 		private long nestedMisses;
 		private boolean hardLimit;
 		private boolean exhausted;
+		/** Re-entries, incoherent revisions and closed sessions met in this context. */
+		private long contextEvents;
 
 		private Core(long maximumMisses, int maximumActiveDepth) {
 			this.maximumMisses = maximumMisses;
@@ -473,12 +517,14 @@ public final class LocusEvaluationSession2D implements AutoCloseable {
 		private final LocusEvaluationSession2D parent;
 		private final long scope;
 		private final Thread thread;
+		private final LocusNestedEvaluationMemo2D memo;
 
 		private ServiceFrame(LocusEvaluationSession2D parent, long scope,
-				Thread thread) {
+				Thread thread, LocusNestedEvaluationMemo2D memo) {
 			this.parent = parent;
 			this.scope = scope;
 			this.thread = thread;
+			this.memo = memo;
 		}
 	}
 

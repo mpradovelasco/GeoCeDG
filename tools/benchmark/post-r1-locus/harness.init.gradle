@@ -21,6 +21,10 @@ allprojects { p ->
             p.tasks.named('test').configure { t ->
                 t.systemProperty('geocedg.postr1.harness', props['postR1Scenario'])
                 t.systemProperty('geocedg.postr1.output', props['postR1Output'])
+                // The mode of the memo of nested evaluations: 'off' is the oracle run.
+                if (props['postR1NestedMemo'] != null) {
+                    t.systemProperty('geocedg.nestedEvaluationMemo', props['postR1NestedMemo'])
+                }
                 t.maxHeapSize = '2g'
                 t.outputs.upToDateWhen { false }
             }

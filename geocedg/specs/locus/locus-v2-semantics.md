@@ -517,3 +517,43 @@ The implementation is deliberately internal and nonpersistent. The typed
 end-user preference and not a public command switch. `Locus[...]` remains
 legacy in both Classic and GeoCeDG. Versioned execution evidence is stored in
 [`g6b-functional-evidence.yml`](../../validation/locus-v2/g6b-functional-evidence.yml).
+
+## Corrections after block 3B: memo of the nested evaluations of one evaluator instance (decision DN-3)
+
+**Status: AMENDMENT AUTHORIZED BY THE AUTHOR (2026-11-22,
+[authorization record](../../../docs/validation/post_r1_1_2_2_corrections_author_authorization_record.md));
+IMPLEMENTATION NOT YET APPROVED AS PRODUCT.** The sections above are not rewritten. This
+section changes no result, no revision, no dependency edge, no work budget and no rule of
+the conditioned evidence: the policy `conditioned-traversal/v1` and the content identity of
+the evidence are untouched.
+
+A reconstruction evaluator, the isolated copy built for one revision of one producer, owns
+a memo of the nested semantic evaluations that the services of its own slice updates
+request.
+
+- **Ownership.** One memo per evaluator instance. It is created with the instance, read and
+  filled only by the slice-scoped service sessions of that instance, and unreachable when
+  the instance is. It is never shared between producers, between evaluators of one producer
+  or between revisions, and there is no process-wide cache. It holds immutable evaluation
+  results; it holds no geometric object and no copy.
+- **Key.** The semantic key of the request: identity of the nested locus, its semantic
+  revision, its branch and its canonical parameter. Inside one evaluator instance nothing
+  else enters the result. The copy was synchronized with its inputs once, when it was
+  built; the only input that changes afterwards is its driver; a nested locus whose
+  definition follows that driver publishes another revision, and so has another key; a
+  nested locus that only moves its own driver keeps its revision and its function.
+- **Validity.** A result is stored only when its computation met no event of its evaluation
+  context: no re-entry, no incoherent revision, no closed session and no exhausted limit.
+  Only such a result is a function of its key alone. A failure is recomputed.
+- **Budget and diagnostics.** A request that the memo answers is charged to the work budget
+  of its session exactly as a request that is computed, and is counted as a session miss.
+  The memo saves time and nothing else: no classification, no limit and no `UNEXPLORED`
+  cell depends on what it holds. The count of evaluator calls is that of the computations
+  really made.
+- **Bound.** At most 65 536 results per instance; beyond it nothing more is stored and the
+  requests are computed.
+- **Oracle and verification.** The process property `geocedg.nestedEvaluationMemo`, or the
+  environment variable `GEOCEDG_NESTED_EVALUATION_MEMO`, with the value `off` creates no
+  memo: every request is computed. That run is the regression oracle, and with the memo
+  every published result must be the same bit for bit. The value `verify` recomputes every
+  request that the memo would answer and fails on a difference.

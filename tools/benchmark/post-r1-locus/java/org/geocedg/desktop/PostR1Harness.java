@@ -82,6 +82,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * the first request, time of a repeated request, and, after each real change of {@code
  * excCyl}, the time of the update of the graph, of the evidence of the new revision and of
  * an off-screen paint.</li>
+ * <li>{@code total}: the whole cost of a real change of {@code excCyl} with the conditioned
+ * evidence consumed (decision D-V6; corrections after block 3B, step C5). On each document,
+ * after a warm-up, three series: regular changes, changes across the bite of the cone and
+ * loss with recovery. Each change is measured in three separate parts, the update of the
+ * graph, the conditioned evidence of every locus of the new revision and an off-screen
+ * paint, and the report gives the median, the 95th percentile and the maximum of each part
+ * and of their sum, with a digest of what every locus publishes at every step. The mode of
+ * the memo of nested evaluations is read from the process and printed, so that a run
+ * without the memo is the oracle of a run with it: equal digests, different times.</li>
  * </ul>
  *
  * Latencies are telemetry of one machine and one short series. They are never a threshold.
@@ -90,7 +99,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
 		PreG9BR6PlusD1DocumentUnitsTest.DesktopLogger.class})
 @EnabledIfSystemProperty(named = "geocedg.postr1.harness",
-		matches = "variant|benchmark|evidence|profile|conditioned")
+		matches = "variant|benchmark|evidence|profile|conditioned|total")
 class PostR1Harness {
 	private static final String ORIGINAL = "InterCilConoObliqueFinal_2.cedg";
 	private static final String PACKAGE = "models/regression/post-r1-locus-on-intersection";
@@ -114,6 +123,7 @@ class PostR1Harness {
 		List<String> report = PreG9BR6PlusF3Fixtures.onEdt(() -> "variant".equals(scenario)
 				? variant(work, output) : "evidence".equals(scenario) ? evidence(work)
 						: "conditioned".equals(scenario) ? conditioned(work)
+						: "total".equals(scenario) ? total(work)
 						: "profile".equals(scenario) ? profile(work, output) : benchmark(work));
 		Files.write(output.resolve(scenario + ".txt"), report, StandardCharsets.UTF_8);
 		assertTrue(!report.isEmpty());
@@ -476,6 +486,140 @@ class PostR1Harness {
 			}
 		}
 		return report;
+	}
+
+	private static List<String> total(Path work) throws Exception {
+		List<String> report = new ArrayList<>();
+		report.add("# whole cost of a real change of excCyl, by part. Times in ms: graph ="
+				+ " update of the dependency graph; evidence = conditioned evidence of every"
+				+ " locus of the new revision; paint = off-screen image of Graphics 1.");
+		report.add("jvm=" + System.getProperty("java.vm.name") + " "
+				+ System.getProperty("java.version") + " os=" + System.getProperty("os.name")
+				+ " processors=" + Runtime.getRuntime().availableProcessors()
+				+ " nested-evaluation-memo=" + org.geocedg.common.kernel.locus
+						.LocusNestedEvaluationMemo2D.mode());
+		for (boolean transported : new boolean[] {false, true}) {
+			String document = transported ? "transport" : "original";
+			Path variant = PreG9BCu0Corpus.repositoryRoot().resolve(PACKAGE).resolve("derived")
+					.resolve(VARIANT);
+			AppGeoCeDG app = transported && Files.isRegularFile(variant)
+					? PreG9BCu0Corpus.open(copy(variant, work)) : open(work);
+			if (transported && !Files.isRegularFile(variant)) {
+				buildTransport(app);
+			}
+			EuclidianView view = app.getEuclidianView1();
+			((EuclidianViewD) view).getJPanel().setSize(VIEW_WIDTH, VIEW_HEIGHT);
+			view.updateSize();
+			view.setCoordSystem(VIEW_X_ZERO, VIEW_Y_ZERO, VIEW_SCALE, VIEW_SCALE);
+			paint(view);
+			double value = ((GeoNumeric) app.getKernel().lookupLabel("excCyl")).getValue();
+			double[] warmUp = new double[4];
+			double[] regular = new double[20];
+			for (int index = 0; index < regular.length; index++) {
+				regular[index] = value + (index % 2 == 0 ? 0.05 : 0);
+			}
+			for (int index = 0; index < warmUp.length; index++) {
+				warmUp[index] = value + (index % 2 == 0 ? 0.05 : 0);
+			}
+			totalSeries(report, app, view, document, "warm-up (not a measure)", warmUp);
+			totalSeries(report, app, view, document, "regular, +0.05 and back", regular);
+			// Changes of topology of the cone-cylinder family: above about 3.657 the cylinder
+			// leaves the cone for part of the turn of N.
+			totalSeries(report, app, view, document, "across the bite (3.60 / 3.70 / 3.80)",
+					new double[] {3.60, 3.70, 3.60, 3.70, 3.80, 3.60, 3.70, 3.80, value});
+			// Loss of the whole first family, a degenerate configuration, and recovery.
+			totalSeries(report, app, view, document, "loss and recovery (4.2 / saved)",
+					new double[] {4.2, value, 4.2, value, 4.2, value});
+		}
+		return report;
+	}
+
+	/** One series of real changes, each measured by part, with a digest of its results. */
+	private static void totalSeries(List<String> report, AppGeoCeDG app, EuclidianView view,
+			String document, String name, double[] values) throws Exception {
+		java.security.MessageDigest digest = java.security.MessageDigest.getInstance(
+				"SHA-256");
+		List<Double> graph = new ArrayList<>();
+		List<Double> evidence = new ArrayList<>();
+		List<Double> painting = new ArrayList<>();
+		List<Double> sum = new ArrayList<>();
+		for (double value : values) {
+			long start = System.nanoTime();
+			PreG9BCu0Corpus.setNumber(app, "excCyl", value);
+			long updated = System.nanoTime();
+			for (String label : LOCI) {
+				GeoElement geo = app.getKernel().lookupLabel(label);
+				if (geo instanceof GeoLocusV2
+						&& ((GeoLocusV2) geo).getSemanticDefinition() != null) {
+					((GeoLocusV2) geo).getConditionedEvidence("generator.main");
+				}
+			}
+			long evidenced = System.nanoTime();
+			paint(view);
+			long painted = System.nanoTime();
+			graph.add((updated - start) / 1e6);
+			evidence.add((evidenced - updated) / 1e6);
+			painting.add((painted - evidenced) / 1e6);
+			sum.add((painted - start) / 1e6);
+			observe(digest, app);
+		}
+		StringBuilder hex = new StringBuilder();
+		for (byte part : digest.digest()) {
+			hex.append(String.format("%02x", part));
+		}
+		report.add(document + " | " + name + " | changes=" + values.length + " | graph "
+				+ partSummary(graph) + " | evidence " + partSummary(evidence) + " | paint "
+				+ partSummary(painting) + " | total " + partSummary(sum) + " | results="
+				+ hex.substring(0, 32));
+	}
+
+	private static String partSummary(List<Double> values) {
+		double[] sorted = values.stream().mapToDouble(Double::doubleValue).sorted().toArray();
+		return String.format(Locale.ROOT, "median=%.0f p95=%.0f max=%.0f",
+				sorted[sorted.length / 2], percentile(values, 0.95),
+				sorted[sorted.length - 1]);
+	}
+
+	/** What every locus of the document publishes now, as exact text, into a digest. */
+	private static void observe(java.security.MessageDigest digest, AppGeoCeDG app) {
+		StringBuilder text = new StringBuilder();
+		for (String label : LOCI) {
+			GeoElement geo = app.getKernel().lookupLabel(label);
+			if (!(geo instanceof GeoLocusV2)) {
+				continue;
+			}
+			GeoLocusV2 locus = (GeoLocusV2) geo;
+			text.append(label).append('=');
+			if (locus.getSemanticDefinition() == null) {
+				text.append("unpublished;");
+				continue;
+			}
+			text.append(locus.getSemanticDefinition().getBranch("generator.main")
+					.getExistenceStructure().getSemanticSignature()).append(';');
+			LocusConditionedEvidence2D evidence = locus.getConditionedEvidence(
+					"generator.main");
+			if (evidence != null) {
+				for (LocusConditionedCell2D cell : evidence.getCells()) {
+					text.append(cell.getKind()).append(':').append(cell.getSpanClass())
+							.append(':').append(Double.toHexString(cell.getLower())).append(':')
+							.append(Double.toHexString(cell.getUpper())).append(';');
+				}
+			}
+			for (int index = 0; index < 16; index++) {
+				LocusEvaluation2D evaluation = locus.evaluate("generator.main",
+						-3.1 + index * 0.4, LocusEvaluationSession2D.reference());
+				text.append(evaluation.isValid() ? Double.toHexString(evaluation.getPoint()
+						.getX()) + "," + Double.toHexString(evaluation.getPoint().getY())
+						: String.valueOf(evaluation.getStatus())).append(';');
+			}
+		}
+		for (String label : new String[] {"N", "E_1"}) {
+			GeoElement geo = app.getKernel().lookupLabel(label);
+			text.append(label).append('=').append(geo == null ? "none"
+					: geo.toValueString(org.geogebra.common.kernel.StringTemplate.maxPrecision))
+					.append(';');
+		}
+		digest.update(text.toString().getBytes(StandardCharsets.UTF_8));
 	}
 
 	/** One locus: revision, time of the request and content of its conditioned evidence. */

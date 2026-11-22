@@ -240,3 +240,122 @@ cambios reales de `excCyl` por modelo.
   contenido de la política aprobada y no se ha hecho sin un diseño aprobado. Queda como
   hallazgo para el autor, sin decisión tomada.
 - Arrastrar el conductor no publica revisión y no recalcula la evidencia: su coste es nulo.
+
+## 8. Memo de evaluaciones anidadas por instancia de evaluador (paso C5, decisión DN-3)
+
+Decisión DN-3 del autor (2026-11-22,
+[registro de la autorización](../validation/post_r1_1_2_2_corrections_author_authorization_record.md)).
+Norma: [`locus-v2-semantics.md`](../../geocedg/specs/locus/locus-v2-semantics.md), sección
+«Corrections after block 3B». **REGISTRO TÉCNICO — PENDIENTE DE REVISIÓN AUTORAL.**
+
+### 8.1 Qué se repetía
+
+Cada evaluación del slice de un lugar con hueco (`w_2`, `a_3`) recalcula, dentro de su
+copia aislada, una intersección con el lugar anidado `o` y dos longitudes sobre `o_1` y
+`e_2`. Esos lugares anidados no dependen del conductor del consumidor: entre dos
+evaluaciones de la misma revisión su copia no cambia, y sin embargo se volvían a muestrear
+enteros. Medido con una sesión instrumentada, fuera del repositorio, sobre el candidato
+`b2c5aad35`: 186 001 evaluaciones de `o` por recorrido de `w_2` (≈ 512 por evaluación del
+slice) y 23 273 de `o_1` y `e_2`; con un memo por instancia de evaluador, las realmente
+calculadas bajan de 209 274 a 41 844 (−80 %) en el recorrido y de 82 046 a 28 018 (−66 %)
+en el grafo.
+
+### 8.2 Qué se ha hecho
+
+`LocusNestedEvaluationMemo2D`: un memo de resultados de evaluación anidada, propiedad de
+una instancia de `ReconstructibleLocusEvaluator2D` (una copia aislada, de una revisión, de
+un productor). Lo leen y lo llenan solo las sesiones de servicio de las actualizaciones de
+slice de esa instancia.
+
+| Condición del autor | Cómo se cumple |
+|---|---|
+| Sin caché global ni objetos geométricos mutables compartidos | Un memo por instancia de evaluador, inalcanzable cuando ella lo es; guarda resultados de evaluación inmutables, ninguna copia ni objeto geométrico |
+| Claves con todas las dependencias relevantes | Identidad del lugar anidado, revisión semántica, rama y parámetro canónico; el propio memo añade la instancia de evaluador. Un lugar anidado cuya definición sigue al conductor publica otra revisión |
+| Vigencia de dependencias y de contexto | El memo muere con su evaluador, que es de una revisión. No se guarda ningún resultado cuyo cálculo encontrase una reentrada, una revisión incoherente, una sesión cerrada o un límite agotado |
+| Presupuestos, diagnósticos, DAG, invalidez y determinismo | Una petición que el memo responde se carga al presupuesto y se cuenta como fallo de sesión igual que una calculada; ninguna clasificación depende de lo que el memo contenga. No toca revisiones, aristas ni publicación |
+| Reproducción bit a bit | Resúmenes de resultados idénticos con y sin memo en todas las series (§8.3); pruebas `PostR1NestedEvaluationMemoTest` |
+| Ejecución sin reutilización como oráculo | `geocedg.nestedEvaluationMemo=off` (o `GEOCEDG_NESTED_EVALUATION_MEMO=off`): no se crea memo. `verify` recalcula cada petición respondida y falla ante una diferencia |
+
+No cambia la política `conditioned-traversal/v1`, la identidad de contenido de la evidencia
+ni ningún contrato de resultado. Límite: 65 536 resultados por instancia; al llenarse no se
+guarda más y las peticiones se calculan.
+
+Regresión compartida completa (`gradlew :shared:common-jre:test --tests org.geocedg.*`,
+2 517 pruebas) en los tres modos, **0 fallos en cada uno**: memo activado, `verify` y
+`off`. Desktop (`PostR1*` y `PreG9BCu2AuthorModel*`, 78 pruebas) con el memo activado: el
+único fallo es el ya conocido en la base `9ccefdcfe`.
+
+### 8.3 Medición
+
+Escenario `total` del arnés (`tools/benchmark/post-r1-locus/run-harness.ps1 -Scenario total
+-NestedEvaluationMemo off|on`), añadido en este paso: en cada cambio real de `excCyl` mide
+por separado la actualización del grafo, la evidencia condicionada de todos los lugares de
+la nueva revisión y una pintura fuera de pantalla, y resume lo que publica cada lugar. JVM
+OpenJDK 17.0.10 del proceso de pruebas, Windows 11, 24 procesadores, máquina sin otra carga,
+4 cambios de calentamiento. Milisegundos, mediana / p95.
+
+| Documento, serie (cambios) | Parte | Sin memo | Con memo |
+|---|---|---|---|
+| original, regular (20) | grafo | 596 / 606 | 541 / 614 |
+| | evidencia | 849 / 865 | 530 / 602 |
+| | pintura | 7 / 7 | 7 / 9 |
+| | **total** | **1 449 / 1 479** | **1 096 / 1 224** |
+| original, a través del mordisco (9) | total | 1 472 / 1 644 | 1 094 / 1 211 |
+| original, pérdida y recuperación (6) | total | 1 415 / 1 443 | 1 038 / 1 136 |
+| transporte, regular (20) | grafo | 729 / 879 | 640 / 667 |
+| | evidencia | 994 / 1 084 | 601 / 619 |
+| | pintura | 6 / 8 | 6 / 8 |
+| | **total** | **1 723 / 1 932** | **1 253 / 1 279** |
+| transporte, a través del mordisco (9) | total | 1 713 / 1 746 | 1 248 / 1 259 |
+| transporte, pérdida y recuperación (6) | total | 1 710 / 1 747 | 1 227 / 1 298 |
+
+- **Resultados idénticos.** El resumen SHA-256 de lo que publican los siete lugares en cada
+  paso (firma de la estructura de existencia, celdas de la evidencia con su clase y sus
+  extremos, 16 puntos evaluados por lugar, valores de `N` y `E_1`) coincide entre las dos
+  ejecuciones en las ocho series, incluidas la transición topológica y la pérdida con
+  recuperación, y coincide también con una ejecución anterior de la misma medición.
+- **Mejora.** El total baja un 24 % en el original y un 27 % en el transportado; la
+  evidencia, un 38 % y un 40 %.
+- **El objetivo de D-V6 no se alcanza.** Con la evidencia consumida, el total sigue por
+  encima de 1 s en los dos documentos: mediana 1,10 s y p95 1,22 s en el original, 1,25 s y
+  1,28 s en el transportado. El grafo solo (0,54 y 0,64 s) sí lo cumple, como antes. No se
+  declara alcanzado ningún objetivo de latencia interactiva; tampoco se ha medido en una
+  ventana real.
+
+Las cifras son de una estación y de series cortas: sirven para comparar las dos columnas,
+no como umbral.
+
+## 9. Estudio de la segunda optimización (paso C6). No implementada
+
+La autorización pide estudiarla si el memo no basta, y no implementarla sin justificar su
+alcance y su compatibilidad. Este apartado es el estudio; no hay código.
+
+### 9.1 Dónde queda el tiempo
+
+Perfil JFR del hilo de eventos con un prototipo equivalente al memo (fuera del repositorio,
+sobre los JAR del candidato; porcentajes del total de un cambio con evidencia): recorrido
+condicionado 49 %, certificado 28 %, métrica viva 14 %, construcción de copias y XML 7 %.
+Por tipo de trabajo: trabajo propio de la intersección anidada 31 %, evaluación de las
+copias 28 %, **resumen de huella del slice 18 %**, motor métrico 8 %, construcción de copias
+y XML 10 %.
+
+### 9.2 Las candidatas
+
+| # | Optimización | Alcance | Ganancia estimada | Compatibilidad y riesgo |
+|---|---|---|---|---|
+| O2-a | **Comparar el estado exacto en vez de resumirlo.** Dentro de una copia aislada, un lugar anidado cuyo conductor es el del consumidor recalcula en cada evaluación las partes de valores, selección y etiquetas de la huella de su slice (cadenas y cuatro SHA-256) para concluir que nada cambió. Se guardaría, junto al resumen, el vector exacto del que sale el texto, y solo se recalcularía el texto si el vector difiere | `ReconstructionSliceFingerprint2D` y `ReconstructionExactState2D`; solo en copias aisladas, como el memo de estructura de D-V6 | −0,10 a −0,17 s por cambio | No cambia ninguna norma ni el valor de ninguna huella. El riesgo es de implementación: el vector debe cubrir exactamente lo que lee el texto, o un cambio real dejaría geometría obsoleta. Se valida con un modo de verificación que calcula siempre el texto y compara, como `geocedg.fingerprint.verifyMemo` |
+| O2-b | **No repetir la resolución de identidad en la intersección anidada.** Cada evaluación del slice resuelve, en la copia, la identidad pública y los tokens de la intersección anidada, aunque solo necesita el punto de la raíz ya seleccionada | Resolvedores de identidad de intersección y libro de tokens, dentro de las copias | hasta −0,2 a −0,3 s | Alto: es el código de identidad, el de mayor riesgo del producto. Necesita diseño propio |
+| O2-c | **Sincronizar valores en la copia existente** en vez de reconstruirla en cada revisión | `AlgoDependentPointLocusV2`, `ReconstructibleLocusEvaluator2D` | −0,1 a −0,15 s | El evaluador de una revisión es hoy inmutable (`locus-v2-semantics.md` v1.2). Probable enmienda normativa |
+| O2-d | **Que el recorrido reutilice las evaluaciones del certificado** de la misma instancia | Certificador y recorrido condicionado | ≤ 19 % del recorrido (medido: 70 de 363 evaluaciones repiten parámetro) | El certificado tendría que guardar el testimonio de cada evaluación |
+
+Todas las ganancias de esta tabla son estimaciones a partir del perfil; ninguna está medida.
+
+### 9.3 Conclusión
+
+O2-a es la segunda optimización que el informe de revisión identificó, y es compatible sin
+cambio de norma. Pero su ganancia estimada no basta por sí sola: dejaría el total en torno a
+0,93–1,0 s en el original y 1,1 s en el transportado. Para bajar de 1 s con margen en los
+dos documentos haría falta además O2-b u O2-c, que tocan identidad o la inmutabilidad del
+evaluador y piden una decisión propia. Por eso no se ha implementado O2-a en este paso: se
+presenta al autor el conjunto, para que decida si el objetivo de 1 s con la evidencia
+consumida se persigue en 1.2.2 y con qué palancas.
