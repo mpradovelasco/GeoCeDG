@@ -106,7 +106,7 @@ public final class LocusPairIntersectionContext2D {
 		ArrayList<String> result = new ArrayList<>();
 		for (ComponentAddress first : getFirstComponents()) {
 			for (ComponentAddress second : getSecondComponents()) {
-				result.add(componentPairKey(first.getBranchKey(),
+				result.add(pairKey(first.getBranchKey(),
 						first.getComponentKey(), second.getBranchKey(),
 						second.getComponentKey()));
 			}
@@ -114,11 +114,19 @@ public final class LocusPairIntersectionContext2D {
 		return Collections.unmodifiableList(result);
 	}
 
-	/** @return canonical component-pair key independent of source order */
-	public static String componentPairKey(String firstBranch,
-			String firstComponent, String secondBranch,
-			String secondComponent) {
-		return LocusPairIdentity2D.componentPair(firstBranch, firstComponent,
+	/**
+	 * Revision-local key of a pair of places of the two sources of this query, first source
+	 * first. Each side carries the identity of its source, so the pairs (first i, second j)
+	 * and (first j, second i) differ even when the sources share branch and component keys.
+	 * It is no identity: the durable lineage of a root is
+	 * {@link LocusPairIntersectionEvidence2D#getEstablishedBranchPairLineage()}.
+	 *
+	 * @return canonical key of the pair, independent of the order of the caller
+	 */
+	public String pairKey(String firstBranch, String firstComponent,
+			String secondBranch, String secondComponent) {
+		return LocusPairIdentity2D.placePair(query.getFirst().getLocusIdentity(),
+				firstBranch, firstComponent, query.getSecond().getLocusIdentity(),
 				secondBranch, secondComponent);
 	}
 

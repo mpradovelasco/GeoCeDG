@@ -29,6 +29,24 @@ public final class LocusPairIdentity2D {
 	}
 
 	/**
+	 * Revision-local key of one pair of places, each with the identity of its source: two
+	 * sources that share a branch key and a component key never collide, and the key does
+	 * not depend on the order of the caller. It is bookkeeping of one revision (coverage,
+	 * unresolved pairs, diagnostics); it is no identity and is never persisted.
+	 *
+	 * @return canonical key of the pair of places
+	 */
+	public static String placePair(String firstSource, String firstBranch,
+			String firstComponent, String secondSource, String secondBranch,
+			String secondComponent) {
+		String first = framed(requireText(firstSource)) + framed(requireText(firstBranch))
+				+ framed(requireText(firstComponent));
+		String second = framed(requireText(secondSource)) + framed(requireText(secondBranch))
+				+ framed(requireText(secondComponent));
+		return unordered(first, second);
+	}
+
+	/**
 	 * Creates an opaque deterministic token from semantic lineage, never from
 	 * coordinates, parameter values, result order or source revisions.
 	 *

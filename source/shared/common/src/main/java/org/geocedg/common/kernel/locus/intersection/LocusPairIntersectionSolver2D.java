@@ -338,7 +338,13 @@ public final class LocusPairIntersectionSolver2D {
 		IntersectionRootRevisionEvidence2D compatibilityEvidence =
 				new IntersectionRootRevisionEvidence2D(
 						firstEvidence.getSemanticRevision(),
-						secondEvidence.getSemanticRevision(), branchPair, branchPair,
+						secondEvidence.getSemanticRevision(), branchPair,
+						// The revision-local key of the pair of places, the one that an
+						// unresolved pair is listed under; the snapshot key stays the lineage.
+						context.pairKey(candidate.getFirstBranchKey(),
+								candidate.getFirstComponentKey(),
+								candidate.getSecondBranchKey(),
+								candidate.getSecondComponentKey()),
 						firstParameter, firstEvidence.getLiftedPeriodicParameter(),
 						firstEvidence.getIsolatingInterval(),
 						candidate.getLocalIsolation().getStatus(),

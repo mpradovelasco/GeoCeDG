@@ -64,7 +64,7 @@ public final class EvaluatorPairIntersectionCapability2D
 		for (ComponentAddress first : context.getFirstComponents()) {
 			SampledComponent firstSamples = sample(context, true, first);
 			for (ComponentAddress second : context.getSecondComponents()) {
-				String pairKey = LocusPairIntersectionContext2D.componentPairKey(
+				String pairKey = context.pairKey(
 						first.getBranchKey(), first.getComponentKey(),
 						second.getBranchKey(), second.getComponentKey());
 				SampledComponent secondSamples = firstSamples == null ? null
@@ -169,7 +169,7 @@ public final class EvaluatorPairIntersectionCapability2D
 				contact = ContactClass.TRANSVERSE_ESTABLISHED;
 			}
 		}
-		String lineage = LocusPairIntersectionContext2D.componentPairKey(
+		String lineage = context.pairKey(
 				first.getBranchKey(), first.getComponentKey(),
 				second.getBranchKey(), second.getComponentKey())
 				+ "/candidate-box-" + firstIndex + "-" + secondIndex;

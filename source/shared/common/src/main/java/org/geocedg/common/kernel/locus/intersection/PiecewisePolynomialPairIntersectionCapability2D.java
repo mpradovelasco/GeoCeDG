@@ -397,7 +397,7 @@ final class PiecewisePolynomialPairIntersectionCapability2D
 				contact = ContactClass.TRANSVERSE_ESTABLISHED;
 			}
 		}
-		String lineage = semanticLineage(root);
+		String lineage = semanticLineage(context, root);
 		List<IntersectionDiagnostic2D> diagnostics = List.of(
 				new IntersectionDiagnostic2D(
 						DiagnosticCode.PAIR_LOCAL_ISOLATION_NOT_ESTABLISHED,
@@ -418,11 +418,12 @@ final class PiecewisePolynomialPairIntersectionCapability2D
 				LineageEventKind.APPEARED, Collections.emptyList(), diagnostics);
 	}
 
-	private String semanticLineage(LocatedRoot root) {
+	private String semanticLineage(LocusPairIntersectionContext2D context,
+			LocatedRoot root) {
 		// Parameters distinguish diagnostic rich candidates only. With no
 		// continuation key and no established pair isolation, this material is
 		// deliberately not durable public identity authority.
-		return LocusPairIntersectionContext2D.componentPairKey(
+		return context.pairKey(
 				root.first.getBranchKey(), root.first.getComponentKey(),
 				root.second.getBranchKey(), root.second.getComponentKey())
 				+ "/semantic-polynomial-spans/"

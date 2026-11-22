@@ -324,3 +324,24 @@ version 7.
 
 **Admission.** Under `constructive-authority/v1` a root with a side on a region has no
 enclosure of its own: its admission is `NOT_ESTABLISHED`, and it is not point-admissible.
+
+## Corrections after block 3B (author authorization of 2026-11-22)
+
+**Status: AMENDMENT AUTHORIZED BY THE AUTHOR (2026-11-22,
+[authorization record](../../../docs/validation/post_r1_1_2_2_corrections_author_authorization_record.md));
+IMPLEMENTATION NOT YET APPROVED AS PRODUCT.** The sections above are not rewritten.
+
+### C1 — the revision-local key of a pair of places names its sources
+
+The key under which a pair of places of `Intersect(L1, L2)` is covered, listed as
+unresolved or named in a diagnostic carries, on each side, the durable identity of the
+source of that side, its branch key and the key of its place, and the two sides are in
+canonical order. Two sources that share a branch key and have two or more components each
+therefore have one key for every pair of components: the pairs (first `i`, second `j`)
+and (first `j`, second `i`) differ, and their search no longer fails. The key does not
+depend on the order of the caller.
+
+It is bookkeeping of one revision: it is no identity, it is never persisted and no token is
+derived from it. The side that the key of a conditioned region names (previous section) is
+kept and is redundant with it. This step changes no durable lineage, no selector and no
+token.
