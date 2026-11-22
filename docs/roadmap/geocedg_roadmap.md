@@ -4611,3 +4611,22 @@ Referencias:
 [registro de la autorización](../validation/post_r1_1_2_2_final_intervention_author_authorization_record.md),
 [informe final](../validation/post_r1_1_2_2_final_intervention_report.md) y
 [registro de progreso](../validation/post_r1_locus_repairs_progress.md).
+
+## 2026-11-22 — Comprobación de cierre de GeoCeDG 1.2.2
+
+Registro aditivo por decisión autoral de 2026-11-22. No altera fechas, aprobaciones ni
+resultados anteriores.
+
+- El autor acepta provisionalmente la recomendación de aceptación técnica del candidato
+  `bb341874b`, con sus limitaciones documentadas, y pide una única comprobación del ciclo
+  de vida de `LocusLength(w_2)` antes del cierre.
+- Autoriza únicamente la corrección mínima de un resultado auxiliar huérfano, si existe, y
+  sus pruebas. No autoriza optimizaciones geométricas, cambios de la política de
+  aislamiento ni ampliaciones funcionales. No abre ninguna fase ni objetivo nuevo.
+- No autoriza la ejecución de `FINAL`, la promoción a `main`, la etiqueta `v1.2.2` ni la
+  publicación.
+
+Referencias:
+[registro de la instrucción](../validation/post_r1_1_2_2_closing_check_author_instruction_record.md),
+[evidencia final de cierre](../validation/geocedg_1_2_2_closing_evidence.md) y
+[registro de progreso](../validation/post_r1_locus_repairs_progress.md).

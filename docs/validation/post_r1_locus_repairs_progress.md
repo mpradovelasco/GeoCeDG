@@ -535,6 +535,31 @@ etiqueta `v1.2.2`. Los instaladores no se instalaron.
 - El trabajo de `wip/post-3b-c2-structural-pair-lineage` no se ha promovido; la rama queda
   como estaba.
 
+## Checkpoint 12 — comprobación de cierre y candidato de cierre
+
+Instrucción del autor de 2026-11-22
+([registro](post_r1_1_2_2_closing_check_author_instruction_record.md)): aceptación
+provisional de la recomendación sobre `bb341874b` y una única comprobación del ciclo de vida
+de `LocusLength(w_2)`. Evidencia: [evidencia final de cierre](geocedg_1_2_2_closing_evidence.md).
+
+| Paso | Commit | Qué entrega |
+|---|---|---|
+| Instrucción | `9b12227b1` | registro de la instrucción del autor |
+| Corrección | `781629cb1` | la autoridad rica privada de un número de longitud se elimina con él si nadie más la lee (`locus-v2-metrics.md` §29); la redefinición queda como límite declarado |
+| Inventario | `a6562fa30` | `PostR1PrivateMetricAuthorityTest` y `PostR1LengthDeletionDesktopTest` en las selecciones `POST-R1-LOCUS` |
+
+**Candidato de cierre `a6562fa30dc7a468b8e62e16843f1ae2f440285b`**, árbol
+`aac4b541b28660233cccd295791bb1a82871d108`: `STATIC`
+`verification-443faf5422ea48d5a13ef0d366037c10`, `PHASE`
+`verification-6bb2140c1e714c28add05f4ee8d83416`, `INTEGRATION`
+`verification-b81359f645654b699a81d85f7473a19d`, `PACKAGING`
+`verification-675aa2ec12b248e7b0a9f3a31e105427`, todas `ACCEPTED / COMPLETE`. Regresión
+compartida 2 536 / 0; Desktop 1 573 con el fallo histórico conocido. Paquetes en
+`artifacts/packaging/windows-1.2.2-nc-candidate-4`. Humo del ejecutable real en dos
+arranques, con el ciclo de vida de `LocusLength(w_2)`: ≈ 6,3 s por cambio mientras existe,
+≈ 1,65 s tras eliminarlo, sin resultado rico huérfano, también tras reabrir. `FINAL` no se
+ejecutó; nada publicado; no hay etiqueta `v1.2.2`.
+
 ## Verificación del candidato
 
 ### Candidato de las precisiones focales y del trabajo preparatorio de I0
@@ -694,15 +719,12 @@ la base. Ninguna etiqueta creada ni movida; versión de producto sin cambiar (1.
 
 ## Pendiente, siguiente acción y reanudación
 
-- **Pendiente del autor:** la revisión del candidato final `bb341874b` y de todos los
-  pasos como producto (ninguno está aprobado); si la longitud total de un lugar
-  condicionado y el coste de `Intersect` se aceptan como limitaciones de 1.2.2; la
-  instalación del MSI y del EXE en un entorno aislado; `FINAL` y la publicación.
-- **No hecho:** instalación de los instaladores; `FINAL`; publicación en `main`, etiqueta
-  `v1.2.2` y release: ninguno autorizado. C6 no se implementó.
-- **Reanudación exacta:** el candidato final es `bb341874b`, con sus paquetes en
-  `artifacts/packaging/windows-1.2.2-nc-candidate-3`. No queda trabajo técnico abierto de
-  la intervención; lo siguiente es la decisión del autor.
+- **Pendiente del autor:** la aprobación del candidato de cierre `a6562fa30` como GeoCeDG
+  1.2.2; `FINAL`; la promoción a `main`, la etiqueta `v1.2.2` y la publicación; la prueba
+  de los instaladores en un entorno aislado.
+- **No hecho:** ninguna de esas acciones, por no estar autorizadas.
+- **Reanudación exacta:** el candidato de cierre es `a6562fa30`, con sus paquetes en
+  `artifacts/packaging/windows-1.2.2-nc-candidate-4`. No queda trabajo técnico abierto.
 - **Conservado:** el original del modelo, la evidencia R1 y las salidas de benchmark en
   `artifacts/benchmarks/post-r1-locus/` (ignoradas por Git). Dos worktrees separados, de la
   base y de `ab37fb5ff`, usados solo para medir el «antes», quedan en el scratchpad de la
