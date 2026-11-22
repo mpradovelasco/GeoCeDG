@@ -400,6 +400,93 @@ Candidato técnico, **no aprobado por el autor, no publicado y sin etiqueta**: c
   un worktree aparte, `STATIC`, `PHASE POST-R1-LOCUS` e `INTEGRATION` sobre el commit de
   inventario, y avance de la rama solo con resultado aceptado.
 
+## Checkpoint 10 — correcciones posteriores a 3B (C0 a C7)
+
+Ejecución del plan autorizado el 2026-11-22
+([registro](post_r1_1_2_2_corrections_author_authorization_record.md)). Ningún paso está
+aprobado como producto: un resultado automatizado aceptado no es aprobación autoral.
+
+| Paso | Commits | Qué entrega | Verificación ordinaria |
+|---|---|---|---|
+| **C0** | `12486d20f` | invariantes restituidos en las pruebas adaptadas; matriz CU2 con los nombres vigentes; **defecto de I3 corregido**: el total condicionado no sumaba las componentes certificadas y podía publicar 0,0 | sobre `12486d20f`: `STATIC` `verification-3f7a7210feef4df1812cc6bfd20ce287`, `PHASE` `verification-d1a620afffb34a9aab6e0219ca98c630`, `INTEGRATION` `verification-1445192a3dec40e79666bc06912362d5` |
+| **C1** | `412f26eb1` | clave local de par con la fuente de cada lado: `Intersect(L1, L2)` ya no falla con varias componentes por fuente | con C3 |
+| **C2** | — | **detenido**: la decisión DN-1 no resuelve la asociación que debía resolver. [Registro de la contradicción](post_r1_1_2_2_c2_pair_identity_contradiction_record.md), commit `0a543a20e`; trabajo conservado sin integrar en la rama local `wip/post-3b-c2-structural-pair-lineage` (`3bcdf3241`) | no verificado, no integrado |
+| **C3** | `805583e8a`, inventario `57a783682` | el aislamiento jacobiano publica la cobertura propia `SAMPLED_RECTANGLE_UNDER_HYPOTHESES`; no puede mezclarse con el vocabulario certificado | sobre `57a783682` (C1 y C3): `STATIC` `verification-a2a85b96d5e44771886c014e46ddadf7`, `PHASE` `verification-d1f287fb29d943d2bb713cf021e1644f`, `INTEGRATION` `verification-12bb58eb8c724fd38ac7bc4e2558c092` |
+| **C4** | `f8a3ffe77` | DN-2: la longitud de una ruta de una región condicionada es un número (`locus-v2-metrics.md` §28.3); `LocusLength(w_2, P, Q)` definido en el modelo del autor | con C5 |
+| **C5** | `e15915aaf`, inventario `9b67f49da` | DN-3: memo de evaluaciones anidadas por instancia de evaluador, con oráculo sin memo y modo de verificación; escenario `total` del arnés | sobre `9b67f49da` (C4 y C5): `STATIC` `verification-d0487b39f36a43228a92fa0a351ee35f`, `PHASE` `verification-7b445674e942479d82177eb51b329d76`, `INTEGRATION` `verification-ff3d1e4d7ddb48a7b9778ef1057a12fe` |
+| **C6** | — | estudio de la segunda optimización, **sin implementar**: [rendimiento, §9](../architecture/post_r1_locus_real_change_performance.md) | — |
+| **C7** | `a4b03d049` | candidato sucesor **parcial** (sin C2); prueba de estructura de las guías corregida | sobre `a4b03d049`: `STATIC` `verification-149b16cb50b745819f855fa214db00f3`, `PHASE` `verification-824d5d8ca76f4eca848a49c140b4309d`, `INTEGRATION` `verification-1b016b7c69ee4ab880833602a8cdd0e8`; `PACKAGING` `verification-d898ebed2ebb49c18521c8bda030b01a` |
+
+Todas las verificaciones: `ACCEPTED / COMPLETE`, código 0. C1 y C3, y C4 y C5, se
+verificaron juntos sobre su commit de inventario común; cada paso tiene su commit y sus
+pruebas. `FINAL` no se ejecutó.
+
+### Candidato sucesor parcial `a4b03d049eeccbc7ad8c48d7e359220d2545d23b`
+
+Árbol `875ab25dea27ed3d86968ad39e182ac11174aaf3`. Sucede a `b2c5aad35`, que no se acepta ni
+se publica. Es **parcial**: no contiene C2, que espera la decisión del autor, y no alcanza
+el objetivo de D-V6.
+
+- **Regresión compartida completa**, `gradlew :shared:common-jre:test --tests
+  org.geocedg.*`, sobre el código de C5: 2 517 pruebas, 0 fallos, con el memo activado, en
+  modo `verify` y sin memo.
+- **Regresión completa de Desktop**, `gradlew :desktop:desktop:test --tests
+  org.geocedg.*`, sobre `9b67f49da` en el checkout principal: 1 569 pruebas, 3 fallos. Uno
+  es el conocido de la base `9ccefdcfe`
+  (`PreG9BCu2AuthorModelConsumerTest.theCertificateIsTheSingleClosureAuthority`), que sigue
+  visible y sin tocar. Los otros dos eran de `PreG9BR5AGuideOutlineTest`: el candidato
+  `b2c5aad35` añadió la sección 6.9 a las guías y no actualizó esa prueba, que no está en
+  ninguna selección ordinaria; `a4b03d049` la corrige, y pasa.
+  `G9U1Revision3AlgebraEditingDiagnostic` pasa en el checkout principal.
+- **Paquetes NC** construidos desde `a4b03d049` limpio en
+  `artifacts/packaging/windows-1.2.2-nc-candidate-2` (ignorado por Git); `source_revision`
+  igual al candidato. ZIP `20320ff26636003417f83b460cc999a84007790dce6965126cb480eaec6088a1`,
+  MSI `688952915a93eef8800be330aba3a5cdf24d6868b88f763e89908f59a2d6772e`, EXE
+  `a95d2a57676a0261722beffef30f96d5ca373ac14496819528e8b43ebffc66fd`. Los paquetes de
+  `b2c5aad35` se conservan en `windows-1.2.2-nc-candidate`.
+- **Ejecutable empaquetado.** El `GeoCeDG.exe` del app-image, sin modificar, con su runtime
+  (Java 25.0.4) y con preferencias y almacenes redirigidos: ventana real, título
+  `GeoCeDG 1.2.2`, fecha `2026-11-22`, modelo del autor abierto desde la línea de órdenes;
+  `w_2` con 2 regiones y 176 celdas; `LocusLength(w_2, P, Q)` = 1,3140010178, número de
+  clase `ESTIMATED` con cobertura geométrica `INCOMPLETE`, usado en una fórmula; total sobre
+  las regiones sin definir; raíz de `Intersect(w_2, segmento)` con libro versión 7 y punto
+  definido; tras un cambio real la longitud se recalcula y al deshacerlo vuelve al mismo
+  valor; documento nativo guardado. El app-image queda idéntico (433 ficheros, mismo
+  resumen) tras el arranque.
+- **MSI.** Extracción administrativa (`msiexec /a`, que no instala ni registra nada) en el
+  scratchpad: 433 ficheros, idénticos a los del app-image salvo el marcador de jpackage
+  (`.package` en lugar de `.jpackage.xml`).
+- **No hecho: instalación del MSI y del EXE.** Comparten el código de actualización de la
+  instalación del autor y la sustituirían por un candidato sin aprobar. Es una comprobación
+  que debe hacer el autor, o autorizar expresamente en una máquina que lo permita.
+- **Rendimiento.** [Documento de rendimiento, §8 a §10](../architecture/post_r1_locus_real_change_performance.md).
+  El memo baja el total de un cambio real de 1,45 a 1,10 s (original) y de 1,72 a 1,25 s
+  (transporte), mediana, con resultados idénticos. **El objetivo de 1 s no se alcanza.** En
+  la aplicación empaquetada, una intersección de `w_2` con un segmento añade unos 6,5 s por
+  cambio real: hallazgo nuevo sobre el incremento I4.
+
+### Hallazgos de esta ejecución, para el autor
+
+1. **C2 no resuelve lo que debía** (decisión pendiente, alternativas en su registro). El
+   informe de revisión caracterizó mal el defecto: el escenario de los deslizadores es la
+   semántica de ranura aprobada de D2; el defecto real aparece al redefinir la lista de
+   piezas, y existe igual con ordinales y con el linaje E-3.
+2. **El total condicionado de I3 omitía las componentes certificadas** y, sin regiones,
+   publicaba 0,0 de clase `STRUCTURAL`. Lo ocultaba una de las pruebas que relajé. Corregido
+   en C0.
+3. **Una prueba de estructura de las guías fallaba desde el candidato anterior.** Corregida
+   en C7. La habría detectado la regresión completa de Desktop sobre aquel candidato, que no
+   se hizo.
+4. **El objetivo de D-V6 no se alcanza** con el memo. Bajar de 1 s pide más palancas, con
+   decisión propia (rendimiento §9).
+5. **La intersección sobre un lugar condicionado cuesta segundos por cambio real** en un
+   lugar de evaluación cara (rendimiento §10).
+6. **Banda no resuelta más estrecha que el paso mínimo** (configuración crítica, `lr2`): no
+   publica celdas y desde I2 no se dibuja nada en ella, ni marca; antes se dibujaba la
+   evidencia exploratoria. Es conforme al contrato §9 y su efecto visible es nulo (3·10⁻⁷
+   de parámetro), pero el dibujo ya no señala esa banda. Fijado en una prueba; sin cambio de
+   producto.
+
 ## Verificación del candidato
 
 ### Candidato de las precisiones focales y del trabajo preparatorio de I0
@@ -559,16 +646,17 @@ la base. Ninguna etiqueta creada ni movida; versión de producto sin cambiar (1.
 
 ## Pendiente, siguiente acción y reanudación
 
-- **Pendiente del autor:** revisión del candidato sucesor cuando se presente; revisión de
-  los incrementos I0 a I4T y de los pasos C0 a C7 como producto (ninguno está aprobado: un
-  resultado automatizado aceptado no es aprobación autoral); revisión de las reparaciones y
-  del modelo (bloques 1 y 2) y de F8; autorización de publicación si procede.
-- **No hecho:** `FINAL`; publicación en `main`, etiqueta `v1.2.2` y release: ninguno
-  autorizado.
-- **Reanudación exacta:** ejecutar en orden C0, C1, C2, C3, C4, C5, C6 (estudio) y C7 del
-  [informe](post_r1_1_2_2_candidate_review_report.md), §7, con las condiciones del
-  [registro de la autorización](post_r1_1_2_2_corrections_author_authorization_record.md).
-  La fecha de versión es `2026-11-22`.
+- **Pendiente del autor:** la decisión sobre C2 (alternativas α a δ de su registro); si el
+  objetivo de 1 s de D-V6 se persigue en 1.2.2 y con qué palancas; qué hacer con el coste
+  de la intersección sobre un lugar condicionado; la revisión del candidato sucesor y de
+  los pasos C0 a C7 y de I0 a I4T como producto (ninguno está aprobado); la instalación del
+  MSI y del EXE; autorización de publicación si procede.
+- **No hecho:** C2; la segunda optimización; instalación de los instaladores; `FINAL`;
+  publicación en `main`, etiqueta `v1.2.2` y release: ninguno autorizado.
+- **Reanudación exacta:** el candidato sucesor parcial es `a4b03d049`. Con la decisión del
+  autor sobre C2: aplicar la alternativa elegida (la rama `wip/post-3b-c2-structural-pair-lineage`
+  contiene la γ), cerrar el paso como los demás y construir el candidato definitivo, con
+  su regresión completa, sus paquetes, `PACKAGING` y el arranque del ejecutable.
 - **Conservado:** el original del modelo, la evidencia R1 y las salidas de benchmark en
   `artifacts/benchmarks/post-r1-locus/` (ignoradas por Git). Dos worktrees separados, de la
   base y de `ab37fb5ff`, usados solo para medir el «antes», quedan en el scratchpad de la

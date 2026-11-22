@@ -359,3 +359,39 @@ dos documentos haría falta además O2-b u O2-c, que tocan identidad o la inmuta
 evaluador y piden una decisión propia. Por eso no se ha implementado O2-a en este paso: se
 presenta al autor el conjunto, para que decida si el objetivo de 1 s con la evidencia
 consumida se persigue en 1.2.2 y con qué palancas.
+
+## 10. Medición en la aplicación empaquetada (paso C7)
+
+Agente de humo fuera del repositorio, cargado por el `GeoCeDG.exe` **sin modificar** del
+app-image del candidato `a4b03d049` (`JAVA_TOOL_OPTIONS`), con su runtime propio (Java
+25.0.4), ventana real, preferencias y almacenes redirigidos fuera del sistema del autor. El
+documento es el original del modelo. Cada cifra es el tiempo, en el hilo de eventos, de un
+cambio real de `excCyl` (+0,05 y vuelta) más la evidencia condicionada de `w_2` y `a_3`;
+la pintura en pantalla es asíncrona y no se incluye. Una sola ejecución de cada serie.
+
+| Estado del documento | Milisegundos por cambio, en orden |
+|---|---|
+| Tal como se guardó | 1 288, 1 282, 1 309, 1 094, 1 116, 1 033, 1 050, 995 |
+| Con una `LocusLength(w_2, P, Q)` | 1 345, 1 401, 1 283, 1 290, 1 315, 1 314 |
+| Con esa longitud y una `Intersect(w_2, segmento)` | 7 866, 7 799, 7 944, 7 954, 8 039, 8 120 |
+| Con la longitud, una fórmula, la intersección y un punto sobre su raíz | 7 874, 7 538, 7 910, 7 790, 7 849, 7 546, 8 451, 7 937 |
+
+- En la aplicación real, el documento tal como se guardó cuesta lo mismo que en el arnés:
+  en torno a 1,0–1,3 s por cambio real, por encima del objetivo.
+- Una longitud sobre una región de `w_2` añade unos 0,3 s por cambio real.
+- **Una intersección de `w_2` con un segmento añade unos 6,5 s por cambio real.** Es código
+  del incremento I4 (búsqueda de raíces sobre las regiones condicionadas), ya presente en el
+  candidato `b2c5aad35`, que no se había medido: la búsqueda evalúa el slice del lugar con
+  hueco varios miles de veces, y cada evaluación cuesta del orden de un milisegundo. El
+  memo del paso C5 abarata cada una de esas evaluaciones, no su número. Es una estimación
+  de la causa; el tiempo es medido.
+- El modelo del autor no contiene ninguna intersección sobre un lugar con hueco, de modo
+  que su coste no cambia. Pero la función que I4 entrega, intersecar un lugar condicionado,
+  no es interactiva hoy sobre un lugar de este coste por evaluación.
+
+Reducirlo pide que los consumidores de un mismo lugar y revisión no repitan sus
+evaluaciones (certificado, recorrido, intersección y métrica piden muchas veces los mismos
+parámetros) o que la búsqueda de raíces parta de los nodos de la evidencia condicionada en
+vez de volver a muestrear. Ninguna de las dos cosas está autorizada ni diseñada: la decisión
+DN-3 cubre el memo por instancia de evaluador, que no alcanza a los consumidores del lugar
+vivo. Queda como hallazgo para el autor.
