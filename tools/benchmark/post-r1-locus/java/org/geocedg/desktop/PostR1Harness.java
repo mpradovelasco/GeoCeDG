@@ -97,8 +97,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * segment)} and with a point on its root, each change by part, with the median and the 95th
  * percentile. The series with the intersection is sampled by Flight Recorder and attributed
  * as a call tree under the producer of the intersection, and the work counters of the locus
- * and of the intersection are read per change. A digest of every published root, with its
- * token and its classification, makes a run the oracle of another.</li>
+ * and of the intersection are read per change. A digest of every published value and of
+ * every published root, with its coordinates and its classification, makes a run the oracle
+ * of another; the token of a root names the result object of the run and is counted within
+ * the series.</li>
  * </ul>
  *
  * Latencies are telemetry of one machine and one short series. They are never a threshold.
@@ -701,6 +703,7 @@ class PostR1Harness {
 		long resolved = crossing == null ? 0
 				: count(crossing.getParentAlgorithm(), "getResolutionCount");
 		StringBuilder shape = new StringBuilder();
+		java.util.Set<String> tokens = new java.util.TreeSet<>();
 		for (double value : values) {
 			long start = System.nanoTime();
 			PreG9BCu0Corpus.setNumber(app, "excCyl", value);
@@ -740,9 +743,11 @@ class PostR1Harness {
 					text.append(';').append(Double.toHexString(root.getEvaluatedPoint().getX()))
 							.append(',').append(Double.toHexString(root.getEvaluatedPoint()
 									.getY())).append(',').append(root.getIdentity()
-											.getRootToken()).append(',').append(root
-													.getIdentity().getIdentityStatus())
+											.getIdentityStatus())
 							.append(',').append(root.getClassification().getContactClass());
+					// The token names the result object of this run, whose identity is
+					// allocated by the run: it is compared within the series, not across.
+					tokens.add(root.getIdentity().getRootToken());
 				}
 				digest.update(text.toString().getBytes(StandardCharsets.UTF_8));
 				shape.append(result.getFiniteSolutions().size());
@@ -759,7 +764,7 @@ class PostR1Harness {
 				+ (hole.getNestedEvaluatorCalls() - nested) / values.length
 				+ (crossing == null ? "" : " | resolutions=" + (count(
 						crossing.getParentAlgorithm(), "getResolutionCount") - resolved)
-						+ " roots per change=" + shape)
+						+ " roots per change=" + shape + " distinct tokens=" + tokens.size())
 				+ " | results=" + hex.substring(0, 32));
 	}
 
