@@ -1712,3 +1712,32 @@ conditioned regions (§28.2), with or without omitted bands. A total stays gover
 inadmissible for the total of a declared domain stay inadmissible for that total. The
 bypass of geometric completeness of §26.6 stays exclusive to its typed numeric traversal,
 and the bypass of this section to the typed evidence of a route in one region.
+
+## 29. Life cycle of the private rich authority of a number (GeoCeDG 1.2.2)
+
+Closing check of GeoCeDG 1.2.2, author instruction of 2026-11-22. It states an existing
+rule of §13 and §27 for one case and corrects its implementation; §1 to §28 are unchanged.
+Its author-approval status is recorded only in the closing record of 1.2.2, never here.
+
+A `LocusLength` command, and a `Length` command whose rich result takes the reserved name,
+creates one public number and one **private rich authority** for it (§27): an auxiliary rich
+result in the reserved namespace of the construction, which no name of the document can
+read. The authority is the dependency of that number alone.
+
+- **Deletion.** When the number is deleted, by the ordinary deletion of the application or
+  by the kernel, its private authority is removed with it if no other algorithm reads it.
+  An authority that another algorithm still reads stays, and goes with its last reader.
+  Until 1.2.2 the authority stayed in the document without a reader, was saved and
+  reopened, and was computed again at every change of its source. Undo restores the number
+  with its authority; Redo removes both.
+- **The private name is the criterion.** It is persisted, so a reopened document keeps the
+  distinction. A rich result with an ordinary name, as those that `LocusLength` created
+  before 1.2.0 and that a document names itself, is never removed with a number that reads
+  it: the document owns it.
+- **Declared limit: redefinition.** A redefinition of the number is a transaction of the
+  spatial identity that replaces the number and removes nothing else. The authority of
+  before stays in the document without a reader, as in 1.2.0 and 1.2.1, and the user
+  cannot reach it. Removing it belongs to the redefinition transaction and is not part of
+  1.2.2. To give up a length, delete it; to change it, delete it and create the new one.
+- Nothing else changes: the authority is computed, published, copied and persisted as
+  before, and a number with a reader keeps its value and its guarantee.

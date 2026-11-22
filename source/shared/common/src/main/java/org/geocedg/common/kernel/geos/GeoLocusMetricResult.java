@@ -73,6 +73,21 @@ public final class GeoLocusMetricResult extends GeoElement
 		setAuxiliaryObject(true);
 	}
 
+	/**
+	 * Whether this result is the private rich authority of one number ({@code
+	 * locus-v2-metrics.md} section 29): the authority that a {@code Length} or {@code
+	 * LocusLength} command created for its scalar, in the reserved namespace of the
+	 * construction, which no name of the document can read. The mark of the creation is not
+	 * persisted; the reserved label is, so a reopened document keeps the distinction.
+	 *
+	 * @return whether this result is a private authority
+	 */
+	public boolean isPrivateScalarAuthority() {
+		String label = getLabelSimple();
+		return internalAuthority
+				|| label != null && label.startsWith(LabelManager.HIDDEN_PREFIX);
+	}
+
 	@Override
 	public String getDefaultLabel() {
 		return internalAuthority ? cons.getIndexLabel(LabelManager.HIDDEN_PREFIX)

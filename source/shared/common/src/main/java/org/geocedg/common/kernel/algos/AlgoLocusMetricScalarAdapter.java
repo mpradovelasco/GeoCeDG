@@ -82,6 +82,30 @@ public final class AlgoLocusMetricScalarAdapter extends AlgoElement {
 		return richInput;
 	}
 
+	/**
+	 * Removes the number and, with it, the private rich authority that its command created
+	 * for it alone when nothing else reads that authority ({@code locus-v2-metrics.md}
+	 * section 29). Otherwise the authority would stay in the document without a reader and
+	 * go on computing at every change. A rich result that the document names itself, and an
+	 * authority that another algorithm still reads, stay. A number removed to be replaced by
+	 * a redefinition, or during a file read, leaves its authority as before: the redefinition
+	 * transaction owns that removal, and section 29 records the limitation.
+	 */
+	@Override
+	public void remove() {
+		if (removed) {
+			return;
+		}
+		boolean replacing = cons.isRemovingGeoToReplaceIt(scalarOutput)
+				|| cons.isRemovingGeoToReplaceIt();
+		super.remove();
+		if (!replacing && !cons.isFileLoading() && richInput.isLabelSet()
+				&& richInput.isPrivateScalarAuthority()
+				&& richInput.getAlgorithmList().isEmpty()) {
+			richInput.remove();
+		}
+	}
+
 	/** Resolves the rich authority of a metric result selected in a frontend. */
 	public static GeoLocusMetricResult richResultOf(GeoElement result) {
 		if (result instanceof GeoLocusMetricResult rich) {
