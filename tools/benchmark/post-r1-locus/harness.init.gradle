@@ -25,6 +25,10 @@ allprojects { p ->
                 if (props['postR1NestedMemo'] != null) {
                     t.systemProperty('geocedg.nestedEvaluationMemo', props['postR1NestedMemo'])
                 }
+                // One configuration of the 'intersect' scenario, or all of them.
+                if (props['postR1Configuration'] != null) {
+                    t.systemProperty('geocedg.postr1.configuration', props['postR1Configuration'])
+                }
                 t.maxHeapSize = '2g'
                 t.outputs.upToDateWhen { false }
             }

@@ -2721,10 +2721,10 @@ public final class LocusIntersectionTokenLedger2D {
 		}
 
 		private Entry withStatus(Status newStatus) {
-			return new Entry(solutionLineage, branchLineage, continuationKey,
+			return keepToken(new Entry(solutionLineage, branchLineage, continuationKey,
 					addressProof, incarnation, newStatus, currentRootBinding,
 					pairRootBinding, pairAddressProof, pairCopyEvidence, branchFrameOrigin,
-					pairOrigins);
+					pairOrigins));
 		}
 
 		/** @return the same scalar entry as a branch-frame binding with its origin */
@@ -2734,10 +2734,10 @@ public final class LocusIntersectionTokenLedger2D {
 				throw new IllegalArgumentException(
 						"Only a branch-frame binding records an origin");
 			}
-			return new Entry(solutionLineage, branchLineage, continuationKey,
+			return keepToken(new Entry(solutionLineage, branchLineage, continuationKey,
 					addressProof, incarnation, status, currentRootBinding,
 					pairRootBinding, pairAddressProof, pairCopyEvidence,
-					Optional.of(origin), pairOrigins);
+					Optional.of(origin), pairOrigins));
 		}
 
 		private Entry withAddressProof(
@@ -2745,25 +2745,25 @@ public final class LocusIntersectionTokenLedger2D {
 			if (pairRootBinding.isPresent()) {
 				throw new IllegalArgumentException("Pair entry cannot use scalar proof");
 			}
-			return new Entry(solutionLineage, branchLineage, continuationKey,
+			return keepToken(new Entry(solutionLineage, branchLineage, continuationKey,
 					newAddressProof, incarnation, status, currentRootBinding,
 					Optional.empty(), null, Optional.empty(), branchFrameOrigin,
-					Optional.empty());
+					Optional.empty()));
 		}
 
 		private Entry withPairAddressProof(PairRootAddressProof2D newProof) {
-			return new Entry(solutionLineage, branchLineage, continuationKey,
+			return keepToken(new Entry(solutionLineage, branchLineage, continuationKey,
 					null, incarnation, status, Optional.empty(), pairRootBinding,
-					newProof, pairCopyEvidence, Optional.empty(), pairOrigins);
+					newProof, pairCopyEvidence, Optional.empty(), pairOrigins));
 		}
 
 		private Entry withCurrentRootBinding(String contract,
 				IntersectionRootDeterministicSelector2D selector) {
-			return new Entry(solutionLineage, branchLineage, continuationKey,
+			return keepToken(new Entry(solutionLineage, branchLineage, continuationKey,
 					addressProof, incarnation, status,
 					Optional.of(new CurrentRootAllocationKey(
 							requireText(contract, "Continuation contract"),
-							java.util.Objects.requireNonNull(selector))));
+							java.util.Objects.requireNonNull(selector)))));
 		}
 
 		private String semanticKey() {
@@ -2805,6 +2805,20 @@ public final class LocusIntersectionTokenLedger2D {
 							other.addressProof);
 		}
 
+		/**
+		 * The token of this entry under one material, computed once: it is a function of
+		 * the material, the lineage texts and the incarnation, which no copy of the entry
+		 * changes. It is a memo of a pure function and no state of the entry.
+		 */
+		private Material tokenMaterial;
+		private String token;
+
+		private Entry keepToken(Entry copy) {
+			copy.tokenMaterial = tokenMaterial;
+			copy.token = token;
+			return copy;
+		}
+
 		private IntersectionTokenLineage2D lineage() {
 			return new IntersectionTokenLineage2D(solutionLineage, branchLineage,
 					continuationKey);
@@ -2827,8 +2841,13 @@ public final class LocusIntersectionTokenLedger2D {
 		}
 
 		private String token(Entry entry) {
-			return LocusSemanticIntersectionToken2D.create(owner, sourcePair,
-					constructive, topology, entry.lineage(), entry.incarnation);
+			if (entry.token == null || entry.tokenMaterial != this
+					&& !equals(entry.tokenMaterial)) {
+				entry.token = LocusSemanticIntersectionToken2D.create(owner, sourcePair,
+						constructive, topology, entry.lineage(), entry.incarnation);
+				entry.tokenMaterial = this;
+			}
+			return entry.token;
 		}
 
 		@Override

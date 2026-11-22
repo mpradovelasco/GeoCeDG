@@ -91,6 +91,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * and of their sum, with a digest of what every locus publishes at every step. The mode of
  * the memo of nested evaluations is read from the process and printed, so that a run
  * without the memo is the oracle of a run with it: equal digests, different times.</li>
+ * <li>{@code intersect}: the cost that one intersection on a conditioned locus adds to a real
+ * change of {@code excCyl} (final corrective intervention of 1.2.2). On the original, the
+ * same series of real changes is measured without the consumer, with {@code Intersect(w_2,
+ * segment)} and with a point on its root, each change by part, with the median and the 95th
+ * percentile. The series with the intersection is sampled by Flight Recorder and attributed
+ * as a call tree under the producer of the intersection, and the work counters of the locus
+ * and of the intersection are read per change. A digest of every published root, with its
+ * token and its classification, makes a run the oracle of another.</li>
  * </ul>
  *
  * Latencies are telemetry of one machine and one short series. They are never a threshold.
@@ -99,7 +107,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 		PreG9BR6PlusD1DocumentUnitsTest.EmptyUnitPreferences.class,
 		PreG9BR6PlusD1DocumentUnitsTest.DesktopLogger.class})
 @EnabledIfSystemProperty(named = "geocedg.postr1.harness",
-		matches = "variant|benchmark|evidence|profile|conditioned|total")
+		matches = "variant|benchmark|evidence|profile|conditioned|total|intersect")
 class PostR1Harness {
 	private static final String ORIGINAL = "InterCilConoObliqueFinal_2.cedg";
 	private static final String PACKAGE = "models/regression/post-r1-locus-on-intersection";
@@ -124,6 +132,7 @@ class PostR1Harness {
 				? variant(work, output) : "evidence".equals(scenario) ? evidence(work)
 						: "conditioned".equals(scenario) ? conditioned(work)
 						: "total".equals(scenario) ? total(work)
+						: "intersect".equals(scenario) ? intersect(work, output)
 						: "profile".equals(scenario) ? profile(work, output) : benchmark(work));
 		Files.write(output.resolve(scenario + ".txt"), report, StandardCharsets.UTF_8);
 		assertTrue(!report.isEmpty());
@@ -532,6 +541,295 @@ class PostR1Harness {
 					new double[] {4.2, value, 4.2, value, 4.2, value});
 		}
 		return report;
+	}
+
+	private static List<String> intersect(Path work, Path output) throws Exception {
+		List<String> report = new ArrayList<>();
+		report.add("# cost that each consumer of the conditioned locus w_2 adds to a real change"
+				+ " of excCyl. Every configuration is a fresh copy of the original with the"
+				+ " consumers named. Times in ms: graph = update of the dependency graph, which"
+				+ " contains the consumers; evidence = conditioned evidence of every locus;"
+				+ " paint = off-screen image of Graphics 1.");
+		report.add("jvm=" + System.getProperty("java.vm.name") + " "
+				+ System.getProperty("java.version") + " os=" + System.getProperty("os.name")
+				+ " processors=" + Runtime.getRuntime().availableProcessors()
+				+ " nested-evaluation-memo=" + System.getProperty(
+						"geocedg.nestedEvaluationMemo", "on"));
+		String only = System.getProperty("geocedg.postr1.configuration", "");
+		// length: LocusLength between two points of one region; total: LocusLength of the
+		// whole locus; cross: Intersect with a segment across the first region; point: a
+		// point on the root of that intersection.
+		for (String configuration : new String[] {"none", "length", "total", "cross",
+				"cross+point", "length+total+cross+point"}) {
+			if (!only.isEmpty() && !only.equals(configuration)) {
+				continue;
+			}
+			intersectConfiguration(report, work, output, configuration);
+		}
+		return report;
+	}
+
+	private static void intersectConfiguration(List<String> report, Path work, Path output,
+			String configuration) throws Exception {
+		AppGeoCeDG app = open(work);
+		EuclidianView view = app.getEuclidianView1();
+		((EuclidianViewD) view).getJPanel().setSize(VIEW_WIDTH, VIEW_HEIGHT);
+		view.updateSize();
+		view.setCoordSystem(VIEW_X_ZERO, VIEW_Y_ZERO, VIEW_SCALE, VIEW_SCALE);
+		paint(view);
+		double value = ((GeoNumeric) app.getKernel().lookupLabel("excCyl")).getValue();
+		double[] warmUp = new double[4];
+		double[] regular = new double[12];
+		for (int index = 0; index < regular.length; index++) {
+			regular[index] = value + (index % 2 == 0 ? 0.05 : 0);
+		}
+		for (int index = 0; index < warmUp.length; index++) {
+			warmUp[index] = value + (index % 2 == 0 ? 0.05 : 0);
+		}
+		GeoLocusV2 hole = PreG9BCu0Corpus.locus(app, "w_2");
+		LocusConditionedEvidence2D evidence = hole.getConditionedEvidence("generator.main");
+		LocusInterval2D region = evidence.getRegions().get(0);
+		double span = region.getUpper() - region.getLower();
+		List<String> parts = Arrays.asList(configuration.split("\\+"));
+		String crossing = null;
+		if (parts.contains("length")) {
+			command(app, "CUP=Point(w_2,\"generator.main\"," + (region.getLower() + 0.3 * span)
+					+ ")");
+			command(app, "CUQ=Point(w_2,\"generator.main\"," + (region.getLower() + 0.7 * span)
+					+ ")");
+			command(app, "cuL=LocusLength(w_2,CUP,CUQ)");
+			command(app, "cuF=2*cuL+1");
+		}
+		if (parts.contains("total")) {
+			command(app, "cuT=LocusLength(w_2)");
+		}
+		if (parts.contains("cross")) {
+			// A segment across w_2 in the middle of its first conditioned region.
+			double at = region.getLower() + 0.5 * span;
+			double[] here = holePoint(hole, at);
+			double[] before = holePoint(hole, at - 1e-4);
+			double[] after = holePoint(hole, at + 1e-4);
+			double norm = Math.hypot(after[0] - before[0], after[1] - before[1]);
+			double nx = -(after[1] - before[1]) / norm * 0.05;
+			double ny = (after[0] - before[0]) / norm * 0.05;
+			command(app, "CUA=(" + (here[0] - nx) + "," + (here[1] - ny) + ")");
+			command(app, "CUB=(" + (here[0] + nx) + "," + (here[1] + ny) + ")");
+			command(app, "cuS=Segment(CUA,CUB)");
+			long created = System.nanoTime();
+			command(app, "cuV=Intersect(w_2,cuS)");
+			report.add(configuration + " | creation of Intersect(w_2, segment) ms="
+					+ String.format(Locale.ROOT, "%.0f", (System.nanoTime() - created) / 1e6));
+			crossing = "cuV";
+		}
+		if (parts.contains("point")) {
+			GeoLocusIntersectionResult rich = (GeoLocusIntersectionResult) app.getKernel()
+					.lookupLabel("cuV");
+			command(app, "CUR=Intersect(cuV,\"" + rich.getIntersectionResult()
+					.getFiniteSolutions().get(0).getIdentity().getRootToken() + "\")");
+		}
+		intersectSeries(report, app, view, configuration + " | warm-up (not a measure)",
+				warmUp, crossing);
+		Path recordingFile = output.resolve("intersect-" + configuration.replace('+', '-')
+				+ ".jfr");
+		try (Recording recording = new Recording(Configuration.getConfiguration("profile"))) {
+			recording.start();
+			intersectSeries(report, app, view, configuration + " | regular, +0.05 and back",
+					regular, crossing);
+			recording.stop();
+			recording.dump(recordingFile);
+		}
+		if (!"none".equals(configuration)) {
+			attribute(report, configuration, recordingFile);
+			for (String root : new String[] {"AlgoLocusIntersectionV2.compute",
+					"AlgoLocusMetricV2.compute", "AlgoLocusBetweenMetricV2.compute"}) {
+				tree(report, configuration, recordingFile, root, 7, 3.0);
+			}
+		}
+		Files.deleteIfExists(recordingFile);
+		if (crossing != null) {
+			// The same consumers where the locus changes its regions, and where it is lost.
+			intersectSeries(report, app, view, configuration
+					+ " | across the bite (3.60 / 3.70 / 3.80)",
+					new double[] {3.60, 3.70, 3.60, 3.70, 3.80, 3.60, 3.70, 3.80, value},
+					crossing);
+			intersectSeries(report, app, view, configuration
+					+ " | loss and recovery (4.2 / saved)",
+					new double[] {4.2, value, 4.2, value, 4.2, value}, crossing);
+		}
+		for (String label : new String[] {"cuL", "cuF", "cuT", "CUR"}) {
+			GeoElement geo = app.getKernel().lookupLabel(label);
+			if (geo != null) {
+				report.add(configuration + " | " + label + " defined=" + geo.isDefined()
+						+ " value=" + geo.toValueString(
+								org.geogebra.common.kernel.StringTemplate.maxPrecision));
+			}
+		}
+	}
+
+	private static double[] holePoint(GeoLocusV2 locus, double parameter) {
+		LocusEvaluation2D evaluation = locus.evaluate("generator.main", parameter,
+				LocusEvaluationSession2D.reference());
+		return new double[] {evaluation.getPoint().getX(), evaluation.getPoint().getY()};
+	}
+
+	private static void command(AppGeoCeDG app, String text) {
+		GeoElementND[] result = app.getKernel().getAlgebraProcessor().processAlgebraCommand(
+				text, false);
+		if (result == null || result.length == 0) {
+			throw new IllegalStateException("Command produced nothing: " + text);
+		}
+	}
+
+	/**
+	 * One series of real changes with or without an intersection on w_2: each change by part,
+	 * the work counters of w_2 and of the intersection, and a digest of the published roots.
+	 */
+	private static void intersectSeries(List<String> report, AppGeoCeDG app,
+			EuclidianView view, String name, double[] values, String intersection)
+			throws Exception {
+		java.security.MessageDigest digest = java.security.MessageDigest.getInstance(
+				"SHA-256");
+		List<Double> graph = new ArrayList<>();
+		List<Double> evidence = new ArrayList<>();
+		List<Double> painting = new ArrayList<>();
+		List<Double> sum = new ArrayList<>();
+		LocusInstrumentation2D hole = PreG9BCu0Corpus.locus(app, "w_2").getInstrumentation();
+		long calls = hole.getEvaluatorCalls();
+		long nested = hole.getNestedEvaluatorCalls();
+		GeoElement crossing = intersection == null ? null
+				: app.getKernel().lookupLabel(intersection);
+		long resolved = crossing == null ? 0
+				: count(crossing.getParentAlgorithm(), "getResolutionCount");
+		StringBuilder shape = new StringBuilder();
+		for (double value : values) {
+			long start = System.nanoTime();
+			PreG9BCu0Corpus.setNumber(app, "excCyl", value);
+			long updated = System.nanoTime();
+			for (String label : LOCI) {
+				GeoElement geo = app.getKernel().lookupLabel(label);
+				if (geo instanceof GeoLocusV2
+						&& ((GeoLocusV2) geo).getSemanticDefinition() != null) {
+					((GeoLocusV2) geo).getConditionedEvidence("generator.main");
+				}
+			}
+			long evidenced = System.nanoTime();
+			paint(view);
+			long painted = System.nanoTime();
+			graph.add((updated - start) / 1e6);
+			evidence.add((evidenced - updated) / 1e6);
+			painting.add((painted - evidenced) / 1e6);
+			sum.add((painted - start) / 1e6);
+			observe(digest, app);
+			for (String label : new String[] {"cuL", "cuF", "cuT", "CUR"}) {
+				GeoElement consumer = app.getKernel().lookupLabel(label);
+				if (consumer != null) {
+					digest.update((label + "=" + consumer.isDefined() + ":"
+							+ consumer.toValueString(
+									org.geogebra.common.kernel.StringTemplate.maxPrecision))
+							.getBytes(StandardCharsets.UTF_8));
+				}
+			}
+			if (crossing instanceof GeoLocusIntersectionResult) {
+				LocusIntersectionResult2D result = ((GeoLocusIntersectionResult) crossing)
+						.getIntersectionResult();
+				StringBuilder text = new StringBuilder(String.valueOf(
+						result.getComputationStatus())).append('/').append(
+								result.getGeometryKind()).append('/').append(
+										result.getCompletenessEvidence().getCompleteness());
+				for (LocusIntersectionSolution2D root : result.getFiniteSolutions()) {
+					text.append(';').append(Double.toHexString(root.getEvaluatedPoint().getX()))
+							.append(',').append(Double.toHexString(root.getEvaluatedPoint()
+									.getY())).append(',').append(root.getIdentity()
+											.getRootToken()).append(',').append(root
+													.getIdentity().getIdentityStatus())
+							.append(',').append(root.getClassification().getContactClass());
+				}
+				digest.update(text.toString().getBytes(StandardCharsets.UTF_8));
+				shape.append(result.getFiniteSolutions().size());
+			}
+		}
+		StringBuilder hex = new StringBuilder();
+		for (byte part : digest.digest()) {
+			hex.append(String.format("%02x", part));
+		}
+		report.add(name + " | changes=" + values.length + " | graph " + partSummary(graph)
+				+ " | evidence " + partSummary(evidence) + " | paint " + partSummary(painting)
+				+ " | total " + partSummary(sum) + " | w_2 evaluator calls per change="
+				+ (hole.getEvaluatorCalls() - calls) / values.length + " nested="
+				+ (hole.getNestedEvaluatorCalls() - nested) / values.length
+				+ (crossing == null ? "" : " | resolutions=" + (count(
+						crossing.getParentAlgorithm(), "getResolutionCount") - resolved)
+						+ " roots per change=" + shape)
+				+ " | results=" + hex.substring(0, 32));
+	}
+
+	/**
+	 * Call tree of the event-thread samples below the outermost frame that contains a marker:
+	 * the share of each callee path, to a depth, as a percentage of the samples under the
+	 * marker.
+	 */
+	private static void tree(List<String> report, String document, Path recordingFile,
+			String marker, int depth, double minimumShare) throws Exception {
+		Map<String, Integer> paths = new TreeMap<>();
+		int under = 0;
+		int all = 0;
+		for (RecordedEvent event : RecordingFile.readAllEvents(recordingFile)) {
+			if (!"jdk.ExecutionSample".equals(event.getEventType().getName())) {
+				continue;
+			}
+			RecordedStackTrace trace = event.getStackTrace();
+			if (trace == null || event.getThread("sampledThread") == null || !String.valueOf(
+					event.getThread("sampledThread").getJavaName()).startsWith("AWT-EventQueue")) {
+				continue;
+			}
+			all++;
+			List<String> frames = new ArrayList<>();
+			for (RecordedFrame frame : trace.getFrames()) {
+				String type = frame.getMethod().getType().getName();
+				frames.add(type.substring(type.lastIndexOf('.') + 1) + "."
+						+ frame.getMethod().getName());
+			}
+			int root = -1;
+			for (int index = frames.size() - 1; index >= 0; index--) {
+				if (frames.get(index).contains(marker)) {
+					root = index;
+					break;
+				}
+			}
+			if (root < 0) {
+				continue;
+			}
+			under++;
+			StringBuilder path = new StringBuilder();
+			String last = frames.get(root);
+			int level = 0;
+			for (int index = root - 1; index >= 0 && level < depth; index--) {
+				// Recursion and lambdas of one method are one level.
+				String frame = frames.get(index);
+				String owner = frame.replaceAll("\\.lambda\\$([A-Za-z0-9_]+)\\$\\d+", ".$1");
+				if (owner.equals(last)) {
+					continue;
+				}
+				last = owner;
+				path.append(level == 0 ? "" : " > ").append(owner);
+				paths.merge(path.toString(), 1, Integer::sum);
+				level++;
+			}
+		}
+		if (under == 0) {
+			return;
+		}
+		report.add(String.format(Locale.ROOT,
+				"%s | tree | %s | samples under it=%d of %d (%.1f%%)", document, marker, under,
+				all, 100.0 * under / Math.max(1, all)));
+		int total = under;
+		for (Map.Entry<String, Integer> entry : paths.entrySet()) {
+			double share = 100.0 * entry.getValue() / Math.max(1, total);
+			if (share >= minimumShare) {
+				report.add(String.format(Locale.ROOT, "%s | tree | %5.1f%% | %s", document,
+						share, entry.getKey()));
+			}
+		}
 	}
 
 	/** One series of real changes, each measured by part, with a digest of its results. */
