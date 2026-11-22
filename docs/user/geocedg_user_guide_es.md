@@ -1274,8 +1274,9 @@ Sobre una región condicionada puede:
 
 - colocar un punto, por comando o con un clic, y arrastrarlo a lo largo de la
   región; el punto se detiene al llegar a una banda;
-- medir la longitud entre dos puntos de la misma región, y la longitud total,
-  que se publica como subtotal con la lista de bandas no incluidas;
+- medir la longitud entre dos puntos de la misma región, que es un número y se
+  puede usar en fórmulas, y la longitud total, que se publica como subtotal con
+  la lista de bandas no incluidas y no es un número;
 - intersecar el trazado con una recta, un segmento, una cónica u otro Locus V2,
   y crear puntos sobre las raíces;
 - trasladarlo, girarlo, reflejarlo u homotetizarlo; la imagen hereda las
@@ -1285,8 +1286,11 @@ Sobre una región condicionada puede:
 Todos estos resultados son **estimaciones bajo hipótesis declaradas**, no
 resultados certificados. Un dibujo que parece cerrado o entero no se declara
 completo, una intersección sobre una región condicionada nunca afirma haber
-encontrado todas las raíces, y una longitud condicionada no alimenta fórmulas
-como un número ordinario. Si una raíz pasa de una región a otra, el punto
+encontrado todas las raíces, y la longitud entre dos puntos de una región,
+aunque se use como número, sigue siendo una estimación: no demuestra que el
+trazado exista ni que sea continuo entre ellos. Si los dos puntos quedan en
+regiones distintas o uno cae en una banda, la longitud queda sin definir. Si
+una raíz pasa de una región a otra, el punto
 creado sobre ella queda sin definir hasta que la raíz vuelve a la región donde
 se creó: GeoCeDG no lo traslada a otra raíz por proximidad.
 

@@ -64,5 +64,16 @@ public enum MetricDiagnosticCode2D {
 	/** A position inside a band or an unexplored cell is valid and has no route. */
 	POSITION_IN_BAND,
 	/** The two positions lie in different conditioned regions. */
-	POSITIONS_IN_DIFFERENT_REGIONS
+	POSITIONS_IN_DIFFERENT_REGIONS,
+	/**
+	 * Section 28.3 (decision DN-2): the length of a route that lies in one conditioned
+	 * region is admissible as a number; informational, with its hypotheses, its numeric
+	 * coverage and what makes it current. It never certifies.
+	 */
+	CONDITIONED_ROUTE_ADMITTED,
+	/**
+	 * Section 28.3: the route lies in one conditioned region but the certificate of the
+	 * branch names, on it, a cause under which no conditioned length is a number.
+	 */
+	CONDITIONED_ROUTE_NOT_ADMISSIBLE
 }

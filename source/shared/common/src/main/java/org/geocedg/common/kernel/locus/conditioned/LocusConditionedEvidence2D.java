@@ -217,6 +217,22 @@ public final class LocusConditionedEvidence2D {
 
 	/**
 	 * @param parameter canonical parameter
+	 * @return the region whose closed range contains the parameter, or {@code null}. Unlike
+	 *         {@link #regionOf}, an end of a region is in the region even where a band
+	 *         shares it: its node is an evaluated valid sample, the end of a span, so a
+	 *         route may start or end there ({@code locus-v2-metrics.md} section 28.1)
+	 */
+	public LocusInterval2D regionAt(double parameter) {
+		for (LocusInterval2D region : getRegions()) {
+			if (region.getLower() <= parameter && parameter <= region.getUpper()) {
+				return region;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param parameter canonical parameter
 	 * @return the first cell at the parameter that is not a span, or {@code null}
 	 */
 	public LocusConditionedCell2D bandAt(double parameter) {

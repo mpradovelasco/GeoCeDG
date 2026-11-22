@@ -409,10 +409,88 @@ public final class LocusMetricEngine2D {
 		for (LocusMetricRouteSegment2D segment : route.getOrderedRouteSegments()) {
 			if (LocusMetricComponentKey2D.isDeclared(segment.getResolvedValidComponentKey())) {
 				// A route on a conditioned region: geometric coverage is not complete.
-				return between.asConditioned(Collections.emptyList());
+				return conditionedBetween(between, definition,
+						definition.getBranch(route.getBranchKey()), route);
 			}
 		}
 		return between;
+	}
+
+	/**
+	 * The causes of an unresolved coverage under which no conditioned length is a number
+	 * ({@code locus-v2-metrics.md} section 28.3): those with which the certificate names a
+	 * possible event on the route or an evaluator that does not reproduce the document.
+	 */
+	private static final java.util.Set<LocusCoverageCause2D> SCALAR_EXCLUDED_CAUSES =
+			java.util.EnumSet.of(LocusCoverageCause2D.INHERITED_TOLERANCE_BEHAVIOUR,
+					LocusCoverageCause2D.SELECTION_NOT_REPRODUCED,
+					LocusCoverageCause2D.RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED,
+					LocusCoverageCause2D.DEGENERATE_CONFIGURATION,
+					LocusCoverageCause2D.COMPUTATIONAL_DEPENDENCY_FAILURE,
+					LocusCoverageCause2D.UNLABELLED_COINCIDENT_OUTPUT);
+
+	/**
+	 * Publication of a length measured on a route of a conditioned region (ADR 0042;
+	 * section 28 of the metric contract). The value is always declared conditioned, with
+	 * incomplete geometric coverage. It carries the evidence that admits it as a number
+	 * (section 28.3, decision DN-2) when the whole route lies in one region, every cell that
+	 * it travels is a span, and no coverage of the branch on it has an excluded cause.
+	 * The estimate, its error and its tolerance are compared by the result itself.
+	 */
+	private LocusMetricResult2D conditionedBetween(LocusMetricResult2D between,
+			LocusDefinition2D definition, LocusBranch2D branch, LocusMetricRoute2D route) {
+		LocusConditionedEvidence2D evidence = conditioned.apply(branch.getBranchKey());
+		if (evidence == null
+				|| between.getComputationStatus() != MetricComputationStatus.SUCCESS) {
+			return between.asConditioned(Collections.emptyList());
+		}
+		LocusInterval2D region = null;
+		double lower = Double.POSITIVE_INFINITY;
+		double upper = Double.NEGATIVE_INFINITY;
+		java.util.Set<String> classes = new java.util.TreeSet<>();
+		for (LocusMetricRouteSegment2D segment : route.getOrderedRouteSegments()) {
+			double from = Math.min(segment.getStartCanonicalParameter(),
+					segment.getEndCanonicalParameter());
+			double to = Math.max(segment.getStartCanonicalParameter(),
+					segment.getEndCanonicalParameter());
+			LocusInterval2D at = evidence.regionAt(from);
+			if (at == null || to > at.getUpper() || region != null
+					&& (region.getLower() != at.getLower()
+							|| region.getUpper() != at.getUpper())) {
+				return between.asConditioned(Collections.emptyList());
+			}
+			region = at;
+			for (LocusConditionedCell2D cell : evidence.cellsBetween(from, to)) {
+				if (cell.getUpper() <= from || cell.getLower() >= to) {
+					// A cell that only touches an end of the stretch is not travelled.
+					continue;
+				}
+				if (!cell.getKind().isSpan()) {
+					return between.asConditioned(Collections.emptyList());
+				}
+				classes.add(String.valueOf(cell.getSpanClass()));
+			}
+			for (LocusExistenceStructure2D.Coverage item
+					: branch.getExistenceStructure().getCoverage()) {
+				if (item.getInterval().getUpper() > from && item.getInterval().getLower() < to
+						&& SCALAR_EXCLUDED_CAUSES.contains(item.getCause())) {
+					return between.asConditioned(Collections.singletonList(
+							new MetricDiagnostic2D(
+									MetricDiagnosticCode2D.CONDITIONED_ROUTE_NOT_ADMISSIBLE,
+									"The certificate of the branch names "
+											+ item.getCause().name() + " on the route: the "
+											+ "length stays a rich result and is no number")));
+				}
+			}
+			lower = Math.min(lower, from);
+			upper = Math.max(upper, to);
+		}
+		if (region == null) {
+			return between.asConditioned(Collections.emptyList());
+		}
+		return between.asConditionedRoute(new LocusMetricConditionedRoute2D(
+				branch.getBranchKey(), region, lower, upper, evidence.getContentIdentity(),
+				evidence.getPolicyVersion(), definition.getSemanticRevision(), classes));
 	}
 
 	/** State of the estimate of the conditioned region that a route segment names. */

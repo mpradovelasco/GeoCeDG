@@ -1616,6 +1616,10 @@ it.
   `POSITION_IN_BAND`. Positions in two regions: `POSITIONS_IN_DIFFERENT_REGIONS`, with the
   kinds of the bands between them. A route whose requested direction leaves the region:
   `ROUTE_CROSSES_BAND`. None publishes a value.
+- A position at an end of a region is in the region, also where a band shares that end:
+  its node is an evaluated valid sample, the end of a span. A whole region is therefore
+  measured between its two ends, and that node is no position of the next region
+  (corrections after block 3B, author authorization of 2026-11-22).
 - Equal positions follow the existing same-position policies. A full cycle, and a route
   across the seam, exist only on a region that covers the whole period of a periodic
   provider with no band and with agreeing seam nodes; it is declared closed-conditioned and
@@ -1645,15 +1649,66 @@ measured over the conditioned evidence that its producer publishes.
 - A result is computed again when the producer publishes another content of the evidence:
   its states are keyed by the content identity of the evidence they read.
 
-### 28.3 Scalar admission is not extended
+### 28.3 Scalar admission of a route in one conditioned region
 
-A length measured on conditioned regions, between positions or total, with or without
-omitted bands, has incomplete geometric coverage: existence and continuity are hypotheses
-there. It is published as a rich result and is **not scalar-admissible**. The scalar
-admissions of §25.4, §26.5 and §26.6 are unchanged, and the bypass of geometric
-completeness of §26.6 stays exclusive to its typed numeric traversal: in particular the
-cases that §26.6 keeps inadmissible (generic `NOT_CERTIFIED`, native tolerance bands,
-uncertain selection, a sampled success that does not establish continuity) stay without a
-scalar. Whether a conditioned length without omitted bands should feed ordinary formulas
-through the scalar adapter is a separate decision of admissibility, which this amendment
-does not take.
+Version `conditioned-length-scalar/v1`. Decision DN-2 of the author, 2026-11-22
+([authorization record](../../../docs/validation/post_r1_1_2_2_corrections_author_authorization_record.md)),
+which takes the decision that the text of increment I3 left open. It replaces that text,
+which admitted no conditioned length as a scalar.
+
+A length measured on conditioned regions has incomplete geometric coverage: existence and
+continuity are hypotheses there. The length **between two positions** is nevertheless
+admissible as a scalar, and feeds ordinary formulas through the scalar adapter, when all of
+the following hold.
+
+1. **Positions.** Both are valid semantic positions of the current revision of the source,
+   addressed by parameter.
+2. **One region.** Both lie in one conditioned region and the whole route in the requested
+   direction lies in it (§28.1). The hypotheses H1 to H4 of the spans of the route are the
+   ones under which it is travelled.
+3. **Only spans.** Every cell that the route travels is a span. No band of any kind and no
+   unexplored cell lies in it; a discontinuity that the traversal found is a band.
+4. **No excluded cause.** No coverage of the branch that overlaps the route has one of the
+   causes with which the certificate names a possible event on it or an evaluator that does
+   not reproduce the document: `INHERITED_TOLERANCE_BEHAVIOUR`,
+   `SELECTION_NOT_REPRODUCED`, `RECONSTRUCTION_FIDELITY_NOT_ESTABLISHED`,
+   `DEGENERATE_CONFIGURATION`, `COMPUTATIONAL_DEPENDENCY_FAILURE` and
+   `UNLABELLED_COINCIDENT_OUTPUT`. Under any of them the same estimate is published as a
+   rich result, with `CONDITIONED_ROUTE_NOT_ADMISSIBLE` and the cause, and is no number.
+5. **Numeric coverage of the route.** The estimator of §25 measured the whole requested
+   route: the status is `SUCCESS`, the value is finite, the curve is rectifiable there and
+   the traversal reached its target. This numeric coverage of the route is not the
+   geometric coverage of the locus, which stays incomplete.
+6. **Error.** The guarantee is `ESTIMATED_ERROR` with a recorded tolerance, and the
+   estimated error does not exceed it (§25.4). An estimate that does not converge keeps its
+   own status and cause and is no number.
+7. **Currentness.** The result carries the evidence of the route: branch, region, stretch
+   measured, hypotheses, classes of its spans, version of the traversal policy, content
+   identity of the conditioned evidence and semantic revision. It is the result of that
+   revision and of that content; another revision of the source or another content of the
+   evidence (a confirmed contradiction, another policy) computes it again, and the number
+   that was published is never kept.
+
+What the number is and is not:
+
+| | States | Does not state |
+|---|---|---|
+| Value | the estimate of the stretch of the route | anything about the locus between the evaluated nodes |
+| Error | class `ESTIMATED`: an estimated error within the tolerance, under the hypotheses of the estimator (§25.5) | a rigorous bound; it is never `CERTIFIED` |
+| Conditioned evidence | valid evaluated nodes with their selection testimony, and the criteria of the traversal policy between them | existence, selection, continuity and resolution between the nodes: they are H1 to H4 |
+| Certification | none | the existence structure stays as it was; measuring certifies nothing |
+
+The admitted result keeps coverage `INCOMPLETE`, the diagnostic `EXISTENCE_NOT_CERTIFIED`
+and adds `CONDITIONED_ROUTE_ADMITTED`. It is never by itself a proof of existence,
+continuity, completeness, incidence or intersection. A construction that reads the number
+reads an estimate, never a rigorous input (§26.3): a locus that depends on it is outside the
+certified class.
+
+Not admitted, and without a scalar as before: positions in different regions, a position
+inside a band or an unexplored cell, a route that would cross a band, a position on a
+certified component with a position addressed by parameter, and every **total** over
+conditioned regions (§28.2), with or without omitted bands. A total stays governed by
+§25.4, §26.5 and §26.6, which are unchanged: in particular the cases that §26.6 keeps
+inadmissible for the total of a declared domain stay inadmissible for that total. The
+bypass of geometric completeness of §26.6 stays exclusive to its typed numeric traversal,
+and the bypass of this section to the typed evidence of a route in one region.

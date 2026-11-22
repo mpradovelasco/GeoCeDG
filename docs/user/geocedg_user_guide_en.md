@@ -1208,8 +1208,9 @@ On a conditioned region you can:
 
 - place a point, by command or with a click, and drag it along the region; the
   point stops when it reaches a band;
-- measure the length between two points of the same region, and the total
-  length, which is published as a subtotal with the list of bands not included;
+- measure the length between two points of the same region, which is a number
+  and can be used in formulas, and the total length, which is published as a
+  subtotal with the list of bands not included and is not a number;
 - intersect the trace with a line, a segment, a conic or another Locus V2, and
   create points on the roots;
 - translate, rotate, reflect or dilate it; the image inherits the regions and
@@ -1219,8 +1220,11 @@ On a conditioned region you can:
 All these results are **estimates under declared hypotheses**, not certified
 results. A drawing that looks closed or whole is not stated to be complete, an
 intersection on a conditioned region never claims to have found every root, and
-a conditioned length does not feed formulas as an ordinary number. If a root
-passes from one region to another, the point created on it stays undefined
+the length between two points of a region, although it is used as a number,
+is still an estimate: it does not prove that the trace exists or is continuous
+between them. If the two points end up in different regions or one falls in a
+band, the length is undefined. If a root passes from one region to another,
+the point created on it stays undefined
 until the root returns to the region where it was created: GeoCeDG does not move
 it to another root by proximity.
 

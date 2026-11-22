@@ -59,8 +59,9 @@ public final class LocusMetricRouteResolver2D {
 		}
 		double from = query.getStart().getSemanticPosition().getProviderCanonicalParameter();
 		double to = query.getTarget().getSemanticPosition().getProviderCanonicalParameter();
-		LocusInterval2D region = evidence.regionOf(from);
-		LocusInterval2D other = evidence.regionOf(to);
+		// A position at an end of a region is in the region (section 28.1).
+		LocusInterval2D region = evidence.regionAt(from);
+		LocusInterval2D other = evidence.regionAt(to);
 		if (region == null || other == null) {
 			LocusConditionedCell2D band = evidence.bandAt(region == null ? from : to);
 			return failure(query, definition, MetricRouteStatus.DISCONTINUITY_ENCOUNTERED,

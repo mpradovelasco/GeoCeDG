@@ -17,6 +17,8 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 /** Rich immutable semantic metric result with orthogonal status axes. */
 public final class LocusMetricResult2D {
 	private final LocusMetricNumericTraversal2D numericTraversal;
+	/** Evidence of an admitted route of one conditioned region, or {@code null}. */
+	private final LocusMetricConditionedRoute2D conditionedRoute;
 	private final MetricValue2D metricValue;
 	private final MetricCoverage coverage;
 	private final MetricComputationStatus computationStatus;
@@ -67,6 +69,7 @@ public final class LocusMetricResult2D {
 			List<LocusMetricContribution2D> contributions,
 			List<MetricDiagnostic2D> diagnostics) {
 		this.numericTraversal = null;
+		this.conditionedRoute = null;
 		this.metricValue = Objects.requireNonNull(metricValue);
 		this.coverage = Objects.requireNonNull(coverage);
 		this.computationStatus = Objects.requireNonNull(computationStatus);
@@ -157,7 +160,8 @@ public final class LocusMetricResult2D {
 	 */
 	public boolean isScalarAdmissible() {
 		if (metricValue.getKind() != MetricValueKind.FINITE
-				|| (coverage != MetricCoverage.COMPLETE && !hasCompleteConditionalTraversal())
+				|| (coverage != MetricCoverage.COMPLETE && !hasCompleteConditionalTraversal()
+						&& !hasCurrentConditionedRoute())
 				|| computationStatus != MetricComputationStatus.SUCCESS
 				|| rectifiability != MetricRectifiability.RECTIFIABLE) {
 			return false;
@@ -204,6 +208,30 @@ public final class LocusMetricResult2D {
 				&& errorEvidence.getRequestedTolerance().isPresent()
 				&& Double.isFinite(errorEvidence.getEstablishedAbsoluteAmount());
 	}
+	/**
+	 * @return the evidence of a length admitted on a route of one conditioned region
+	 *         ({@code locus-v2-metrics.md} section 28.3), independently of geometric coverage
+	 */
+	public Optional<LocusMetricConditionedRoute2D> getConditionedRoute() {
+		return Optional.ofNullable(conditionedRoute);
+	}
+
+	/**
+	 * Numeric coverage of the whole requested route, in one conditioned region, with an
+	 * estimated error under a recorded tolerance, at the revision of this result. It is
+	 * the only thing that the bypass of geometric completeness of section 28.3 reads; the
+	 * tolerance itself is compared by {@link #isScalarAdmissible()}.
+	 */
+	private boolean hasCurrentConditionedRoute() {
+		return conditionedRoute != null
+				&& conditionedRoute.getSemanticRevision() == provenance.getSemanticRevision()
+				&& !isConditionedSubtotal()
+				&& errorEvidence.getNumericGuarantee().orElse(null)
+						== NumericGuarantee.ESTIMATED_ERROR
+				&& errorEvidence.getRequestedTolerance().isPresent()
+				&& Double.isFinite(errorEvidence.getEstablishedAbsoluteAmount());
+	}
+
 	/** Package-only publication after the engine's guarded full-domain estimate. */
 	LocusMetricResult2D withNumericTraversal(org.geocedg.common.kernel.locus.LocusBranch2D branch) {
 		return new LocusMetricResult2D(this, branch);
@@ -212,6 +240,7 @@ public final class LocusMetricResult2D {
 			org.geocedg.common.kernel.locus.LocusBranch2D branch) {
 		numericTraversal = new LocusMetricNumericTraversal2D(branch, source.coverage,
 				source.provenance.getSemanticRevision());
+		conditionedRoute = null;
 		metricValue = source.metricValue;
 		coverage = MetricCoverage.INCOMPLETE;
 		computationStatus = source.computationStatus;
@@ -235,14 +264,36 @@ public final class LocusMetricResult2D {
 	 * value with incomplete geometric coverage and, for a subtotal, the diagnostic that
 	 * lists the omitted bands. Geometric coverage is not complete where existence and
 	 * continuity are hypotheses, so {@link #isScalarAdmissible()} refuses the value: the
-	 * scalar admission of sections 26.5 and 26.6 of the metric contract is not extended.
+	 * scalar admissions of sections 26.5 and 26.6 of the metric contract are unchanged, and
+	 * the only conditioned length that a scalar publishes is the route of section 28.3
+	 * ({@link #asConditionedRoute}).
 	 */
 	LocusMetricResult2D asConditioned(List<MetricDiagnostic2D> omitted) {
-		return new LocusMetricResult2D(this, omitted);
+		return new LocusMetricResult2D(this, omitted, null);
 	}
 
-	private LocusMetricResult2D(LocusMetricResult2D source, List<MetricDiagnostic2D> omitted) {
+	/**
+	 * Package-only publication of a length measured on a route that lies in one
+	 * conditioned region and meets the admission of section 28.3 of the metric contract
+	 * (decision DN-2): the same value, with incomplete geometric coverage, declared
+	 * conditioned, with the evidence of the numeric coverage of its route. The scalar
+	 * adapter may publish it; it certifies nothing.
+	 */
+	LocusMetricResult2D asConditionedRoute(LocusMetricConditionedRoute2D route) {
+		return new LocusMetricResult2D(this, Collections.singletonList(
+				new MetricDiagnostic2D(MetricDiagnosticCode2D.CONDITIONED_ROUTE_ADMITTED,
+						"Length of a route of one conditioned region, admissible as a number: "
+								+ "numeric coverage of the whole route, estimated error "
+								+ "within the tolerance, hypotheses " + route.getHypotheses()
+								+ " between the evaluated nodes; it proves no existence, "
+								+ "continuity, completeness, incidence or intersection. "
+								+ route)), Objects.requireNonNull(route));
+	}
+
+	private LocusMetricResult2D(LocusMetricResult2D source, List<MetricDiagnostic2D> omitted,
+			LocusMetricConditionedRoute2D route) {
 		numericTraversal = null;
+		conditionedRoute = route;
 		metricValue = source.metricValue;
 		coverage = MetricCoverage.INCOMPLETE;
 		computationStatus = source.computationStatus;
