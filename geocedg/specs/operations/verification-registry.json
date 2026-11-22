@@ -3,7 +3,7 @@
   "schema_version": 2,
   "registry_id": "geocedg.verification.v2",
   "catalogs": [
-    { "catalog_id": "junit_inventory", "path": "geocedg/specs/operations/verification-junit-inventory.json", "sha256": "27a76cc3ab8d1478b5fe6dc474ea0787f96ed22afdd34c37dcc805347acfc727" },
+    { "catalog_id": "junit_inventory", "path": "geocedg/specs/operations/verification-junit-inventory.json", "sha256": "fa8c08fef2a17c07ddd6cfaf44c056bbcd4573c48ebab885fbfaedac39bae2f4" },
     { "catalog_id": "static_contracts", "path": "geocedg/specs/operations/verification-static-contracts.json", "sha256": "bd8cebf862a66004835d1372b11dc167d3a15a3a0acf2c123203fac0f6d0ae84" }
   ],
   "profiles": [
