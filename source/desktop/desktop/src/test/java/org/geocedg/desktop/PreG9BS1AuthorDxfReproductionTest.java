@@ -225,16 +225,28 @@ class PreG9BS1AuthorDxfReproductionTest {
 		assertEquals(0, locusPreflight.getInvalidCount());
 		assertEquals(1, locusPreflight.getApproximateCount());
 		assertEquals(1, locusPreflight.getModel().getEntities().size());
-		assertEquals(1, locusPreflight.getIncompleteSemanticCoverageCount());
 		assertTrue(locusPreflight.hasIncompleteSemanticCoverage());
 		assertTrue(locusPreflight.isSidecarRequired());
+		// ADR 0042 (dxf-curve-fidelity-and-approximation.md section 11): the conditioned
+		// regions of the uncertified part are omitted and declared in one outcome, beside
+		// the outcome of the certified component, which is exported as before.
+		var declaredOutcomes = locusPreflight.getModel().getOutcomes().stream()
+				.filter(outcome -> !outcome.isEmitted()).toList();
+		assertEquals(1, declaredOutcomes.size());
+		assertEquals(Fidelity.DECLARED, declaredOutcomes.get(0).getFidelity());
+		assertEquals(org.geocedg.common.export.SourceExportOutcome.Reason
+				.EXISTENCE_NOT_ESTABLISHED, declaredOutcomes.get(0).getReason());
+		assertTrue(declaredOutcomes.get(0).getMessage().contains("CONDITIONED_REGION"),
+				declaredOutcomes.get(0).getMessage());
 		assertTrue(locusPreflight.getModel().getOutcomes().stream()
+				.filter(outcome -> outcome.isEmitted())
 				.allMatch(outcome -> outcome.getFidelity() == Fidelity.APPROXIMATE
 						&& outcome.getSemanticCoverage()
 								== SemanticCoverage
 										.LOCALLY_CERTIFIED_GLOBAL_NOT_ESTABLISHED));
 		assertEquals(branch.getCertifiedContinuousValidComponents(),
 				locusPreflight.getModel().getOutcomes().stream()
+						.filter(outcome -> outcome.isEmitted())
 						.map(outcome -> new LocusInterval2D(
 								outcome.getComponentAddress().getParameterStart(),
 								outcome.getComponentAddress().getParameterEnd(),

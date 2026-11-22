@@ -61,7 +61,11 @@ public final class DxfExporter {
 		}
 		if (model.getModelVersion() >= 2) {
 			for (SourceExportOutcome outcome : model.getOutcomes()) {
-				if (!outcome.isEmitted()) {
+				// A declared component has no entity and never blocks the strict request
+				// (dxf-curve-fidelity-and-approximation.md sections 10 and 11): the sidecar
+				// states it, beside the emitted components of the same source.
+				if (!outcome.isEmitted()
+						&& outcome.getFidelity() != SourceExportOutcome.Fidelity.DECLARED) {
 					throw new IllegalArgumentException(
 							"Strict G9X1 model contains a non-emitted component: "
 									+ outcome.getComponentAddress().getComponentKey());
