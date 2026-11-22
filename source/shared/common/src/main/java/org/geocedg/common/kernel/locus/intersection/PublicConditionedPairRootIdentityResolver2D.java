@@ -353,7 +353,7 @@ public final class PublicConditionedPairRootIdentityResolver2D {
 		LocalPairIsolationEvidence2D isolation = new LocalPairIsolationEvidence2D(
 				LocalIsolationStatus.ESTABLISHED,
 				PairIsolationMethod.SAFEGUARDED_REGULAR_JACOBIAN,
-				PairCoverageStatus.EXHAUSTIVE_RECTANGLE,
+				PairCoverageStatus.SAMPLED_RECTANGLE_UNDER_HYPOTHESES,
 				PairUniquenessStatus.REGULAR_JACOBIAN_UNIQUE,
 				NumericGuarantee.FLOATING_POINT_UNCERTIFIED,
 				"Sign change across the opposite sides of the parameter rectangle ["

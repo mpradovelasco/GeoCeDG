@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -23,7 +24,13 @@ import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ConstructiveAdmission;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.DiagnosticCode;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.IdentityStatus;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.LocalIsolationStatus;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.PairCoverageStatus;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.PairIsolationMethod;
+import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.PairUniquenessStatus;
+import org.geocedg.common.kernel.locus.intersection.LocalPairIsolationEvidence2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
+import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.main.settings.config.AppConfigGeoCeDG;
 import org.geogebra.common.AppCommonFactory;
 import org.geogebra.common.jre.headless.AppCommon;
@@ -136,6 +143,55 @@ final class PostR1ConditionedPairIntersectionTest extends G9U0PublicSurfaceTestB
 	private boolean defined(String label) {
 		GeoElement element = lookup(label);
 		return element != null && element.isDefined();
+	}
+
+	/**
+	 * Step C3 of the corrections after block 3B: the local isolation of a pair root on
+	 * conditioned regions is numerical evidence of a regular Jacobian on a sampled
+	 * rectangle. It is established, it is never certified, and it has a coverage value of
+	 * its own, which a certified rectangle cannot carry and which it cannot borrow.
+	 */
+	@Test
+	void theIsolationOfAConditionedPairRootIsEstablishedAndNeverCertified() {
+		GeoLocusIntersectionResult rich = pair(1.2);
+		LocalPairIsolationEvidence2D isolation = only(rich).getPairEvidence().orElseThrow()
+				.getLocalIsolation();
+		assertEquals(LocalIsolationStatus.ESTABLISHED, isolation.getStatus());
+		assertEquals(PairIsolationMethod.SAFEGUARDED_REGULAR_JACOBIAN, isolation.getMethod());
+		assertEquals(PairCoverageStatus.SAMPLED_RECTANGLE_UNDER_HYPOTHESES,
+				isolation.getCoverage());
+		assertEquals(PairUniquenessStatus.REGULAR_JACOBIAN_UNIQUE, isolation.getUniqueness());
+		assertEquals(NumericGuarantee.FLOATING_POINT_UNCERTIFIED,
+				isolation.getNumericGuarantee());
+		assertFalse(isolation.isCertified());
+		// Nothing is upgraded by it: the roots are never known to be all the roots.
+		assertEquals(Completeness.NOT_ESTABLISHED, rich.getIntersectionResult()
+				.getCompletenessEvidence().getCompleteness());
+		assertTrue(has(only(rich), DiagnosticCode.CONDITIONED_REGION_ROOT));
+
+		// The two vocabularies cannot be mixed in either direction.
+		assertThrows(IllegalArgumentException.class, () -> new LocalPairIsolationEvidence2D(
+				LocalIsolationStatus.ESTABLISHED,
+				PairIsolationMethod.SAFEGUARDED_REGULAR_JACOBIAN,
+				PairCoverageStatus.EXHAUSTIVE_RECTANGLE,
+				PairUniquenessStatus.REGULAR_JACOBIAN_UNIQUE,
+				NumericGuarantee.FLOATING_POINT_UNCERTIFIED, "a Jacobian is not exhaustive"));
+		assertThrows(IllegalArgumentException.class, () -> new LocalPairIsolationEvidence2D(
+				LocalIsolationStatus.ESTABLISHED, PairIsolationMethod.CERTIFIED_RECTANGLE,
+				PairCoverageStatus.SAMPLED_RECTANGLE_UNDER_HYPOTHESES,
+				PairUniquenessStatus.CERTIFIED_UNIQUE,
+				NumericGuarantee.CERTIFIED_ERROR_BOUND, "a certificate is not sampled"));
+		assertThrows(IllegalArgumentException.class, () -> new LocalPairIsolationEvidence2D(
+				LocalIsolationStatus.ESTABLISHED,
+				PairIsolationMethod.SAFEGUARDED_REGULAR_JACOBIAN,
+				PairCoverageStatus.SAMPLED_RECTANGLE_UNDER_HYPOTHESES,
+				PairUniquenessStatus.REGULAR_JACOBIAN_UNIQUE,
+				NumericGuarantee.CERTIFIED_ERROR_BOUND, "a Jacobian certifies no bound"));
+		LocalPairIsolationEvidence2D certified = new LocalPairIsolationEvidence2D(
+				LocalIsolationStatus.ESTABLISHED, PairIsolationMethod.CERTIFIED_RECTANGLE,
+				PairCoverageStatus.EXHAUSTIVE_RECTANGLE, PairUniquenessStatus.CERTIFIED_UNIQUE,
+				NumericGuarantee.CERTIFIED_ERROR_BOUND, "a certified rectangle");
+		assertTrue(certified.isCertified());
 	}
 
 	@Test

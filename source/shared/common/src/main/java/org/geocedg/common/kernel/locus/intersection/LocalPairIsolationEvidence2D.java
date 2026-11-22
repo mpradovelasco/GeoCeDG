@@ -33,12 +33,31 @@ public final class LocalPairIsolationEvidence2D {
 				numericGuarantee);
 		this.diagnostic = requireText(diagnostic);
 		if (status == LocalIsolationStatus.ESTABLISHED
-				&& (coverage != PairCoverageStatus.EXHAUSTIVE_RECTANGLE
+				&& (coverage == PairCoverageStatus.NOT_ESTABLISHED
 						|| uniqueness == PairUniquenessStatus.NOT_ESTABLISHED
 						|| method == PairIsolationMethod.NOT_ESTABLISHED)) {
 			throw new IllegalArgumentException(
 					"Pair isolation needs rectangle coverage and uniqueness");
 		}
+		// The numerical evidence of a regular Jacobian never borrows the words of a
+		// certified rectangle, and a certified rectangle never borrows its words.
+		boolean sampled = coverage == PairCoverageStatus.SAMPLED_RECTANGLE_UNDER_HYPOTHESES;
+		if (sampled != (method == PairIsolationMethod.SAFEGUARDED_REGULAR_JACOBIAN)
+				|| sampled != (uniqueness == PairUniquenessStatus.REGULAR_JACOBIAN_UNIQUE)
+				|| sampled && numericGuarantee != NumericGuarantee.FLOATING_POINT_UNCERTIFIED) {
+			throw new IllegalArgumentException(
+					"A sampled rectangle is the uncertified evidence of a regular Jacobian");
+		}
+	}
+
+	/**
+	 * @return whether the isolation is established by a certificate or an analytic proof of
+	 *         the whole rectangle; the numerical evidence of a regular Jacobian under the
+	 *         hypotheses of a conditioned region is established and is not certified
+	 */
+	public boolean isCertified() {
+		return status == LocalIsolationStatus.ESTABLISHED
+				&& coverage == PairCoverageStatus.EXHAUSTIVE_RECTANGLE;
 	}
 
 	/** @return conservative unestablished local evidence */

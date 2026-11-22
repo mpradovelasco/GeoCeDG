@@ -345,3 +345,19 @@ It is bookkeeping of one revision: it is no identity, it is never persisted and 
 derived from it. The side that the key of a conditioned region names (previous section) is
 kept and is redundant with it. This step changes no durable lineage, no selector and no
 token.
+
+### C3 — the coverage of a sampled rectangle has a value of its own
+
+The local isolation of method `SAFEGUARDED_REGULAR_JACOBIAN` (previous section) publishes
+the coverage `SAMPLED_RECTANGLE_UNDER_HYPOTHESES`: the rectangle is sampled at its sides
+and its centre, and nothing between the samples is proved. Its uniqueness is
+`REGULAR_JACOBIAN_UNIQUE` and its guarantee `FLOATING_POINT_UNCERTIFIED`. The three values
+go together and with no other method: an evidence that combines any of them with
+`EXHAUSTIVE_RECTANGLE`, with a certified uniqueness or with a certified guarantee is
+rejected when it is built, and a certified rectangle cannot carry them.
+
+The isolation is still `ESTABLISHED`, which is what the admission of a point on the root
+reads, under the hypotheses of the spans. It is not certified: the evidence answers so
+(`isCertified`), completeness stays `NOT_ESTABLISHED`, the root keeps
+`CONDITIONED_REGION_ROOT`, and under `constructive-authority/v1` its admission stays
+`NOT_ESTABLISHED`. No behaviour of the search, of the selector or of the ledger changes.

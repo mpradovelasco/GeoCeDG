@@ -155,7 +155,16 @@ public final class IntersectionSemanticMetadata2D {
 
 	/** Coverage evidence for one local parameter-pair rectangle. */
 	public enum PairCoverageStatus {
-		EXHAUSTIVE_RECTANGLE, NOT_ESTABLISHED
+		/** The whole rectangle is covered by a certificate or an analytic proof. */
+		EXHAUSTIVE_RECTANGLE,
+		/**
+		 * The rectangle is sampled at its sides and its centre and nothing between the
+		 * samples is proved: numerical evidence under the hypotheses of the spans of a
+		 * conditioned region (ADR 0042), never a certified enclosure. It is the coverage of
+		 * the method {@code SAFEGUARDED_REGULAR_JACOBIAN} and of no other.
+		 */
+		SAMPLED_RECTANGLE_UNDER_HYPOTHESES,
+		NOT_ESTABLISHED
 	}
 
 	/** Uniqueness evidence inside one local parameter-pair rectangle. */
