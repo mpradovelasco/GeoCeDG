@@ -1,7 +1,7 @@
 <!-- geocedg-guide-section: about-this-guide -->
 # Guía de usuario de GeoCeDG
 
-GeoCeDG 1.2.1 · Edición en español
+GeoCeDG 1.2.2 · Edición en español
 
 Empiece por [La primera construcción](#getting-started/2.7), consulte una
 herramienta en la [referencia](#command-and-workflow-reference) o pulse
@@ -49,8 +49,8 @@ detallan el alcance de las vistas y la compatibilidad.
 
 ### 1.3 Versión y estado
 
-**Ayuda → Acerca de GeoCeDG** muestra la versión **1.2.1**, la fecha de versión
-**2026-11-20** y la identificación de la compilación. Allí puede consultar
+**Ayuda → Acerca de GeoCeDG** muestra la versión **1.2.2**, la fecha de versión
+**2026-11-22** y la identificación de la compilación. Allí puede consultar
 la *condición de distribución* y los avisos de la copia en uso.
 Una copia instalada puede mostrar **INTERNAL EVALUATION — NOT FOR REDISTRIBUTION**
 o **NON-COMMERCIAL DISTRIBUTION — PROFILE NC**. Una *compilación de desarrollo*
@@ -88,7 +88,7 @@ en la revisión `9b93256b7df401ff056c37b502d82df4d72b1522`.
 ### 2.1 Iniciar GeoCeDG
 
 Inicie GeoCeDG desde su acceso directo instalado. El título de la ventana indica
-`GeoCeDG 1.2.1`, o `GeoCeDG 1.2.1 — <nombre de archivo>` cuando hay un documento
+`GeoCeDG 1.2.2`, o `GeoCeDG 1.2.2 — <nombre de archivo>` cuando hay un documento
 abierto.
 
 Si trabaja desde un checkout de fuentes preparado en lugar de una copia
@@ -1257,6 +1257,42 @@ una relación demostrada o conservar límites sin resolver. Un corte declarado
 organiza el recorrido y no demuestra por sí mismo un salto. La certificación
 de componentes tampoco implica que cualquier intersección entre curvas pueda
 materializarse: siguen las condiciones de la sección 8.7.
+
+### 6.9 Trazados sin certificado: uso condicionado
+
+Cuando GeoCeDG no puede demostrar la existencia y la continuidad de un Locus V2
+en todo su dominio, el objeto sigue existiendo y se puede usar. La parte sin
+certificado se recorre con el propio evaluador de la construcción y se divide en
+**regiones condicionadas**, separadas por **bandas** donde el punto trazado
+deja de existir, cambia la raíz seleccionada, hay un salto o falla una
+evaluación. El inspector de definición muestra el grado **Condicionado —
+existencia/continuidad no certificadas**, la lista de regiones y bandas y las
+hipótesis que se suponen entre los nodos evaluados. El dibujo traza cada región
+con el estilo del objeto y la señala con un pequeño rombo hueco.
+
+Sobre una región condicionada puede:
+
+- colocar un punto, por comando o con un clic, y arrastrarlo a lo largo de la
+  región; el punto se detiene al llegar a una banda;
+- medir la longitud entre dos puntos de la misma región, y la longitud total,
+  que se publica como subtotal con la lista de bandas no incluidas;
+- intersecar el trazado con una recta, un segmento, una cónica u otro Locus V2,
+  y crear puntos sobre las raíces;
+- trasladarlo, girarlo, reflejarlo u homotetizarlo; la imagen hereda las
+  regiones y las bandas, y con una ampliación GeoCeDG vuelve a comprobarlas a la
+  escala de la imagen.
+
+Todos estos resultados son **estimaciones bajo hipótesis declaradas**, no
+resultados certificados. Un dibujo que parece cerrado o entero no se declara
+completo, una intersección sobre una región condicionada nunca afirma haber
+encontrado todas las raíces, y una longitud condicionada no alimenta fórmulas
+como un número ordinario. Si una raíz pasa de una región a otra, el punto
+creado sobre ella queda sin definir hasta que la raíz vuelve a la región donde
+se creó: GeoCeDG no lo traslada a otra raíz por proximidad.
+
+La exportación semántica (DXF y LaTeX) omite las regiones condicionadas y lo
+declara, junto a las componentes certificadas, que se exportan como siempre. La
+exportación de imagen de una vista exporta lo que la vista dibuja.
 
 ---
 
@@ -3089,7 +3125,7 @@ muestra los tipos de entrada. Un caso degenerado puede quedar indefinido.
 
 ---
 
-*GeoCeDG 1.2.1 — Manuel Prado-Velasco, Universidad de Sevilla. Los créditos y
+*GeoCeDG 1.2.2 — Manuel Prado-Velasco, Universidad de Sevilla. Los créditos y
 licencias upstream obligatorios se conservan en `LICENSE`, `NOTICE.md` y
 `THIRD_PARTY.md`.*
 

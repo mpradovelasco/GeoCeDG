@@ -5,7 +5,7 @@
   "identity_mode":"canonical_utf8_lf_v1",
   "contracts":[
     {"contract_id":"packaging.source-authority","semantic_domain":"PRODUCT","inputs":[
-      {"path":"packaging/windows/package.yml","sha256":"b6f1b7aa0a78392894282f83638298f3ce28b899f7642c6b57a8f8e5225f453a"},
+      {"path":"packaging/windows/package.yml","sha256":"f40a9d0c594e8f4d68b0ffdda9e114bd71680d27772b951d129e13fb3ab75729"},
       {"path":"geocedg/specs/operations/package-profile.schema.json","sha256":"5801f35e471259f5d3d3829c4320c927a808722acfc37452c0145361fe908c81"},
       {"path":"geocedg/resources/assets-manifest.yml","sha256":"5790ba1cb31ea5d9b5c3952f8bfbb96c8c3338460f795eebbc6ddcc7e27cace5"},
       {"path":"geocedg/resources/source-access-manifest.json","sha256":"b5b2bb592cb5e5e6a78431c7d784b96ffa338a1094473bb54c958b1239df949e"},

@@ -1,7 +1,7 @@
 <!-- geocedg-guide-section: about-this-guide -->
 # GeoCeDG user guide
 
-GeoCeDG 1.2.1 · English edition
+GeoCeDG 1.2.2 · English edition
 
 Start with [Your first construction](#getting-started/2.7), look up a tool
 in the [reference](#command-and-workflow-reference), or press **Ctrl+F** to
@@ -49,8 +49,8 @@ compatibility boundaries.
 
 ### 1.3 Version and status
 
-**Help → About GeoCeDG** shows version **1.2.1**, the version date
-**2026-11-20** and the build identifier. It also shows the *distribution condition* and the notices for the copy you are running.
+**Help → About GeoCeDG** shows version **1.2.2**, the version date
+**2026-11-22** and the build identifier. It also shows the *distribution condition* and the notices for the copy you are running.
 Installed copies may show **INTERNAL EVALUATION — NOT FOR REDISTRIBUTION**
 or **NON-COMMERCIAL DISTRIBUTION — PROFILE NC**. A *development build* is
 labelled separately. About points to the full terms, including EUPL-1.2
@@ -86,7 +86,7 @@ revision `9b93256b7df401ff056c37b502d82df4d72b1522`.
 ### 2.1 Starting GeoCeDG
 
 Start GeoCeDG from its installed shortcut. The window title reads
-`GeoCeDG 1.2.1`, or `GeoCeDG 1.2.1 — <file name>` once a document is open.
+`GeoCeDG 1.2.2`, or `GeoCeDG 1.2.2 — <file name>` once a document is open.
 
 If you are working from a prepared source checkout instead of an installed
 copy, the product profile is launched through the Gradle task
@@ -1191,6 +1191,42 @@ or retain unresolved limits. A declared cut organizes the traversal and does
 not by itself prove a jump. Certifying components also does not imply that
 every curve intersection can be materialized: the conditions in section 8.7
 still apply.
+
+### 6.9 Traces without a certificate: conditioned use
+
+When GeoCeDG cannot prove the existence and the continuity of a Locus V2 on its
+whole domain, the object still exists and can be used. The part without a
+certificate is traversed with the evaluator of the construction itself and is
+divided into **conditioned regions**, separated by **bands** where the traced
+point stops existing, the selected root changes, there is a jump or an
+evaluation fails. The definition inspector shows the grade **Conditioned —
+existence/continuity not certified**, the list of regions and bands and the
+hypotheses assumed between the evaluated nodes. The drawing strokes each region
+with the style of the object and marks it with a small hollow rhombus.
+
+On a conditioned region you can:
+
+- place a point, by command or with a click, and drag it along the region; the
+  point stops when it reaches a band;
+- measure the length between two points of the same region, and the total
+  length, which is published as a subtotal with the list of bands not included;
+- intersect the trace with a line, a segment, a conic or another Locus V2, and
+  create points on the roots;
+- translate, rotate, reflect or dilate it; the image inherits the regions and
+  the bands, and under a magnification GeoCeDG checks them again at the scale of
+  the image.
+
+All these results are **estimates under declared hypotheses**, not certified
+results. A drawing that looks closed or whole is not stated to be complete, an
+intersection on a conditioned region never claims to have found every root, and
+a conditioned length does not feed formulas as an ordinary number. If a root
+passes from one region to another, the point created on it stays undefined
+until the root returns to the region where it was created: GeoCeDG does not move
+it to another root by proximity.
+
+Semantic export (DXF and LaTeX) omits the conditioned regions and declares it,
+beside the certified components, which are exported as before. A picture export
+of a view exports what the view draws.
 
 ---
 
@@ -2947,7 +2983,7 @@ undefined.
 
 ---
 
-*GeoCeDG 1.2.1 — Manuel Prado-Velasco, Universidad de Sevilla. Required upstream
+*GeoCeDG 1.2.2 — Manuel Prado-Velasco, Universidad de Sevilla. Required upstream
 credits and licenses are retained in `LICENSE`, `NOTICE.md` and
 `THIRD_PARTY.md`.*
 

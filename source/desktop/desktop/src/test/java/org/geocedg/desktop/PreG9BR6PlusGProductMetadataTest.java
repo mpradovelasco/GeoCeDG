@@ -97,16 +97,16 @@ class PreG9BR6PlusGProductMetadataTest {
 		assertEquals(1, count(text, "\"version_date\"\\s*:"), "exactly one version_date key");
 		Map<?, ?> application = (Map<?, ?>) ((Map<?, ?>) GeoCeDGStrictJson.parse(text))
 				.get("application");
-		assertEquals("1.2.1", application.get("version"));
-		assertEquals("2026-11-20", application.get("version_date"));
-		assertTrue(GeoCeDGBuildProvenance.isCalendarDate("2026-11-20"));
-		assertEquals("1.2.1", GeoCeDGProductInfo.semanticVersion());
-		assertEquals("2026-11-20", GeoCeDGProductInfo.versionDate());
-		assertEquals("GeoCeDG 1.2.1", GeoCeDGProductInfo.applicationTitle());
+		assertEquals("1.2.2", application.get("version"));
+		assertEquals("2026-11-22", application.get("version_date"));
+		assertTrue(GeoCeDGBuildProvenance.isCalendarDate("2026-11-22"));
+		assertEquals("1.2.2", GeoCeDGProductInfo.semanticVersion());
+		assertEquals("2026-11-22", GeoCeDGProductInfo.versionDate());
+		assertEquals("GeoCeDG 1.2.2", GeoCeDGProductInfo.applicationTitle());
 		// the version date is the author-designated value of the authority, never a
 		// build, commit or file time: the generated record carries no other date field
 		java.util.Properties generated = generatedProvenance();
-		assertEquals("2026-11-20", generated.getProperty("application.version.date"));
+		assertEquals("2026-11-22", generated.getProperty("application.version.date"));
 		for (String key : generated.stringPropertyNames()) {
 			String lower = key.toLowerCase(java.util.Locale.ROOT);
 			assertFalse(lower.contains("time") || lower.contains("timestamp")
@@ -165,7 +165,7 @@ class PreG9BR6PlusGProductMetadataTest {
 		assertFalse(digest.equals(canonicalSha256((lf + " ").getBytes(StandardCharsets.UTF_8))));
 		GeoCeDGBuildProvenance build = GeoCeDGProductInfo.provenance();
 		assertEquals(digest, build.getPackageProfileSha256());
-		assertEquals("2026-11-20", build.getApplicationVersionDate());
+		assertEquals("2026-11-22", build.getApplicationVersionDate());
 		List<?> declared = (List<?>) ((Map<?, ?>) ((Map<?, ?>) GeoCeDGStrictJson.parse(lf))
 				.get("distribution")).get("profiles");
 		assertEquals(declared.size(), build.getDistributionProfiles().size());
@@ -190,9 +190,9 @@ class PreG9BR6PlusGProductMetadataTest {
 				development);
 		String spanish = GeoCeDGAboutText.compose("es", GeoCeDGProductInfo.provenance(),
 				development);
-		assertTrue(english.startsWith("GeoCeDG 1.2.1\nVersion date: 2026-11-20\nBuild: "),
+		assertTrue(english.startsWith("GeoCeDG 1.2.2\nVersion date: 2026-11-22\nBuild: "),
 				english);
-		assertTrue(spanish.startsWith("GeoCeDG 1.2.1\nFecha de versión: 2026-11-20\n"
+		assertTrue(spanish.startsWith("GeoCeDG 1.2.2\nFecha de versión: 2026-11-22\n"
 				+ "Compilación: "), spanish);
 	}
 
@@ -560,7 +560,7 @@ class PreG9BR6PlusGProductMetadataTest {
 			String flowing = guide.replaceAll("\\s+", " ");
 			assertEquals(1, count(guide, "(?m)^# "));
 			assertEquals(16, count(guide, "(?m)^## "));
-			assertEquals(102, count(guide, "(?m)^### "));
+			assertEquals(103, count(guide, "(?m)^### "));
 			assertEquals(17, count(guide, "geocedg-guide-section:"));
 			for (String shared : List.of("0.4·t", "AutoCAD 2026", "Type 1", "Ghostscript",
 					"Poppler", "Xpdf", "`SquarebyDiagonal`", "`SymmSymbol`", "EUPL-1.2",

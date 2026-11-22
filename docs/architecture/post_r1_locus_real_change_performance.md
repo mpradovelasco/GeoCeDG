@@ -214,3 +214,29 @@ testimonio usa ahora el estado de selección que la norma ya define como reprodu
 (`locus-v2-certified-construction-model.md` §10.2: compactación, permutación fija o punto
 ya incidente); una definición tangente o una permutación pendiente, que el cálculo siguiente
 fijaría por proximidad, siguen sin estar establecidas.
+
+## 7. Medición con el bloque 3B completo (candidato 1.2.2)
+
+Medición de 2026-11-22 sobre `0f02c8f21` (I0 a I4T), con la máquina sin otra carga y el
+escenario `conditioned` del arnés (`tools/benchmark/post-r1-locus/run-harness.ps1`), seis
+cambios reales de `excCyl` por modelo.
+
+| Modelo | Grafo por cambio | Evidencia de `w_2` por revisión |
+|---|---|---|
+| original | 589 a 708 ms | 393 a 472 ms |
+| derivado con transporte | 723 a 778 ms | 391 a 414 ms |
+
+- El coste del grafo no cambia con I1 a I4T respecto a la medida de la sección 3: buscar
+  raíces en las regiones condicionadas no añade trabajo a un cambio en el que ninguna
+  intersección lee un lugar condicionado, y el contenido de la evidencia se identifica por
+  su contenido, no se recalcula.
+- La evidencia sigue costando de 0,4 a 0,5 s por lugar con hueco y revisión, como en la
+  sección 6, y se calcula cuando un consumidor la pide. Con los dos lugares con hueco del
+  modelo dibujados, un cambio real de `excCyl` cuesta en total ≈ 0,65 s de grafo más
+  ≈ 0,85 s de evidencia.
+- **El objetivo de D-V6 (cambio real por debajo de 1 s) se cumple para el grafo y no para
+  el total con la evidencia consumida por el dibujo.** Reducirlo exige no recorrer de nuevo
+  lo que el cambio no altera (exploración perezosa o por celdas), que toca la identidad de
+  contenido de la política aprobada y no se ha hecho sin un diseño aprobado. Queda como
+  hallazgo para el autor, sin decisión tomada.
+- Arrastrar el conductor no publica revisión y no recalcula la evidencia: su coste es nulo.
