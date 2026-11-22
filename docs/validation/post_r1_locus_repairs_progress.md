@@ -218,6 +218,55 @@ el umbral de margen (10⁻³) y el límite de trabajo (2 048 evaluaciones) de la
 clasificación de una celda cuyos nodos están ausentes con causas distintas, que hoy es
 `FAILURE_BAND` por prudencia (no es ausencia condicionada, que exige la misma causa).
 
+## Checkpoint 7 — aprobación normativa y bloque 3B
+
+Decisión autoral de 2026-11-22, «APROBACIÓN AUTORAL — ADR 0042 Y USO CONDICIONADO DE LOCUS
+V2», transcrita en el
+[registro de aprobación](post_r1_conditioned_use_author_approval_record.md): aprobados el ADR
+0042 revisión 4 y el contrato `conditioned-use/v4-candidate` del commit `9160d67d7`, y
+autorizado el bloque 3B completo (I0 a I4T) sin consultas rutinarias. Siguen sin autorizar la
+publicación en `main`, la etiqueta `v1.2.2`, una release y `FINAL`. La aprobación del texto
+no aprueba ninguna implementación: cada incremento es un candidato técnico.
+
+Este checkpoint se amplía con cada incremento. Las enmiendas del contrato §12 se incorporan
+a las especificaciones con el incremento que implementa cada una.
+
+| Paso | Commits | Contenido | Verificación ordinaria |
+|---|---|---|---|
+| Registro de la aprobación | `2ee7aae26` | registro de aprobación; ADR 0042 `ACCEPTED`; contrato `conditioned-use/v4`; cabeceras del diseño y del registro de decisiones; registro aditivo en la hoja de ruta | `STATIC` `verification-d2744077338947a7b33ee2e2f6cf881b`, `ACCEPTED / COMPLETE` |
+| **I0** | `02b1d688f` (código, especificación, arnés), `4490d58fb` (inventario) | testimonio del evaluador real; lista cerrada de causas de ausencia; propietario de la evidencia en el productor y accesos en `GeoLocusV2`; ninguna celda dentro de una cobertura certificada; política v1 con límite de trabajo 1 024; escenario `conditioned` del arnés; `locus-v2-existence-components.md` 1.2, §19 | sobre `4490d58fb` (árbol `0e5adf81`): `STATIC` `verification-63e5bd05085542348374b113342fe26f`, `PHASE POST-R1-LOCUS` `verification-e9081ba52f334db9a6ff5c1a56f829de` (235 identidades compartidas y 25 de Desktop), `INTEGRATION` `verification-0104d11323c04f2cb5510c84f8c81c3d`; las tres `ACCEPTED / COMPLETE`, código 0 |
+
+### I0 — evidencia condicionada desde el productor real
+
+- **Testimonio.** `ReconstructibleLocusEvaluator2D.evaluateWithTestimony` lee, de lo que la
+  copia aislada calculó para esa evaluación, el testimonio de las dependencias selectoras
+  que lee el punto trazado: puntos de token (token exacto, admisibilidad y distancia a la
+  otra raíz), selecciones recta-cónica heredadas (estado de selección reproducible) y puntos
+  estructurales. No inicia ninguna resolución.
+- **Ausencia y fallo.** Lista cerrada de `conditioned-traversal/v1`:
+  `DEPENDENCY_UNDEFINED` e `INTERSECTION_ROOT_ABSENT`. Todo lo demás es fallo. Una celda con
+  ausencias de causas distintas es `FAILURE_BAND` (regla definitiva).
+- **Productor.** Una evidencia por revisión, calculada a petición sobre la parte del dominio
+  declarado que el certificado no cubre. Mover el conductor no publica revisión y la
+  conserva. Un aviso solo cambia el contenido si el productor lo confirma con su evaluador.
+- **Ningún consumidor cambia** en I0: estructura de existencia, definición y revisión son
+  las mismas con y sin evidencia.
+- **Pruebas.** `PostR1ConditionedProducerTest` (7 casos, kernel real): una región sobre un
+  locus fuera de clase; ninguna evidencia en un locus certificado; ausencia condicionada y
+  banda de transición localizada al paso mínimo; revisión nueva descarta la evidencia;
+  aviso confirmado, no confirmado y repetido, con celdas retiradas y resultados vigentes
+  (criterio 3b); testimonio del token y de la selección recta-cónica.
+  `PostR1ConditionedEvidenceTest` gana el caso de cobertura certificada (16 casos).
+- **Banco con el protocolo real y rendimiento.**
+  [Documento de rendimiento, §6](../architecture/post_r1_locus_real_change_performance.md#6-coste-de-la-evidencia-condicionada-por-revisión-incremento-i0):
+  `w_2` y `a_3`, dos regiones con cuatro bandas de transición en los pliegues, 353 a 385
+  evaluaciones y 0,41 a 0,50 s por revisión; `trHole`, una región de periodo completo, 257
+  evaluaciones y 0,16 s. Coste nulo al arrastrar. El banco real destapó y corrigió el
+  criterio de testimonio de la selección recta-cónica (allí descrito).
+- **Pendiente que I0 traslada.** El sobrecoste por revisión cuando la evidencia se consuma
+  (≈ 0,9 s en el modelo original) se trata en I2 con la exploración perezosa del
+  certificado.
+
 ## Verificación del candidato
 
 ### Candidato de las precisiones focales y del trabajo preparatorio de I0
