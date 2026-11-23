@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "94a7262967fa2254f4c64b818f7a3bcdeea17103fcdcbffccd09f3b17fe10aa5",
+      "discovery_evidence_sha256": "7f326abfb8e169b7efd402574839c25c0bb19e6873ff9562d8b623f1b9717453",
       "discovered_identity_count": 7057,
       "discovered_identities_sha256": "2ce2118ec1dc827e413087529914b42a499d5f70ce30420982cb55315ffcb4cf"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "f1b8c7bc07b29e88377059377d8f7a3ce5e54c4026b8d196a9a3af8110902024",
-      "discovered_identity_count": 2607,
-      "discovered_identities_sha256": "97334eb54c9f0b5e7141c64d7993430884739fd04bbf7866c3b36fc27d8665b3"
+      "discovery_evidence_sha256": "67fde6e0c7109626adc522ee232a1b5da91f0369541eb0b163ea3275a0c6ed8e",
+      "discovered_identity_count": 2619,
+      "discovered_identities_sha256": "30b14fe8e521a02108d1e12d798d6b96afe203736d979db9fa30bd7f31866270"
     }
   ],
   "selections": [
@@ -202,8 +202,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2607,
-      "expected_identities_sha256": "97334eb54c9f0b5e7141c64d7993430884739fd04bbf7866c3b36fc27d8665b3",
+      "expected_identity_count": 2619,
+      "expected_identities_sha256": "30b14fe8e521a02108d1e12d798d6b96afe203736d979db9fa30bd7f31866270",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -5298,6 +5298,44 @@
       ]
     },
     {
+      "selection_id": "pre-g9b-maint-u2.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.locus.M08PointCreationKernelTest",
+        "org.geocedg.common.locus.IndividualForwardPointCreationTest",
+        "org.geocedg.common.locus.R5ForwardCreationRoutingTest",
+        "org.geocedg.common.locus.Maintenance120PointInteractionTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.locus.M08PointCreationKernelTest",
+        "--tests",
+        "org.geocedg.common.locus.IndividualForwardPointCreationTest",
+        "--tests",
+        "org.geocedg.common.locus.R5ForwardCreationRoutingTest",
+        "--tests",
+        "org.geocedg.common.locus.Maintenance120PointInteractionTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 64,
+      "expected_identities_sha256": "ed517a1a0649a6f1c6f432ec48c46c36828d253fe26d08246c94013c5986a8df",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "4d351b2bd0ade0bf0d44030d500e8778ed2f4d2a",
+          "tree": "8f2f2c10203509af02e0757eebdc863de2130578"
+        }
+      ]
+    },
+    {
       "selection_id": "post-r1-locus.desktop",
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
@@ -5359,6 +5397,98 @@
         {
           "commit": "79d56efd0e34a19a8396115377f656bd66720a6d",
           "tree": "ef67455d3984cb41383ee64366d08f99ccc37bea"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-maint-u2.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.MaintU2PointToolUnificationDesktopTest",
+        "org.geocedg.desktop.Cu7M08SGeneralCreationTest",
+        "org.geocedg.desktop.GeneralPointInteractionDesktopTest",
+        "org.geocedg.desktop.R3PointInteractionDesktopTest",
+        "org.geocedg.desktop.G9U1SemanticPointInteractionTest",
+        "org.geocedg.desktop.R4ViewActivationDesktopTest",
+        "org.geocedg.desktop.R4NativeBudgetDesktopTest",
+        "org.geocedg.desktop.R5ReferenceCreationDesktopTest",
+        "org.geocedg.desktop.R5SemanticPointPointerDesktopTest",
+        "org.geocedg.desktop.Cu7M08SReferenceToolTest",
+        "org.geocedg.desktop.Cu7M08SDesktopEventsTest",
+        "org.geocedg.desktop.Cu7M08SCorrectionTest",
+        "org.geocedg.desktop.Maintenance120PointToolsDesktopTest",
+        "org.geocedg.desktop.Maintenance120ConeInteractionDesktopTest",
+        "org.geocedg.desktop.PostR1ConditionedPointDesktopTest",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest",
+        "org.geocedg.desktop.GeoCeDGProfileTest",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "org.geocedg.desktop.G9U1IconReviewTest",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.MaintU2PointToolUnificationDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.Cu7M08SGeneralCreationTest",
+        "--tests",
+        "org.geocedg.desktop.GeneralPointInteractionDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.R3PointInteractionDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1SemanticPointInteractionTest",
+        "--tests",
+        "org.geocedg.desktop.R4ViewActivationDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.R4NativeBudgetDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.R5ReferenceCreationDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.R5SemanticPointPointerDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.Cu7M08SReferenceToolTest",
+        "--tests",
+        "org.geocedg.desktop.Cu7M08SDesktopEventsTest",
+        "--tests",
+        "org.geocedg.desktop.Cu7M08SCorrectionTest",
+        "--tests",
+        "org.geocedg.desktop.Maintenance120PointToolsDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.Maintenance120ConeInteractionDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.PostR1ConditionedPointDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGProfileTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1IconReviewTest",
+        "--tests",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 272,
+      "expected_identities_sha256": "84fb7c1675ebaa1718836bd7fd4710430879a07925f10512febc9c57c168837f",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "4d351b2bd0ade0bf0d44030d500e8778ed2f4d2a",
+          "tree": "8f2f2c10203509af02e0757eebdc863de2130578"
         }
       ]
     },

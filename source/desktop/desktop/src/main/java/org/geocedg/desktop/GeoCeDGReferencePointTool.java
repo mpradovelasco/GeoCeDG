@@ -5,6 +5,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 import javax.swing.JButton;
@@ -48,6 +49,9 @@ final class GeoCeDGReferencePointTool {
 	private JPanel choices;
 	private JTextField status;
 	private JLabel coverage;
+	private JLabel originRule;
+	private JToggleButton originClick;
+	private JToggleButton originReference;
 	private JTextField[] inputs;
 	private boolean fillingPolicy;
 	private boolean policyDirty;
@@ -72,7 +76,11 @@ final class GeoCeDGReferencePointTool {
 	}
 
 	private String t(String en, String es) {
-		return "es".equals(app.getLocale().getLanguage()) ? es : en;
+		return t(app.getLocale(), en, es);
+	}
+
+	private static String t(Locale locale, String en, String es) {
+		return "es".equals(locale.getLanguage()) ? es : en;
 	}
 
 	void activate() {
@@ -95,10 +103,28 @@ final class GeoCeDGReferencePointTool {
 		if (app.getGuiManager() instanceof GuiManagerGeoCeDG gui) {
 			gui.setReferencePointPanel(panel);
 		}
-		updateStatus(app.getMode() != EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT
-				&& !fromReference ? t("Click to create a point", "Pulse para crear un punto")
-				: clickPosition ? t("Click object to choose a position", "Pulse el objeto para elegir una posición")
-				: t("Select object", "Seleccione objeto"));
+		updateStatus(isReferenceOriginSelected() ? t("Select object", "Seleccione objeto")
+				: isAliasMode() ? t("Click object to choose a position", "Pulse el objeto para elegir una posición")
+				: t("Click to create a point", "Pulse para crear un punto"));
+	}
+
+	/** Tool 145 is an alias of the Point panel whose origin preference starts at reference Q. */
+	private boolean isAliasMode() {
+		return app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT;
+	}
+
+	private boolean isPointMode() {
+		return app.getMode() == EuclidianConstants.MODE_POINT
+				|| app.getMode() == EuclidianConstants.MODE_POINT_ON_OBJECT;
+	}
+
+	/**
+	 * The origin shown by the selector. Point and Point on object keep one session preference
+	 * (click by default); tool 145 keeps its own (reference Q by default). Each origin runs the
+	 * route that its tool already had; the selector only chooses between them.
+	 */
+	boolean isReferenceOriginSelected() {
+		return isAliasMode() ? !clickPosition : fromReference;
 	}
 
 	void reset() {
@@ -112,6 +138,9 @@ final class GeoCeDGReferencePointTool {
 		panel = null;
 		status = null;
 		coverage = null;
+		originRule = null;
+		originClick = null;
+		originReference = null;
 		inputs = null;
 		policyDirty = false;
 		app.getSelectionManager().clearSelectedGeos();
@@ -328,36 +357,14 @@ final class GeoCeDGReferencePointTool {
 			refuse(selection.getFailure());
 			return;
 		}
-		boolean historical = selection.getRoute() == GeoCeDGReferencePlacement.Route.R1_R6;
-		boolean individual = selection.getRoute() == GeoCeDGReferencePlacement.Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION;
-		boolean conditioned = selection.getRoute()
-				== GeoCeDGReferencePlacement.Route.CONDITIONED_PARAMETER_ADDRESS;
 		boolean several = selection.getChoices().size() > 1;
 		String title = several
 				? t("Several possible positions were found. Select one.",
 						"Se han encontrado varias posiciones posibles. Seleccione una.")
 				: t("Position found on the curve", "Posición encontrada sobre la curva");
-		// The route and its guarantee are diagnostic detail: kept, but not the usual label.
-		String guarantee = historical ? "R1/R6: " + selection.getHistoricalResult().getStatus()
-						+ " / " + selection.getHistoricalResult().getSearchCoverage()
-				: individual ? t("Individual forward address; numerical proximity is uncertified; "
-						+ "global coverage not established",
-						"Dirección forward individual; proximidad numérica no certificada; "
-						+ "cobertura global no establecida")
-				: conditioned ? t("Address by parameter on a conditioned region: existence and "
-						+ "continuity of the curve are not certified; the positions found are not "
-						+ "stated to be all",
-						"Dirección por parámetro sobre una región condicionada: la existencia y la "
-						+ "continuidad de la curva no están certificadas; no se afirma que las "
-						+ "posiciones halladas sean todas")
-				: t("R2/H1 verified local address; global uniqueness not established",
-						"Dirección local verificada R2/H1; unicidad global no establecida");
-		coverage.setText(historical ? t("Positions found by the search", "Posiciones halladas por la búsqueda")
-				: individual ? t("Position checked by direct evaluation", "Posición comprobada por evaluación directa")
-				: conditioned ? t("Position on a conditioned stretch (not certified)",
-						"Posición sobre un tramo condicionado (no certificado)")
-				: t("Position verified locally", "Posición verificada localmente"));
-		coverage.setToolTipText(guarantee);
+		var presentation = routePresentation(app.getLocale(), selection);
+		coverage.setText(presentation.coverage());
+		coverage.setToolTipText(presentation.guarantee());
 		updateStatus(several ? t("Select a branch and confirm", "Seleccione una rama y confirme")
 				: t("Confirm the position", "Confirme la posición"));
 		var addresses = selection.getChoices().stream()
@@ -367,6 +374,43 @@ final class GeoCeDGReferencePointTool {
 						source instanceof GeoLocusV2 locus ? locus : null, addresses),
 				addresses.stream().map(GeoCeDGAddressPresentation::technical).toList(),
 				this::commit, title);
+	}
+
+	/**
+	 * Usual coverage text and diagnostic guarantee of an offered route.
+	 *
+	 * @param coverage the short text shown with the offer
+	 * @param guarantee the route and its guarantee, kept as diagnostic detail (tooltip)
+	 */
+	record RoutePresentation(String coverage, String guarantee) { }
+
+	/** The one presentation of a route, shared by the Point panel and the endpoint assistance. */
+	static RoutePresentation routePresentation(Locale locale, GeoCeDGReferencePlacement selection) {
+		var route = selection.getRoute();
+		boolean historical = route == GeoCeDGReferencePlacement.Route.R1_R6;
+		boolean individual = route == GeoCeDGReferencePlacement.Route.INDIVIDUAL_FORWARD_ADDRESS_CREATION;
+		boolean conditioned = route == GeoCeDGReferencePlacement.Route.CONDITIONED_PARAMETER_ADDRESS;
+		// The route and its guarantee are diagnostic detail: kept, but not the usual label.
+		String guarantee = historical ? "R1/R6: " + selection.getHistoricalResult().getStatus()
+						+ " / " + selection.getHistoricalResult().getSearchCoverage()
+				: individual ? t(locale, "Individual forward address; numerical proximity is uncertified; "
+						+ "global coverage not established",
+						"Dirección forward individual; proximidad numérica no certificada; "
+						+ "cobertura global no establecida")
+				: conditioned ? t(locale, "Address by parameter on a conditioned region: existence and "
+						+ "continuity of the curve are not certified; the positions found are not "
+						+ "stated to be all",
+						"Dirección por parámetro sobre una región condicionada: la existencia y la "
+						+ "continuidad de la curva no están certificadas; no se afirma que las "
+						+ "posiciones halladas sean todas")
+				: t(locale, "R2/H1 verified local address; global uniqueness not established",
+						"Dirección local verificada R2/H1; unicidad global no establecida");
+		String coverage = historical ? t(locale, "Positions found by the search", "Posiciones halladas por la búsqueda")
+				: individual ? t(locale, "Position checked by direct evaluation", "Posición comprobada por evaluación directa")
+				: conditioned ? t(locale, "Position on a conditioned stretch (not certified)",
+						"Posición sobre un tramo condicionado (no certificado)")
+				: t(locale, "Position verified locally", "Posición verificada localmente");
+		return new RoutePresentation(coverage, guarantee);
 	}
 
 	GeoPoint commit(GeoCeDGReferencePlacement.Choice choice) {
@@ -403,7 +447,8 @@ final class GeoCeDGReferencePointTool {
 				"Punto nativo sobre objeto; Q es referencia inicial"));
 	}
 
-	private String describeFailure(String code) {
+	/** @return the user text of a typed rejection; the code itself stays in the tooltip */
+	String describeFailure(String code) {
 		return switch (code) {
 		case "R1_FORWARD_REJECTED" -> t("R1 forward publication rejected", "Publicación forward R1 rechazada");
 		case "CERTIFIED_ABSENCE" -> t("Certified absence within the R1 query policy", "Ausencia certificada bajo la política R1");
@@ -430,7 +475,13 @@ final class GeoCeDGReferencePointTool {
 		case "STALE_SELECTION" -> t("Selection is stale; make a new request", "Selección caducada; realice una petición nueva");
 		case "FOREIGN_CHOICE" -> t("Choice belongs to another query", "Dirección ajena a la consulta");
 		case "CONSUMED_SELECTION" -> t("Selection already consumed", "Selección ya consumida");
-		case "COMPONENT_NOT_ESTABLISHED" -> t("Component not established", "Componente no establecida");
+		// F8 is not implemented: the rejection points to the explicit address alternatives.
+		case "COMPONENT_NOT_ESTABLISHED" -> t(
+				"the components of this curve are not established here, so the position cannot be"
+						+ " confirmed on a component. Use Point(curve, parameter) or the tool ",
+				"las componentes de esta curva no están establecidas aquí, así que la posición no"
+						+ " puede confirmarse sobre una componente. Use Point(curva, parámetro) o la herramienta ")
+				+ app.getLocalization().getMenu("LocusV2.Point.Tool");
 		case "UNSAFE_SEARCH", "UNSAFE_DISCOVERY" -> t("Unsafe search barrier", "Barrera de seguridad de búsqueda");
 		case "AUTHORITY_NOT_ESTABLISHED" -> t("Source authority not established", "Autoridad de la fuente no establecida");
 		case "FORWARD_MODEL_MISMATCH" -> t("Forward model mismatch", "Discrepancia del modelo forward");
@@ -565,37 +616,6 @@ final class GeoCeDGReferencePointTool {
 				"Puntos nuevos sobre objetos admitidos; los fijos siguen los cambios de su fuente"));
 		free.addActionListener(event -> draggable = free.isSelected());
 		actions.add(free);
-		if (app.getMode() == EuclidianConstants.MODE_POINT
-				|| app.getMode() == EuclidianConstants.MODE_POINT_ON_OBJECT) {
-			JToggleButton reference = new JToggleButton(t("From reference Q", "Desde referencia Q"), fromReference);
-			reference.setName("m08-from-reference");
-			reference.addActionListener(event -> {
-				fromReference = reference.isSelected();
-				restoreReferencePolicy();
-				worldPlacement = false;
-				clearSelection(); source = null;
-				fillPolicy();
-				app.getSelectionManager().clearSelectedGeos();
-				updateStatus(fromReference ? t("Select object, then Q", "Seleccione objeto y después Q")
-						: t("Click to create a point", "Pulse para crear un punto"));
-			});
-			actions.add(reference);
-		}
-		if (app.getMode() == EuclidianConstants.MODE_LOCUS_V2_REFERENCE_POINT) {
-			JToggleButton origin = new JToggleButton(t("Click position", "Posición de clic"), clickPosition);
-			origin.setName("m08-click-position");
-			origin.addActionListener(event -> {
-				clickPosition = origin.isSelected();
-				worldPlacement = false;
-				clearSelection();
-				source = null;
-				app.getSelectionManager().clearSelectedGeos();
-				coverage.setText("");
-				updateStatus(clickPosition ? t("Click L to choose a position", "Pulse L para elegir una posición")
-						: t("Select L", "Seleccione L"));
-			});
-			actions.add(origin);
-		}
 		JLabel radius = new JLabel(labels[0]); radius.setLabelFor(inputs[0]);
 		actions.add(radius); actions.add(inputs[0]);
 		JToggleButton options = new JToggleButton(t("Policy", "Política"));
@@ -605,6 +625,7 @@ final class GeoCeDGReferencePointTool {
 		actions.add(restart);
 		JPanel header = new JPanel(new BorderLayout(4, 0));
 		header.add(status, BorderLayout.CENTER); header.add(actions, BorderLayout.EAST);
+		if (isPointMode() || isAliasMode()) { header.add(buildOriginSelector(), BorderLayout.SOUTH); }
 		panel.add(header, BorderLayout.NORTH);
 		JPanel technical = new JPanel(new BorderLayout(4, 2));
 		JLabel scope = new JLabel(t("Scope: all supported branches/components", "Alcance: todas las ramas/componentes admitidas"));
@@ -626,6 +647,95 @@ final class GeoCeDGReferencePointTool {
 		panel.registerKeyboardAction(event -> restart(), KeyStroke.getKeyStroke("ESCAPE"),
 				JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 	}
+
+	/**
+	 * One origin selector for Point, Point on object and tool 145. The two segments are
+	 * complementary: pressing the selected one selects the other origin. Below them, the panel
+	 * states where the search radius comes from and when an offer needs Confirm (U2-3).
+	 */
+	private JPanel buildOriginSelector() {
+		JPanel row = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEADING, 4, 0));
+		JLabel label = new JLabel(t("Origin:", "Origen:"));
+		JToggleButton click = new JToggleButton(t("Click", "Clic"));
+		click.setName("m08-click-position");
+		JToggleButton reference = new JToggleButton(t("Reference Q", "Referencia Q"));
+		reference.setName("m08-from-reference");
+		click.getAccessibleContext().setAccessibleName(t("Origin: click", "Origen: clic"));
+		reference.getAccessibleContext().setAccessibleName(t("Origin: reference Q", "Origen: referencia Q"));
+		originRule = new JLabel();
+		originRule.setName("m08-origin-rule");
+		click.addActionListener(event -> chooseOrigin(!click.isSelected()));
+		reference.addActionListener(event -> chooseOrigin(reference.isSelected()));
+		originClick = click;
+		originReference = reference;
+		showOrigin();
+		row.add(label); row.add(click); row.add(reference); row.add(originRule);
+		return row;
+	}
+
+	private void chooseOrigin(boolean reference) {
+		if (isAliasMode()) { clickPosition = !reference; } else { fromReference = reference; }
+		boolean restored = canvasPreviousPolicy != null;
+		restoreReferencePolicy();
+		worldPlacement = false;
+		clearSelection();
+		source = null;
+		// Show the policy that applies again; edits that were not applied yet are kept.
+		if (restored) { fillPolicy(); }
+		app.getSelectionManager().clearSelectedGeos();
+		if (coverage != null) { coverage.setText(""); }
+		showOrigin();
+		updateStatus(reference ? t("Select object", "Seleccione objeto")
+				: isAliasMode() ? t("Click object to choose a position", "Pulse el objeto para elegir una posición")
+				: t("Click to create a point", "Pulse para crear un punto"));
+	}
+
+	private void showOrigin() {
+		boolean reference = isReferenceOriginSelected();
+		originClick.setSelected(!reference);
+		originReference.setSelected(reference);
+		String rule;
+		String detail;
+		if (reference) {
+			rule = t("Radius r world around Q · every offer needs Confirm",
+					"Radio r world alrededor de Q · toda oferta requiere Confirmar");
+			detail = t("Select the object, then an existing point Q in Graphics or Algebra. On Locus V2"
+					+ " and Spline V2 the search radius is r world around Q; native objects use the"
+					+ " ordinary projection of Q. Every offer appears here and waits for Confirm."
+					+ " The new point does not depend on Q.",
+					"Seleccione el objeto y después un punto Q existente en Gráfica o Álgebra. Sobre"
+					+ " Locus V2 y Spline V2 el radio de búsqueda es r world alrededor de Q; los objetos"
+					+ " nativos usan la proyección ordinaria de Q. Toda oferta aparece aquí y espera a"
+					+ " Confirmar. El punto nuevo no depende de Q.");
+		} else if (isAliasMode()) {
+			rule = t("Radius r world around the click · every offer needs Confirm",
+					"Radio r world alrededor del clic · toda oferta requiere Confirmar");
+			detail = t("The search radius is r world, in construction units, around the clicked"
+					+ " position. Every offer appears here and waits for Confirm.",
+					"El radio de búsqueda es r world, en unidades de la construcción, alrededor de la"
+					+ " posición pulsada. Toda oferta aparece aquí y espera a Confirmar.");
+		} else {
+			rule = t("Radius from the view · positions found by the search are created at once;"
+					+ " other offers need Confirm",
+					"Radio de la vista · lo hallado por la búsqueda se crea al instante;"
+					+ " el resto requiere Confirmar");
+			detail = t("The search radius comes from the view (pointer size and zoom). A click on a"
+					+ " Locus V2 or Spline V2 creates the point at once when the search finds the"
+					+ " position (choose one if several are found); any other offer appears here and"
+					+ " waits for Confirm. On native objects and on empty space the ordinary tool"
+					+ " applies.",
+					"El radio de búsqueda se toma de la vista (tamaño del puntero y zoom). Un clic"
+					+ " sobre un Locus V2 o un Spline V2 crea el punto al instante cuando la búsqueda"
+					+ " halla la posición (elija una si hay varias); cualquier otra oferta aparece aquí"
+					+ " y espera a Confirmar. Sobre objetos nativos y en el espacio vacío actúa la"
+					+ " herramienta ordinaria.");
+		}
+		originRule.setText(rule);
+		originRule.setToolTipText(detail);
+	}
+
+	/** @return the radius and confirmation rule of the selected origin, or {@code null} */
+	String originRule() { return originRule == null || panel == null ? null : originRule.getText(); }
 
 	private void policyEdited() {
 		if (fillingPolicy) { return; }

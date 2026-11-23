@@ -1,7 +1,13 @@
 /* GeoCeDG. Copyright (c) 2026 GeoCeDG contributors. SPDX-License-Identifier: EUPL-1.2 */
 package org.geocedg.desktop;
 
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.ToolTipManager;
 
 import org.geocedg.common.kernel.algos.AlgoProvenLocusEndpoint2D;
 import org.geocedg.common.kernel.algos.SemanticMetricEndpointResolver2D;
@@ -63,6 +69,10 @@ final class GeoCeDGMetricEndpointAssistance {
 		}
 	}
 
+	/**
+	 * Same placement policy, address presentation, route guarantee and drag choice as the Point
+	 * panel. The host stores the single Undo step of the created point.
+	 */
 	private GeoPoint place(GeoLocusV2 source, GeoPoint reference, String title) {
 		try (var selection = new GeoCeDGReferencePlacement(source, reference,
 				LocusPointInteractionPolicy2D.initial(.1))) {
@@ -75,22 +85,50 @@ final class GeoCeDGMetricEndpointAssistance {
 						JOptionPane.INFORMATION_MESSAGE);
 				return null;
 			}
-			String[] options = new String[choices.size()];
-			for (int i = 0; i < choices.size(); i++) {
-				var address = choices.get(i).getAddress();
-				options[i] = (i + 1) + ". " + address.getBranchKey() + "   t = "
-						+ address.getCanonicalParameter();
-			}
-			Object selected = JOptionPane.showInputDialog(app.getMainComponent(),
+			var addresses = choices.stream().map(GeoCeDGReferencePlacement.Choice::getAddress).toList();
+			var labels = GeoCeDGAddressPresentation.labels(app.getLocale(), source, addresses);
+			var details = addresses.stream().map(GeoCeDGAddressPresentation::technical).toList();
+			JList<String> list = new JList<>(labels.toArray(String[]::new)) {
+				private static final long serialVersionUID = 1L;
+				@Override public String getToolTipText(java.awt.event.MouseEvent event) {
+					int row = locationToIndex(event.getPoint());
+					return row >= 0 && getCellBounds(row, row).contains(event.getPoint())
+							? details.get(row) : null;
+				}
+			};
+			ToolTipManager.sharedInstance().registerComponent(list);
+			list.setName("m08-endpoint-positions");
+			list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			list.setVisibleRowCount(Math.min(4, labels.size()));
+			// A single offer is preselected; several offers have no implicit choice.
+			if (labels.size() == 1) { list.setSelectedIndex(0); }
+			String heading = labels.size() > 1
+					? text("Several possible positions were found. Select one.",
+							"Se han encontrado varias posiciones posibles. Seleccione una.")
+					: text("Position found on the curve", "Posición encontrada sobre la curva");
+			list.getAccessibleContext().setAccessibleName(heading);
+			var presentation = GeoCeDGReferencePointTool.routePresentation(app.getLocale(), selection);
+			JLabel guarantee = new JLabel(presentation.coverage());
+			guarantee.setName("m08-endpoint-guarantee");
+			guarantee.setToolTipText(presentation.guarantee());
+			JCheckBox free = new JCheckBox(text("Allow dragging", "Permitir arrastre"), true);
+			free.setName("m08-allow-dragging");
+			free.setToolTipText(text("New points on supported objects; fixed points still follow their source",
+					"Puntos nuevos sobre objetos admitidos; los fijos siguen los cambios de su fuente"));
+			Object[] message = {
 					text("The new point retains the selected locus position, independent of the reference.",
 							"El nuevo punto conserva la posición elegida en el lugar y es independiente de la referencia."),
-					title, JOptionPane.QUESTION_MESSAGE, null, options, null);
-			for (int i = 0; i < options.length; i++) {
-				if (options[i].equals(selected) && app.getKernel().getConstruction() == source.getConstruction()) {
-					return selection.commit(choices.get(i));
-				}
+					heading, new JScrollPane(list), guarantee, free};
+			int answer = JOptionPane.showConfirmDialog(app.getMainComponent(), message, title,
+					JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			int index = list.getSelectedIndex();
+			if (answer != JOptionPane.OK_OPTION || index < 0
+					|| app.getKernel().getConstruction() != source.getConstruction()) {
+				return null;
 			}
-			return null;
+			GeoPoint point = selection.commit(choices.get(index));
+			if (point != null) { point.setFixed(!free.isSelected()); }
+			return point;
 		}
 	}
 
