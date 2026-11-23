@@ -4630,3 +4630,23 @@ Referencias:
 [registro de la instrucción](../validation/post_r1_1_2_2_closing_check_author_instruction_record.md),
 [evidencia final de cierre](../validation/geocedg_1_2_2_closing_evidence.md) y
 [registro de progreso](../validation/post_r1_locus_repairs_progress.md).
+
+## 2026-11-23 — Aprobación autoral del candidato de cierre de GeoCeDG 1.2.2
+
+Registro aditivo por decisión autoral de 2026-11-23. No altera fechas, aprobaciones ni
+resultados anteriores.
+
+- El autor aprueba el candidato de cierre `a6562fa30dc7a468b8e62e16843f1ae2f440285b` como
+  GeoCeDG 1.2.2 (fecha de versión `2026-11-22`), con la evidencia final de cierre y sus
+  limitaciones declaradas: **PASS — AUTHOR APPROVED**. El PASS técnico se refiere a las
+  verificaciones ordinarias ejecutadas; `FINAL` no se ejecutó.
+- No es una fase ni una subfase de la hoja de ruta: cierra el trabajo de mantenimiento de la
+  línea 1.2.x posterior a R1.
+- No autoriza la ejecución de `FINAL`, la promoción a `main`, la etiqueta `v1.2.2`, la
+  release ni la instalación de los paquetes. Cada una exige una autorización expresa del
+  autor.
+
+Referencias:
+[registro de la aprobación](../validation/geocedg_1_2_2_author_approval_record.md),
+[evidencia final de cierre](../validation/geocedg_1_2_2_closing_evidence.md) y
+[registro de progreso](../validation/post_r1_locus_repairs_progress.md).

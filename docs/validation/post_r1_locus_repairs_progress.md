@@ -560,6 +560,14 @@ arranques, con el ciclo de vida de `LocusLength(w_2)`: ≈ 6,3 s por cambio mien
 ≈ 1,65 s tras eliminarlo, sin resultado rico huérfano, también tras reabrir. `FINAL` no se
 ejecutó; nada publicado; no hay etiqueta `v1.2.2`.
 
+## Checkpoint 13 — aprobación autoral del candidato de cierre
+
+El 2026-11-23 el autor aprobó el candidato de cierre `a6562fa30` como GeoCeDG 1.2.2, con la
+evidencia final de cierre y sus limitaciones declaradas. La aprobación consta solo en su
+[registro](geocedg_1_2_2_author_approval_record.md); este registro de progreso no la
+duplica. No autoriza `FINAL`, la promoción a `main`, la etiqueta `v1.2.2`, la release ni la
+instalación de los paquetes, y nada de eso se ha hecho.
+
 ## Verificación del candidato
 
 ### Candidato de las precisiones focales y del trabajo preparatorio de I0
@@ -719,11 +727,12 @@ la base. Ninguna etiqueta creada ni movida; versión de producto sin cambiar (1.
 
 ## Pendiente, siguiente acción y reanudación
 
-- **Pendiente del autor:** la aprobación del candidato de cierre `a6562fa30` como GeoCeDG
-  1.2.2; `FINAL`; la promoción a `main`, la etiqueta `v1.2.2` y la publicación; la prueba
-  de los instaladores en un entorno aislado.
+- **Aprobado por el autor (2026-11-23):** el candidato de cierre `a6562fa30` como GeoCeDG
+  1.2.2 ([registro](geocedg_1_2_2_author_approval_record.md)).
+- **Pendiente del autor:** `FINAL`; la promoción a `main`, la etiqueta `v1.2.2` y la
+  publicación; la prueba de los instaladores en un entorno aislado.
 - **No hecho:** ninguna de esas acciones, por no estar autorizadas.
-- **Reanudación exacta:** el candidato de cierre es `a6562fa30`, con sus paquetes en
+- **Reanudación exacta:** el candidato aprobado es `a6562fa30`, con sus paquetes en
   `artifacts/packaging/windows-1.2.2-nc-candidate-4`. No queda trabajo técnico abierto.
 - **Conservado:** el original del modelo, la evidencia R1 y las salidas de benchmark en
   `artifacts/benchmarks/post-r1-locus/` (ignoradas por Git). Dos worktrees separados, de la
