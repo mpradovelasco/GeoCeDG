@@ -6,10 +6,15 @@
 ## Objective
 <!-- geocedg-field: objective -->
 
-S2 es el **objetivo funcional principal** de la sustitución: sustituir un punto por otro con
-identidad nueva preservando las construcciones dependientes compatibles, mediante la
-actualización explícita de sus dependencias y la revalidación de su evidencia, sin reducir las
-garantías de coherencia del DAG ni aceptar publicación parcial.
+S2 es el **objetivo funcional principal** de la sustitución (dirección aprobada por el autor el
+2026-11-23, implementación pendiente; prevalece el diseño D §3.0): sustituir un punto por otro
+con identidad nueva preservando las construcciones dependientes estructuralmente compatibles,
+mediante la actualización explícita de sus dependencias y la revalidación de su evidencia, con
+las siete garantías no negociables. Ejemplo: `r = Line(P, A)` puede actualizarse como
+`r = Line(P', A)` si el contrato del constructor admite la nueva entrada. En Locus V2 se
+revalidan explícitamente dependencias, existencia, componentes, certificaciones y vínculos
+semánticos. Los dependientes incompatibles tienen un tratamiento explícito e informado de
+antemano.
 
 **N3** (`DOCUMENTATION_STATUS_ONLY`): redactar las enmiendas candidatas de ADR 0026 (decisión
 6), ADR 0029 (decisión 4), ADR 0041 (decisión 8) y del contrato M09 §3. Admiten, dentro de una

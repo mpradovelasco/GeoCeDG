@@ -1,7 +1,9 @@
 # GeoCeDG — PRE-G9B-MAINT-F8: creación interactiva sobre componentes certificadas locales
 
-**PROMPT CANDIDATO — NO AUTORIZADO.** Requiere U2 cerrado, la decisión D-F8 y una instrucción
-autoral con base exacta. Dos pasos con puerta autoral entre ellos.
+**PROMPT CANDIDATO — NO AUTORIZADO.** D-F8 quedó aprobada el 2026-11-23 solo para la
+caracterización F8-S0 sobre un locus mixto real. F8-S0 requiere una instrucción autoral con base
+exacta; F8-min solo podrá autorizarse con evidencia discriminante de una carencia funcional
+real. Dos pasos con puerta autoral entre ellos.
 
 ## Objective
 <!-- geocedg-field: objective -->

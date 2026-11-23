@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | **Evidencia de planificación.** No aprueba nada ni es autoridad normativa. `selfApproved=false`. Un hecho observado no es una decisión |
-| Estado | `CHARACTERIZATION — PENDING AUTHOR REVIEW` (revisión 2) |
+| Estado | `CHARACTERIZATION — CONSIDERED IN THE AUTHOR RESOLUTION 2026-11-23` (contenido de la revisión 2 sin cambios; las decisiones están en la [hoja F](pre_g9b_maint_p0_author_decision_sheet.md) §0) |
 | Encargo | Instrucción autoral «GeoCeDG — PRE-G9B-MAINT-P0» y enmiendas autorales finales del expediente (ambas del 2026-11-23): planificación, caracterización técnica y diseño preliminar; sin implementación productiva |
 | Base | `main` = `origin/main` = `f80f0e9b029e678007f399508163bf794951992c`, árbol `8c1d4ca163b214898ec392bd9d02f04c955661d1`; etiqueta `v1.2.2` (objeto `7a8e12b8f`) sobre `1b54ff95d`; árbol de trabajo limpio al empezar |
 | Método | Lectura del código, las pruebas y los documentos en esa base; dos sondas de caracterización de usar y tirar (§F), ejecutadas desde el directorio temporal de la sesión con un script de inicialización de Gradle y sin versionar. Ninguna prueba, selección ni artefacto del repositorio se ha modificado |

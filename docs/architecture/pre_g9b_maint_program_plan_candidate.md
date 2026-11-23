@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |---|---|
-| Carácter | **Plan candidato de programa.** No es el roadmap normativo, no abre ninguna fase y no autoriza ningún incremento. `implementationAuthorized=false`; `selfApproved=false` |
-| Estado | `PROGRAM PLAN CANDIDATE — PENDING AUTHOR REVIEW` (revisión 2) |
+| Carácter | **Plan de programa aprobado como planificación por el autor (2026-11-23).** No es el roadmap normativo, no abre ninguna fase y no autoriza ningún incremento: cada implementación requiere autorización autoral propia sobre una base exacta. `implementationAuthorized=false`; `selfApproved=false` |
+| Estado | `PROGRAM PLAN — PLANNING APPROVED BY THE AUTHOR 2026-11-23` (revisión 3); decisiones en la [hoja F](../validation/pre_g9b_maint_p0_author_decision_sheet.md) §0 |
 | Identificador propuesto | `PRE-G9B-MAINT`, con incrementos `PRE-G9B-MAINT-<id>`; familia nueva sin colisión con `PRE-G9B-S/D/P/R/CU` ni con `G9B` |
 | Encargo | Instrucción autoral «GeoCeDG — PRE-G9B-MAINT-P0» y enmiendas autorales finales del expediente (ambas del 2026-11-23) |
 | Base | `f80f0e9b029e678007f399508163bf794951992c` (GeoCeDG 1.2.2) |
@@ -15,6 +15,7 @@
 |---|---|---|
 | 1 | 2026-11-23 | Versión inicial: bloque A como `A1` → `A2` → `A3`; NURBS e importación DXF diferidas; B1 como `MAINT-B1a` sin subtotal |
 | 2 | 2026-11-23 | Enmiendas autorales: bloque A reordenado en `A-N1`, `A-DXF0`, `A2`, `A-DXF1`, `A3` y `A-R` (diseñada, no autorizada), sin secuencia artificial entre importación, familia y exportación; B1 con decisión normativa pendiente entre tres opciones; S0 amplía la caracterización previa a S1 y S2; I2G0 como barrera basada en el riesgo con caracterización previa; F8 condicionado a una prueba discriminante |
+| 3 | 2026-11-23 | Resolución autoral definitiva: el marco y la primera ola quedan aprobados como planificación; `MAINT-N1` cubre solo B5a y B2-F1; B2-F2 no se implementa (ningún barrido al cargar ni migración de documentos antiguos); T-A diferida hasta validar B5a; B1 pendiente; A-DXF0 empieza con R-a; S0 es puerta previa de S1 y S2; I2G0 y F8 aprobados para caracterización; capacidades diferidas ampliadas (§7) |
 
 ## 0. Principios del programa
 
@@ -57,15 +58,17 @@ Esfuerzo relativo: XS < S < M < L (comparativo, no en días).
 
 | Id | Bloque | Contenido | Capa | Requiere antes | Esfuerzo | Clase de verificación propuesta | Alcance |
 |---|---|---|---|---|---|---|---|
-| `MAINT-P0` | — | Esta planificación | documental | — | — | `DOCUMENTATION_STATUS_ONLY` | autorizado (en curso) |
-| `MAINT-N1` | B | Enmienda de `locus-v2-metrics.md` §28.3 y §29 para B5a y B2; §28.2 para B1 solo si D-B-1b elige O1 u O2 | normativa | D-B-1a, D-B-2 (D-B-1b para la parte de B1) | XS | `DOCUMENTATION_STATUS_ONLY` | propuesto |
+| `MAINT-P0` | — | Esta planificación | documental | — | — | `DOCUMENTATION_STATUS_ONLY` | planificación aprobada por el autor (2026-11-23); cierre documental |
+| `MAINT-N1` | B | Enmienda de `locus-v2-metrics.md` §28.3 (B5a) y §29 (B2-F1). §28.2 no se modifica mientras D-B-1b esté pendiente; T-A diferida | normativa | D-B-1a, D-B-2 (aprobadas) | XS | `DOCUMENTATION_STATUS_ONLY` | primera ola aprobada como planificación |
 | `MAINT-B5a` | B | Guarda de escalado de cuerdas en la admisión de rutas condicionadas, con presupuesto acotado | núcleo (métricas) | N1 | S | `INTEGRATED_PHASE` | **propuesto, prioridad científica 1** |
 | `MAINT-U2` | C | Panel único de Punto, alias 145, asistencia de extremos, mensaje de rechazo, guías | Desktop | D-U2 | S | `INTEGRATED_PHASE` | **propuesto, prioridad 1 de interfaz** |
 | `MAINT-I2G0` | C | Caracterización de la conducta Classic legítima y de los casos en riesgo; después, barrera basada en el riesgo antes de eliminar nada | núcleo (anfitrión) | D-I2G | S | caracterización: `BOUNDED_PHASE`; barrera: `INTEGRATED_PHASE` | propuesto |
-| `MAINT-B2` | B | Barrido de la autoridad rica huérfana al completar la redefinición (y opcionalmente al cargar) | núcleo | N1, D-B-2 | S | `INTEGRATED_PHASE` | propuesto |
-| `MAINT-B1a` | B | Total condicionado sin estimación automática del subtotal (O1) o con estimación solo a petición (O2); T-A opcional | núcleo (métricas) | D-B-1b ∈ {O1, O2}; N1 | S | `INTEGRATED_PHASE` | propuesto, condicionado a decisión pendiente |
+| `MAINT-B2` | B | Limpieza de la autoridad rica auxiliar huérfana al completar correctamente una redefinición (solo B2-F1; sin barrido al cargar, por decisión expresa) | núcleo | N1, D-B-2 | S | `INTEGRATED_PHASE` | propuesto |
+| `MAINT-B1-S0` | B | Caracterización del resultado rico vigente del total condicionado, sus consumidores y su comportamiento por revisión | pruebas | — | XS | `BOUNDED_PHASE` | propuesto; previo a D-B-1b |
+| `MAINT-B1a` | B | Total condicionado sin estimación automática del subtotal (O1) o con estimación solo a petición (O2) | núcleo (métricas) | D-B-1b ∈ {O1, O2} (pendiente); N1 ampliada a §28.2 | S | `INTEGRATED_PHASE` | condicionado a decisión pendiente |
 | `MAINT-A-N1` | A | Diseño normativo: especificación `bspline-2d` preparada para NURBS (v1 polinómica) y su ADR; contrato de importación `dxf-spline-reference/v1`; biblioteca matemática; versión serializada | normativa | D-A-1..D-A-7 | S | `DOCUMENTATION_STATUS_ONLY` | propuesto |
-| `MAINT-A-DXF0` | A | Importación DXF `SPLINE` 2D de solo lectura, polinómica y racional, como referencia | adaptador de importación + Desktop | contrato de importación de A-N1 aprobado | M | `INTEGRATED_PHASE` | propuesto, **prioridad de interoperabilidad** |
+| `MAINT-A-DXF0` | A | Importación DXF `SPLINE` 2D de solo lectura, polinómica y racional, como referencia; persistencia R-a (solo sesión) | adaptador de importación + Desktop | contrato de importación de A-N1 aprobado | M | `INTEGRATED_PHASE` | propuesto, **prioridad de interoperabilidad** |
+| `MAINT-A-DXF0-RC` | A | Persistencia R-c de las referencias (copia en el documento fuera de `Construction`), tras caracterizar la compatibilidad del archivo `.cedg`, los lectores anteriores y las reglas de guardado y reapertura | Desktop + documento | A-DXF0; caracterización previa | S | `INTEGRATED_PHASE` | objetivo posterior prioritario |
 | `MAINT-A2` | A | Familia polinómica semántica como proveedor de `GeoLocusV2` (propuesta B §6.1) | núcleo + mínimo de producto | especificación de familia de A-N1 aprobada | L | `INTEGRATED_PHASE` | propuesto |
 | `MAINT-F8` | C | F8-S0 (prueba discriminante sobre locus mixto real); F8-min solo si se confirma | núcleo + Desktop | U2 cerrado; D-F8 | S + M | S0: `BOUNDED_PHASE`; min: `INTEGRATED_PHASE` | propuesto, condicionado |
 | `MAINT-S0` | C | Caracterización: referencias por nombre, fronteras de transacción, condiciones de restauración, fusión, hermanos tras fallo, veracidad del impacto, frecuencia en modelos | pruebas | — | S | `BOUNDED_PHASE` | propuesto |
@@ -76,6 +79,7 @@ Esfuerzo relativo: XS < S < M < L (comparativo, no en días).
 | `MAINT-S2` | C | Objetivo funcional principal: dependientes compatibles conservan identidad con dependencias actualizadas y evidencia revalidada (incluidos Locus V2) | núcleo | N3 aprobada | M | `INTEGRATED_PHASE`; posible escalado | propuesto, condicionado |
 | `MAINT-PERF-O2a` | B | Huella de valores más barata por evaluación (B1, B3, D-V6) | núcleo | D-B-3 | M | `INTEGRATED_PHASE` | opcional |
 | `MAINT-A-DXF1b` | A | Cota global certificada del error de aproximación (propuesta B §9.5), si no entra en A-DXF1 | servicio externo | A-DXF1; D-A-9 | S | `INTEGRATED_PHASE` | opcional |
+| Admisión T-A | B | Una región sin bandas como número (D-B-1c) | núcleo (métricas) | B5a validado | XS | `INTEGRATED_PHASE` | diferido hasta validar B5a |
 | `MAINT-B5b` | B | Recorrido condicionado v2 con la prueba de escalado | núcleo (evidencia) | decisión propia | M | `INTEGRATED_PHASE` | diferido |
 | Política de aislamiento B3 | B | Sección áurea o semillas desde la evidencia | núcleo | objetivo autoral | M | `INTEGRATED_PHASE` | diferido |
 | `MAINT-A-R` | A | NURBS semántica nativa (propuesta B §10) | núcleo | A2 y decisión propia | L | por decidir | **diseñado, no autorizado** |
@@ -156,12 +160,18 @@ Número, fecha, `FINAL` y publicación siguen siendo decisiones autorales separa
 
 ## 7. Deudas que permanecen diferidas
 
-M08-D, I3, reconstrucción general, arrastre universal sobre Locus V2, redefinición general con
-conservación de identidad, NURBS semántica nativa (`MAINT-A-R`, diseñada), importación DXF de
-variantes no admitidas (3D, solo puntos de ajuste, periódicas, no ancladas, bloques),
-persistencia de referencias en el documento (R-b, R-c, R-d) y aproximación dinámica vinculada,
+Fijadas por la resolución autoral del 2026-11-23: M08-D; I3; reconstrucción general del
+núcleo; arrastre universal de puntos sobre Locus V2; redefinición general con conservación de la
+identidad de `P`; NURBS semántica nativa (`MAINT-A-R`, diseñada); importación DXF fuera del
+subconjunto racional 2D aprobado (3D, solo puntos de ajuste, periódicas, no ancladas, bloques);
+actualización dinámica de aproximaciones DXF; migraciones automáticas de documentos antiguos;
+barrido de auxiliares ricos durante la carga (B2-F2); modificaciones generales de la política de
+aislamiento de intersecciones. No se convierten en dependencias de los incrementos aprobados
+salvo demostración y nueva autorización.
+
+Además: persistencia de referencias R-b y R-d (R-c es objetivo posterior prioritario),
 `SPLINE` derivada de SplineV2, modelo certificado de la familia B-spline, recorrido condicionado
-v2, cambios de la política de aislamiento de `Intersect`, identidad declarativa de piezas de
+v2, admisión T-A (hasta validar B5a), identidad declarativa de piezas de
 deslizadores, I2G-3 (conservar hermanos con el productor original), el fallo histórico de
 Desktop OD-1 y la deriva de firma del proveedor OD-2. Ninguna es dependencia de un incremento
 propuesto.

@@ -1,7 +1,10 @@
 # GeoCeDG — PRE-G9B-MAINT-I2G0: barrera de productores con varias salidas
 
-**PROMPT CANDIDATO — NO AUTORIZADO.** Requiere la decisión D-I2G y una instrucción autoral con
-base exacta.
+**PROMPT CANDIDATO — NO AUTORIZADO.** D-I2G quedó aprobada el 2026-11-23 para caracterización
+y diseño (diseño D §4.4). Cada paso requiere una instrucción autoral con base exacta; la barrera
+requiere además autorización propia tras revisar la caracterización. Si más adelante se
+autoriza retirar un grupo completo, la pérdida se describe con exactitud y exige confirmación
+explícita.
 
 ## Objective
 <!-- geocedg-field: objective -->

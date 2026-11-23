@@ -3,13 +3,23 @@
 **PROMPT CANDIDATO — NO AUTORIZADO.** S0 no tiene requisitos previos más allá de una
 instrucción autoral con base exacta. S1 requiere el informe de S0 revisado por el autor, B2 e
 I2G0 cerrados, las decisiones D-M09-1 a D-M09-4 y su propia instrucción autoral. S0 y S1 se
-autorizan por separado; la implementación de S1 no se aprueba antes de conocer S0.
+autorizan por separado; la implementación de S1 no se aprueba antes de conocer S0. La dirección
+de D-M09-1 a D-M09-4 quedó aprobada el 2026-11-23 con implementación pendiente; prevalece el
+diseño D §3.0.
 
 ## Objective
 <!-- geocedg-field: objective -->
 
-**S0** (`BOUNDED_PHASE`, solo pruebas e informe): caracterizar
+**S0** (`BOUNDED_PHASE`, solo pruebas e informe), caracterización previa obligatoria.
+Caracterizar, distinguiendo las garantías que el núcleo ya proporciona de las que no están
+demostradas, y sin proponer infraestructura transaccional nueva si los mecanismos existentes
+bastan para el alcance reducido:
 
+- las operaciones de sustitución disponibles en GeoCeDG y en GeoGebra, y el modo
+  `LEGACY_REPLACEMENT` del ADR 0026;
+- la identidad y las dependencias de puntos ordinarios y semánticos;
+- el estado del DAG y del registro de identidad durante la operación;
+- el impacto real sobre dependientes duraderos y ordinarios;
 - las referencias por nombre fuera del DAG (guiones GGBScript y JavaScript, textos dinámicos,
   condiciones de visibilidad, colores dinámicos, cadenas de `Execute`, herramientas de
   usuario y macros, subtítulos) y su comportamiento cuando `P'` recibe la etiqueta de `P`;
@@ -24,11 +34,12 @@ autorizan por separado; la implementación de S1 no se aprueba antes de conocer 
 - el impacto anunciado frente al eliminado en la sustitución legada;
 - la frecuencia, en los modelos del autor, de puntos aguas arriba de objetos duraderos.
 
-**S1** (`INTEGRATED_PHASE`), incremento de transparencia y seguridad: operación «Sustituir
-punto…» con el nivel de restauración que el autor fije tras S0 (D-M09-1) y sin rebajar los
-requisitos de coherencia del diseño D §3.3 (atomicidad, ninguna publicación parcial,
-reversión propia y no por Undo, ningún punto de Undo antes del éxito, DAG y registro de
-identidad coherentes tras cualquier fallo):
+**S1** (`INTEGRATED_PHASE`), incremento de transparencia y seguridad, no solución funcional
+completa de M09: operación «Sustituir punto…» con el nivel transaccional que el autor fije tras
+S0 y con las siete garantías no negociables del diseño D §3.0 (atomicidad, coherencia del DAG,
+integridad de identidad, revalidación, reversión propia ante fallo, Undo/Redo que reproduce
+identidades y dependencias, vigencia). No se aprueba de antemano ningún debilitamiento de las
+garantías de M09:
 
 - `P` libre o de productor de salida única, fuera de la cadena de conductor o soporte de Locus V2;
 - `P'` es una definición nueva que recibe la etiqueta de `P` como asa del analizador (D-M09-3);
@@ -76,6 +87,10 @@ informe §C.3.
 <!-- geocedg-field: forbidden_scope -->
 
 - Conservar identidad de `P` en `P'` o transferir tokens o reclamaciones.
+- Cambios de roles especializados no caracterizados; productores con varias salidas sin
+  adaptador aprobado.
+- Referencias por nombre cuyo impacto sea relevante y no pueda determinarse: la operación se
+  rechaza o el caso se declara fuera del alcance admitido, según la política fijada tras S0.
 - Actualizar el contrato de dependientes duraderos (eso es S2, tras N3).
 - I3, M08-D, reconstrucción general.
 - Separar salidas.

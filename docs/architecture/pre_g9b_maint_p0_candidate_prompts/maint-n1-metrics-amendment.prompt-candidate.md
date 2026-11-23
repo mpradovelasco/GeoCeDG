@@ -1,8 +1,9 @@
 # GeoCeDG — PRE-G9B-MAINT-N1: enmienda de métricas §28-§29
 
 **PROMPT CANDIDATO — NO AUTORIZADO.** Preparado por PRE-G9B-MAINT-P0. No se ejecuta sin
-instrucción autoral expresa con base exacta y con las decisiones D-B-1a y D-B-2 tomadas. La
-parte de B1 requiere además D-B-1b, hoy pendiente.
+instrucción autoral expresa con base exacta. D-B-1a y D-B-2 (solo B2-F1) quedaron aprobadas
+como dirección el 2026-11-23 y `MAINT-N1` está en la primera ola de planificación; eso no
+autoriza su ejecución.
 
 ## Objective
 <!-- geocedg-field: objective -->
@@ -10,9 +11,11 @@ parte de B1 requiere además D-B-1b, hoy pendiente.
 Redactar, como propuesta normativa para aprobación autoral, la enmienda fechada de
 `geocedg/specs/locus/locus-v2-metrics.md` que habilita:
 
-- §28.3: una ruta condicionada no es número si la prueba de escalado de cuerdas observa la firma de un salto (B5a), y, si se decide, admisión T-A;
-- §29: barrido de la autoridad rica privada sin lector al completar una redefinición y, si se decide, al cargar (B2);
-- §28.2, solo si D-B-1b elige O1 u O2: el subtotal no se estima automáticamente (O1) o se estima solo a petición expresa para la revisión vigente (O2). Con O3 no se toca §28.2.
+- §28.3: una ruta condicionada no es número si la prueba de escalado de cuerdas observa la firma de un salto (B5a);
+- §29: limpieza de la autoridad rica privada sin consumidores al completar correctamente una redefinición (B2-F1).
+
+Fuera de esta enmienda por la resolución autoral del 2026-11-23: el barrido al cargar (B2-F2,
+que no se implementa), la admisión T-A (diferida hasta validar B5a) y §28.2 (D-B-1b pendiente).
 
 `CHANGE_ROUTE=ORDINARY`. `VERIFICATION_CLASS=DOCUMENTATION_STATUS_ONLY`.
 `PRODUCT_PHASE_EFFECT=NONE`. Nivel previsto: `STATIC`.
@@ -55,16 +58,20 @@ Debe fijar:
 - la prueba de escalado: cociente `c(h/2)/c(h)` en bisecciones del subintervalo de cuerda
   máxima, umbral `ρ`, número de niveles `m`, resolución `ε_res`, paso mínimo;
 - el presupuesto de trabajo: niveles adicionales por hoja, tope de evaluaciones adicionales
-  por ruta y negativa conservadora con causa propia si se agota;
-- la causa y el diagnóstico;
+  por ruta y negativa conservadora con causa propia si se agota; umbrales, refinamientos y
+  presupuesto fijados mediante análisis y pruebas focales;
+- diagnósticos distintos para salto observado, comprobación inconclusa y agotamiento de
+  presupuesto, y la lista declarada de contraejemplos no detectables por muestreo finito;
+- que B5a no toca el inventario de componentes, los tokens, la identidad semántica ni los
+  certificados de existencia;
 - su carácter de comprobación numérica conservadora, no prueba universal ni certificación, y
   la distinción entre discontinuidad no detectada, incumplimiento de H3 y ausencia de
   certificación de continuidad (plan C §1.2);
-- (si O1 u O2) el estado público del total no calculado, la remisión a rutas por región y, en
-  O2, la petición expresa y la vigencia del valor por revisión;
 - el criterio de autoridad huérfana: privada, sin lector, nunca un resultado con nombre del
-  usuario;
-- el momento del barrido respecto del paso de Undo y de la reversión.
+  usuario ni un resultado con identidad y uso independiente;
+- el momento de la limpieza respecto del paso de Undo y de la reversión: después de completar
+  correctamente la redefinición, dentro del mismo ciclo de Undo/Redo y sin cambios parciales si
+  la redefinición falla.
 
 ## Geometric invariants and degeneracies
 
@@ -74,8 +81,9 @@ descritos: salto alineado, salto transversal bajo resolución, extremo de tipo p
 
 ## Compatibility and serialization
 
-Ningún cambio de XML. Declarar el efecto sobre documentos de 1.2.0–1.2.2: contenido rico
-mostrado de totales condicionados y, si se decide, la retirada de huérfanos al cargar.
+Ningún cambio de XML. Declarar el efecto sobre documentos de 1.2.0–1.2.2: rutas que dejan de
+ser número por B5a. La carga de documentos existentes no cambia: no hay barrido al cargar
+(B2-F2 no se implementa) y los huérfanos heredados quedan como limitación documentada.
 
 ## Required tests and commands
 <!-- geocedg-field: required_checks -->
@@ -86,8 +94,7 @@ mostrado de totales condicionados y, si se decide, la retirada de huérfanos al 
 <!-- geocedg-field: authorization_boundary -->
 
 Autoriza solo la redacción de la enmienda candidata. Su adopción es una decisión autoral
-posterior; no autoriza B5a, B1a ni B2. Si D-B-1b sigue pendiente, la enmienda cubre solo
-§28.3 y §29 y la parte de §28.2 se redacta después.
+posterior; no autoriza B5a, B1a ni B2. §28.2 no se toca mientras D-B-1b esté pendiente.
 
 ## Publication boundary
 <!-- geocedg-field: publication_boundary -->

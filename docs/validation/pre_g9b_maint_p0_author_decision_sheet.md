@@ -2,11 +2,60 @@
 
 | Campo | Valor |
 |---|---|
-| Carácter | **Hoja de decisiones pendientes.** No registra ninguna decisión tomada ni aprueba nada. `selfApproved=false` |
-| Estado | `DECISIONS PENDING — AUTHOR REVIEW` (revisión 2) |
-| Encargo | Instrucción autoral «GeoCeDG — PRE-G9B-MAINT-P0» y enmiendas autorales finales del expediente (ambas del 2026-11-23) |
-| Base | `f80f0e9b029e678007f399508163bf794951992c` (GeoCeDG 1.2.2) |
+| Carácter | **Hoja de decisiones autorales.** Desde la revisión 3 transcribe la resolución autoral del 2026-11-23 (§0); las recomendaciones de la revisión 2 (§1-§4) se conservan como historia. `selfApproved=false`: las decisiones son del autor y esta hoja solo las transcribe |
+| Estado | `DECISIONS RECORDED — AUTHOR RESOLUTION 2026-11-23` (revisión 3); D-B-1b sigue pendiente; ninguna implementación autorizada |
+| Encargo | Instrucción autoral «GeoCeDG — PRE-G9B-MAINT-P0», enmiendas autorales finales del expediente y resolución autoral definitiva del expediente (las tres del 2026-11-23) |
+| Base | `f80f0e9b029e678007f399508163bf794951992c` (GeoCeDG 1.2.2); candidato resuelto `f0f41c4bf186944f227d5b38addc719fb701ce07` |
 | Expediente | [portada](pre_g9b_maint_p0_dossier.md) |
+
+## 0. Resolución autoral del 2026-11-23
+
+Resolución «GeoCeDG — PRE-G9B-MAINT-P0. Resolución autoral definitiva del expediente de
+planificación», sobre el candidato documental `f0f41c4bf186944f227d5b38addc719fb701ce07`
+(árbol `91e0525f4eb409b953fed708e2d85f135361522b`). Naturaleza: aprobación de planificación y
+autorización de cierre documental. **Implementación productiva: no autorizada.** El autor
+aprueba el marco `PRE-G9B-MAINT-P0` con las decisiones siguientes; ninguna autoriza por sí
+misma un incremento productivo, cada implementación requiere autorización propia sobre una
+base exacta y el programa sigue separado de G9B (`DESIGNED — NOT AUTHORIZED`).
+
+| Id | Resolución | Precisiones del autor |
+|---|---|---|
+| **D-0** | **Aprobada** | `PRE-G9B-MAINT` es un programa de mantenimiento independiente de G9B. El cierre de P0 y el marco se registran con una entrada aditiva en el roadmap. La conciliación de cabeceras antiguas es mantenimiento documental independiente y no amplía este cierre |
+| **D-ORD** | **Aprobada como prioridad de planificación** | Primera ola: `MAINT-N1` (enmiendas de B5a y B2), `MAINT-B5a`, `MAINT-U2`, `MAINT-I2G0` (caracterización y, previa autorización, barrera) y `MAINT-A-N1`. Los incrementos pueden avanzar por separado cuando sus dependencias lo permitan |
+| **D-V** | **Aprobada** | Documentales: `STATIC`. Caracterizaciones focales: `STATIC` + `PHASE` registrada. Productivos: `STATIC` + `PHASE` + `INTEGRATION` según la clase aprobada. `FINAL` no se exige por categoría; una campaña adicional requiere justificación y autorización expresa. La aceptación automática no es aprobación del autor |
+| **D-A-1 a D-A-5** | **Aprobadas como dirección arquitectónica** | Familia B-spline semántica nueva, independiente de SplineV2, concebida para la extensión racional; primera implementación polinómica con pesos unitarios implícitos. `MAINT-A-R` diseñada y no autorizada. Sin interfaces racionales generales en el núcleo mientras no hagan falta. Sin cambios en la semántica ni en los formatos de SplineV2 |
+| **D-A-6** | **Aprobada** | Importación DXF 2D de `SPLINE` polinómicas y racionales con datos de control completos (`MAINT-A-DXF0`) como objetivo prioritario; solo lectura; referencias, no construcciones autoritativas; fuera del DAG y sin conversión automática a `GeoLocusV2`; límites, diagnósticos, unidades y transformaciones de la propuesta B |
+| **D-A-7** | **Aprobada con precisión** | R-a (solo sesión) en la primera implementación de A-DXF0. R-c (copia en el documento fuera de `Construction`, sin DAG paralelo) es el objetivo posterior prioritario, tras caracterizar la compatibilidad del archivo `.cedg`, los lectores anteriores y las reglas de guardado y reapertura. R-d no autorizada |
+| **D-A-8** | **Aprobada** | Conversión exacta para fuentes polinómicas dentro de los límites; aproximación explícita para fuentes racionales o fuera de límites; ajuste en el parámetro de la fuente como primera dirección; la aproximante es una construcción CeDG nueva y distinta de la referencia |
+| **D-A-9** | **Aprobada como política de diseño** | Tres garantías distintas: residuo en muestras, estimación numérica, cota global rigurosamente certificada. La cota se justifica por su procedimiento de acotación, con redondeo y precondiciones. Nada calculado sobre la aproximación se atribuye a la curva original |
+| **D-A-10** | **Aprobada como dirección** | Primera aproximación congelada e independiente, con procedencia explícita; sin actualización dinámica ni dependencias nuevas entre la referencia y la construcción. La ubicación del registro de procedencia, y su comportamiento en copia, redefinición y persistencia, se resuelven en el contrato normativo |
+| **D-B-1a** | **Aprobada como dirección normativa** | B5a es la primera prioridad científica. Distinguir ausencia de certificación, incumplimiento real de H3 e incumplimiento no detectado; la ausencia de alarma no demuestra continuidad; la guarda no certifica. Umbrales, refinamientos y presupuesto se fijan en la especificación del incremento. Criterio de aceptación en el [plan C](../architecture/pre_g9b_maint_p0_limitations_plan.md) §1.6. Sin cambios en inventario de componentes, tokens, identidad ni certificados de existencia |
+| **D-B-1b** | **Pendiente** | O1, O2 y O3 se conservan; preferencia técnica O2. Antes de adoptarla, caracterizar el resultado rico vigente, sus consumidores y su comportamiento por revisión. §28.2 no se modifica todavía |
+| **D-B-1c** | **Diferida hasta validar B5a** | La admisión T-A se evaluará con la política corregida de consistencia numérica |
+| **D-B-1d** | **Diferida** | Sin `conditioned-traversal/v2` en el programa inicial |
+| **D-B-2** | **Aprobada con alcance reducido** | Solo B2-F1: limpieza de autoridades ricas auxiliares privadas sin consumidores al completar correctamente una redefinición, en el borde transaccional adecuado, dentro del mismo ciclo de Undo/Redo, respetando consumidores legítimos y resultados con identidad y uso independiente, sin cambios parciales si la redefinición se revierte. **Decisión expresa: no se implementa B2-F2**: ningún barrido al cargar, ninguna migración ni reparación silenciosa de archivos históricos; los huérfanos heredados quedan como limitación documentada. Sustituye la recomendación de la revisión 2 (§3), que incluía ambos barridos |
+| **D-B-3** | **Aprobada** | Coste de `Intersect` condicionado y D-V6 aceptados como limitaciones cuantificadas; sin cambios en la política de aislamiento ni en la selección de raíces; `MAINT-PERF-O2a` opcional y con autorización específica |
+| **D-B-4** | **Aprobada** | Semántica posicional D2 mantenida; una prueba de regresión fija la reordenación de listas, sin identidades duraderas nuevas |
+| **D-U2** | **Aprobada como alcance propuesto** | U2-1 a U2-6; se mantienen todas las rutas y capacidades existentes; implementación por su incremento propio |
+| **D-F8** | **Aprobada para caracterización** | `MAINT-F8-S0` sobre un locus mixto real. La traza y P-2 no son confirmación. `MAINT-F8-min` solo con evidencia discriminante de una carencia real. Componentes certificadas locales y regiones condicionadas no se confunden |
+| **D-M09-1 a D-M09-4** | **Dirección aprobada; implementación pendiente** | Sustituir `P` por `P'` con identidad nueva y dependencias propias, conservando los dependientes estructuralmente compatibles; sin conservar la identidad de `P` ni exigir coincidencia geométrica. `MAINT-S0` es caracterización previa obligatoria; S1 (seguridad y transparencia) y S2 (objetivo funcional principal) requieren autorización tras revisar S0. Siete garantías no negociables; el nivel transaccional definitivo se decide tras S0, sin debilitamiento anticipado de las garantías de M09. Alcance inicial y referencias por nombre según el [diseño D](../architecture/pre_g9b_maint_p0_cu7_revised_design.md) §3.0 |
+| **D-I2G** | **Aprobada para caracterización y diseño** | Barrera basada en el riesgo real, no solo en el número de salidas; impedir la destrucción silenciosa de identidades, dependientes CeDG o reclamaciones de hermanos; conducta Classic preservada sin riesgo CeDG demostrado; caracterizar antes de modificar el anfitrión; conservación de hermanos diferida; una retirada de grupo, si se autoriza, se describe con exactitud y exige confirmación |
+
+Capacidades que permanecen fuera del programa inmediato: M08-D; I3; reconstrucción general
+del núcleo; arrastre universal sobre Locus V2; redefinición general con conservación de la
+identidad de `P`; NURBS semántica nativa (`MAINT-A-R`); importación DXF fuera del subconjunto
+racional 2D aprobado; actualización dinámica de aproximaciones DXF; migraciones automáticas de
+documentos antiguos; barrido de auxiliares ricos durante la carga; cambios generales de la
+política de aislamiento de intersecciones. Ninguna es dependencia de un incremento aprobado
+salvo demostración y nueva autorización.
+
+La promoción documental del expediente a `main` y la autorización de los primeros incrementos
+son decisiones autorales posteriores.
+
+## Recomendaciones presentadas al autor (revisión 2, conservadas como historia)
+
+Las secciones 1 a 4 son las recomendaciones de la revisión 2, sin cambios. Donde difieren de §0,
+prevalece §0.
 
 Solo figuran las decisiones que exigen al autor. Cada una lleva una recomendación técnica por
 defecto (**R**) y sus alternativas. Las decisiones técnicas internas de cada incremento se
@@ -22,7 +71,8 @@ nativa NURBS.
 Registro de revisiones: la revisión 1 (2026-11-23) es la versión inicial. La revisión 2
 (2026-11-23) actualiza D-ORD, D-V, D-A-1 a D-A-5, D-U2, D-F8, D-M09-1, D-M09-2, D-M09-4 y
 D-I2G; divide la antigua D-B-1 en D-B-1a, D-B-1c y D-B-1d; y añade D-A-6 a D-A-10 y la
-decisión pendiente D-B-1b, según las enmiendas autorales finales.
+decisión pendiente D-B-1b, según las enmiendas autorales finales. La revisión 3 (2026-11-23)
+añade §0 con la resolución autoral definitiva y deja §1-§4 sin cambios como historia.
 
 ## 1. Programa
 

@@ -2,7 +2,14 @@
 
 **PROMPTS CANDIDATOS — NINGUNO ESTÁ AUTORIZADO.** Preparados por PRE-G9B-MAINT-P0
 (2026-11-23) sobre la base `f80f0e9b029e678007f399508163bf794951992c` y revisados con las
-enmiendas autorales finales del expediente (revisión 2, 2026-11-23). `selfApproved=false`.
+enmiendas autorales finales del expediente (revisión 2, 2026-11-23), y conciliados con la
+resolución autoral definitiva del 2026-11-23 (revisión 3). `selfApproved=false`.
+
+La resolución aprueba el marco del programa y la primera ola **como planificación**:
+`MAINT-N1` (B5a y B2-F1), `MAINT-B5a`, `MAINT-U2`, `MAINT-I2G0` (caracterización y, previa
+autorización, barrera) y `MAINT-A-N1`. Eso no autoriza la ejecución de ningún prompt: cada
+incremento requiere autorización autoral propia sobre una base exacta. Las decisiones están en
+la [hoja F](../../validation/pre_g9b_maint_p0_author_decision_sheet.md) §0.
 
 Están fuera de `.github/prompts/` y con sufijo `.prompt-candidate.md` a propósito: no forman
 parte de la capa canónica de prompts ni de su validación, y no deben leerse como dirección
@@ -17,10 +24,10 @@ artefactos, paradas y deudas diferidas.
 
 | Prompt | Incremento | Bloque | Depende de |
 |---|---|---|---|
-| [maint-n1-metrics-amendment](maint-n1-metrics-amendment.prompt-candidate.md) | `MAINT-N1` | B | D-B-1a, D-B-2 (D-B-1b para §28.2) |
+| [maint-n1-metrics-amendment](maint-n1-metrics-amendment.prompt-candidate.md) | `MAINT-N1` (§28.3 y §29; sin §28.2 ni T-A) | B | D-B-1a, D-B-2 (aprobadas) |
 | [maint-b5a-conditioned-route-jump-guard](maint-b5a-conditioned-route-jump-guard.prompt-candidate.md) | `MAINT-B5a` | B | N1 |
-| [maint-b2-redefinition-orphan-sweep](maint-b2-redefinition-orphan-sweep.prompt-candidate.md) | `MAINT-B2` | B | N1, D-B-2 |
-| [maint-b1a-conditioned-total-subtotal-policy](maint-b1a-conditioned-total-subtotal-policy.prompt-candidate.md) | `MAINT-B1a` | B | D-B-1b (pendiente) ∈ {O1, O2}, N1 |
+| [maint-b2-redefinition-orphan-sweep](maint-b2-redefinition-orphan-sweep.prompt-candidate.md) | `MAINT-B2` (solo B2-F1) | B | N1 |
+| [maint-b1a-conditioned-total-subtotal-policy](maint-b1a-conditioned-total-subtotal-policy.prompt-candidate.md) | `MAINT-B1a` | B | `MAINT-B1-S0`, D-B-1b (pendiente) ∈ {O1, O2} |
 | [maint-u2-point-tool-unification](maint-u2-point-tool-unification.prompt-candidate.md) | `MAINT-U2` | C | D-U2 |
 | [maint-i2g0-multi-output-redefine-barrier](maint-i2g0-multi-output-redefine-barrier.prompt-candidate.md) | `MAINT-I2G0` (caracterización y barrera) | C | D-I2G |
 | [maint-f8-local-component-creation](maint-f8-local-component-creation.prompt-candidate.md) | `MAINT-F8` (S0 y min) | C | U2, D-F8 |
@@ -35,7 +42,11 @@ artefactos, paradas y deudas diferidas.
 Cambios de la revisión 2: `maint-a1-bspline-normative-spec` pasa a
 `maint-a-n1-bspline-nurbs-normative-design` y `maint-b1a-conditioned-total-without-subtotal`
 pasa a `maint-b1a-conditioned-total-subtotal-policy`; se añaden `maint-a-dxf0` y
-`maint-a-dxf1`; los demás se actualizan según las enmiendas.
+`maint-a-dxf1`; los demás se actualizan según las enmiendas. Cambios de la revisión 3: los
+prompts afectados recogen la resolución autoral (B2 sin barrido al cargar, T-A diferida, §28.2
+sin tocar, criterio de aceptación de B5a, S0 ampliado y siete garantías de S1/S2, R-a en
+A-DXF0, procedencia de aproximación resuelta en el contrato normativo, I2G0 y F8 aprobados para
+caracterización).
 
 No se preparan prompts para los incrementos opcionales, diferidos o no autorizados
 (`MAINT-PERF-O2a`, `MAINT-A-DXF1b`, `MAINT-B5b`, la política de aislamiento de B3, `MAINT-A4`,

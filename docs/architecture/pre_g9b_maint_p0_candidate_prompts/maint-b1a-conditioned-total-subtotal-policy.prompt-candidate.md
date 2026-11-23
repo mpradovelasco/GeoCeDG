@@ -1,9 +1,12 @@
 # GeoCeDG — PRE-G9B-MAINT-B1a: política del subtotal del total condicionado
 
-**PROMPT CANDIDATO — NO AUTORIZADO.** Requiere la decisión normativa D-B-1b, hoy
-**pendiente**, y, si elige O1 u O2, la parte §28.2 de la enmienda `MAINT-N1` aprobada y una
-instrucción autoral con base exacta. Si el autor elige O3, este incremento no existe y la
-mejora posible es `MAINT-PERF-O2a`.
+**PROMPT CANDIDATO — NO AUTORIZADO.** Requiere la decisión normativa D-B-1b, **pendiente**
+tras la resolución autoral del 2026-11-23, y, si elige O1 u O2, una enmienda de §28.2 aprobada
+y una instrucción autoral con base exacta. Si el autor elige O3, este incremento no existe y la
+mejora posible es `MAINT-PERF-O2a`. Antes de adoptar O2 debe ejecutarse la caracterización
+`MAINT-B1-S0` (resultado rico vigente, sus consumidores y su comportamiento por revisión); hasta
+entonces §28.2 no se modifica. La admisión T-A queda diferida hasta validar B5a y fuera de este
+prompt.
 
 ## Objective
 <!-- geocedg-field: objective -->
@@ -18,8 +21,7 @@ científica potencialmente útil, según la opción decidida (plan C §3.2):
   queda marcado con su revisión, no se recalcula solo tras un cambio, nunca se muestra como
   vigente si es de otra revisión y no se guarda.
 
-En ambas, si N1 lo decide, admitir como número el caso T-A (una región sin bandas). Objetivo
-medible: el coste por cambio real con un total condicionado no calculable es aproximadamente
+Objetivo medible: el coste por cambio real con un total condicionado no calculable es aproximadamente
 el de la base.
 
 `CHANGE_ROUTE=ORDINARY`. `VERIFICATION_CLASS=INTEGRATED_PHASE`. Nivel previsto: `STATIC` +
@@ -58,12 +60,11 @@ Núcleo Java compartido: métricas de Locus V2; acción y presentación en Deskt
 
 ## Required design/specification
 
-D-B-1b decidida; §28.2 enmendado (y §28.3 si se adopta T-A).
+Caracterización `MAINT-B1-S0` revisada; D-B-1b decidida; §28.2 enmendado.
 
 ## Geometric invariants and degeneracies
 
 - Ninguna banda se omite en silencio.
-- Un escalar solo en T-A.
 - El escalar público de un total con bandas sigue indefinido, también tras una petición.
 - (O2) el valor pedido es idéntico al que hoy se publica para la misma revisión.
 
@@ -116,4 +117,4 @@ longitudes condicionadas).
 
 ## Deferred debts
 
-Admisión T-B y T-C; comando explícito para pedir el subtotal desde guiones; `MAINT-PERF-O2a`.
+Admisión T-A (diferida hasta validar B5a), T-B y T-C; comando explícito para pedir el subtotal desde guiones; `MAINT-PERF-O2a`.

@@ -1,8 +1,10 @@
 # GeoCeDG — PRE-G9B-MAINT-A-N1: diseño normativo de la familia B-spline preparada para NURBS y del contrato de importación de referencia
 
-**PROMPT CANDIDATO — NO AUTORIZADO.** Requiere las decisiones D-A-1 a D-A-7 y una
+**PROMPT CANDIDATO — NO AUTORIZADO.** D-A-1 a D-A-10 quedaron aprobadas como dirección el
+2026-11-23 y `MAINT-A-N1` está en la primera ola de planificación; su ejecución requiere una
 instrucción autoral con base exacta. Sustituye al candidato `MAINT-A1` de la revisión 1 del
-expediente.
+expediente. Persistencia de referencias: R-a en la primera implementación, R-c como objetivo
+posterior prioritario (con caracterización previa), R-d no autorizada.
 
 ## Objective
 <!-- geocedg-field: objective -->
@@ -85,12 +87,16 @@ La especificación de la familia debe fijar:
 - el identificador de contrato serializado, la regla de versiones (`v1` subconjunto exacto de
   la versión racional) y los lectores anteriores;
 - la separación entre evaluación numérica, evidencia condicionada y resultados certificados;
-- el bloque pasivo de procedencia de aproximación, si D-A-10 lo adopta;
+- la ubicación del registro de procedencia de aproximación (D-A-10) y su comportamiento en
+  copia, redefinición y persistencia, o su remisión expresa al contrato de aproximación de
+  `MAINT-A-DXF1`;
 - las garantías publicadas.
 
 El contrato de importación debe fijar el alcance de la propuesta B §8.3 según D-A-6, la
-procedencia de §8.4, las reglas de distinción de §8.5, la persistencia según D-A-7 y, si se
-eligiera R-d, las responsabilidades del núcleo de §8.7.
+procedencia de §8.4, las reglas de distinción de §8.5 y la persistencia R-a de D-A-7. R-c se
+deja como objetivo posterior, con la lista de lo que su caracterización previa debe establecer
+(compatibilidad del archivo `.cedg`, lectores anteriores, guardado y reapertura). R-d no se
+especifica.
 
 ## Geometric invariants and degeneracies
 
@@ -132,8 +138,8 @@ Documentos, `STATIC`.
   aditiva.
 - La preparación para NURBS exige una interfaz racional general en el núcleo antes de
   `MAINT-A-R`.
-- El contrato de importación exige que la referencia participe en el DAG sin que el autor
-  haya elegido R-d.
+- El contrato de importación exige que la referencia participe en el DAG (R-d no está
+  autorizada).
 
 ## Deferred debts
 

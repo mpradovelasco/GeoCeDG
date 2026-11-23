@@ -13,7 +13,22 @@ condicionado no se toca.
 
 La guarda es una comprobación numérica conservadora con presupuesto de trabajo acotado, no
 una prueba universal de continuidad: las rutas que siguen admitidas no pasan a tener
-continuidad certificada. Es la prioridad científica del programa.
+continuidad certificada. Es la prioridad científica del programa (D-B-1a, aprobada como
+dirección normativa el 2026-11-23).
+
+Criterio de aceptación fijado por el autor (plan C §1.6):
+
+1. detectar y rechazar los saltos alineados con la cuerda que produzcan evidencia positiva
+   bajo el procedimiento;
+2. mantener la admisibilidad de las rutas continuas de referencia, incluidas
+   parametrizaciones no uniformes, puntos estacionarios y casos próximos a degeneraciones;
+3. mantener acotado el trabajo adicional;
+4. distinguir con diagnósticos propios salto observado, comprobación inconclusa y agotamiento
+   de presupuesto;
+5. declarar los contraejemplos que el muestreo finito no puede detectar.
+
+No se exige detección universal. Sin cambios en el inventario de componentes, los tokens, la
+identidad semántica ni los certificados de existencia.
 
 `CHANGE_ROUTE=ORDINARY`. `VERIFICATION_CLASS=INTEGRATED_PHASE`. Nivel previsto: `STATIC` +
 `PHASE PRE-G9B-MAINT-B5A` + `INTEGRATION`. `selfApproved=false`.
@@ -43,7 +58,8 @@ Commit y árbol designados por el autor, que contengan la enmienda N1 aprobada.
 <!-- geocedg-field: forbidden_scope -->
 
 `LocusConditionedTraversal2D` y su política (la identidad de contenido de la evidencia no
-cambia); certificados, P2, H10; `Intersect`; serialización.
+cambia); inventario de componentes, tokens, identidad semántica y certificados de existencia;
+P2, H10; `Intersect`; serialización; la admisión T-A (diferida hasta validar B5a).
 
 ## Architectural placement
 
@@ -83,7 +99,9 @@ de número a indefinido: declararlo en la nota de versión.
     fija como límite declarado;
   - no regresión de admisibilidad: parametrizaciones `u ↦ u³` y `u ↦ u⁸`, puntos
     estacionarios de orden 1 y 2, lazos estrechos, velocidad divergente bajo el umbral;
-  - agotamiento del presupuesto: negativa con su causa.
+  - agotamiento del presupuesto y comprobación inconclusa: negativa con su diagnóstico
+    propio, distinto del de salto observado;
+  - lista declarada de contraejemplos no detectables, cada uno fijado por una prueba.
 - Pruebas que deben seguir verdes sin cambios: `PostR1ConditionedMetricTest` (incluida
   `aRouteAcrossAJumpThatTheTraversalDoesNotSeeIsNoNumber`), `PostR1ConditionedEvidenceTest`
   (incluida la prueba fijada del recorrido) y `PostR1LengthDeletionDesktopTest`.

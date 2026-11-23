@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Carácter | **Plan candidato.** No modifica `locus-v2-metrics.md`, el contrato de uso condicionado, ADR 0028/0038/0042 ni ninguna política; no autoriza implementación. `implementationAuthorized=false`; `selfApproved=false` |
-| Estado | `PLAN CANDIDATE — PENDING AUTHOR REVIEW` (revisión 2) |
-| Encargo | Instrucción autoral «GeoCeDG — PRE-G9B-MAINT-P0», bloque B, y enmiendas autorales finales del expediente, punto 2 (ambas del 2026-11-23) |
+| Estado | `PLAN — AUTHOR RESOLUTION RECORDED 2026-11-23` (revisión 3): planificación aprobada por el autor; D-B-1b pendiente; ningún incremento autorizado |
+| Encargo | Instrucción autoral «GeoCeDG — PRE-G9B-MAINT-P0», bloque B, enmiendas autorales finales del expediente, punto 2, y resolución autoral definitiva, punto 4 (las tres del 2026-11-23) |
 | Base | `f80f0e9b029e678007f399508163bf794951992c` (GeoCeDG 1.2.2) |
 | Evidencia | [informe de caracterización](../validation/pre_g9b_maint_p0_characterization_report.md), §B y §F |
 
@@ -14,13 +14,25 @@
 |---|---|---|
 | 1 | 2026-11-23 | Versión inicial. Para B1 recomendaba no estimar el subtotal (`MAINT-B1a`) con enmienda de §28.2 |
 | 2 | 2026-11-23 | Enmiendas autorales, punto 2: B5a distingue discontinuidad no detectada, incumplimiento de H3 y ausencia de certificación, y exige presupuesto acotado, pruebas adversariales y no regresión de admisibilidad (§1); B1 pasa a comparar tres opciones con la decisión normativa registrada como pendiente, sin aprobar la desaparición del subtotal (§3) |
+| 3 | 2026-11-23 | Resolución autoral definitiva: la sección «Resolución autoral» registra las decisiones; criterio de aceptación de B5a (§1.6); B2 reducido a B2-F1 con decisión expresa de no implementar B2-F2 (§2.3); T-A diferida hasta validar B5a; B1 sigue pendiente sin modificar §28.2; B3 y B4 aprobados. El texto de las revisiones anteriores se conserva; donde difiere de la sección «Resolución autoral», prevalece la sección «Resolución autoral» |
+
+## Resolución autoral del 2026-11-23
+
+| Limitación | Resolución ([hoja F](../validation/pre_g9b_maint_p0_author_decision_sheet.md) §0) |
+|---|---|
+| B5 | D-B-1a aprobada como dirección normativa; primera prioridad científica; criterio de aceptación en §1.6 |
+| B2 | D-B-2 aprobada con alcance reducido: solo B2-F1. **No se implementa B2-F2**: ningún barrido al cargar documentos, ninguna migración ni reparación silenciosa de archivos históricos. Los auxiliares huérfanos heredados quedan como limitación documentada |
+| B1 | D-B-1b pendiente: O2 es la preferencia técnica, pero antes de adoptarla se caracterizan el resultado rico vigente, sus consumidores y su comportamiento por revisión. §28.2 no se modifica todavía. T-A (D-B-1c) diferida hasta validar B5a |
+| B3 | D-B-3 aprobada: coste de `Intersect` condicionado y D-V6 aceptados como limitaciones cuantificadas; sin cambios en la política de aislamiento ni en la selección de raíces; `MAINT-PERF-O2a` opcional con autorización específica |
+| B4 | D-B-4 aprobada: semántica posicional D2 mantenida y prueba de regresión de la reordenación de listas, sin identidades duraderas nuevas |
+| B5b | D-B-1d diferida |
 
 ## 0. Resumen y prioridad
 
 | Prioridad | Limitación | Impacto práctico | Intervención mínima propuesta | Norma afectada | Coste |
 |---|---|---|---|---|---|
 | **1** | **B5** — salto alineado con la cuerda | **Corrección:** la sonda P-1 confirma que una ruta que cruza el salto se admite como número `ESTIMATED` que incluye la longitud del salto | `MAINT-B5a`: guarda de escalado de cuerdas en la admisión de rutas condicionadas (§28.3), comprobación numérica conservadora con presupuesto acotado | enmienda de métricas §28.3 | S |
-| 2 | **B2** — huérfano tras redefinir | Recalcula en silencio una autoridad inalcanzable en cada cambio (hasta 4,6–6,5 s si era un total) y queda guardada | `MAINT-B2`: barrido tras completar la redefinición, en el mismo paso de Undo; opcionalmente al cargar | enmienda de métricas §29 | S |
+| 2 | **B2** — huérfano tras redefinir | Recalcula en silencio una autoridad inalcanzable en cada cambio (hasta 4,6–6,5 s si era un total) y queda guardada | `MAINT-B2`: barrido tras completar la redefinición, en el mismo paso de Undo; sin barrido al cargar (B2-F2 no se implementa, decisión autoral) | enmienda de métricas §29 | S |
 | 3 | **B1** — longitud total condicionada | 4,6–6,5 s por cambio mientras exista, para un subtotal que no es escalar público | **Decisión normativa pendiente** entre tres opciones (§3.2): no calcular el subtotal, calcularlo solo a petición expresa o mantener la estimación actual con optimizaciones justificadas. Recomendación técnica: cálculo a petición (`MAINT-B1a`, opción O2) | §28.2 solo con O1 u O2 | S |
 | 4 | **B3** — `Intersect` condicionado | +0,55–0,75 s por cambio; sin trabajo repetido dentro de la política | Diferir los cambios de política; `MAINT-PERF-O2a` opcional (coste por evaluación, sin cambio normativo) | ninguna para O2-a | M |
 | 5 | **B4** — piezas de deslizadores | Ningún caso constructivo demostrado | Cerrar como límite declarado y fijar con una prueba la reordenación por redefinición de la lista | ninguna | XS |
@@ -153,6 +165,25 @@ trabajo (límite 1 024) y exige decisión normativa propia.
 B5a se mantiene como prioridad científica del programa: es la única limitación de 1.2.2 que
 produce un número erróneo admitido.
 
+### 1.6 Criterio de aceptación fijado por el autor (2026-11-23)
+
+La implementación de `MAINT-B5a` deberá:
+
+1. detectar y rechazar los saltos alineados con la cuerda que produzcan evidencia positiva bajo
+   el procedimiento;
+2. mantener la admisibilidad de las rutas continuas de referencia, incluidas parametrizaciones
+   no uniformes, puntos estacionarios y casos próximos a degeneraciones;
+3. mantener acotado el trabajo adicional;
+4. distinguir, con diagnósticos propios, **salto observado**, **comprobación inconclusa** y
+   **agotamiento de presupuesto**;
+5. declarar explícitamente los contraejemplos que no pueden detectarse mediante muestreo finito.
+
+No se exige la detección universal de discontinuidades, imposible en estas condiciones. Los
+umbrales (`ρ`, `m`), el número de refinamientos y el presupuesto adicional de §1.4 son valores
+iniciales de diseño: se fijan en la especificación del incremento mediante análisis y pruebas
+focales. B5a no modifica el inventario de componentes, los tokens, la identidad semántica ni los
+certificados de existencia; se limita a la admisibilidad de los escalares condicionados.
+
 ## 2. B2 — Autoridad rica huérfana tras redefinir el número
 
 ### 2.1 Reproducibilidad y causa
@@ -175,9 +206,12 @@ también los conservan.
   - cuando el adaptador se retira por sustitución, registrar su autoridad privada como candidata en una cola de la operación de redefinición;
   - al completar la operación (`completeSpatialRedefineOperation`; en lotes, tras el conmutador final), fuera del arrendamiento de publicación y antes de almacenar el punto de Undo, retirar las candidatas que sigan sin lector;
   - si la redefinición se revierte, descartar la cola.
-- **B2-F2 (opcional, decisión D-B-2):** barrido al cargar un documento, que retira toda autoridad
-  privada (`isPrivateScalarAuthority`) sin lectores y deja un diagnóstico. Limpia los huérfanos
-  heredados, pero cambia el contenido de esos documentos al guardarlos de nuevo.
+- **B2-F2 (opcional en la revisión 2; no se implementa por decisión expresa del autor del
+  2026-11-23):** barrido al cargar un documento, que retiraría toda autoridad privada
+  (`isPrivateScalarAuthority`) sin lectores y dejaría un diagnóstico. Limpiaría los huérfanos
+  heredados, pero cambiaría el contenido de esos documentos al guardarlos de nuevo. No habrá
+  barrido al cargar, migración ni reparación silenciosa de archivos históricos; los huérfanos
+  heredados quedan como limitación documentada.
 - No se propone tratar la redefinición como borrar y crear, porque rompería la continuidad de
   identidad del número.
 
@@ -198,7 +232,7 @@ decide el destino de dependientes públicos. Se implementan por separado y B2 pr
   - una redefinición fallida y revertida conserva el par;
   - Undo y Redo exactos;
   - guardar y reabrir sin huérfano;
-  - (F2) un documento con huérfano, escrito por un candidato anterior, queda limpio al cargar y no cambia nada más;
+  - un documento con huérfano heredado, escrito por un candidato anterior, se abre y se guarda exactamente como hoy (la prueba F2 de la revisión 2 queda sustituida: no hay barrido al cargar);
   - Desktop: tras `cuT = 5` sobre el modelo del autor, las evaluaciones de `w_2` vuelven a la base.
 - Medición previa (S0): coste aislado de la redefinición en el arnés, que hoy no consta.
 - Resuelto cuando la prueba invertida pasa con las pruebas de transacción sin cambios.
@@ -307,7 +341,7 @@ resuelve B1 por sí sola.
 | Id | Resuelto cuando | Diferido cuando |
 |---|---|---|
 | B5a | ninguna ruta a través de un salto de la batería es número; las rutas admitidas hoy siguen admitidas; trabajo adicional dentro del tope | el autor acepta el riesgo, y entonces se fija con prueba |
-| B2 | prueba fijada invertida; transacciones, Undo y reapertura sin cambios | el autor mantiene §29 |
+| B2 | prueba fijada invertida para nuevas redefiniciones (solo B2-F1); transacciones, Undo y reapertura sin cambios; la carga de documentos existentes no cambia | el autor mantiene §29 |
 | B1 | decisión D-B-1b tomada; con O1 u O2, coste del total no calculable ≈ base, con hechos publicados idénticos salvo el campo declarado (y, en O2, el valor a petición idéntico al actual) | el autor elige O3: límite cuantificado, con O2-a opcional |
 | B3 | objetivo autoral cumplido sin cambio de raíces ni tokens | sin objetivo autoral: límite cuantificado |
 | B4 | prueba de reordenación añadida; límite declarado | — |

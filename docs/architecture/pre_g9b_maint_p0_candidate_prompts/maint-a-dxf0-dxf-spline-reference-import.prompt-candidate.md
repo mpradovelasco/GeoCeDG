@@ -1,8 +1,9 @@
 # GeoCeDG — PRE-G9B-MAINT-A-DXF0: importación DXF `SPLINE` de referencia, de solo lectura
 
 **PROMPT CANDIDATO — NO AUTORIZADO.** Requiere el contrato de importación de `MAINT-A-N1`
-aprobado, las decisiones D-A-6 y D-A-7 y una instrucción autoral con base exacta. No depende
-de `MAINT-A2`.
+aprobado y una instrucción autoral con base exacta. D-A-6 y D-A-7 quedaron aprobadas el
+2026-11-23: objetivo prioritario, solo lectura, referencias fuera del DAG y persistencia R-a
+(solo sesión) en esta primera implementación. No depende de `MAINT-A2`.
 
 ## Objective
 <!-- geocedg-field: objective -->
@@ -39,8 +40,8 @@ Commit y árbol designados por el autor, que contengan el contrato de importaci�
 
 - Lector DXF ASCII de la sección `ENTITIES` limitado a `SPLINE`, en la capa de adaptadores
   fuera del núcleo.
-- Modelo de referencia inmutable de la sesión (R-a) o, si D-A-7 lo decide, copia fuera de
-  `Construction` (R-c).
+- Modelo de referencia inmutable de la sesión (R-a). La copia en el documento (R-c) es un
+  incremento posterior con caracterización previa; R-d no está autorizada.
 - Biblioteca matemática común (de Boor homogéneo, inserción de nudos), si este incremento es
   el primero que la necesita, con la API fijada por A-N1.
 - Render en Desktop con presentación propia de referencia; inspector de solo lectura con datos
@@ -80,8 +81,8 @@ Contrato `dxf-spline-reference/v1` aprobado.
 
 ## Compatibility and serialization
 
-Con R-a, ningún cambio de formato. Con R-c, entrada nueva del archivo del documento fuera de
-`Construction`, con la conducta de los lectores 1.2.2 caracterizada en A-N1 y declarada.
+Con R-a, ningún cambio de formato: las referencias no se guardan con el documento y hay que
+volver a importarlas al reabrir; declararlo en la guía.
 
 ## Required tests and commands
 <!-- geocedg-field: required_checks -->
@@ -119,4 +120,5 @@ nueva de referencias DXF importadas).
 
 ## Deferred debts
 
-Variantes excluidas; persistencia R-b, R-c o R-d según D-A-7; `MAINT-A-DXF1`.
+Variantes excluidas; persistencia R-c (`MAINT-A-DXF0-RC`, objetivo posterior prioritario);
+R-b y R-d; `MAINT-A-DXF1`.

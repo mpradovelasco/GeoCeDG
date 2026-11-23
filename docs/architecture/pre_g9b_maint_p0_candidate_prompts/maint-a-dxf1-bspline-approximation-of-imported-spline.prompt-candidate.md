@@ -1,8 +1,11 @@
 # GeoCeDG — PRE-G9B-MAINT-A-DXF1: B-spline polinómica aproximante de una `SPLINE` importada
 
-**PROMPT CANDIDATO — NO AUTORIZADO.** Requiere `MAINT-A2` y `MAINT-A-DXF0` cerrados, las
-decisiones D-A-8 a D-A-10, un contrato breve de aproximación aprobado y una instrucción
-autoral con base exacta.
+**PROMPT CANDIDATO — NO AUTORIZADO.** Requiere `MAINT-A2` y `MAINT-A-DXF0` cerrados, un
+contrato breve de aproximación aprobado y una instrucción autoral con base exacta. D-A-8 a
+D-A-10 quedaron aprobadas el 2026-11-23 (D-A-9 como política de diseño, D-A-10 como
+dirección): conversión exacta o aproximación explícita, tres garantías distintas, primera
+aproximación congelada e independiente, sin actualización dinámica ni dependencias nuevas entre
+la referencia y la construcción.
 
 ## Objective
 <!-- geocedg-field: objective -->
@@ -34,11 +37,14 @@ Commit y árbol designados por el autor, que contengan A2 y A-DXF0 aprobados.
 <!-- geocedg-field: allowed_scope -->
 
 - Contrato breve de aproximación (`bspline-param-lsq/v1`, propuesto), aprobado antes del
-  código: método, límites, medidas y su grado, fallo tipado, procedencia.
+  código: método, límites, medidas y su grado, fallo tipado y procedencia, incluida la
+  ubicación del registro y su comportamiento en copia, redefinición y persistencia (si
+  A-N1 no la fijó). La cota certificada, si se incluye, se justifica con su procedimiento de
+  acotación, incluidos redondeo y precondiciones.
 - Servicio de ajuste fuera del núcleo sobre la biblioteca matemática común; produce los datos
   de una B-spline nueva.
 - Creación de la aproximante mediante la familia existente, con un solo paso de Undo.
-- Bloque pasivo de procedencia en el contrato de la familia, si D-A-10 lo adopta.
+- Registro de procedencia en la ubicación que fije el contrato normativo.
 - Diálogo Desktop: grado, tolerancia, límites, medidas resultantes y su grado; textos
   «sobre la aproximación».
 - Pruebas y selecciones `PRE-G9B-MAINT-A-DXF1`.
@@ -73,8 +79,8 @@ Contrato breve de aproximación aprobado.
 
 ## Compatibility and serialization
 
-La aproximante se guarda como cualquier objeto de la familia; con D-A-10 recomendada, más el
-bloque de procedencia versionado. Ningún cambio en documentos existentes.
+La aproximante se guarda como cualquier objeto de la familia, con el registro de procedencia
+donde fije el contrato normativo. Ningún cambio en documentos existentes.
 
 ## Required tests and commands
 <!-- geocedg-field: required_checks -->

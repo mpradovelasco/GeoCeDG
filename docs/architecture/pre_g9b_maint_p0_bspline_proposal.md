@@ -3,7 +3,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | **Propuesta candidata de planificación.** No es especificación normativa, no aprueba ni modifica `semantic-spline-2d.md`, los ADR 0018/0021/0022/0028 ni los contratos DXF, y no autoriza implementación. `implementationAuthorized=false`; `selfApproved=false` |
-| Estado | `PROPOSAL CANDIDATE — PENDING AUTHOR REVIEW` (revisión 2) |
+| Estado | `PROPOSAL — ARCHITECTURAL DIRECTION APPROVED BY THE AUTHOR 2026-11-23` (revisión 3): D-A-1 a D-A-5 aprobadas como dirección arquitectónica, D-A-6 y D-A-8 aprobadas, D-A-7 aprobada con R-a para la primera implementación (R-c después, R-d no autorizada), D-A-9 como política de diseño y D-A-10 como dirección; `MAINT-A-R` diseñada y no autorizada; ninguna implementación autorizada ([hoja F](../validation/pre_g9b_maint_p0_author_decision_sheet.md) §0) |
 | Encargo | Instrucción autoral «GeoCeDG — PRE-G9B-MAINT-P0», bloque A, y enmiendas autorales finales del expediente, punto 1 (ambas del 2026-11-23): solo planificación, caracterización técnica y diseño preliminar |
 | Base inspeccionada | `main` = `origin/main` = `f80f0e9b029e678007f399508163bf794951992c` (GeoCeDG 1.2.2), árbol `8c1d4ca163b214898ec392bd9d02f04c955661d1` |
 | Expediente | [portada del expediente](../validation/pre_g9b_maint_p0_dossier.md) · [informe de caracterización](../validation/pre_g9b_maint_p0_characterization_report.md) · [hoja de decisiones](../validation/pre_g9b_maint_p0_author_decision_sheet.md) |
@@ -14,6 +14,7 @@
 |---|---|---|
 | 1 | 2026-11-23 | Versión inicial: familia hermana `BSpline` como proveedor de `GeoLocusV2`; exportación `SPLINE` posterior; importación DXF diferida; recomendación de no incluir NURBS en el programa |
 | 2 | 2026-11-23 | Enmiendas autorales finales, punto 1: arquitectura preparada para NURBS desde el origen (§5); importación DXF `SPLINE` de referencia, polinómica y racional (§8); construcción explícita de B-splines aproximantes (§9); NURBS semántica nativa diseñada y no autorizada (§10); secuencia A-N1, A-DXF0, A2, A-DXF1, A3, A-R (§11). La recomendación de la revisión 1 sobre NURBS queda sustituida y se conserva aquí como historia: la exclusión de NURBS deja de presentarse como decisión arquitectónica definitiva |
+| 3 | 2026-11-23 | Resolución autoral definitiva: estado de D-A-1 a D-A-10 en la cabecera. Precisiones: la primera implementación de A-DXF0 usa R-a y R-c es el objetivo posterior prioritario, con caracterización previa del archivo `.cedg`; la cota certificada de §9.5 se justifica con su procedimiento de acotación, incluidos redondeo y precondiciones; la ubicación del registro de procedencia de §9.7 y su comportamiento en copia, redefinición y persistencia se resuelven en el contrato normativo (la preferencia de §9.7 queda como propuesta). El resto del texto no cambia |
 
 ## 0. Resumen y recomendación
 

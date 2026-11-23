@@ -3,8 +3,8 @@
 | Campo | Valor |
 |---|---|
 | Carácter | **Diseño preliminar candidato.** No modifica ADR 0026, 0029, 0041 ni el contrato M09, no aprueba un contrato sustitutorio y no altera retroactivamente las decisiones de CU7. `implementationAuthorized=false`; `selfApproved=false` |
-| Estado | `DESIGN CANDIDATE — PENDING AUTHOR REVIEW` (revisión 2) |
-| Encargo | Instrucción autoral «GeoCeDG — PRE-G9B-MAINT-P0», bloque C, y enmiendas autorales finales del expediente, punto 3 (ambas del 2026-11-23) |
+| Estado | `DESIGN — AUTHOR RESOLUTION RECORDED 2026-11-23` (revisión 3): dirección aprobada por el autor; S0, F8-S0 e I2G0 aprobados para caracterización; ninguna implementación autorizada |
+| Encargo | Instrucción autoral «GeoCeDG — PRE-G9B-MAINT-P0», bloque C, enmiendas autorales finales del expediente, punto 3, y resolución autoral definitiva, puntos 5 a 7 (las tres del 2026-11-23) |
 | Base | `f80f0e9b029e678007f399508163bf794951992c` (GeoCeDG 1.2.2) |
 | Evidencia | [informe de caracterización](../validation/pre_g9b_maint_p0_characterization_report.md), §C y §F |
 
@@ -14,6 +14,7 @@
 |---|---|---|
 | 1 | 2026-11-23 | Versión inicial |
 | 2 | 2026-11-23 | Enmiendas autorales, punto 3: S1 como incremento de transparencia y seguridad y S2 como objetivo funcional principal; sin reducir la coherencia del DAG ni aceptar publicación parcial confiando en Undo; caracterización de referencias por nombre, fronteras de transacción y condiciones de restauración antes de aprobar la implementación (§3). I2G0 pasa a ser una barrera basada en el riesgo demostrado para el productor y su grupo, que no rechaza operaciones Classic legítimas, con caracterización previa de ambos comportamientos (§4). F8 queda condicionado a una prueba discriminante; la traza de código y la sonda P-2 no son confirmación empírica (§2). U2 se mantiene como mejora prioritaria. M08-D e I3 siguen diferidos |
+| 3 | 2026-11-23 | Resolución autoral definitiva: D-U2 aprobada como alcance; D-F8 aprobada para caracterización; dirección de M09 aprobada con implementación pendiente (§3.0: intención, S0 ampliado, siete garantías no negociables, alcance inicial, referencias por nombre); D-I2G aprobada para caracterización y diseño (§4.4). El texto de las revisiones anteriores se conserva; donde difiere de §3.0 o §4.4, prevalecen estas |
 
 ## 0. Resumen
 
@@ -200,6 +201,82 @@ Cambios mínimos en el núcleo:
 4. Fuera de alcance: el respaldo multirrama (C3) y cualquier arrastre nuevo.
 
 ## 3. M09 reformulado como sustitución explícita
+
+### 3.0 Resolución autoral del 2026-11-23 (prevalece sobre §3.1-§3.6)
+
+D-M09-1 a D-M09-4: **dirección aprobada; implementación pendiente.**
+
+**Intención funcional.** Permitir sustituir un punto `P` por un punto `P'` con identidad nueva
+y dependencias propias, conservando las construcciones dependientes que sigan siendo
+estructuralmente compatibles. No se pretende conservar la identidad duradera de `P` ni se exige
+coincidencia geométrica entre `P` y `P'`. El usuario podrá deshacer con Undo una sustitución
+válida cuyo resultado no le convenga, pero Undo no sustituye la obligación del núcleo de
+ejecutar una operación internamente coherente.
+
+**`MAINT-S0` — caracterización previa obligatoria.** Estudia:
+
+- las operaciones de sustitución disponibles en GeoCeDG y en GeoGebra;
+- el comportamiento del modo `LEGACY_REPLACEMENT` del ADR 0026;
+- la identidad y las dependencias de puntos ordinarios y semánticos;
+- las fronteras transaccionales y las publicaciones intermedias;
+- el estado del DAG y del registro de identidad durante la operación;
+- las referencias mediante etiquetas fuera del DAG;
+- la integridad de Undo y de la reversión propia ante fallos;
+- el impacto real sobre dependientes duraderos y ordinarios;
+- el comportamiento de productores con varias salidas y puntos hermanos.
+
+S0 distingue las garantías que el núcleo ya proporciona de las que no están demostradas, y no
+propone infraestructura transaccional nueva si los mecanismos existentes bastan para el alcance
+reducido.
+
+**`MAINT-S1` — seguridad y transparencia.** Sustitución explícita con identidad nueva y
+evaluación previa del impacto, que informa con veracidad de los objetos conservados, los que
+deben revalidarse, los que se perderían o retirarían y las relaciones cuyo impacto no puede
+establecerse. El usuario confirma o cancela antes de modificar la construcción. S1 puede
+eliminar explícitamente dependientes incompatibles bajo las reglas aprobadas. No se presenta como
+solución funcional completa de M09: los dependientes duraderos compatibles pueden seguir
+perdiéndose. Su implementación requiere autorización posterior, tras revisar S0.
+
+**`MAINT-S2` — objetivo funcional principal.** Los dependientes estructuralmente compatibles
+sobreviven a la sustitución. Por ejemplo, `r = Line(P, A)` puede actualizarse como
+`r = Line(P', A)` si el contrato del constructor admite la nueva entrada. Un dependiente conserva
+su identidad solo cuando su propia definición y su contrato de continuidad permiten la
+sustitución. En Locus V2 se revalidan explícitamente dependencias, existencia, componentes,
+certificaciones y vínculos semánticos. Los tokens de raíces no se transfieren ni se reasignan por
+coordenadas o proximidad. La invalidez geométrica de una construcción compatible no implica
+perder su identidad: puede quedar indefinida hasta recuperar sus precondiciones. Los dependientes
+incompatibles tienen un tratamiento explícito e informado de antemano.
+
+**Garantías no negociables de S1 y S2:**
+
+1. atomicidad: ninguna publicación parcial;
+2. coherencia del DAG: referencias y dependencias compatibles con la construcción resultante;
+3. integridad de identidad: `P'` tiene identidad nueva; las identidades de los dependientes se
+   conservan solo mediante reglas aprobadas;
+4. revalidación: ninguna evidencia geométrica obsoleta se conserva como vigente;
+5. reversión propia ante fallo: la operación restablece un estado coherente sin intervención
+   del usuario;
+6. Undo/Redo: una sustitución completada puede deshacerse y rehacerse reproduciendo sus
+   identidades y dependencias;
+7. vigencia: una evaluación previa no se aplica sobre una construcción modificada entretanto.
+
+La restauración puede reconstruir instancias Java si el contrato aprobado lo permite, pero debe
+preservar identidades, dependencias y demás invariantes. El nivel transaccional definitivo se
+decide tras S0; no queda aprobado de antemano ningún debilitamiento de las garantías de M09.
+
+**Alcance inicial.** Puntos ordinarios y productores de salida única. Quedan excluidos al
+principio: la sustitución coordinada de soporte o conductor de Locus V2 (I3); los cambios de
+roles especializados no caracterizados; los productores con varias salidas sin adaptador
+aprobado; la reconstrucción general; las asociaciones por coincidencia de coordenadas, etiquetas
+o proximidad; y la fusión con un `P'` preexistente mientras su comportamiento no esté
+caracterizado.
+
+**Referencias fuera del DAG.** Guiones, textos dinámicos y demás mecanismos que usan referencias
+por nombre se caracterizan en S0. Una referencia a una etiqueta no se presupone asociación
+semántica segura. Si su impacto es relevante y no puede determinarse, la operación se rechaza o
+el caso se declara fuera del alcance admitido. La política se fija antes de implementar S1 y S2;
+la recomendación de la revisión 2 para D-M09-4 («siguen al nombre; no verificadas», sin bloquear)
+queda sustituida por esta regla.
 
 ### 3.1 Comparación
 
@@ -424,6 +501,22 @@ depende de lo que se perdería, no de la cardinalidad.
   eliminarlos).
 
 Solo después se modifica el anfitrión, y únicamente en los casos con riesgo.
+
+### 4.4 Resolución autoral del 2026-11-23
+
+D-I2G: **aprobada para caracterización y diseño.** Se estudia una barrera basada en el riesgo
+real de la operación, no solo en el número de salidas, para impedir que una redefinición destruya
+en silencio identidades duraderas, dependientes CeDG o reclamaciones de tokens de puntos
+hermanos. La conducta Classic se preserva cuando no hay riesgo CeDG demostrado. Ambos casos se
+caracterizan antes de modificar el anfitrión. No se asume que una salida pueda separarse
+libremente de su algoritmo; la conservación de hermanos cuyo productor no admite separación sigue
+diferida. Si más adelante se autoriza retirar un grupo completo, la pérdida se describe con
+exactitud y exige confirmación explícita. La barrera requiere autorización propia tras la
+caracterización.
+
+U2 y F8 (§1 y §2): D-U2 aprobada como alcance propuesto (U2-1 a U2-6, manteniendo todas las rutas
+y capacidades existentes); D-F8 aprobada solo para la caracterización `MAINT-F8-S0`;
+`MAINT-F8-min` requiere evidencia discriminante de una carencia funcional real.
 
 ## 5. Capacidades diferidas (fuera del programa)
 
