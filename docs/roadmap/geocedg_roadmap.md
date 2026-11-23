@@ -4650,3 +4650,22 @@ Referencias:
 [registro de la aprobación](../validation/geocedg_1_2_2_author_approval_record.md),
 [evidencia final de cierre](../validation/geocedg_1_2_2_closing_evidence.md) y
 [registro de progreso](../validation/post_r1_locus_repairs_progress.md).
+
+## 2026-11-23 — Autorización autoral de la publicación de GeoCeDG 1.2.2
+
+Registro aditivo por decisión autoral de 2026-11-23 («GeoCeDG 1.2.2 — Autorización autoral de
+publicación definitiva»). No altera fechas, aprobaciones ni resultados anteriores.
+
+- El autor aprueba definitivamente GeoCeDG 1.2.2 (candidato técnico
+  `a6562fa30dc7a468b8e62e16843f1ae2f440285b`, fecha de versión `2026-11-22`). Autoriza su
+  promoción a `main` por fast-forward, la etiqueta anotada `v1.2.2` y la release de GitHub con
+  los paquetes Windows x64 del perfil `NC`.
+- `FINAL NOT EXECUTED — EXPLICIT AUTHOR-APPROVED RELEASE EXCEPTION`: por decisión expresa del
+  autor no se ejecuta `FINAL`. No hay recibo de `FINAL`, y nada se declara como su sustituto.
+- No autoriza funcionalidades, correcciones ni cambios de arquitectura nuevos, ni abre
+  ninguna fase. Las limitaciones residuales aprobadas quedan como deuda de mantenimiento.
+
+Referencias:
+[registro de la autorización de publicación](../validation/geocedg_1_2_2_publication_authorization_record.md),
+[registro de la aprobación](../validation/geocedg_1_2_2_author_approval_record.md) y
+[evidencia final de cierre](../validation/geocedg_1_2_2_closing_evidence.md).
