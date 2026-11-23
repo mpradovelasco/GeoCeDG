@@ -4705,3 +4705,31 @@ Locus V2 Support, con fecha de versión `2026-11-22`:
 `v1.2.0`, `v1.2.1` y sus releases no cambian. Las limitaciones residuales aprobadas quedan como
 deuda de mantenimiento posterior. La existencia de `v1.2.2` no cambia el baseline técnico del
 libro, que se decide en su propio repositorio. Este registro no autoriza ni inicia ninguna fase.
+
+## 2026-11-23 — Aprobación autoral de la planificación PRE-G9B-MAINT-P0
+
+Registro aditivo por decisión autoral de 2026-11-23 («GeoCeDG — PRE-G9B-MAINT-P0. Resolución
+autoral definitiva del expediente de planificación», decisión D-0). No altera fechas,
+aprobaciones ni resultados anteriores.
+
+- El autor aprueba el marco de planificación `PRE-G9B-MAINT-P0` sobre el candidato documental
+  `f0f41c4bf186944f227d5b38addc719fb701ce07` y autoriza su cierre documental. Se adopta
+  `PRE-G9B-MAINT` como programa de mantenimiento independiente de G9B, con tres bloques:
+  B-splines, NURBS e interoperabilidad 2D; limitaciones de GeoCeDG 1.2.2; mejoras pendientes de
+  PRE-G9B-CU7.
+- Expediente conciliado: `d5d183a9662e991f5166572988b5546330509a49`, árbol
+  `57b1f61fb0094009428cb29b9600eb73481a9055`, `STATIC`
+  `verification-83820232b5db4e90aa1c7bcac05fce82` aceptado.
+- Primera ola, aprobada como prioridad de planificación: `MAINT-N1` (B5a y B2), `MAINT-B5a`,
+  `MAINT-U2`, `MAINT-I2G0` (caracterización y, previa autorización, barrera) y `MAINT-A-N1`.
+- Decisión expresa: no se implementa el barrido de auxiliares ricos al cargar documentos (B2-F2)
+  ni migraciones automáticas de documentos antiguos. D-B-1b sigue pendiente.
+- No autoriza ningún incremento productivo, la promoción a `main`, etiquetas, releases,
+  `FINAL` ni cambios en el libro. G9B sigue `DESIGNED — NOT AUTHORIZED` y ninguna puerta de
+  producto queda autorizada.
+
+Referencias:
+[registro de la resolución](../validation/pre_g9b_maint_p0_author_resolution_record.md),
+[portada del expediente](../validation/pre_g9b_maint_p0_dossier.md),
+[hoja de decisiones](../validation/pre_g9b_maint_p0_author_decision_sheet.md) y
+[plan del programa](../architecture/pre_g9b_maint_program_plan_candidate.md).
