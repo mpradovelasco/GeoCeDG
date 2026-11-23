@@ -729,11 +729,15 @@ la base. Ninguna etiqueta creada ni movida; versión de producto sin cambiar (1.
 
 - **Aprobado por el autor (2026-11-23):** el candidato de cierre `a6562fa30` como GeoCeDG
   1.2.2 ([registro](geocedg_1_2_2_author_approval_record.md)).
-- **Pendiente del autor:** `FINAL`; la promoción a `main`, la etiqueta `v1.2.2` y la
-  publicación; la prueba de los instaladores en un entorno aislado.
-- **No hecho:** ninguna de esas acciones, por no estar autorizadas.
-- **Reanudación exacta:** el candidato aprobado es `a6562fa30`, con sus paquetes en
-  `artifacts/packaging/windows-1.2.2-nc-candidate-4`. No queda trabajo técnico abierto.
+- **Publicado (2026-11-23):** por autorización expresa del autor
+  ([registro](geocedg_1_2_2_publication_authorization_record.md)). Comprende `main` en
+  `1b54ff95d`, la etiqueta `v1.2.2` y la release de GitHub con los paquetes NC
+  ([registro de release](../releases/v1.2.2.release.json)). `FINAL` no se ejecutó, por la
+  excepción expresa del autor.
+- **No hecho:** la instalación de los paquetes en el entorno de trabajo, que no está
+  autorizada.
+- **Reanudación exacta:** GeoCeDG 1.2.2 está cerrada y publicada. Las limitaciones residuales
+  quedan como deuda de mantenimiento posterior; no queda trabajo abierto en esta línea.
 - **Conservado:** el original del modelo, la evidencia R1 y las salidas de benchmark en
   `artifacts/benchmarks/post-r1-locus/` (ignoradas por Git). Dos worktrees separados, de la
   base y de `ab37fb5ff`, usados solo para medir el «antes», quedan en el scratchpad de la
