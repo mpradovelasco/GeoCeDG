@@ -185,3 +185,24 @@ decide `R-c`.
 No Java, Desktop, resource, test, verification tool, roadmap, approved specification, ADR,
 SplineV2 contract, DXF export contract, governance file or other worktree was changed. The
 only governance-layer file added is the task prompt, in its own commit, as authorized.
+
+## Appendix R2 — post-freeze documentary correction (2026-11-23)
+
+This appendix was added after the freeze of §0–§8, by a separate corrective commit that
+descends from `307bc8fda5df2013dd5d6cccc80f3ddc62c4de5c`, under the author's instruction
+«GeoCeDG — PRE-G9B-MAINT-A-N1. Corrección documental focal y verificación STATIC»
+(2026-11-23; `DOCUMENTATION_STATUS_ONLY`, `STATIC` only). Sections §0–§8 are unchanged and
+keep their characterization facts and their frozen state; where they differ from this
+appendix, this appendix records the later correction. It records no author approval.
+
+| Item | Correction | Where |
+|---|---|---|
+| DXF weights | The Autodesk *AutoCAD DXF Reference* (entity `SPLINE`) defines bit 4 of code 70 as «rational spline» and code 41 as a weight written only when it is not 1. Missing code 41 is a legitimate representation of unit weights. The weight rule now distinguishes the representation flag, the weight provenance (`EXPLICIT` or `IMPLICIT_UNIT`), the effective weights and the mathematical nature; it admits flag-without-weights and explicit unit weights without the flag, and rejects only non-unit weights without the flag and partial lists. This supersedes the Q-DXF-2 row of §5 | import contract §3, §4.3, §4.4 (predicates 10–13), §4.6, §5, §9, §17; matrix DX-2, DX-13 |
+| Error criteria | The revision-1 BS-3 bound `64·2^-53·max‖P_i‖` had the dimension of a length and was not a relative tolerance. It is replaced by separate absolute and relative criteria for positions and derivatives, with geometric and parametric scales, a near-zero-derivative rule and a reproducible procedure; no constant is asserted (`PENDING_VALIDATION_IN_MAINT_A2`) | matrix §0.1, §0.2; BS-1, BS-2, BS-3, BS-10, BS-16, BS-17 |
+| Semicircle fixture | A single clamped rational quadratic with positive weights cannot represent 180°. DX-1 now defines the quarter circle Q and the semicircle H as two rational quadratic quarter arcs (knots `0,0,0,1,1,2,2,2`), with control points, weights, written weight value, domain, orientation, continuity at the joint, the exact radial identity, the Möbius parameter map used as oracle, and the separate weight-rounding discrepancy | matrix DX-1, §2.1 |
+
+Unchanged by this correction: the family specification, ADR 0043 (still proposed), D-A-1 to
+D-A-10, `bspline-2d/v1` polynomial, the NURBS-ready architecture, the local per-span
+representation, SplineV2, the `<geocedgBSpline>` persistence, the pure library, read-only
+references outside `Construction`, `R-a` with `R-c` reserved and `R-d` excluded, the passive
+approximation provenance and the stated Locus V2 guarantees and limitations.

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | **CANDIDATE — PENDING AUTHOR REVIEW.** `selfApproved=false`, `authorApproved=false`. Not normative until the author accepts it explicitly |
-| Contract identifier | `dxf-spline-reference/v1` (document revision 1, 2026-11-23) |
+| Contract identifier | `dxf-spline-reference/v1` (document revision 2, 2026-11-23: weight reconstruction of §4.6 per the author's corrective instruction; revision 1 is commit `307bc8fda`) |
 | Increment that writes it | `PRE-G9B-MAINT-A-N1` (normative design only) |
 | Increment that would implement it | `MAINT-A-DXF0`, **not authorized** |
 | Architectural layer | Import adapter outside the geometric kernel (AGENTS §4); pure mathematical library shared with the kernel family |
@@ -59,8 +59,8 @@ authority; using it here gives the reference no CeDG semantics.
 ## 3. Definitions
 
 For an admitted entity, with degree `p`, control points `P_0..P_n`, knots
-`U = (u_0..u_m)`, `m = n + p + 1`, and weights `w_0..w_n` (all implicitly 1 when the
-entity is polynomial):
+`U = (u_0..u_m)`, `m = n + p + 1`, and effective weights `w_0..w_n` reconstructed by
+§4.6:
 
 \[
 C(u) = \frac{\sum_{i=0}^{n} N_{i,p}(u)\,w_i\,P_i}{\sum_{i=0}^{n} N_{i,p}(u)\,w_i},
@@ -69,10 +69,20 @@ C(u) = \frac{\sum_{i=0}^{n} N_{i,p}(u)\,w_i\,P_i}{\sum_{i=0}^{n} N_{i,p}(u)\,w_i
 
 with the Cox–de Boor basis, the `0/0 := 0` convention and the knot-ownership rule of the
 family specification §3.3 (the same rule; it is not restated with variations here).
-Orientation is that of increasing `u`. The reference is **polynomial** when it carries no
-weights, and **rational** otherwise; a rational reference whose weights are all exactly
-equal defines exactly the polynomial curve with the same `p`, `U` and control points, and
-is recorded as `RATIONAL_EQUAL_WEIGHTS` (relevant to exact conversion in `MAINT-A-DXF1`).
+Orientation is that of increasing `u`. Four facts about weights are kept apart and
+recorded separately (§4.6, §5): the DXF representation flag (bit 4 of code 70), the
+provenance of the weights (explicit code-41 values or implicit unit weights because the
+file has no code 41), the effective weights, and the mathematical nature of the curve. The
+nature is decided by the effective weights alone, by exact binary64 comparison:
+
+| Nature | Effective weights | Curve |
+|---|---|---|
+| `POLYNOMIAL` | all equal to 1 (implicit or explicit) | the polynomial B-spline of `p`, `U` and the control points |
+| `RATIONAL_EQUAL_WEIGHTS` | explicit, all exactly equal to a common value different from 1 | exactly the same polynomial curve (the common weight cancels); the explicit values are kept as read |
+| `RATIONAL` | explicit, not all equal | a rational curve |
+
+`POLYNOMIAL` and `RATIONAL_EQUAL_WEIGHTS` are the cases of exact conversion in
+`MAINT-A-DXF1` (§14).
 
 ## 4. Input scope
 
@@ -108,11 +118,11 @@ Only top-level `SPLINE` entities of the `ENTITIES` section in model space are ca
 | 5 | handle | provenance |
 | 8 | layer name | provenance |
 | 67 | paper-space flag | selection (§4.2) |
-| 70 | spline flags: 1 closed, 2 periodic, 4 rational, 8 planar, 16 linear | 2 and 4 decide admission; 1 is contrasted with the data; 8 and 16 are informative |
+| 70 | spline flags: 1 closed, 2 periodic, 4 rational, 8 planar, 16 linear | 2 decides admission; 4 takes part in the weight rule of §4.6 and is recorded; 1 is contrasted with the data; 8 and 16 are informative |
 | 71 | degree | definition |
 | 72, 73, 74 | number of knots, control points, fit points | consistency |
 | 40 | knot value, repeated | definition |
-| 41 | weight, repeated | definition when the entity is rational |
+| 41 | weight, repeated; the DXF reference allows it to be omitted when the weight is 1 | effective weights by §4.6 |
 | 10, 20, 30 | control point, repeated (WCS) | definition |
 | 42, 43, 44 | knot, control-point and fit tolerances | recorded as ignored; never used to merge knots or to decide closure |
 | 11, 21, 31 | fit points | recorded as ignored (§4.4) |
@@ -141,12 +151,13 @@ additional diagnostics):
 | 7 | knots nondecreasing | `KNOTS_DECREASING` |
 | 8 | clamped: `u_0 = … = u_p` and `u_{n+1} = … = u_{n+p+1}` by exact binary64 equality, and `u_p < u_{n+1}` | `NOT_CLAMPED_UNSUPPORTED`, `EMPTY_DOMAIN` |
 | 9 | every interior knot value has multiplicity `≤ p` | `INTERIOR_MULTIPLICITY_UNSUPPORTED` |
-| 10 | flag 4 set ⇔ exactly `n + 1` weights present; no partial weight list | `RATIONAL_FLAG_WITHOUT_WEIGHTS`, `WEIGHTS_WITHOUT_RATIONAL_FLAG`, `WEIGHT_COUNT_MISMATCH` |
-| 11 | every weight `> 0` and `max w / min w ≤ W_RATIO_MAX` (candidate value `10^6`) | `NONPOSITIVE_WEIGHT`, `WEIGHT_RATIO_OUT_OF_RANGE` |
-| 12 | every control point has the same `z` by exact binary64 equality (an absent code 30 reads as `0`) | `NONPLANAR_UNSUPPORTED` |
+| 10 | the number of code-41 values is `0` or exactly `n + 1` (§4.6) | `WEIGHT_COUNT_MISMATCH` |
+| 11 | when flag 4 is clear, every explicit weight is exactly 1 | `NON_UNIT_WEIGHTS_WITHOUT_RATIONAL_FLAG` |
+| 12 | every explicit weight `> 0` and `max w / min w ≤ W_RATIO_MAX` (candidate value `10^6`) | `NONPOSITIVE_WEIGHT`, `WEIGHT_RATIO_OUT_OF_RANGE` |
+| 13 | every control point has the same `z` by exact binary64 equality (an absent code 30 reads as `0`) | `NONPLANAR_UNSUPPORTED` |
 
 When both control and fit data are present, the control data are used and the presence of
-fit data is recorded. Predicate 12 places the curve exactly in the plane `z = c` (partition
+fit data is recorded. Predicate 13 places the curve exactly in the plane `z = c` (partition
 of unity and positive weights); `c` is recorded and the reference is the planar curve in
 `(x, y)`.
 
@@ -172,6 +183,37 @@ The record holds exactly these binary64 values. The difference between the decim
 of the file and the binary64 data is the declared **reading rounding**; nothing computed
 later is claimed about the decimal text itself.
 
+### 4.6 Weight reconstruction
+
+The DXF reference (Autodesk, *AutoCAD DXF Reference*, entity `SPLINE`) defines bit 4 of
+code 70 as «rational spline» and code 41 as a weight that is written only when it is not 1;
+it states that the weights are present when not all of them are 1. The absence of code 41
+is therefore a legitimate representation of unit weights and is not, by itself, an
+incoherence. The reader reconstructs the effective weights as follows, with no other rule:
+
+| Flag 4 | Code-41 values | Outcome | Weight provenance | Nature (§3) |
+|---|---|---|---|---|
+| clear | none | admitted | `IMPLICIT_UNIT` | `POLYNOMIAL` |
+| set | none | admitted with implicit unit weights; informative diagnostic `RATIONAL_FLAG_WITH_IMPLICIT_UNIT_WEIGHTS` | `IMPLICIT_UNIT` | `POLYNOMIAL` |
+| set | exactly `n + 1`, all valid (predicate 12) | admitted | `EXPLICIT` | `RATIONAL` when not all equal; `RATIONAL_EQUAL_WEIGHTS` when all equal to a value other than 1; `POLYNOMIAL` when all equal to 1 |
+| clear | exactly `n + 1`, all exactly 1 | admitted; the explicit representation is recorded; informative diagnostic `EXPLICIT_UNIT_WEIGHTS_WITHOUT_RATIONAL_FLAG` | `EXPLICIT` | `POLYNOMIAL` |
+| clear | exactly `n + 1`, at least one different from 1 | rejected, `NON_UNIT_WEIGHTS_WITHOUT_RATIONAL_FLAG` | — | — |
+| any | between 1 and `n` values, or more than `n + 1` | rejected, `WEIGHT_COUNT_MISMATCH` | — | — |
+
+Rules:
+
+- With exactly `n + 1` values, the `i`-th code-41 value in order of occurrence within the
+  entity is the weight of the `i`-th control point. A list of any other length is never
+  completed, truncated or matched to control points: no unknown weight is deduced.
+- Implicit unit weights are effective weights only. The record stores them as the explicit
+  absence of code 41 (`IMPLICIT_UNIT`), never as code-41 values the file did not contain;
+  the canonical encoding of §9 uses the absence marker.
+- Finiteness (predicate 1), positivity and the ratio bound (predicate 12) apply to every
+  explicit weight; implicit unit weights satisfy them trivially. Size limits are unchanged.
+- The flag is recorded as read. It never changes the nature: an entity with flag 4 whose
+  effective weights are all 1 is mathematically polynomial and is not given rational
+  semantics.
+
 ## 5. Reference record
 
 An admitted entity produces one immutable record:
@@ -179,8 +221,10 @@ An admitted entity produces one immutable record:
 | Field | Content |
 |---|---|
 | `contract` | `dxf-spline-reference/v1` |
-| `nature` | `POLYNOMIAL`, `RATIONAL` or `RATIONAL_EQUAL_WEIGHTS` |
-| `sourceData` | `p`, `U`, control points `(x_i, y_i)`, weights or their absence, plane `z = c`, exactly as read |
+| `nature` | `POLYNOMIAL`, `RATIONAL` or `RATIONAL_EQUAL_WEIGHTS` (§3) |
+| `representation` | the code-70 rational flag as read (`SET` or `CLEAR`) and the weight provenance (`EXPLICIT` or `IMPLICIT_UNIT`) (§4.6) |
+| `sourceData` | `p`, `U`, control points `(x_i, y_i)`, the explicit weights as read or the absence of code 41, plane `z = c`, exactly as read |
+| `effectiveWeights` | the weights reconstructed by §4.6 |
 | `transform` | the transformation applied (§6) |
 | `data` | the transformed control points (weights and knots are never transformed) |
 | `domain` | `[u_p, u_{n+1}]`, orientation of increasing `u` |
@@ -246,9 +290,11 @@ Per record, with no dependence on the time of import:
 | units | `$INSUNITS` code, document construction unit at import |
 | plane | `z = c` |
 | transformation | the six coefficients (§6) |
+| weights | the code-70 rational flag as read and the weight provenance: explicit code-41 values, or `IMPLICIT_UNIT` when the file contains no code 41 for the entity (§4.6) |
 | contract | `dxf-spline-reference/v1` |
 | data digests | SHA-256 of the canonical encoding of `sourceData` and of `data` |
 | ignored data | fit points, tolerances 42–44, tangents, unrecognized codes, contradicted flags |
+| informative diagnostics | `RATIONAL_FLAG_WITH_IMPLICIT_UNIT_WEIGHTS`, `EXPLICIT_UNIT_WEIGHTS_WITHOUT_RATIONAL_FLAG` (§4.6) |
 
 Canonical encoding of the data for digests: the ASCII tag of the contract, then `p`,
 `n + 1`, the knots, the control points and the weights (or an explicit absence marker) as
@@ -391,7 +437,7 @@ render is exact.
 
 ## 16. Validation
 
-The candidate cases are DX-1 to DX-12 of the
+The candidate cases are DX-1 to DX-13 of the
 [A-N1 validation matrix](../../../docs/validation/pre_g9b_maint_a_n1_validation_matrix.md).
 `MAINT-A-DXF0` must execute them; `MAINT-A-N1` does not.
 
@@ -412,6 +458,6 @@ Open decisions for the author:
 | Id | Question | Candidate proposal |
 |---|---|---|
 | Q-DXF-1 | Limits `FILE_BYTES_MAX`, `SPLINE_ENTITIES_MAX`, `N_MAX_IMPORT`, `W_RATIO_MAX`, `RENDER_REL_TOL` | 64 MiB, 10 000, 1 024, `10^6`, `10^-4` |
-| Q-DXF-2 | Rational flag without weights, or weights without the flag | reject both (D-A-6 «incoherences rejected»); a writer that omits unit weights is then not admitted |
+| Q-DXF-2 | Rational flag and code-41 weights | revision 2: policy of §4.6, fixed by the author's corrective instruction of 2026-11-23 after contrast with the DXF reference; only incoherences that are real (non-unit weights without the flag, partial lists) are rejected, consistent with D-A-6. The contract as a whole remains a candidate |
 | Q-DXF-3 | Picture exports (PNG, PDF, SVG of a view) when references are visible | reproduce the view as presentation, with no semantic claim, as for any view content; semantic exports exclude references |
 | Q-DXF-4 | Location of this contract | new directory `geocedg/specs/import/`, parallel to `export/` |
