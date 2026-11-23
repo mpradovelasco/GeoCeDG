@@ -7,7 +7,7 @@
 | Decisiones que la motivan | D-B-1a (dirección normativa de B5a) y D-B-2 (solo B2-F1), aprobadas en la [resolución autoral de P0](pre_g9b_maint_p0_author_resolution_record.md) y transcritas en la [hoja F](pre_g9b_maint_p0_author_decision_sheet.md) §0 |
 | Base | `main = origin/main = e79ace7d1473f13d32d0b660e92a4d1d45ce39bf`, árbol `9c43dfa5548a0844215c0ab9ba808f20e3dd3a84` (comprobados contra `origin` antes de crear la rama) |
 | Rama | `phase/pre-g9b-maint-n1-metrics-amendment`, local y sin publicar |
-| Commits | `84e05a59b`: paso de gobernanza (prompt canónico). El commit documental N1 contiene este registro y la enmienda; su identidad y la de su `STATIC` se informan fuera del commit |
+| Commits | `84e05a59b`: paso de gobernanza (prompt canónico). `ac842e73df361e0cbe7ddc3ffbcbe0d2dbdf8585` (árbol `15c2f192233e78a025d225a276a8f909e8ea42bc`): revisión 1 de la enmienda y de este registro, `STATIC` `verification-65765d27e6a84f4f86347d7ea07757ed` `ACCEPTED / COMPLETE`. La revisión 2 (§9) es su descendiente directo; su identidad y la de su `STATIC` se informan fuera del commit |
 | Prompt | [`pre-g9b-maint-n1-metrics-amendment.prompt.md`](../../.github/prompts/tasks/pre-g9b-maint-n1-metrics-amendment.prompt.md) |
 | Clase | `CHANGE_ROUTE=ORDINARY`; `VERIFICATION_CLASS=DOCUMENTATION_STATUS_ONLY`, congelada al inicio; `PRODUCT_PHASE_EFFECT=NONE`; nivel `STATIC` |
 | Enmienda | [`locus-v2-metrics.md`](../../geocedg/specs/locus/locus-v2-metrics.md) §28.3.1 (B5a) y §29.1 (B2-F1), ambas candidatas y sin vigor |
@@ -55,13 +55,14 @@ evidencia histórica de P0; donde difiere, prevalece el prompt canónico.
 | Id | Propuesta |
 |---|---|
 | N1-B5a-1 | La admisión de §28.3 pasaría a `conditioned-length-scalar/v2` con una condición 8: una comprobación de escalado de cuerdas (`conditioned-route-jump-guard/v1`) sobre cada hoja aceptada de la estimación de la ruta. Las condiciones 1 a 7 no cambian |
-| N1-B5a-2 | Carácter: detección numérica conservadora. No es prueba ni certificación de continuidad; una ruta admitida conserva H1–H4 como hipótesis. La tabla de §28.3.1 separa continuidad no certificada (estado normal), incumplimiento de H3 observado (sin número) e incumplimiento no detectado (sin cambio) |
-| N1-B5a-3 | Procedimiento determinista por hoja: cuarto de cuerda máxima, bisecciones siguiendo la mitad de cuerda mayor, cociente `q_k = c(I_{k+1})/c(I_k)`, firma de salto si `q_k > ρ_J` en `m` niveles consecutivos; parada anticipada cuando ya no caben `m` niveles; desempates hacia el parámetro menor |
-| N1-B5a-4 | Tres diagnósticos propios y distintos: `CHORD_SCALING_JUMP_SIGNATURE`, `CHORD_SCALING_INCONCLUSIVE`, `CHORD_SCALING_BUDGET_EXHAUSTED`; la ruta no admitida publica la misma estimación como resultado rico con `CONDITIONED_ROUTE_NOT_ADMISSIBLE`, como la condición 4. Una evaluación fallida en un punto de la comprobación es un fallo del resultado (§28.1) |
-| N1-B5a-5 | Valores candidatos `ρ_J = 0,85`, `m = 3`, `L = 5`, `ε_res(λ) = max(τ_λ, 2^8·u·M_λ)`, `E_cap = 8 192` evaluaciones por ruta, con intervalos admisibles dentro de los cuales `MAINT-B5a` fija los valores finales mediante pruebas focales; fuera de ellos hace falta una enmienda nueva |
+| N1-B5a-2 | Carácter: detección numérica conservadora. No es prueba ni certificación de continuidad; una ruta admitida conserva H1–H4 como hipótesis. La firma observada es compatible con una discontinuidad o con una variación singular de velocidad: no demuestra que H3 sea falsa, solo que la continuidad que exige H3 no queda establecida por la comprobación, y por política conservadora el escalar no se admite. La tabla de §28.3.1 separa continuidad no certificada sin evidencia adversa (sin cambio), firma numérica observada (sin número, sin demostrar discontinuidad) y discontinuidad real no detectada por muestreo finito (sin cambio) |
+| N1-B5a-3 | Procedimiento determinista por hoja: cuarto de cuerda máxima, bisecciones siguiendo la mitad de cuerda mayor, cociente `q_k = c(I_{k+1})/c(I_k)`, firma de escalado observada si `q_k > ρ_J` en `m` niveles consecutivos; parada anticipada cuando ya no caben `m` niveles; desempates hacia el parámetro menor |
+| N1-B5a-4 | Tres diagnósticos propios y distintos: `CHORD_SCALING_JUMP_SIGNATURE`, `CHORD_SCALING_INCONCLUSIVE`, `CHORD_SCALING_BUDGET_EXHAUSTED`; la ruta no admitida publica la misma estimación como resultado rico con `CONDITIONED_ROUTE_NOT_ADMISSIBLE`, como la condición 4. El primero declara una firma compatible con una discontinuidad o una variación singular de velocidad y nombra la firma, no su causa. Una evaluación fallida en un punto de la comprobación es un fallo del resultado (§28.1) |
+| N1-B5a-5 | Valores candidatos `ρ_J = 0,85`, `m = 3`, `L = 5`, `ε_res(λ) = max(τ_λ, 2^8·u·M_λ)`, `E_cap = 8 192` evaluaciones por ruta, con intervalos admisibles dentro de los cuales `MAINT-B5a` fija los valores finales mediante pruebas focales; fuera de ellos hace falta una enmienda nueva. La forma de `ε_res(λ)` sigue siendo candidata y no se cambia sin caracterización |
 | N1-B5a-6 | Presupuesto: como máximo `L` evaluaciones por hoja (típicamente `L − m + 1 = 3`) y `E_cap` por ruta, contadas aparte del presupuesto del estimador; no son hojas, no cambian valor ni error y no se reutilizan entre revisiones. Agotar el tope es negativa con causa propia |
-| N1-B5a-7 | Límites declarados (seis clases de incumplimientos de H3 no detectables por muestreo finito) y negativas conservadoras (singularidad de velocidad con `α > 1 + log2 ρ_J`, puntos estacionarios de orden muy alto, variación de velocidad no resuelta), nunca presentadas como salto probado |
+| N1-B5a-7 | Límites declarados (seis clases de incumplimientos de H3 no detectables por muestreo finito) y negativas conservadoras (singularidad de velocidad con `α > 1 + log2 ρ_J`, puntos estacionarios de orden muy alto, variación de velocidad no resuelta), nunca presentadas como salto probado ni como incumplimiento probado de H3 |
 | N1-B5a-8 | Sin cambios en el recorrido y su política, identidad de contenido de la evidencia, estructura de existencia, inventario de componentes, tokens, identidad semántica, certificados, valor y error de la estimación, H10, P2, §28.1, §28.2, `Intersect` ni serialización. No se aplica a ningún total. B5b y T-A siguen diferidas |
+| N1-B5a-9 | Representación numérica y traslaciones: la comprobación matemática es invariante por traslación, pero su implementación binary64 no lo es exactamente. El redondeo de los puntos y de las cuerdas crece con la magnitud de las coordenadas absolutas y el término `2^8·u·M_λ` crece con `M_λ`, de modo que una traslación puede cambiar una decisión (hoja bajo resolución, cociente cerca de `ρ_J`), las evaluaciones y los diagnósticos, y los límites declarados 3 y 5 se amplían. No se afirma invariancia geométrica exacta frente a traslaciones; la de zoom, DPI y vista se mantiene. `MAINT-B5a` prueba las mismas curvas con traslaciones de magnitud creciente, compara admisibilidad, evaluaciones y diagnósticos, y justifica el factor de resolución antes de aprobar la política final |
 
 ### 3.2 B2-F1 — §29.1
 
@@ -69,10 +70,12 @@ evidencia histórica de P0; donde difiere, prevalece el prompt canónico.
 |---|---|
 | N1-B2-1 | Al adoptarse, sustituye el punto «Declared limit: redefinition» de §29; el resto de §29 no cambia |
 | N1-B2-2 | Cuando una redefinición sustituye al número, su autoridad privada pasa a candidata de retirada de esa operación; nada se retira durante la transacción y las guardas de identidad no cambian |
-| N1-B2-3 | Al completar con éxito la operación (en lotes, tras el conmutador final), fuera del arrendamiento de publicación y antes de almacenar el punto de Undo, se retira por la retirada ordinaria de §29 cada candidata que siga en la construcción sin lector; el punto de Undo registra el estado sin la autoridad y no hay punto intermedio |
+| N1-B2-3 | Al completarse con éxito la sustitución del número (en lotes, tras el conmutador final), fuera del arrendamiento de publicación y antes de almacenar el punto de Undo, se retira por la retirada ordinaria de §29 cada candidata que siga en la construcción sin lector; el punto de Undo registra el estado sin la autoridad y no hay punto intermedio |
 | N1-B2-4 | Criterio: nombre privado del espacio reservado, entrada rica del número sustituido y ningún lector. Nunca se retiran un resultado rico con nombre ordinario, una autoridad con otro lector (incluido el número nuevo), un resultado con identidad y uso propios ni nada que la redefinición no haya hecho candidato |
 | N1-B2-5 | Una redefinición fallida o revertida descarta sus candidatas y conserva el par íntegro; Undo restaura el número anterior con su autoridad y Redo el redefinido sin ella, cada uno en un paso; la redefinición nunca se trata como borrar y crear |
 | N1-B2-6 | Sin barrido al cargar (B2-F2 no se implementa): abrir, leer y reconstruir estados de Undo/Redo no retiran nada; los huérfanos heredados quedan como limitación declarada, sin migración ni reparación silenciosa |
+| N1-B2-7 | Atomicidad: la redefinición y la retirada son una única operación lógica. No se declara éxito con una retirada obligatoria incompleta, no se publica como resultado final un estado parcialmente actualizado y, si la retirada falla tras sustituir el número, la operación restablece coherentemente el número anterior, su autoridad privada, sus dependencias y las identidades afectadas. Una operación fallida no registra punto de Undo; una correcta conserva un único paso de Undo/Redo |
+| N1-B2-8 | Condición de implementación: si los mecanismos transaccionales existentes no garantizan esa reversión coherente cuando la retirada falla después de la sustitución, `MAINT-B2` se detiene y pide una decisión arquitectónica antes de modificar el núcleo. N1 no autoriza infraestructura transaccional nueva, cambios en las guardas de identidad ni el diseño de una reconstrucción general |
 
 ## 4. Análisis de los valores candidatos
 
@@ -128,11 +131,17 @@ medición sobre los modelos del autor, que es condición de entrada y criterio d
    evaluaciones, para comparar después con las evaluaciones de la comprobación.
 4. Valores finales dentro de los intervalos de §28.3.1, fijados por pruebas focales y
    registrados en la política y el informe; un valor fuera exige enmienda nueva y detención.
-5. Paradas: una ruta admitida hoy deja de admitirse sin firma de salto o por agotamiento del
+5. Antes de aprobar la política final: pruebas de las mismas curvas con traslaciones de
+   magnitud creciente, comparando admisibilidad, evaluaciones adicionales y diagnósticos con la
+   curva sin trasladar; justificación del factor de resolución elegido y declaración del rango
+   de magnitudes de coordenadas en el que el resultado se mostró invariable (§28.3.1,
+   «Numeric representation and translations»). La forma de `ε_res(λ)` no se cambia sin esa
+   caracterización y una enmienda nueva.
+6. Paradas: una ruta admitida hoy deja de admitirse sin firma de escalado o por agotamiento del
    presupuesto; la comprobación exige tocar el recorrido o su identidad de contenido; un fallo de
    `INTEGRATION` atribuible al cambio.
-6. Criterio de aceptación del autor (plan C §1.6) y validación enumerada al final de §28.3.1.
-7. Fuera de alcance: B5b, T-A, §28.2, `Intersect` y su política de aislamiento.
+7. Criterio de aceptación del autor (plan C §1.6) y validación enumerada al final de §28.3.1.
+8. Fuera de alcance: B5b, T-A, §28.2, `Intersect` y su política de aislamiento.
 
 ## 7. Condiciones de entrada de `MAINT-B2`
 
@@ -140,12 +149,25 @@ medición sobre los modelos del autor, que es condición de entrada y criterio d
    prompt, revisado e incorporado en un paso de gobernanza autorizado.
 2. Antes de codificar, el informe fija el punto exacto de la retirada para redefinición simple,
    en lote y revertida, y mide el coste aislado de la redefinición en el arnés post-R1.
-3. Paradas: la retirada exige relajar una guarda de identidad, tratar la redefinición como
-   borrar y crear o barrer al cargar; una reversión pierde el par; un resultado con nombre del
-   usuario queda afectado.
+3. Antes de modificar el núcleo, el informe establece cómo los mecanismos transaccionales
+   existentes restablecen coherentemente el estado anterior (número, autoridad privada,
+   dependencias e identidades) cuando la retirada falla después de sustituir el número, sin
+   registrar punto de Undo (§29.1, «Atomicity»). Si no pueden garantizarlo, `MAINT-B2` se
+   detiene y pide una decisión arquitectónica.
+4. Paradas: la retirada exige relajar una guarda de identidad, infraestructura transaccional
+   nueva, una reconstrucción general, tratar la redefinición como borrar y crear o barrer al
+   cargar; una reversión pierde el par; un estado parcialmente actualizado se publica como
+   resultado; un resultado con nombre del usuario queda afectado.
 
 ## 8. Qué no decide
 
 No adopta la enmienda, no autoriza `MAINT-B5a`, `MAINT-B2`, `MAINT-B1a` ni ningún otro
 incremento, no decide D-B-1b ni T-A, no promueve a `main` ni publica. La aceptación técnica de
 `STATIC` sobre el commit N1 es independiente de la decisión autoral.
+
+## 9. Registro de revisiones
+
+| Revisión | Fecha | Contenido |
+|---|---|---|
+| 1 | 2026-11-23 | Commit `ac842e73d`: enmienda candidata §28.3.1 y §29.1 y este registro |
+| 2 | 2026-11-23 | Corrección documental autorizada por el autor («GeoCeDG — PRE-G9B-MAINT-N1. Corrección documental final del candidato normativo y verificación STATIC»), en un único commit descendiente directo de `ac842e73d`. Tres precisiones, sin cambiar el algoritmo, los tres diagnósticos, los valores candidatos ni el alcance: **(1)** `CHORD_SCALING_JUMP_SIGNATURE` declara una firma compatible con una discontinuidad o con una variación singular de velocidad, que no demuestra que H3 sea falsa; la continuidad que exige H3 no queda establecida y, por política conservadora, el escalar no se admite; la tabla de situaciones separa continuidad no certificada sin evidencia adversa, firma observada y discontinuidad real no detectada (N1-B5a-2, -3, -4, -7). **(2)** Representación numérica y traslaciones: se retira la afirmación implícita de invariancia exacta frente a traslaciones de la implementación binary64, se declara la dependencia de `M_λ` respecto de las coordenadas absolutas y se exigen a `MAINT-B5a` pruebas con traslaciones crecientes y la justificación del factor de resolución (N1-B5a-5, -9; §6.5). **(3)** Atomicidad de B2-F1 ante un fallo de la retirada posterior a la sustitución del número, con la condición de detención de `MAINT-B2` si los mecanismos existentes no garantizan la reversión coherente (N1-B2-3, -7, -8; §7.3-§7.4). No se repitieron sondas ni cálculos numéricos |
