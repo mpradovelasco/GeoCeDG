@@ -6870,6 +6870,192 @@
       "authority": "docs/validation/pre_g9b_cu2_validation_matrix.md"
     },
     {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineCanonicalEncoding.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineData.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineDataCause.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineEvaluation.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineExactRational.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineGlobalPolynomial.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineInteriorKnot.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineKnotInsertion.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineLimits.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineOutcome.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplinePoint.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineSpanForms.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineSpanLookup.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineSpanPolynomial.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineStatus.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineValidation.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/BSplineWeightMode.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/math/bspline/package-info.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library (bspline-2d section 12): pure stateless 2D B-spline mathematics shared by the bspline-2d family and the DXF reference import; no kernel, view or Desktop dependency.",
+      "authority": "geocedg/specs/curves/bspline-2d.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineCanonicalEncodingTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineErrorBoundSweepTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineErrorCriteria.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineEvaluationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineExactRationalTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineKnotInsertionTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineLibraryBoundaryTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineRationalCircleTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineSpanFormsTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineStructureTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineTestData.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/BSplineValidationTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/math/bspline/ExactRationalBSplineReference.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0 shared library tests: exact rational reference, error criteria E1-E5 and direct tests of org.geocedg.common.math.bspline.",
+      "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/CircleDriverRootStructure2D.java",
       "change": "added",
       "purpose": "PRE-G9B-CU2 step T4, exact algebraic certificate of first-level predicates (D-CU2-16): exact classification of a first-level predicate over a circle driver, with the seam analysed exactly.",
