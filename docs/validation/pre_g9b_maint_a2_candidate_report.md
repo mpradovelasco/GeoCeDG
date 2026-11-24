@@ -115,8 +115,8 @@ estricta del consumidor (opción A):
   extremo **superior** de una pieza es la derivada por la izquierda **solo** si el evaluador
   diferencial declara la interfaz; el extremo inferior, los puntos interiores, el muestreo y toda
   otra fuente conservan exactamente la aritmética anterior. Las ediciones están limitadas a la
-  ruta de búsqueda de la velocidad (líneas de la base ~181–200 y un método nuevo tras `speed`,
-  ~526), sin solaparse con los fragmentos de `MAINT-B5a`.
+  ruta de búsqueda de la velocidad (líneas de la base 182 y 200, y un método nuevo insertado tras `speed`, después de la
+  línea 517), sin solaparse con los fragmentos de `MAINT-B5a`.
 - Sin cambios en propiedad del parámetro, direcciones semánticas, interacción de puntos,
   intersecciones, tangentes ni continuidad publicada.
 
