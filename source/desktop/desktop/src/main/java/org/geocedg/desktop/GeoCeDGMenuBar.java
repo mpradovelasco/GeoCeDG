@@ -196,7 +196,7 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 		}
 		item.putClientProperty(GeoCeDGActionRegistry.ACTION_ID, id);
 		item.getAccessibleContext().setAccessibleDescription(
-				(String) action.getValue(Action.SHORT_DESCRIPTION));
+				GeoCeDGTooltips.plain((String) action.getValue(Action.SHORT_DESCRIPTION)));
 		return item;
 	}
 

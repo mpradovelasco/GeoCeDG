@@ -1376,7 +1376,7 @@ Classic diagnostic session.
 <!-- geocedg-guide-section: semantic-points-intersections-materialization -->
 ## 8. Semantic points, intersections and materialization
 
-### 8.1 Semantic points
+### 8.1 Create a point on a curve
 
 **[N]** **[!]** The dedicated Create point from reference action opens the reference workflow.
 
@@ -1393,27 +1393,49 @@ you chose and can be used to measure a route (§9.3).
 
 *Diagram of the spline from section 7.5. Changing h moves the curve and its associated points together.*
 
-**Place by clicking.** With **Point** or **Point on object**, click a supported
-curve. If GeoCeDG can place the point directly, it creates it. If the panel
-offers a position instead, select it and choose **Confirm**, even when there
-is just one offer. If several objects are under the pointer, choose the curve
-first. No helper point is needed. Panning or zooming within the same view
-keeps a pending offer. Changing views or tools, editing the source or
-changing the placement policy can invalidate it. Click again if the offer
-expires.
+**One Point panel.** **Point**, **Point on object** and **Point on Locus V2
+from reference** open the same panel above the input bar. The panel is
+available in a bottom row even with the input bar hidden. Its **Origin:**
+selector has two segments:
 
-**Place from a reference.** Choose **Construction → Semantic curves →
-Point on Locus V2 from reference**. Select the curve, then select the existing
-reference point `Q` in Graphics or Algebra. In the panel above the input bar,
-choose the position and click **Confirm**. To start from the click itself,
-activate **Click position** in that tool and click the curve. The panel is
-available in a bottom row even with the input bar hidden. **Cancel**,
-**Restart** or `Escape` lets you start again without creating a point.
+- **Click** starts from the position you click.
+- **Reference Q** starts from an existing point `Q` that you select in
+  Graphics or Algebra. `Q` is only a reference: the new point does not
+  depend on it.
 
-- **r world** is the search radius in construction units, initially 0.1 for
-  the reference tool. With **Click position** in that tool, it still uses the
-  entered radius. With an ordinary click in **Point**, GeoCeDG captures a
-  radius from the view and keeps it during confirmation.
+**Point** and **Point on object** start with **Click**. **Point on Locus V2
+from reference**, in **Construction → Semantic curves**, is the same panel
+with **Reference Q** preselected. While you work in the current document,
+**Point** and **Point on object** share one origin choice, the reference tool
+keeps its own, and the panel remembers the drag choice.
+The line next to the selector states where the search radius comes from and
+when an offer needs **Confirm**; its tooltip gives the details.
+
+**Click in Point or Point on object.** Click a supported curve. The search
+radius comes from the view. When the search finds the position, GeoCeDG
+creates the point at once; if it finds several, choose one. Any other offer
+appears in the panel: select it and choose **Confirm**, even when there is
+just one offer. If several objects are under the pointer, choose the curve
+first. No helper point is needed. On native objects and on empty space the
+ordinary tool applies. Panning or zooming within the same view keeps
+a pending offer. Changing views or tools, editing the source or changing
+the placement policy can invalidate it. Click again if the offer expires.
+
+**Reference Q.** Select the curve, then the existing point `Q` in Graphics
+or Algebra. On Locus V2 and Spline V2 the search radius is **r world**
+around `Q`. Choose the position in the panel and click **Confirm**: every
+offer waits for it. **Cancel**, **Restart** or `Escape` lets you start again
+without creating a point.
+
+**Click in Point on Locus V2 from reference.** Select **Click** in that tool
+to start from the clicked position, with the radius **r world** around the
+click. As with `Q`, every offer waits for **Confirm**. For the same position
+and radius, a click and a reference `Q` give the same position on the curve.
+
+- **r world** is the search radius in construction units, initially 0.1. It
+  applies to **Reference Q** and to **Click** in **Point on Locus V2 from
+  reference**. With **Click** in **Point** or **Point on object**, GeoCeDG
+  captures a radius from the view and keeps it during confirmation.
 - **Policy** displays the equal-distance and parameter tolerances, plus
   limits on evaluations (**Semantic misses**), subdivisions, refinement
   iterations and candidates. Enter positive numbers with a decimal point
@@ -1425,7 +1447,9 @@ available in a bottom row even with the input bar hidden. **Cancel**,
   evaluation** can place the point at a supported position, with no
   guarantee of exact projection or minimum distance. If no position is
   offered, read the diagnostic. A refused search may leave open whether a
-  mathematical solution exists.
+  mathematical solution exists. When the panel says that the components of
+  the curve are not established here, the position cannot be confirmed on a
+  component: give it explicitly, as described below.
 
 The new point follows the curve. Moving `Q` afterwards has no direct effect,
 though it can affect the result if it already helps define the curve. If the
@@ -1439,8 +1463,7 @@ key and parameter in the dialog. See §7.4 for the Spline V2 branch key.
 
 **Allow dragging.** The panel initially enables dragging for new points on
 supported objects. Clear it to create a locked point that still follows its
-source. The panel remembers your reference and drag choices while you work
-in the current document. To move an unlocked point, switch to **Move** and start a new gesture.
+source. Changing the origin keeps this choice. To move an unlocked point, switch to **Move** and start a new gesture.
 Supported Locus V2 and Spline V2 constructions keep the point on the same branch
 and component as you drag, including across a periodic seam when the continuation is
 established. The pointer can leave the stroke. At a gap, ambiguity or other
@@ -1451,14 +1474,15 @@ unsupported existing region point or undefined conic can prevent an operation
 whose failure GeoCeDG cannot safely undo.
 
 **Place an ordinary point using Q.** Right-click a supported native 2D
-object and choose **Create point from reference Q**. Select `Q` in Graphics
-or Algebra and **Confirm**. You can also enable **From reference Q** in the
-**Point** or **Point on object** panel and select the object, then `Q`.
+object and choose **Create point from reference Q**. The **Point** panel
+opens with **Reference Q** selected and the object chosen. Select `Q` in
+Graphics or Algebra and **Confirm**. You can also select **Reference Q** in
+the **Point** or **Point on object** panel and select the object, then `Q`.
 Supported objects include 2D lines, rays, segments, conics and supported conic
 parts. Axes, 3D objects, dimensions, functions, implicit curves, polylines and
 legacy loci are outside this reference mode. The native placement uses the
-ordinary point-on-object rule and ignores the V2 search radius. Leave **From
-reference Q** off for ordinary click placement.
+ordinary point-on-object rule and ignores the V2 search radius. Select
+**Click** for ordinary click placement.
 
 **Example — start a point on a segment from Q.** Enter the two lines in a new
 construction.
@@ -1870,15 +1894,23 @@ must follow the actual producer's route. This focal reconciliation admits no
 real discontinuities and removes none of H10's guards; the P2 candidate remains
 pending acceptance.
 
-If the inspector offers **Construct a metric endpoint**, review the available
-routes. **Create equivalent point** requires a constructively established
+If the inspector or the **Partial semantic locus length** tool offers
+**Construct a metric endpoint**, the dialog says which endpoint (for example
+`A`) has no semantic address on the curve. Review the available routes.
+**Create equivalent point** requires a constructively established
 direction, such as two translations using the same vector.
 The new point retains its construction when a premise temporarily fails and
 can become defined again once the same premise is restored. **Choose a position
-on the locus** uses the reference to find an admissible selection. You choose
-the position explicitly and the new point follows the locus at that position.
-Use the new point in the length query. In the oblique-cone example, shifting
-the metric origin can separate two points that coincide in the starting view.
+on the locus** lists the positions of the curve next to `A` (search radius 0.1)
+as the Point panel does (branch, section and parameter), states the guarantee
+of the route and offers **Allow dragging**. No position is selected for you:
+click one, then **Create point**; until you select a position the button stays
+disabled. **Cancel** creates nothing, and if no position is found the dialog
+says so and creates nothing. The new point keeps the selected position on the
+locus, `A` does not change, and creating the point is one Undo step.
+The new point does not replace `A` in the length: measure again with the new
+point. In the oblique-cone example, shifting the metric origin can separate
+two points that coincide in the starting view.
 
 ### 9.4 Measure from an intersection
 

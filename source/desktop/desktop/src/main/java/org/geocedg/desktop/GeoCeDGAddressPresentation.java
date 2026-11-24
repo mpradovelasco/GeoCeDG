@@ -83,8 +83,15 @@ final class GeoCeDGAddressPresentation {
 				label.append(spanish ? "Tramo " : "Section ").append(section).append(SEPARATOR);
 			}
 		}
-		return label.append("u = ").append(String.format(locale, "%." + decimals + "f",
-				address.getCanonicalParameter())).toString();
+		return label.append("u = ").append(parameter(locale, address.getCanonicalParameter(),
+				decimals)).toString();
+	}
+
+	/** The printed parameter; a value that rounds to zero is printed without a sign. */
+	private static String parameter(Locale locale, double value, int decimals) {
+		String text = String.format(locale, "%." + decimals + "f", value);
+		return text.startsWith("-") && text.chars().skip(1).allMatch(c -> c == '0' || !Character.isDigit(c))
+				? text.substring(1) : text;
 	}
 
 	/** @return the complete technical identifier, for a tooltip or a diagnostic view */

@@ -68,7 +68,8 @@ class GeoCeDGToolImageResourceTest {
 			for (int mode : MODES) {
 				String name = EuclidianConstants.getModeTextSimple(mode);
 				ImageResourceD resource = manager.getToolImageResource(name);
-				assertSame(GeoCeDGToolImageResource.LOCUS_V2, resource);
+				// PRE-G9B-MAINT-U2-R1: the two length tools have their own artwork.
+				assertSame(expected(mode), resource);
 				assertSame(resource, manager.getToolImageResource(
 						name.toUpperCase(Locale.ROOT)));
 				assertNotNull(getClass().getResource(resource.getFilename()));
@@ -83,8 +84,8 @@ class GeoCeDGToolImageResourceTest {
 			for (int mode : MODES) {
 				ImageResourceD resource = manager.getToolImageResource(
 						EuclidianConstants.getModeTextSimple(mode));
-				assertOwnedRaster(manager.getImageResourceGeoGebra(resource), 64);
-				assertOwnedRaster(manager.getInternalImage(resource).getImage(), 64);
+				assertOwnedRaster(manager.getImageResourceGeoGebra(resource), 64, mode);
+				assertOwnedRaster(manager.getInternalImage(resource).getImage(), 64, mode);
 			}
 		}
 	}
@@ -162,7 +163,7 @@ class GeoCeDGToolImageResourceTest {
 					EuclidianConstants.getModeTextSimple(mode), Color.LIGHT_GRAY);
 			assertNotNull(icon);
 			assertEquals(64, icon.getIconWidth());
-			assertOwnedRaster(icon.getImage(), 64);
+			assertOwnedRaster(icon.getImage(), 64, mode);
 		}
 	}
 
@@ -176,7 +177,7 @@ class GeoCeDGToolImageResourceTest {
 			assertTrue(filename.get().endsWith("/tool.png"));
 			MyImageD image = (MyImageD) app.getImageManager().getExternalImage(filename.get());
 			assertNotNull(image);
-			assertOwnedRaster(image.getImage(), 64);
+			assertOwnedRaster(image.getImage(), 64, mode);
 			assertEquals(filename.get(), app.getImageManager().createImage(
 					app.getImageManager().getToolImageResource(
 							EuclidianConstants.getModeTextSimple(mode)), app));
@@ -195,8 +196,17 @@ class GeoCeDGToolImageResourceTest {
 			MyImageD image = (MyImageD) app.getImageManager()
 					.getExternalImage(geo.getImageFileName());
 			assertNotNull(image);
-			assertOwnedRaster(image.getImage(), 64);
+			assertOwnedRaster(image.getImage(), 64, mode);
 		}
+	}
+
+	/** The owned artwork of each mode: Locus V2 and its point tool share it, the lengths do not. */
+	private static GeoCeDGToolImageResource expected(int mode) {
+		return mode == EuclidianConstants.MODE_LOCUS_V2_LENGTH
+				? GeoCeDGToolImageResource.LOCUS_LENGTH_TOTAL
+				: mode == EuclidianConstants.MODE_LOCUS_V2_LENGTH_BETWEEN
+						? GeoCeDGToolImageResource.LOCUS_LENGTH_PARTIAL
+						: GeoCeDGToolImageResource.LOCUS_V2;
 	}
 
 	private static GraphicsConfiguration configuration(double ratio) {
@@ -222,12 +232,20 @@ class GeoCeDGToolImageResourceTest {
 	}
 
 	private static void assertOwnedRaster(Image image, int size) {
+		assertOwnedRaster(image, size, EuclidianConstants.MODE_LOCUS_V2);
+	}
+
+	/** Owned blue always survives; owned red only where the artwork of the mode has it. */
+	private static void assertOwnedRaster(Image image, int size, int mode) {
 		assertNotNull(image);
 		assertEquals(size, image.getWidth(null));
 		assertEquals(size, image.getHeight(null));
 		BufferedImage raster = ImageManagerD.toBufferedImage(image);
 		assertTrue(containsColor(raster, new Color(0x4b6fff)), "Owned blue must survive");
-		assertTrue(containsColor(raster, new Color(0xd43b3b)), "Owned red must survive");
+		if (expected(mode) == GeoCeDGToolImageResource.LOCUS_V2) {
+			assertTrue(containsColor(raster, new Color(0xd43b3b)), "Owned red must survive");
+		}
+		assertTrue(containsColor(raster, new Color(0x111111)), "Owned outline must survive");
 	}
 
 	private static boolean containsColor(BufferedImage image, Color expected) {

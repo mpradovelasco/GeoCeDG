@@ -1445,7 +1445,7 @@ disponible en la sesión de diagnóstico Classic.
 <!-- geocedg-guide-section: semantic-points-intersections-materialization -->
 ## 8. Puntos semánticos, intersecciones y materialización
 
-### 8.1 Puntos semánticos
+### 8.1 Crear un punto sobre una curva
 
 **[N]** **[!]** La acción específica Crear punto desde referencia abre el procedimiento de referencia.
 
@@ -1462,29 +1462,53 @@ la posición elegida y puede servir para medir un recorrido (§9.3).
 
 *Esquema de la spline de la sección 7.5. Al cambiar h, la curva y sus puntos asociados se desplazan juntos.*
 
-**Colocar con un clic.** Con **Punto** o **Punto en objeto**, pulse sobre una
-curva admitida. Si GeoCeDG puede colocar el punto directamente, lo crea. Si
-el panel ofrece una posición, selecciónela y pulse **Confirmar**, aunque
-solo haya una. Si hay varios objetos bajo el puntero, elija primero la curva.
-No hace falta un punto auxiliar. Desplazar o ampliar la misma vista conserva
-una oferta pendiente. Cambiar de vista o de herramienta, editar la curva o
+**Un único panel de Punto.** **Punto**, **Punto en objeto** y **Punto sobre
+Locus V2 desde referencia** abren el mismo panel sobre la barra de entrada.
+El panel aparece en una fila inferior aunque se oculte la barra de entrada.
+Su selector **Origen:** tiene dos segmentos:
+
+- **Clic** parte de la posición que pulse.
+- **Referencia Q** parte de un punto existente `Q` que seleccione en
+  Gráficos o Álgebra. `Q` es solo una referencia: el punto nuevo no depende
+  de él.
+
+**Punto** y **Punto en objeto** empiezan con **Clic**. **Punto sobre Locus V2
+desde referencia**, en **Construcción → Curvas semánticas**, es el mismo panel
+con **Referencia Q** preseleccionada. Mientras trabaja en el documento actual,
+**Punto** y **Punto en objeto** comparten una elección de origen, la
+herramienta de referencia conserva la suya y el panel recuerda la opción de
+arrastre. La línea junto al selector indica de dónde sale el radio de
+búsqueda y cuándo una oferta requiere **Confirmar**; su ayuda emergente da los
+detalles.
+
+**Clic en Punto o Punto en objeto.** Pulse sobre una curva admitida. El radio
+de búsqueda se toma de la vista. Si la búsqueda halla la posición, GeoCeDG
+crea el punto al instante; si halla varias, elija una. Cualquier otra oferta
+aparece en el panel: selecciónela y pulse **Confirmar**, aunque solo haya
+una. Si hay varios objetos bajo el puntero, elija primero la curva. No hace
+falta un punto auxiliar. Sobre objetos nativos y en el espacio vacío actúa la
+herramienta ordinaria. Desplazar o ampliar la misma vista conserva una
+oferta pendiente. Cambiar de vista o de herramienta, editar la curva o
 modificar la política de colocación puede invalidarla. Si caduca, pulse de
 nuevo.
 
-**Colocar desde una referencia.** Elija **Construcción → Curvas semánticas →
-Punto sobre Locus V2 desde referencia**. Seleccione la curva y luego el punto
-existente `Q` en Gráficos o Álgebra. En el panel situado sobre la barra de
-entrada, elija la posición y pulse **Confirmar**. Para partir del propio clic,
-active **Posición de clic** en esa herramienta y pulse sobre la curva. El
-panel aparece en una fila inferior aunque se oculte la barra de entrada.
-**Cancelar**, **Reiniciar** o `Escape` permiten volver a empezar sin crear
-un punto.
+**Referencia Q.** Seleccione la curva y luego el punto existente `Q` en
+Gráficos o Álgebra. Sobre Locus V2 y Spline V2 el radio de búsqueda es
+**r world** alrededor de `Q`. Elija la posición en el panel y pulse
+**Confirmar**: toda oferta lo espera. **Cancelar**, **Reiniciar** o `Escape`
+permiten volver a empezar sin crear un punto.
+
+**Clic en Punto sobre Locus V2 desde referencia.** Seleccione **Clic** en esa
+herramienta para partir de la posición pulsada, con el radio **r world**
+alrededor del clic. Como con `Q`, toda oferta espera a **Confirmar**. Con la
+misma posición y el mismo radio, un clic y una referencia `Q` dan la misma
+posición sobre la curva.
 
 - **r world** es el radio de búsqueda en unidades de construcción. Su valor
-  inicial en la herramienta de referencia es 0,1. Con **Posición de clic**
-  en esa herramienta se sigue usando el radio introducido. Con un clic
-  ordinario en **Punto**, GeoCeDG obtiene el radio de la vista y lo conserva
-  hasta la confirmación.
+  inicial es 0,1. Se aplica a **Referencia Q** y a **Clic** en **Punto sobre
+  Locus V2 desde referencia**. Con **Clic** en **Punto** o **Punto en
+  objeto**, GeoCeDG obtiene el radio de la vista y lo conserva hasta la
+  confirmación.
 - **Política** muestra las tolerancias de empate en distancia y de parámetro,
   además de los límites de evaluaciones (**Misses semánticos**), subdivisiones,
   iteraciones de refinamiento y candidatos. Escriba números positivos con
@@ -1498,6 +1522,9 @@ un punto.
   una posición admitida, sin garantizar una proyección exacta ni la distancia
   mínima. Si no hay oferta, consulte el diagnóstico. El rechazo de una
   consulta puede dejar abierta la existencia de una solución matemática.
+  Cuando el panel indica que las componentes de la curva no están
+  establecidas en ese lugar, la posición no puede confirmarse sobre una
+  componente: indíquela de forma explícita, como se describe a continuación.
 
 El punto creado sigue la curva. Mover `Q` después no tiene efecto directo,
 aunque puede afectar al resultado si `Q` ya intervenía en la definición de
@@ -1511,8 +1538,7 @@ su clave de rama y su parámetro. La sección 7.4 da la clave de Spline V2.
 
 **Permitir arrastre.** El panel activa inicialmente el arrastre de puntos
 nuevos sobre objetos admitidos. Desactive la casilla para crear un punto fijo
-que sigue dependiendo de su origen. El panel conserva las opciones de
-referencia y arrastre mientras trabaja en el documento actual. Para mover un punto desbloqueado,
+que sigue dependiendo de su origen. Cambiar el origen conserva esta opción. Para mover un punto desbloqueado,
 cambie a **Mueve** e inicie otro gesto. Las construcciones Locus V2 y Spline V2
 admitidas conservan la misma rama y el mismo tramo durante el arrastre,
 incluso al pasar por la unión de un recorrido periódico cuando la continuidad
@@ -1525,15 +1551,16 @@ o una cónica indefinida pueden impedir una operación cuyo fallo GeoCeDG
 no puede deshacer con seguridad.
 
 **Colocar un punto ordinario con Q.** Pulse con el botón derecho sobre un
-objeto nativo 2D admitido y elija **Crear punto desde referencia Q**.
+objeto nativo 2D admitido y elija **Crear punto desde referencia Q**. Se abre
+el panel de **Punto** con **Referencia Q** seleccionada y el objeto elegido.
 Seleccione `Q` en Gráficos o Álgebra y pulse **Confirmar**. También puede
-activar **Desde referencia Q** en el panel de **Punto** o **Punto en objeto**
+seleccionar **Referencia Q** en el panel de **Punto** o **Punto en objeto**
 y seleccionar primero el objeto y luego `Q`. Se admiten rectas, semirrectas,
 segmentos, cónicas 2D y partes de cónicas admitidas. Quedan fuera de este modo
 los ejes, objetos 3D, cotas, funciones, implícitas, polilíneas y lugares
 heredados. La colocación nativa aplica la regla habitual de punto sobre objeto
 y prescinde del radio de búsqueda V2. Para colocar con un clic ordinario,
-deje **Desde referencia Q** desactivado.
+seleccione **Clic**.
 
 **Ejemplo — colocar un punto sobre un segmento a partir de Q.** Introduzca
 las dos líneas en una construcción nueva.
@@ -1964,16 +1991,24 @@ correspondientes. El certificador debe seguir la ruta real del productor. Esta
 conciliación focal no admite discontinuidades reales ni elimina las guardas de
 H10; el candidato P2 sigue pendiente de aceptación.
 
-Si el inspector ofrece **Construir un extremo métrico**, revise las rutas
-disponibles. **Crear punto equivalente** exige una dirección demostrada por la
-construcción, como en la clase admitida de dos traslaciones con el mismo vector.
+Si el inspector o la herramienta **Longitud semántica parcial del lugar
+geométrico** ofrecen **Construir un extremo métrico**, el diálogo indica qué
+extremo (por ejemplo `A`) carece de dirección semántica sobre la curva. Revise
+las rutas disponibles. **Crear punto equivalente** exige una dirección
+demostrada por la construcción, como en la clase admitida de dos traslaciones
+con el mismo vector.
 El nuevo punto conserva su construcción si una premisa falla temporalmente y
 puede volver a definirse cuando se restablece esa misma premisa. **Elegir una
-posición en el lugar** usa la referencia para encontrar una colocación
-admisible. Elija la posición de forma explícita y el punto nuevo seguirá el
-lugar en esa posición. Use el punto nuevo en la consulta de longitud. En el
-ejemplo del cono oblicuo, mover el origen métrico puede separar dos puntos
-que coinciden en la vista inicial.
+posición en el lugar** presenta las posiciones de la curva junto a `A` (radio
+de búsqueda 0,1) como el panel de Punto (rama, tramo y parámetro), indica la
+garantía de la ruta y ofrece **Permitir arrastre**. No se selecciona ninguna
+posición por usted: pulse una y después **Crear punto**; hasta que seleccione
+una posición el botón está desactivado. **Cancelar** no crea nada y, si no se
+encuentra ninguna posición, el diálogo lo indica y no crea nada. El punto
+nuevo conserva la posición elegida en el lugar, `A` no cambia y su creación es
+un solo paso de Deshacer. El punto nuevo no sustituye a `A` en la longitud:
+vuelva a medir con el punto nuevo. En el ejemplo del cono oblicuo, mover el
+origen métrico puede separar dos puntos que coinciden en la vista inicial.
 
 ### 9.4 Medir desde una intersección
 
