@@ -65,6 +65,8 @@ final class LocusMetricEstimator2D {
 	private long subdivisions;
 	private int locatedReversals;
 	private boolean lastRejectionByProbe;
+	/** Whether accepted leaves keep their evaluated nodes for the chord-scaling check. */
+	private boolean retainLeafNodes;
 
 	LocusMetricEstimator2D(LocusDefinition2D definition, String branchKey,
 			LocusInterval2D componentExtent, Mode mode,
@@ -91,6 +93,16 @@ final class LocusMetricEstimator2D {
 
 	long getEvaluations() {
 		return evaluations;
+	}
+
+	/**
+	 * Makes every accepted leaf keep the nodes that the estimator already evaluated on it, for
+	 * the chord-scaling check of a conditioned route ({@code locus-v2-metrics.md} section
+	 * 28.3.1). It is an additive record: it changes no evaluation, decision, value, error or
+	 * budget of the estimate.
+	 */
+	void retainLeafNodes() {
+		retainLeafNodes = true;
 	}
 
 	/**
@@ -266,7 +278,10 @@ final class LocusMetricEstimator2D {
 						: (upper - lower) * (startSpeed / 2 + endSpeed / 2);
 				if (Double.isFinite(value)) {
 					leaves.add(new Leaf(lower, upper, Math.max(0, value), 0, true,
-							true));
+							true).retaining(accepted(lower, upper, share,
+									new double[] {lower, upper}, start == null || end == null
+											? null : new LocusPoint2D[] {start, end},
+									null)));
 					return;
 				}
 			}
@@ -332,7 +347,7 @@ final class LocusMetricEstimator2D {
 			double error = Math.max(levelError, probeError);
 			if (Double.isFinite(value) && Double.isFinite(error) && error <= share) {
 				leaves.add(new Leaf(lower, upper, Math.max(0, value), error,
-						vanishing));
+						vanishing).retaining(accepted(lower, upper, share, at, chain, p)));
 				return;
 			}
 			lastRejectionByProbe = probeError > share && levelError <= share;
@@ -371,8 +386,9 @@ final class LocusMetricEstimator2D {
 		double probeError = Math.abs(sProbe - interpolated) * width;
 		double error = Math.max(levelError, probeError);
 		if (Double.isFinite(simpson2) && Double.isFinite(error) && error <= share) {
+			// The differential route evaluates speeds, not points: no chord of the leaf.
 			leaves.add(new Leaf(lower, upper, Math.max(0, simpson2), error,
-					vanishing));
+					vanishing).retaining(accepted(lower, upper, share, null, null, null)));
 			return;
 		}
 		lastRejectionByProbe = probeError > share && levelError <= share;
@@ -553,6 +569,28 @@ final class LocusMetricEstimator2D {
 				"Metric estimate exceeded " + dimension);
 	}
 
+	/**
+	 * @return the record of an accepted leaf for the chord-scaling check, or {@code null} when
+	 *         this estimator does not retain one
+	 */
+	private AcceptedLeaf accepted(double lower, double upper, double share,
+			double[] parameters, LocusPoint2D[] points, LocusPoint2D probe) {
+		if (!retainLeafNodes) {
+			return null;
+		}
+		if (parameters == null || points == null) {
+			return new AcceptedLeaf(lower, upper, share, null, null, 0);
+		}
+		double magnitude = probe == null ? 0
+				: Math.max(Math.abs(probe.getX()), Math.abs(probe.getY()));
+		for (LocusPoint2D point : points) {
+			magnitude = Math.max(magnitude,
+					Math.max(Math.abs(point.getX()), Math.abs(point.getY())));
+		}
+		return new AcceptedLeaf(lower, upper, share, parameters.clone(), points.clone(),
+				magnitude);
+	}
+
 	private static double distance(LocusPoint2D first, LocusPoint2D second) {
 		return Math.hypot(first.getX() - second.getX(),
 				first.getY() - second.getY());
@@ -608,8 +646,17 @@ final class LocusMetricEstimator2D {
 		private final int unorderedLeaves;
 		private final int subResolutionCells;
 		private final double probeSpacing;
+		private final List<AcceptedLeaf> acceptedLeaves;
 
 		private Estimate(List<Leaf> leaves) {
+			ArrayList<AcceptedLeaf> accepted = new ArrayList<>();
+			for (Leaf leaf : leaves) {
+				if (leaf.accepted != null) {
+					accepted.add(leaf.accepted);
+				}
+			}
+			acceptedLeaves = !accepted.isEmpty() && accepted.size() == leaves.size()
+					? Collections.unmodifiableList(accepted) : null;
 			int count = leaves.size();
 			parameters = new double[count + 1];
 			values = new double[count];
@@ -649,6 +696,15 @@ final class LocusMetricEstimator2D {
 
 		int getSubResolutionCells() {
 			return subResolutionCells;
+		}
+
+		/**
+		 * @return the accepted leaves in increasing parameter order with the nodes that the
+		 *         estimator evaluated on them, or {@code null} when the estimator did not
+		 *         retain them (section 28.3.1)
+		 */
+		List<AcceptedLeaf> getAcceptedLeaves() {
+			return acceptedLeaves;
 		}
 
 		double[] getParameters() {
@@ -691,6 +747,7 @@ final class LocusMetricEstimator2D {
 		private final double error;
 		private final boolean unordered;
 		private final boolean subResolution;
+		private AcceptedLeaf accepted;
 
 		private Leaf(double lower, double upper, double value, double error,
 				boolean unordered) {
@@ -705,6 +762,66 @@ final class LocusMetricEstimator2D {
 			this.error = error;
 			this.unordered = unordered;
 			this.subResolution = subResolution;
+		}
+
+		private Leaf retaining(AcceptedLeaf record) {
+			accepted = record;
+			return this;
+		}
+	}
+
+	/**
+	 * An accepted leaf with the nodes that the estimator evaluated on it, read by the
+	 * chord-scaling check of a conditioned route ({@code locus-v2-metrics.md} section 28.3.1):
+	 * the parameters and points of its quarter nodes (of its two ends for a cell narrower than
+	 * the refinement stencil), the share of the tolerance of the leaf and the greatest
+	 * absolute coordinate of its evaluated nodes, probe included. A leaf of the differential
+	 * route has no evaluated chord and no nodes.
+	 */
+	static final class AcceptedLeaf {
+		private final double lower;
+		private final double upper;
+		private final double share;
+		private final double[] nodeParameters;
+		private final LocusPoint2D[] nodePoints;
+		private final double magnitude;
+
+		private AcceptedLeaf(double lower, double upper, double share,
+				double[] nodeParameters, LocusPoint2D[] nodePoints, double magnitude) {
+			this.lower = lower;
+			this.upper = upper;
+			this.share = share;
+			this.nodeParameters = nodeParameters;
+			this.nodePoints = nodePoints;
+			this.magnitude = magnitude;
+		}
+
+		double getLower() {
+			return lower;
+		}
+
+		double getUpper() {
+			return upper;
+		}
+
+		/** @return the share of the tolerance with which the leaf was accepted */
+		double getShare() {
+			return share;
+		}
+
+		/** @return the parameters of the evaluated nodes, or {@code null} */
+		double[] getNodeParameters() {
+			return nodeParameters == null ? null : nodeParameters.clone();
+		}
+
+		/** @return the evaluated nodes, or {@code null} */
+		LocusPoint2D[] getNodePoints() {
+			return nodePoints == null ? null : nodePoints.clone();
+		}
+
+		/** @return the greatest absolute coordinate of the evaluated nodes of the leaf */
+		double getMagnitude() {
+			return magnitude;
 		}
 	}
 

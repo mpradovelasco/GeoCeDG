@@ -12,6 +12,7 @@ import java.util.Optional;
 
 import org.geocedg.common.kernel.locus.LocusBranch2D;
 import org.geocedg.common.kernel.locus.LocusDefinition2D;
+import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusEvaluationSession2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusParameterPartition2D;
@@ -163,6 +164,25 @@ public final class PolicyV2LocusMetricCapability2D
 			LocusDefinition2D definition, LocusBranch2D branch, LocusInterval2D piece,
 			boolean wholePeriod, LocusMetricIndexKey2D key, LocusMetricPolicy2D policy,
 			LocusMetricInstrumentation2D instrumentation) {
+		return buildConditionedEstimateState(definition, branch, piece, wholePeriod, key,
+				policy, instrumentation, false);
+	}
+
+	/**
+	 * Conditioned estimate of one declared piece or route stretch, as
+	 * {@link #buildConditionedEstimateState(LocusDefinition2D, LocusBranch2D,
+	 * LocusInterval2D, boolean, LocusMetricIndexKey2D, LocusMetricPolicy2D,
+	 * LocusMetricInstrumentation2D)}.
+	 *
+	 * @param retainLeafNodes whether the accepted leaves keep the nodes that the estimator
+	 *        evaluated, for the chord-scaling check of a route (section 28.3.1); this changes
+	 *        no evaluation, value, error or budget of the estimate
+	 * @return the conditioned state of the piece
+	 */
+	LocusMetricComponentState2D buildConditionedEstimateState(
+			LocusDefinition2D definition, LocusBranch2D branch, LocusInterval2D piece,
+			boolean wholePeriod, LocusMetricIndexKey2D key, LocusMetricPolicy2D policy,
+			LocusMetricInstrumentation2D instrumentation, boolean retainLeafNodes) {
 		currentDefinition = definition;
 		if (policy.getEstimatorPolicy() == null) {
 			throw new IllegalArgumentException("Metric policy v2 is required");
@@ -222,6 +242,9 @@ public final class PolicyV2LocusMetricCapability2D
 							? Mode.EVALUATOR_ONLY : Mode.DIFFERENTIAL,
 					differential, session, policy.getEstimatorPolicy(),
 					policy.getWorkBudget(), instrumentation);
+			if (retainLeafNodes) {
+				estimator.retainLeafNodes();
+			}
 			Samples samples = estimator.sample(piece.getLower(), piece.getUpper(),
 					breakpoints(lineage.root, branch.getBranchKey(), piece.getLower(),
 							piece.getUpper()));
@@ -322,6 +345,40 @@ public final class PolicyV2LocusMetricCapability2D
 		default:
 			return routeEstimate(state, policy, instrumentation, extension, low,
 					high, false);
+		}
+	}
+
+	/**
+	 * Runs the chord-scaling check of section 28.3.1 on the accepted leaves of the conditioned
+	 * estimate of one route stretch, evaluating the traced point of the measured source (the
+	 * same source, branch and component extent as the estimator). It reads the state and
+	 * changes nothing in it.
+	 *
+	 * @param state conditioned estimate of the stretch, built with its leaf nodes retained
+	 * @param run the check of the route
+	 */
+	void checkConditionedRoute(LocusMetricComponentState2D state,
+			LocusConditionedRouteJumpGuard2D.Run run) {
+		Extension extension = extension(state);
+		LocusInterval2D stretch = state.getComponentExtent();
+		if (extension.kind == Kind.ZERO) {
+			// A collapsed image or an isolated parameter: the estimator accepted no leaf.
+			return;
+		}
+		if (extension.kind != Kind.ESTIMATE || extension.estimate == null) {
+			run.check(null, stretch.getLower(), stretch.getUpper(), parameter -> null);
+			return;
+		}
+		Lineage lineage = Lineage.of(coherentDefinition(state));
+		String branchKey = state.getBranchKey();
+		try (LocusEvaluationSession2D session =
+				LocusEvaluationSession2D.openServiceSession(false, 1)) {
+			run.check(extension.estimate.getAcceptedLeaves(), stretch.getLower(),
+					stretch.getUpper(), parameter -> {
+						LocusEvaluation2D evaluation = lineage.root.evaluateInComponent(
+								branchKey, stretch, parameter, session);
+						return evaluation.isValid() ? evaluation.getPoint() : null;
+					});
 		}
 	}
 

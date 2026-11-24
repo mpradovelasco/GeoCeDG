@@ -362,6 +362,9 @@ public final class LocusMetricEngine2D {
 					Collections.emptyList());
 		}
 		List<LocusMetricContribution2D> contributions = new ArrayList<>();
+		// The conditioned estimates of the stretches of the route, read by the chord-scaling
+		// check of its admission (section 28.3.1).
+		List<CapabilityState> conditionedStates = new ArrayList<>();
 		if (route.getOrderedRouteSegments().isEmpty()) {
 			contributions.add(zeroContribution(query, definition, route));
 		} else {
@@ -389,6 +392,7 @@ public final class LocusMetricEngine2D {
 								"The conditioned region of the route is not current",
 								Optional.of(TraversalOutcome.TARGET_NOT_REACHABLE));
 					}
+					conditionedStates.add(selected);
 				}
 				if (selected == null) {
 					LocusInterval2D component =
@@ -410,7 +414,7 @@ public final class LocusMetricEngine2D {
 			if (LocusMetricComponentKey2D.isDeclared(segment.getResolvedValidComponentKey())) {
 				// A route on a conditioned region: geometric coverage is not complete.
 				return conditionedBetween(between, definition,
-						definition.getBranch(route.getBranchKey()), route);
+						definition.getBranch(route.getBranchKey()), route, conditionedStates);
 			}
 		}
 		return between;
@@ -438,7 +442,8 @@ public final class LocusMetricEngine2D {
 	 * The estimate, its error and its tolerance are compared by the result itself.
 	 */
 	private LocusMetricResult2D conditionedBetween(LocusMetricResult2D between,
-			LocusDefinition2D definition, LocusBranch2D branch, LocusMetricRoute2D route) {
+			LocusDefinition2D definition, LocusBranch2D branch, LocusMetricRoute2D route,
+			List<CapabilityState> stretches) {
 		LocusConditionedEvidence2D evidence = conditioned.apply(branch.getBranchKey());
 		if (evidence == null
 				|| between.getComputationStatus() != MetricComputationStatus.SUCCESS) {
@@ -488,9 +493,35 @@ public final class LocusMetricEngine2D {
 		if (region == null) {
 			return between.asConditioned(Collections.emptyList());
 		}
-		return between.asConditionedRoute(new LocusMetricConditionedRoute2D(
+		LocusMetricConditionedRoute2D admitted = new LocusMetricConditionedRoute2D(
 				branch.getBranchKey(), region, lower, upper, evidence.getContentIdentity(),
-				evidence.getPolicyVersion(), definition.getSemanticRevision(), classes));
+				evidence.getPolicyVersion(), definition.getSemanticRevision(), classes);
+		LocusMetricResult2D candidate = between.asConditionedRoute(admitted);
+		if (!candidate.isScalarAdmissible()) {
+			// Conditions 5 to 7 are not met: the estimate keeps its own status and cause, and
+			// the chord-scaling check does not run (section 28.3.1, "Scope").
+			return candidate;
+		}
+		// Condition 8 (section 28.3.1): the chord-scaling check over every accepted leaf of
+		// the estimate of the route, in increasing parameter order, within its own budget.
+		List<CapabilityState> ordered = new ArrayList<>(stretches);
+		ordered.sort((first, second) -> Double.compare(
+				first.state.getComponentExtent().getLower(),
+				second.state.getComponentExtent().getLower()));
+		LocusConditionedRouteJumpGuard2D.Run run = LocusConditionedRouteJumpGuard2D.newRun();
+		for (CapabilityState stretch : ordered) {
+			if (!(stretch.capability instanceof PolicyV2LocusMetricCapability2D)) {
+				run.check(null, stretch.state.getComponentExtent().getLower(),
+						stretch.state.getComponentExtent().getUpper(), parameter -> null);
+				continue;
+			}
+			((PolicyV2LocusMetricCapability2D) stretch.capability)
+					.checkConditionedRoute(stretch.state, run);
+		}
+		if (run.admits()) {
+			return between.asConditionedRoute(admitted.withJumpGuard(run.record()));
+		}
+		return between.asConditioned(run.refusal());
 	}
 
 	/** State of the estimate of the conditioned region that a route segment names. */
@@ -517,7 +548,8 @@ public final class LocusMetricEngine2D {
 						new LocusInterval2D(lower, upper, true, true),
 						regionKey + "|" + Double.toHexString(lower) + ":"
 								+ Double.toHexString(upper),
-						policy, hierarchy, owner, indexMode, instrumentation, consumerToken);
+						policy, hierarchy, owner, indexMode, instrumentation, consumerToken,
+						true);
 			}
 		}
 		return null;
@@ -553,6 +585,20 @@ public final class LocusMetricEngine2D {
 			LocusMetricSharedOwner2D owner, LocusMetricIndexMode indexMode,
 			LocusMetricInstrumentation2D instrumentation,
 			String consumerToken) {
+		return conditionedState(definition, branch, piece, pieceKey, policy, hierarchy, owner,
+				indexMode, instrumentation, consumerToken, false);
+	}
+
+	/**
+	 * @param retainLeafNodes whether the accepted leaves keep their evaluated nodes for the
+	 *        chord-scaling check of a route (section 28.3.1); only route stretches do
+	 */
+	private static CapabilityState conditionedState(LocusDefinition2D definition,
+			LocusBranch2D branch, LocusInterval2D piece, String pieceKey,
+			LocusMetricPolicy2D policy, LocusMetricCapabilityHierarchy2D hierarchy,
+			LocusMetricSharedOwner2D owner, LocusMetricIndexMode indexMode,
+			LocusMetricInstrumentation2D instrumentation,
+			String consumerToken, boolean retainLeafNodes) {
 		LocusMetricCapability2D capability = select(definition, branch, policy,
 				hierarchy);
 		if (!(capability instanceof PolicyV2LocusMetricCapability2D)) {
@@ -567,8 +613,8 @@ public final class LocusMetricEngine2D {
 				capability);
 		return new CapabilityState(capability, build(key, ignored ->
 				estimator.buildConditionedEstimateState(definition, branch, piece,
-						wholePeriod, key, policy, instrumentation), owner, indexMode,
-				instrumentation, consumerToken));
+						wholePeriod, key, policy, instrumentation, retainLeafNodes), owner,
+				indexMode, instrumentation, consumerToken));
 	}
 
 	/**

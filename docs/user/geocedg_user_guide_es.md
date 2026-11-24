@@ -1294,6 +1294,21 @@ una raíz pasa de una región a otra, el punto
 creado sobre ella queda sin definir hasta que la raíz vuelve a la región donde
 se creó: GeoCeDG no lo traslada a otra raíz por proximidad.
 
+Antes de que la longitud entre dos puntos sea un número, GeoCeDG aplica a la
+ruta una **comprobación de escalado de cuerdas**: biseca los trozos del tramo
+medido y observa cómo se reducen sus cuerdas. Un salto en la dirección del
+trazado conserva la cuerda del conjunto en todos los niveles, una firma
+numérica que el recorrido de las regiones no puede ver. Si la comprobación
+observa esa firma, no puede decidir sobre un trozo o agota su presupuesto de
+evaluaciones, la longitud queda sin definir; el resultado rico conserva la
+estimación y su diagnóstico indica cuál de las tres causas se da. La firma es
+compatible con un salto o con una velocidad que varía demasiado bruscamente, de
+modo que no demuestra una discontinuidad, y una ruta que supera la comprobación
+sigue siendo una estimación, no una prueba de continuidad: no se detectan los
+saltos muy pequeños, un único punto erróneo ni los saltos de ida y vuelta entre
+puntos evaluados. Los documentos hechos con GeoCeDG 1.2.2 pueden mostrar sin
+definir una longitud de este tipo donde 1.2.2 mostraba un número.
+
 La exportación semántica (DXF y LaTeX) omite las regiones condicionadas y lo
 declara, junto a las componentes certificadas, que se exportan como siempre. La
 exportación de imagen de una vista exporta lo que la vista dibuja.
