@@ -2300,8 +2300,8 @@ RGB colour, current visibility and the off state of hidden layers are.
 ### 11.12 Imported DXF references (read-only)
 
 **File → Import DXF reference…** reads the `SPLINE` entities of a 2D ASCII DXF
-file and draws them in Graphics as *references*: dashed purple curves that are
-not part of the construction.
+file and draws them in the first Graphics view as *references*: dashed purple
+curves that are not part of the construction.
 
 - **What is read.** Top-level model-space `SPLINE` entities defined by degree
   (1 to 7), knots, control points (at most 1 024) and weights. A rational

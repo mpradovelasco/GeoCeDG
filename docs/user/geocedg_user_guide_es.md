@@ -2414,8 +2414,8 @@ visibilidad vigente y el estado desactivado de las capas ocultas sí.
 ### 11.12 Referencias DXF importadas (solo lectura)
 
 **Archivo → Importar referencia DXF…** lee las entidades `SPLINE` de un archivo
-DXF ASCII 2D y las dibuja en la vista gráfica como *referencias*: curvas
-discontinuas de color morado que no forman parte de la construcción.
+DXF ASCII 2D y las dibuja en la primera vista gráfica como *referencias*:
+curvas discontinuas de color morado que no forman parte de la construcción.
 
 - **Qué se lee.** Entidades `SPLINE` de primer nivel en el espacio modelo,
   definidas por grado (de 1 a 7), nudos, puntos de control (como máximo 1 024)
