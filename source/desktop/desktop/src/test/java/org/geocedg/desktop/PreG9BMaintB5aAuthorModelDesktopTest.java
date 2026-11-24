@@ -7,6 +7,7 @@ package org.geocedg.desktop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,6 +97,61 @@ class PreG9BMaintB5aAuthorModelDesktopTest {
 	@Test
 	void theRoutesOfTheTransportedContourStayNumbers() throws Exception {
 		assertEquals(List.of(), measure(PostR1Corpus.transport(), transport()));
+	}
+
+	/**
+	 * The order of the consumers of one revision of {@code w_2} (the subtotal over its
+	 * regions, a route and a second length on the same route) changes nothing in what the
+	 * route publishes: the state of a route stretch is cached apart from the state of a whole
+	 * region.
+	 */
+	@Test
+	void theRouteOfTheHoleLocusDoesNotDependOnTheOrderOfItsConsumers() throws Exception {
+		List<String> totalFirst = consumersInOrder(true);
+		List<String> routeFirst = consumersInOrder(false);
+		assertEquals(totalFirst, routeFirst);
+		assertEquals(totalFirst.get(0), totalFirst.get(1), "two lengths on the same route");
+		assertEquals("true 1.3140010177874024 " + LocusConditionedRouteJumpGuard2D.VERSION
+				+ ": 64 leaf(s) tested, 0 below resolution, 256 evaluation(s); "
+				+ LocusConditionedRouteJumpGuard2D.STATEMENT, totalFirst.get(0)
+						.substring(0, totalFirst.get(0).indexOf(" [")));
+	}
+
+	private List<String> consumersInOrder(boolean totalFirst) throws Exception {
+		return PreG9BR6PlusF3Fixtures.onEdt(() -> {
+			AppGeoCeDG app = PreG9BCu0Corpus.open(PostR1Corpus.workingCopy(
+					PostR1Corpus.original(),
+					Files.createDirectories(work.resolve(totalFirst ? "a" : "b"))));
+			GeoLocusV2 locus = PreG9BCu0Corpus.locus(app, "w_2");
+			LocusInterval2D region = locus.getConditionedEvidence(PostR1Corpus.MAIN)
+					.getRegions().get(0);
+			double width = region.getUpper() - region.getLower();
+			PostR1Corpus.command(app, "BOA=Point(w_2,\"" + PostR1Corpus.MAIN + "\","
+					+ (region.getLower() + 0.3 * width) + ")");
+			PostR1Corpus.command(app, "BOB=Point(w_2,\"" + PostR1Corpus.MAIN + "\","
+					+ (region.getLower() + 0.7 * width) + ")");
+			if (totalFirst) {
+				PostR1Corpus.command(app, "boT=LocusLength(w_2)");
+			}
+			PostR1Corpus.command(app, "boL=LocusLength(w_2,BOA,BOB)");
+			PostR1Corpus.command(app, "boM=LocusLength(w_2,BOA,BOB)");
+			if (!totalFirst) {
+				PostR1Corpus.command(app, "boT=LocusLength(w_2)");
+			}
+			List<String> outcomes = new ArrayList<>();
+			for (String label : new String[] {"boL", "boM"}) {
+				GeoNumeric number = (GeoNumeric) app.getKernel().lookupLabel(label);
+				LocusMetricResult2D rich = AlgoLocusMetricScalarAdapter.richResultOf(number)
+						.getMetricResult();
+				outcomes.add(rich.isScalarAdmissible() + " " + number.getValue() + " "
+						+ rich.getConditionedRoute().flatMap(route -> route.getJumpGuard())
+								.map(Object::toString).orElse("no check") + " "
+						+ rich.getDiagnostics());
+			}
+			outcomes.add(String.valueOf(AlgoLocusMetricScalarAdapter.richResultOf(
+					app.getKernel().lookupLabel("boT")).getMetricResult().getDiagnostics()));
+			return outcomes;
+		});
 	}
 
 	/** @return the routes that differ from the baseline, with what was measured */

@@ -83,6 +83,31 @@ Ninguna exige una decisión normativa nueva; se señalan para revisión.
 | L-8 | Las evaluaciones de la comprobación no se suman a los contadores de instrumentación del estimador; constan en el registro y en los diagnósticos. No se memorizan: cada cálculo de la ruta repite la comprobación |
 | L-9 | El presupuesto se agota cuando hace falta una evaluación y ya se gastaron `E_cap`: esa hoja queda sin decidir y las siguientes sin probar |
 
+### 2.3 Caché de estados y orden de los consumidores
+
+Revisión pedida por el coordinador sobre el candidato `7c11b4845`. Los estados de las
+estimaciones condicionadas los posee y guarda en caché el propietario métrico compartido de la
+fuente, por `LocusMetricIndexKey2D`, cuya igualdad incluye la clave de componente. Un estado
+construido sin retener nodos no puede servirse a una ruta, porque los espacios de claves son
+disjuntos:
+
+| Consumidor | Clave de componente | Retiene nodos |
+|---|---|---|
+| Ruta entre dos posiciones (`conditionedRegionState`) | `createConditionedRegion(...)` con el sufijo `<inferior>:<superior>` del tramo en hexadecimal | sí, siempre |
+| Total o subtotal sobre regiones (§28.2) | `createConditionedRegion(...)`, sin sufijo | no |
+| Piezas declaradas (§26.5) | `createDeclared(...)` | no |
+| Recorrido numérico completo (§26.6) | `createDeclared(...)` con el sufijo de la versión del recorrido | no |
+
+El sufijo existe aunque el tramo de la ruta sea la región entera, y solo `conditionedRegionState`
+construye claves con él. Dos longitudes sobre la misma ruta comparten el mismo estado, que
+conserva sus nodos. No es un defecto y no cambia el código. Lo fijan dos pruebas:
+`PreG9BMaintB5aPostR1RoutesTest.theOutcomeOfARouteDoesNotDependOnTheOrderOfTheConsumers`, con
+el consumidor de una raíz, que tiene tres regiones y cuyo total es un subtotal, y
+`PreG9BMaintB5aAuthorModelDesktopTest.theRouteOfTheHoleLocusDoesNotDependOnTheOrderOfItsConsumers`,
+con `w_2` y su subtotal. Ambas miden en los dos órdenes, total primero o rutas primero, y con dos
+longitudes sobre la misma ruta, y comparan admisión, bits del valor y del error, registro de la
+comprobación (hojas y evaluaciones) y diagnósticos.
+
 ## 3. Parámetros finales y su justificación
 
 ### 3.1 Análisis del modelo colineal
@@ -269,16 +294,17 @@ singular de velocidad.
 Nuevas (compartidas, `org.geocedg.common.locus`): `PreG9BMaintB5aChordScalingCheckTest` (5),
 `PreG9BMaintB5aAdversarialBatteryTest` (5), `PreG9BMaintB5aContinuousReferencesTest` (5),
 `PreG9BMaintB5aDiagnosticsTest` (5), `PreG9BMaintB5aDeclaredLimitsTest` (6),
-`PreG9BMaintB5aTranslationTest` (3), `PreG9BMaintB5aPostR1RoutesTest` (12) y
+`PreG9BMaintB5aTranslationTest` (3), `PreG9BMaintB5aPostR1RoutesTest` (13, con la prueba de orden de §2.3) y
 `PreG9BMaintB4SliderPieceReorderingTest` (1, B4: al mover una pieza de deslizadores a otro
 lugar, el token de cada lugar nombra la raíz de la pieza que ahora está allí; sin marcos
-conservados). Desktop: `PreG9BMaintB5aAuthorModelDesktopTest` (2), que lee el número (`GeoNumeric`) de cada orden. Ninguna prueba existente cambia.
+conservados). Desktop: `PreG9BMaintB5aAuthorModelDesktopTest` (3, con la prueba de orden de §2.3), que lee el número
+(`GeoNumeric`) de cada orden. Ninguna prueba existente cambia.
 
 Selección `PHASE PRE-G9B-MAINT-B5A`: compartida (las ocho clases nuevas, las clases post-R1 de
 métrica condicionada y las de estimador de CU1/CU2/P2) y Desktop (la prueba nueva,
 `PostR1ConditionedLengthDesktopTest`, `PostR1LengthDeletionDesktopTest` y las tres pruebas de
-la guía): 170 y 45 identidades de evidencia ejecutada; descubrimiento compartido 7 057 → 7 099
-y Desktop 2 627 → 2 629 (evidencia `--test-dry-run`); pin del inventario en el registro y
+la guía): 171 y 46 identidades de evidencia ejecutada; descubrimiento compartido 7 057 → 7 100
+y Desktop 2 627 → 2 630 (evidencia `--test-dry-run`); pin del inventario en el registro y
 recuentos de `verification-final-coverage.Tests.ps1` (102 selecciones, 91 fases) actualizados.
 Las selecciones `final.*` no se refrescan porque solo `FINAL` las exige y `FINAL` no está
 autorizado (precedente U2). Regresión compartida completa en el árbol de trabajo:
@@ -300,14 +326,48 @@ Ninguna ruta de los modelos del autor cambia.
 tres causas de indefinición y lo que no detecta. Impacto de bootstrap: sin cambio; ningún
 prerrequisito de estación ni supuesto del bootstrap de Windows cambia.
 
-## 11. Riesgos y asuntos para el autor
+## 11. Asuntos para la decisión del autor
 
-1. **Parámetros distintos de los candidatos** (`ρ_J`, `L`, `E_cap`), dentro de los intervalos;
-   justificación en §3. La norma recoge los candidatos como análisis; los valores finales
-   constan en la política y aquí.
-2. **Velocidad divergente interior**: el umbral de §28.3.1 es el de un extremo; en el interior
+Propuesta de B5a, aceptada por el coordinador para verificación; la decisión es del autor.
+
+| Id | Decisión | Propuesta | Justificación |
+|---|---|---|---|
+| D-B5a-1 | `ρ_J` | `0,90` (candidato `0,85`) | §3.2: con `0,85`, velocidad divergente interior con `α < 0,766` refusada |
+| D-B5a-2 | `m` | `3` (candidato) | §3.1 |
+| D-B5a-3 | `L` | `6` (candidato `5`) | §3.2: devuelve la resolución de saltos a `0,5·s·h_0` con `ρ_J = 0,90` |
+| D-B5a-4 | factor de `ε_res` | `2^8` (candidato) | §3.3 |
+| D-B5a-5 | `E_cap` | `16 384` (candidato `8 192`) | §3.4: cubre 4 096 hojas a 4 evaluaciones |
+| D-B5a-6 | Lecturas L-1 a L-9 de la norma | como en §2.2 | ninguna exige una decisión normativa nueva |
+
+Riesgos que la decisión debe considerar:
+
+1. **Velocidad divergente interior**: el umbral de §28.3.1 es el de un extremo; en el interior
    la firma aparece antes (§3.1). Con los valores finales, desde `α ≈ 0,78`.
-3. **Coste**: entre un 60 y un 80 % más de evaluaciones por ruta condicionada (§4.3).
-4. **Estimador en coordenadas muy grandes** (§6): hallazgo previo a B5a, fuera de su alcance.
-5. Deudas que siguen diferidas: B5b, T-A, descubrimiento de raíces de `Intersect` a través de un
+2. **Coste**: entre un 60 y un 80 % más de evaluaciones por ruta condicionada (§4.3).
+3. Deudas que siguen diferidas: B5b, T-A, descubrimiento de raíces de `Intersect` a través de un
    salto alineado.
+
+## 12. Deuda previa, fuera del alcance de B5a
+
+Registrada por el coordinador como deuda previa; B5a no la corrige.
+
+1. **Pin de contrato estático de `geocedg/resources/assets-manifest.yml`.** Un `INFRA_UNIT` de
+   desarrollo sobre el árbol del candidato (copia del registro, ignorada por Git, en
+   `artifacts/agent/pre-g9b-maint-b5a-infra-dev-copy/`) aceptó todas las hojas salvo `infra.static-semantic`, que falla con «hash
+   differs geocedg/resources/assets-manifest.yml». Hash fijado en
+   `verification-static-contracts.json`: `5790ba1cb31ea5d9b5c3952f8bfbb96c8c3338460f795eebbc6ddcc7e27cace5`.
+   Hash canónico del fichero: `9dd0a986978f6f0d193dca5ebcc0550ee9de9539f1442edd53686fab41d04c9a`.
+   Ninguno de los dos ficheros difiere de la base `228580e96` (`git diff --quiet` sobre ambos).
+   El último cambio del manifiesto es U2-R1 (`f99a99785`, iconos nuevos registrados), que no
+   volvió a fijar el contrato. `STATIC` no evalúa esa prueba y acepta el candidato.
+2. **Estimador en coordenadas muy grandes.** Con la ruta trasladada por `(T, T)`
+   (`explore-final.tsv`, `PreG9BMaintB5aTranslationTest`), el estimador §25 de la base admite
+   valores que no son los de la ruta sin trasladar:
+
+   | Ruta | Sin trasladar | `T = 10^11` | `T = 10^13` | `T = 10^16` |
+   |---|---|---|---|---|
+   | P-1, antes del salto | 0.08944271909999162 | 0.11855341813151267 | 0.12109375 | 0.0 |
+   | `exp`, 0,2→0,7 | 0.9388979755898462 | sin número | 1.1591073960891642 | 0.0 |
+
+   Esos valores salen del estimador, no de la comprobación: en esas magnitudes todas las
+   cuerdas quedan bajo `ε_res` y la comprobación no evalúa nada.

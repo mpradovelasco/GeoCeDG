@@ -190,6 +190,105 @@ final class PreG9BMaintB5aPostR1RoutesTest extends G9U0PublicSurfaceTestBase {
 		assertStillAdmitted("L", 0, 1, 1.547865654674981, 93);
 	}
 
+	/**
+	 * What one route publishes, bit for bit: admission, value, error, the record of the check
+	 * and the diagnostic codes.
+	 */
+	private static String outcome(LocusMetricResult2D result) {
+		StringBuilder codes = new StringBuilder();
+		result.getDiagnostics().forEach(d -> codes.append(d.getCode()).append(','));
+		return result.isScalarAdmissible() + " " + Double.doubleToRawLongBits(result
+				.getMetricValue().getFiniteValue().orElse(Double.NaN)) + " "
+				+ Double.doubleToRawLongBits(result.getErrorEvidence()
+						.getEstablishedAbsoluteAmount()) + " "
+				+ result.getConditionedRoute().flatMap(route -> route.getJumpGuard())
+						.map(Object::toString).orElse("no check") + " " + codes;
+	}
+
+	/** The consumer of a root of the metric battery: three regions between four folds. */
+	private GeoLocusV2 consumerOfARoot() {
+		add("c=Circle((0,0),2)");
+		add("E=Point(c)");
+		add("QF=(1,0)");
+		add("M=Midpoint(E,QF)");
+		add("S=LocusV2(M,E)");
+		add("k=Circle((0.5,0),3)");
+		add("T=Point(k)");
+		add("H=(4,0)");
+		add("r=Ray(H,T)");
+		GeoPoint driver = (GeoPoint) lookup("T");
+		driver.setCoords(0.5 + 3 * Math.cos(3.0), 3 * Math.sin(3.0), 1.0);
+		driver.updateCascade();
+		GeoLocusIntersectionResult rich = add("v=Intersect(S,r)");
+		List<LocusIntersectionSolution2D> roots =
+				rich.getIntersectionResult().getFiniteSolutions();
+		add("RA=Intersect(v,\"" + roots.get(0).getIdentity().getRootToken() + "\")");
+		add("ZP=Midpoint(RA,T)");
+		GeoLocusV2 consumer = add("L=LocusV2(ZP,T)");
+		getKernel().updateConstruction(false);
+		return consumer;
+	}
+
+	/**
+	 * Builds the consumer of a root, whose total is a subtotal over its three regions, and
+	 * measures in the given order: the subtotal, which builds the state of each whole region;
+	 * a route over the whole first region, the same stretch; a route inside it; and a second
+	 * length on the first route. Every consumer reads the same shared metric owner.
+	 *
+	 * @return the outcomes of the whole-region route, the inner route, the second length and
+	 *         the subtotal
+	 */
+	private List<String> measureInOrder(boolean totalFirst) {
+		getKernel().clearConstruction(true);
+		GeoLocusV2 locus = consumerOfARoot();
+		LocusInterval2D region = locus.getConditionedEvidence(BRANCH).getRegions().get(0);
+		double width = region.getUpper() - region.getLower();
+		add("OA=Point(L,\"" + BRANCH + "\"," + region.getLower() + ")");
+		add("OB=Point(L,\"" + BRANCH + "\"," + region.getUpper() + ")");
+		add("OC=Point(L,\"" + BRANCH + "\"," + (region.getLower() + 0.3 * width) + ")");
+		add("OD=Point(L,\"" + BRANCH + "\"," + (region.getLower() + 0.7 * width) + ")");
+		if (totalFirst) {
+			add("oT=LocusLength(L)");
+		}
+		add("oM=LocusLength(L,OA,OB)");
+		add("oN=LocusLength(L,OC,OD)");
+		add("oM2=LocusLength(L,OA,OB)");
+		if (!totalFirst) {
+			add("oT=LocusLength(L)");
+		}
+		List<String> outcomes = new java.util.ArrayList<>();
+		for (String label : new String[] {"oM", "oN", "oM2", "oT"}) {
+			outcomes.add(outcome(richResultOf(lookup(label)).getMetricResult()));
+		}
+		return outcomes;
+	}
+
+	/**
+	 * The states of the conditioned estimates are owned and cached by the shared metric owner
+	 * of the source. A route reads the state of its own stretch, keyed apart from the state
+	 * of a whole region that a subtotal builds (section 28.2), even when the stretch is that
+	 * whole region; so the order in which the consumers of one revision are computed changes
+	 * neither the admission, nor the value, nor the evaluations of the check, nor the
+	 * diagnostics, and two lengths on the same route publish the same outcome.
+	 */
+	@Test
+	void theOutcomeOfARouteDoesNotDependOnTheOrderOfTheConsumers() {
+		List<String> totalFirst = measureInOrder(true);
+		List<String> routesFirst = measureInOrder(false);
+		assertEquals(totalFirst, routesFirst);
+		assertEquals(totalFirst.get(0), totalFirst.get(2), "two lengths on the same route");
+		assertEquals(Double.doubleToRawLongBits(1.4183070533009867) + " ",
+				totalFirst.get(0).substring(5, totalFirst.get(0).indexOf(' ', 5) + 1));
+		assertTrue(totalFirst.get(0).startsWith("true "), totalFirst.get(0));
+		assertTrue(totalFirst.get(0).contains(" 294 leaf(s) tested, 0 below resolution, "
+				+ "1176 evaluation(s)"), totalFirst.get(0));
+		assertTrue(totalFirst.get(1).startsWith("true "), totalFirst.get(1));
+		assertTrue(totalFirst.get(1).contains(" 64 leaf(s) tested, 0 below resolution, "
+				+ "256 evaluation(s)"), totalFirst.get(1));
+		assertTrue(totalFirst.get(3).contains("CONDITIONED_SUBTOTAL"), totalFirst.get(3));
+		assertFalse(totalFirst.get(3).contains("CHORD_SCALING"), totalFirst.get(3));
+	}
+
 	@Test
 	void theRoutesThatTheBatteriesRefusedAreStillRefusedForTheirOwnCauses() {
 		segmentLocus("x(P)", "exp(x(P))+0.0009*floor(x(P)+0.5)");
