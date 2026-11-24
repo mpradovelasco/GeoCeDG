@@ -35,6 +35,7 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import org.geocedg.common.export.PhysicalExportScale;
+import org.geocedg.common.kernel.bspline.BSplineContractException;
 import org.geocedg.common.kernel.layers.HiddenLayerMetadataException;
 import org.geocedg.common.kernel.layers.HiddenLayerSet;
 import org.geocedg.common.kernel.locus.constructive.AuthorityPolicyAdoption;
@@ -422,6 +423,11 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		UnitMetadataException units = UnitMetadataException.find(failure);
 		if (units != null) {
 			return unitLoadErrorText(units, documentName);
+		}
+		// PRE-G9B-MAINT-A2: a BSpline family-contract rejection names its typed cause.
+		BSplineContractException bspline = BSplineContractException.find(failure);
+		if (bspline != null) {
+			return layerText("BSpline.LoadError." + bspline.getCode().name(), documentName);
 		}
 		HiddenLayerMetadataException layers = HiddenLayerMetadataException.find(failure);
 		return layers == null ? null : hiddenLayerLoadErrorText(layers, documentName);

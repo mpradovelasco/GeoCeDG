@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.geocedg.common.kernel.algos.AlgoBSpline;
 import org.geocedg.common.kernel.algos.AlgoDependentPointLocusV2;
 import org.geocedg.common.kernel.algos.AlgoLocusBetweenMetricV2;
 import org.geocedg.common.kernel.algos.AlgoLocusDriverCorrespondencePoint2D;
@@ -120,6 +121,45 @@ public final class LocusV2PublicOperations {
 		AlgoSplineV2 algorithm = null;
 		try {
 			algorithm = new AlgoSplineV2(construction, points, degree, weight);
+			GeoLocusV2 output = algorithm.getLocus();
+			finishLabel(output, label, false);
+			if (!construction.isFileLoading()) {
+				batch.stageReserved(output, outputId, dependencies);
+				batch.publish();
+			}
+			return output;
+		} catch (RuntimeException exception) {
+			batch.abandonBeforePublication();
+			removeFailed(algorithm);
+			throw exception;
+		}
+	}
+
+	/**
+	 * PRE-G9B-MAINT-A2: creates one reconstructible control-point B-spline
+	 * ({@code bspline-2d/v1}); unlabelled arguments are promoted to labelled construction
+	 * objects as for SplineV2.
+	 *
+	 * @return public semantic B-spline represented by the existing Locus V2 shell
+	 */
+	public static GeoLocusV2 createBSpline(Construction construction, String label,
+			GeoList points, GeoNumberValue degree, GeoList knots) {
+		requireAccess(construction);
+		ArrayList<GeoElement> directInputs = new ArrayList<>();
+		directInputs.add(points);
+		directInputs.add(degree.toGeoElement());
+		if (knots != null) {
+			directInputs.add(knots);
+		}
+		List<GeoElement> dependencies = direct(directInputs.toArray(new GeoElement[0]));
+		ParticipationBatch batch = new ParticipationBatch(construction);
+		if (!construction.isFileLoading()) {
+			batch.prepareAll(dependencies);
+		}
+		PersistentGeoId outputId = batch.reserveOutput();
+		AlgoBSpline algorithm = null;
+		try {
+			algorithm = new AlgoBSpline(construction, points, degree, knots);
 			GeoLocusV2 output = algorithm.getLocus();
 			finishLabel(output, label, false);
 			if (!construction.isFileLoading()) {

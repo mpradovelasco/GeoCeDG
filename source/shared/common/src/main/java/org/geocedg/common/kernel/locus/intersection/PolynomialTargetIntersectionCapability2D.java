@@ -19,6 +19,7 @@ import org.geocedg.common.kernel.locus.LocusExistenceStructure2D;
 import org.geocedg.common.kernel.locus.LocusInterval2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.PiecewisePolynomialLocus2D;
+import org.geocedg.common.kernel.locus.PolynomialSpanCoefficients2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.CompletenessMethod;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
@@ -132,11 +133,17 @@ final class PolynomialTargetIntersectionCapability2D
 						continue;
 					}
 					context.getInstrumentation().recordPolynomialSpanExamined();
-					double[][] coordinates = source
-							.getPolynomialCoordinateCoefficients(
-									branch.getBranchKey(), span);
-					double[] x = localPolynomial(coordinates[0], lower, upper);
-					double[] y = localPolynomial(coordinates[1], lower, upper);
+					// PRE-G9B-MAINT-A2 (bspline-2d.md section 11.3): local span coefficients
+					// when the source publishes them; otherwise the inherited global read.
+					PolynomialSpanCoefficients2D form = PolynomialSpanCoefficients2D.read(
+							context.getDefinition(), source, branch.getBranchKey(), span);
+					double[][] coordinates = form.getCoordinates();
+					double[] x = form.isLocal()
+							? PolynomialSpanCoefficients2D.ascending(coordinates[0])
+							: localPolynomial(coordinates[0], lower, upper);
+					double[] y = form.isLocal()
+							? PolynomialSpanCoefficients2D.ascending(coordinates[1])
+							: localPolynomial(coordinates[1], lower, upper);
 					double[] composed = compose(target, x, y);
 					if (composed == null) {
 						throw new IllegalArgumentException(
@@ -436,9 +443,9 @@ final class PolynomialTargetIntersectionCapability2D
 					return false;
 				}
 				for (int span = 0; span < spanCount; span++) {
-					double[][] coordinates = source
-							.getPolynomialCoordinateCoefficients(
-									branch.getBranchKey(), span);
+					double[][] coordinates = PolynomialSpanCoefficients2D.read(
+							context.getDefinition(), source, branch.getBranchKey(), span)
+							.getCoordinates();
 					int sourceDegree = Math.max(coordinates[0].length,
 							coordinates[1].length) - 1;
 					if ((long) sourceDegree * targetDegree

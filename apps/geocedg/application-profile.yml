@@ -5941,6 +5941,22 @@
       "en": "%0 cannot be opened: its unit metadata is outside the construction.",
       "es": "No se puede abrir %0: sus metadatos de unidades están fuera de la construcción."
     },
+    "BSpline.LoadError.UNSUPPORTED_CONTRACT_VERSION": {
+      "en": "%0 cannot be opened: it contains a B-spline curve of a newer, unsupported contract version.",
+      "es": "No se puede abrir %0: contiene una curva B-spline de una versión de contrato más reciente y no admitida."
+    },
+    "BSpline.LoadError.CONTRACT_MISSING": {
+      "en": "%0 cannot be opened: a B-spline curve has no contract record.",
+      "es": "No se puede abrir %0: una curva B-spline no tiene registro de contrato."
+    },
+    "BSpline.LoadError.MALFORMED_CONTRACT": {
+      "en": "%0 cannot be opened: the contract record of a B-spline curve is malformed.",
+      "es": "No se puede abrir %0: el registro de contrato de una curva B-spline está mal formado."
+    },
+    "BSpline.LoadError.UNSUPPORTED_PROVENANCE_VERSION": {
+      "en": "%0 cannot be opened: a B-spline curve carries approximation provenance of an unsupported version.",
+      "es": "No se puede abrir %0: una curva B-spline contiene una procedencia de aproximación de una versión no admitida."
+    },
     "Units.LoadError.Document": {
       "en": "The document",
       "es": "el documento"

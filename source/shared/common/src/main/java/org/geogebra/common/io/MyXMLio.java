@@ -23,6 +23,7 @@ import javax.annotation.CheckForNull;
 
 import org.geocedg.common.document.controls.ControlLayoutException;
 import org.geocedg.common.document.controls.ControlLayoutXml;
+import org.geocedg.common.kernel.bspline.BSplineContractException;
 import org.geocedg.common.kernel.layers.HiddenLayerMetadataException;
 import org.geocedg.common.kernel.layers.HiddenLayersXml;
 import org.geocedg.common.kernel.spatial.identity.SpatialIdentityException;
@@ -536,7 +537,7 @@ public abstract class MyXMLio {
 			Log.error(e.getMessage());
 			if (e instanceof SpatialIdentityException || e instanceof UnitMetadataException
 					|| e instanceof HiddenLayerMetadataException || e instanceof ControlLayoutException
-					|| !isGGTOrDefaults) {
+					|| e instanceof BSplineContractException || !isGGTOrDefaults) {
 				throw e;
 			}
 		} finally {
@@ -591,11 +592,13 @@ public abstract class MyXMLio {
 	private boolean requiresParseRollback(Throwable failure, boolean restoreEntry) {
 		// PRE-G9B-R6-plus-D1: a fail-closed unit rejection restores the entry snapshot
 		// too, so a non-native route never leaves a half-loaded construction;
-		// PRE-G9B-R6-plus-A-2: so does a fail-closed hidden-layer rejection.
+		// PRE-G9B-R6-plus-A-2: so does a fail-closed hidden-layer rejection;
+		// PRE-G9B-MAINT-A2: and a fail-closed BSpline family-contract rejection.
 		return failure instanceof SpatialIdentityException
 				|| failure instanceof UnitMetadataException
 				|| failure instanceof HiddenLayerMetadataException
-				|| failure instanceof ControlLayoutException || restoreEntry;
+				|| failure instanceof ControlLayoutException
+				|| failure instanceof BSplineContractException || restoreEntry;
 	}
 
 	private boolean canRestoreRejectedSpatialParse() {

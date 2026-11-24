@@ -133,6 +133,6 @@ public final class RuntimeFeatureService {
 	 */
 	public static boolean isDedicatedLocusV2Command(Commands command) {
 		return command == Commands.LocusV2 || command == Commands.LocusLength
-				|| command == Commands.SplineV2;
+				|| command == Commands.SplineV2 || command == Commands.BSpline;
 	}
 }

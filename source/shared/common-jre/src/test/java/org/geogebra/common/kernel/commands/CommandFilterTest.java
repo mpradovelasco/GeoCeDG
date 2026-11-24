@@ -40,7 +40,8 @@ import org.junit.jupiter.api.Test;
 class CommandFilterTest extends BaseUnitTest {
 
 	private static final List<Commands> GEOCEDG_COMMANDS =
-			List.of(Commands.LocusV2, Commands.LocusLength, Commands.SplineV2);
+			List.of(Commands.LocusV2, Commands.LocusLength, Commands.SplineV2,
+					Commands.BSpline);
 
 	@Override
 	public AppCommon createAppCommon() {

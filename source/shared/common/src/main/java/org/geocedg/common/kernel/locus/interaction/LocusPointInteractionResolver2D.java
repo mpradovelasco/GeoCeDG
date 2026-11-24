@@ -32,6 +32,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.DefinitionStatus;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
 import org.geocedg.common.kernel.locus.PiecewisePolynomialLocus2D;
+import org.geocedg.common.kernel.locus.PolynomialSpanCoefficients2D;
 import org.geocedg.common.kernel.locus.interaction.LocusPointInteractionResult2D.SearchCoverage;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionWorkLimitException;
 import org.geocedg.common.kernel.locus.intersection.PolynomialRootIsolation2D;
@@ -370,8 +371,13 @@ public final class LocusPointInteractionResolver2D {
 					instrumentation.polynomialSpan();
 					double lower = span.lower;
 					double upper = span.upper;
+					// PRE-G9B-MAINT-A2 (bspline-2d.md section 11.3): a source that publishes
+					// local span coefficients is searched in the span variable s in [0, 1].
+					PolynomialSpanCoefficients2D form = PolynomialSpanCoefficients2D.read(
+							definition, polynomial, branch.getBranchKey(), span.index);
+					boolean local = form.isLocal();
 					double[][] coordinates = checkedPolynomialCoordinateCoefficients(
-							query, polynomial, branch.getBranchKey(), span.index);
+							query, form.getCoordinates());
 					double[] x = coordinates[0];
 					double[] y = coordinates[1];
 					x[0] -= query.getTargetX();
@@ -381,8 +387,8 @@ public final class LocusPointInteractionResolver2D {
 					double isolationTolerance = polynomialIsolationTolerance(lower,
 						upper, query.getPolicy().getParameterTolerance());
 					IsolationResult isolated = PolynomialRootIsolation2D.isolate(
-							stationarity, lower, upper,
-							isolationTolerance,
+							stationarity, local ? 0 : lower, local ? 1 : upper,
+							local ? isolationTolerance / (upper - lower) : isolationTolerance,
 							query.getPolicy().getWorkBudget()
 									.getMaximumRefinementIterations(),
 							new RootWorkRecorder(instrumentation));
@@ -419,8 +425,9 @@ public final class LocusPointInteractionResolver2D {
 								"piecewise-polynomial-endpoint/v2"));
 					}
 					for (RootCell cell : isolated.getCells()) {
-						double parameter = snapToSpanBoundary(cell.getParameter(),
-								lower, upper,
+						double parameter = snapToSpanBoundary(local
+								? lower + (upper - lower) * cell.getParameter()
+								: cell.getParameter(), lower, upper,
 								query.getPolicy().getParameterTolerance());
 						if (sameParameter(parameter, upper,
 								query.getPolicy().getParameterTolerance())
@@ -428,8 +435,12 @@ public final class LocusPointInteractionResolver2D {
 							continue;
 						}
 						accumulated.record(retain(query, definition, branch,
-								component, parameter, Math.max(lower, cell.getLower()),
-								Math.min(upper, cell.getUpper()), session,
+								component, parameter, Math.max(lower, local
+										? lower + (upper - lower) * cell.getLower()
+										: cell.getLower()),
+								Math.min(upper, local
+										? lower + (upper - lower) * cell.getUpper()
+										: cell.getUpper()), session,
 								instrumentation, accumulated.candidates,
 								LocusPointInteractionLocalEvidence2D.Method
 										.POLYNOMIAL_STATIONARY_CELL,
@@ -1378,10 +1389,7 @@ public final class LocusPointInteractionResolver2D {
 	}
 
 	private static double[][] checkedPolynomialCoordinateCoefficients(
-			LocusPointInteractionQuery2D query,
-			PiecewisePolynomialLocus2D polynomial, String branchKey, int span) {
-		double[][] coordinates = polynomial.getPolynomialCoordinateCoefficients(
-				branchKey, span);
+			LocusPointInteractionQuery2D query, double[][] coordinates) {
 		int coefficientLimit = Math.min(32, Math.max(2,
 				query.getPolicy().getWorkBudget().getMaximumSubdivisions()));
 		if (coordinates == null || coordinates.length != 2) {

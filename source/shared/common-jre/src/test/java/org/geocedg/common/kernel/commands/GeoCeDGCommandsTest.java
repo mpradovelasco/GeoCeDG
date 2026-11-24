@@ -72,6 +72,25 @@ public class GeoCeDGCommandsTest extends BaseUnitTest {
 				.orElseThrow(), 1E-10);
 	}
 
+	/** PRE-G9B-MAINT-A2: the control-point B-spline family bspline-2d/v1. */
+	@Test
+	void cmdBSpline() {
+		add("A=(-2,0)");
+		add("B=(-1,0)");
+		add("C=(1,0)");
+		add("D=(2,0)");
+		GeoLocusV2 spline = add("S=BSpline({A,B,C,D},3)");
+		assertNotNull(spline);
+		assertTrue(spline.isDefined());
+		assertFalse(spline.isPath());
+		assertEquals(Commands.BSpline, spline.getParentAlgorithm().getClassName());
+		GeoLocusMetricResult metric = richResultOf(add("M=LocusLength(S)"));
+		assertEquals(4, metric.getMetricResult().getMetricValue().getFiniteValue()
+				.orElseThrow(), 1E-9);
+		assertNotNull(add("Default=BSpline({A,B,C,D})"));
+		assertNotNull(add("Explicit=BSpline({A,B,C,D},3,{0,0,0,0,1,1,1,1})"));
+	}
+
 	@Test
 	void cmdAlignedDimension() {
 		add("A=(0,0)");

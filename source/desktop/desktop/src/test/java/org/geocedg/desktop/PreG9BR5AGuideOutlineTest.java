@@ -52,10 +52,11 @@ class PreG9BR5AGuideOutlineTest {
 			throws IOException {
 		for (String language : LANGUAGES) {
 			List<GeoCeDGGuideOutline.Entry> outline = outline(language);
-			assertEquals(120, outline.size(), language);
+			// PRE-G9B-MAINT-A2 adds the B-spline subsections 7.8 and 7.9.
+			assertEquals(122, outline.size(), language);
 			assertEquals(1, count(outline, 1), language);
 			assertEquals(16, count(outline, 2), language);
-			assertEquals(103, count(outline, 3), language);
+			assertEquals(105, count(outline, 3), language);
 		}
 	}
 
@@ -233,7 +234,7 @@ class PreG9BR5AGuideOutlineTest {
 					GeoCeDGActionRegistry.readUserGuide(language));
 			assertEquals(1, occurrences(html, "<h1>"), language);
 			assertEquals(16, occurrences(html, "<h2>"), language);
-			assertEquals(103, occurrences(html, "<h3>"), language);
+			assertEquals(105, occurrences(html, "<h3>"), language);
 			assertEquals(0, occurrences(html, "<h1 "), language);
 			assertEquals(0, occurrences(html, "<h2 "), language);
 			assertEquals(0, occurrences(html, "<h3 "), language);

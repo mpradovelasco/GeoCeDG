@@ -20,6 +20,7 @@ import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
 import org.geocedg.common.kernel.locus.PiecewisePolynomialLocus2D;
+import org.geocedg.common.kernel.locus.PolynomialSpanCoefficients2D;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.Completeness;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.CompletenessMethod;
 import org.geocedg.common.kernel.locus.intersection.IntersectionSemanticMetadata2D.ContactClass;
@@ -70,8 +71,10 @@ final class PiecewisePolynomialPairIntersectionCapability2D
 			return false;
 		}
 		try {
-			return supportedComponents(context.getFirstComponents(), first)
-					&& supportedComponents(context.getSecondComponents(), second);
+			return supportedComponents(context.getFirstDefinition(),
+					context.getFirstComponents(), first)
+					&& supportedComponents(context.getSecondDefinition(),
+							context.getSecondComponents(), second);
 		} catch (RuntimeException exception) {
 			return false;
 		}
@@ -547,10 +550,25 @@ final class PiecewisePolynomialPairIntersectionCapability2D
 					&& lower < upper)) {
 				continue;
 			}
-			double[][] coordinates = source.getPolynomialCoordinateCoefficients(
-					component.getBranchKey(), span);
-			double[] x = localPolynomial(coordinates[0], lower, upper);
-			double[] y = localPolynomial(coordinates[1], lower, upper);
+			// PRE-G9B-MAINT-A2 (bspline-2d.md section 11.3): local span coefficients when
+			// the source publishes them; otherwise the inherited global read.
+			PolynomialSpanCoefficients2D form = PolynomialSpanCoefficients2D.read(
+					definition, source, component.getBranchKey(), span);
+			double[][] coordinates = form.getCoordinates();
+			double[] x;
+			double[] y;
+			if (form.isLocal()) {
+				// The local variable of the span is re-expanded onto the clipped part only;
+				// an unclipped span maps to [0, 1] exactly and is copied in ascending order.
+				double sourceWidth = sourceUpper - sourceLower;
+				double localLower = (lower - sourceLower) / sourceWidth;
+				double localUpper = (upper - sourceLower) / sourceWidth;
+				x = localPolynomial(coordinates[0], localLower, localUpper);
+				y = localPolynomial(coordinates[1], localLower, localUpper);
+			} else {
+				x = localPolynomial(coordinates[0], lower, upper);
+				y = localPolynomial(coordinates[1], lower, upper);
+			}
 			result.add(new PolynomialSpan(lower, upper, x, y, false,
 					lower == component.getInterval().getLower()
 							&& upper == component.getInterval().getUpper()));
@@ -565,8 +583,8 @@ final class PiecewisePolynomialPairIntersectionCapability2D
 		return result;
 	}
 
-	private static boolean supportedComponents(List<ComponentAddress> components,
-			PiecewisePolynomialLocus2D source) {
+	private static boolean supportedComponents(LocusDefinition2D definition,
+			List<ComponentAddress> components, PiecewisePolynomialLocus2D source) {
 		for (ComponentAddress component : components) {
 			if (!Double.isFinite(component.getInterval().getLower())
 					|| !Double.isFinite(component.getInterval().getUpper())) {
@@ -577,9 +595,8 @@ final class PiecewisePolynomialPairIntersectionCapability2D
 				return false;
 			}
 			for (int span = 0; span < spans; span++) {
-				double[][] coordinates = source
-						.getPolynomialCoordinateCoefficients(
-								component.getBranchKey(), span);
+				double[][] coordinates = PolynomialSpanCoefficients2D.read(definition,
+						source, component.getBranchKey(), span).getCoordinates();
 				if (coordinates == null || coordinates.length != 2) {
 					return false;
 				}
