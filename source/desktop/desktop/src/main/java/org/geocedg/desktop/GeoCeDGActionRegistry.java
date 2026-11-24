@@ -172,10 +172,11 @@ public final class GeoCeDGActionRegistry {
 					? text(definition.textKey() + ".short_help")
 					: app.getToolHelp(definition.mode());
 			String longHelp = definition.mode() == null
-					? text(definition.textKey() + ".long_help") : shortHelp;
+					? text(definition.textKey() + ".long_help") : GeoCeDGTooltips.plain(shortHelp);
 			action.putValue(Action.NAME, name);
-			action.putValue(Action.SHORT_DESCRIPTION,
-					reason == null ? shortHelp : reason);
+			// A tool help with explicit line breaks is shown as a multi-line tooltip (U2-R1-2).
+			action.putValue(Action.SHORT_DESCRIPTION, reason != null ? reason
+					: definition.mode() == null ? shortHelp : GeoCeDGTooltips.explicit(shortHelp));
 			action.putValue(Action.LONG_DESCRIPTION, longHelp);
 			action.setEnabled(reason == null);
 			action.putValue(Action.SELECTED_KEY, checked(definition.target()));

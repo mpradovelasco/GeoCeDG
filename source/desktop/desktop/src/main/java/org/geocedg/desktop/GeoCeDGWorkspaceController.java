@@ -388,7 +388,7 @@ public final class GeoCeDGWorkspaceController {
 		button.setToolTipText((String) action.getValue(Action.SHORT_DESCRIPTION));
 		button.getAccessibleContext().setAccessibleName((String) action.getValue(Action.NAME));
 		button.getAccessibleContext().setAccessibleDescription(
-				(String) action.getValue(Action.SHORT_DESCRIPTION));
+				GeoCeDGTooltips.plain((String) action.getValue(Action.SHORT_DESCRIPTION)));
 		button.putClientProperty("geocedg.toolbar.active.action.id", id);
 		Object selected = action.getValue(Action.SELECTED_KEY);
 		if (GeoCeDGProfile.getAction(id).mode() == null && selected instanceof Boolean) {

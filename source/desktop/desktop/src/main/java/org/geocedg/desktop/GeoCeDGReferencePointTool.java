@@ -175,7 +175,7 @@ final class GeoCeDGReferencePointTool {
 		if (status != null) {
 			status.setText(message);
 			status.setCaretPosition(0);
-			status.setToolTipText(message);
+			status.setToolTipText(GeoCeDGTooltips.wrap(message));
 		}
 	}
 
@@ -364,7 +364,7 @@ final class GeoCeDGReferencePointTool {
 				: t("Position found on the curve", "Posición encontrada sobre la curva");
 		var presentation = routePresentation(app.getLocale(), selection);
 		coverage.setText(presentation.coverage());
-		coverage.setToolTipText(presentation.guarantee());
+		coverage.setToolTipText(GeoCeDGTooltips.wrap(presentation.guarantee()));
 		updateStatus(several ? t("Select a branch and confirm", "Seleccione una rama y confirme")
 				: t("Confirm the position", "Confirme la posición"));
 		var addresses = selection.getChoices().stream()
@@ -505,7 +505,9 @@ final class GeoCeDGReferencePointTool {
 		// The typed code stays available for diagnosis as the tooltip; it is not the message.
 		updateStatus(t("No point created: ", "No se creó ningún punto: ")
 				+ describeFailure(reason.split(" / ")[0]));
-		if (status != null) { status.setToolTipText(status.getText() + " [" + reason + "]"); }
+		if (status != null) {
+			status.setToolTipText(GeoCeDGTooltips.lines(status.getText(), "[" + reason + "]"));
+		}
 	}
 
 	GeoCeDGReferencePlacement pendingSelection() { return selection; }
@@ -535,7 +537,7 @@ final class GeoCeDGReferencePointTool {
 		heading.setEditable(false);
 		heading.setFocusable(false);
 		heading.setCaretPosition(0);
-		heading.setToolTipText(title);
+		heading.setToolTipText(GeoCeDGTooltips.wrap(title));
 		content.add(heading, BorderLayout.NORTH);
 		JList<String> list = new JList<>(labels.toArray(String[]::new)) {
 			private static final long serialVersionUID = 1L;
@@ -612,8 +614,11 @@ final class GeoCeDGReferencePointTool {
 		JPanel actions = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.TRAILING, 4, 0));
 		JCheckBox free = new JCheckBox(t("Allow dragging", "Permitir arrastre"), draggable);
 		free.setName("m08-allow-dragging");
-		free.setToolTipText(t("New points on supported objects; fixed points still follow their source",
-				"Puntos nuevos sobre objetos admitidos; los fijos siguen los cambios de su fuente"));
+		free.setToolTipText(GeoCeDGTooltips.lines(
+				t("Applies to new points on supported objects.",
+						"Se aplica a los puntos nuevos sobre objetos admitidos."),
+				t("A fixed point still follows its source.",
+						"Un punto fijo sigue los cambios de su fuente.")));
 		free.addActionListener(event -> draggable = free.isSelected());
 		actions.add(free);
 		JLabel radius = new JLabel(labels[0]); radius.setLabelFor(inputs[0]);
@@ -695,43 +700,50 @@ final class GeoCeDGReferencePointTool {
 		originClick.setSelected(!reference);
 		originReference.setSelected(reference);
 		String rule;
-		String detail;
+		String[] detail;
+		// The tooltip separates purpose, search radius and confirmation (U2-R1-1).
 		if (reference) {
 			rule = t("Radius r world around Q · every offer needs Confirm",
 					"Radio r world alrededor de Q · toda oferta requiere Confirmar");
-			detail = t("Select the object, then an existing point Q in Graphics or Algebra. On Locus V2"
-					+ " and Spline V2 the search radius is r world around Q; native objects use the"
-					+ " ordinary projection of Q. Every offer appears here and waits for Confirm."
-					+ " The new point does not depend on Q.",
-					"Seleccione el objeto y después un punto Q existente en Gráfica o Álgebra. Sobre"
-					+ " Locus V2 y Spline V2 el radio de búsqueda es r world alrededor de Q; los objetos"
-					+ " nativos usan la proyección ordinaria de Q. Toda oferta aparece aquí y espera a"
-					+ " Confirmar. El punto nuevo no depende de Q.");
+			detail = new String[] {
+					t("Select the object, then an existing point Q.",
+							"Seleccione el objeto y después un punto Q existente."),
+					t("Radius: r world around Q on Locus V2 and Spline V2;"
+							+ " native objects use the projection of Q.",
+							"Radio: r world alrededor de Q sobre Locus V2 y Spline V2;"
+							+ " los objetos nativos usan la proyección de Q."),
+					t("Confirm: every offer waits for Confirm.",
+							"Confirmar: toda oferta espera a Confirmar."),
+					t("The new point does not depend on Q.", "El punto nuevo no depende de Q.")};
 		} else if (isAliasMode()) {
 			rule = t("Radius r world around the click · every offer needs Confirm",
 					"Radio r world alrededor del clic · toda oferta requiere Confirmar");
-			detail = t("The search radius is r world, in construction units, around the clicked"
-					+ " position. Every offer appears here and waits for Confirm.",
-					"El radio de búsqueda es r world, en unidades de la construcción, alrededor de la"
-					+ " posición pulsada. Toda oferta aparece aquí y espera a Confirmar.");
+			detail = new String[] {
+					t("Click the object at the position you want.",
+							"Pulse el objeto en la posición deseada."),
+					t("Radius: r world, in construction units, around the click.",
+							"Radio: r world, en unidades de la construcción, alrededor del clic."),
+					t("Confirm: every offer waits for Confirm.",
+							"Confirmar: toda oferta espera a Confirmar.")};
 		} else {
 			rule = t("Radius from the view · positions found by the search are created at once;"
 					+ " other offers need Confirm",
 					"Radio de la vista · lo hallado por la búsqueda se crea al instante;"
 					+ " el resto requiere Confirmar");
-			detail = t("The search radius comes from the view (pointer size and zoom). A click on a"
-					+ " Locus V2 or Spline V2 creates the point at once when the search finds the"
-					+ " position (choose one if several are found); any other offer appears here and"
-					+ " waits for Confirm. On native objects and on empty space the ordinary tool"
-					+ " applies.",
-					"El radio de búsqueda se toma de la vista (tamaño del puntero y zoom). Un clic"
-					+ " sobre un Locus V2 o un Spline V2 crea el punto al instante cuando la búsqueda"
-					+ " halla la posición (elija una si hay varias); cualquier otra oferta aparece aquí"
-					+ " y espera a Confirmar. Sobre objetos nativos y en el espacio vacío actúa la"
-					+ " herramienta ordinaria.");
+			detail = new String[] {
+					t("Click a Locus V2 or Spline V2 at the position you want.",
+							"Pulse un Locus V2 o un Spline V2 en la posición deseada."),
+					t("Radius: from the view (pointer size and zoom).",
+							"Radio: de la vista (tamaño del puntero y zoom)."),
+					t("Confirm: a position found by the search is created at once"
+							+ " (choose one if there are several); other offers wait for Confirm.",
+							"Confirmar: lo hallado por la búsqueda se crea al instante"
+							+ " (elija una posición si hay varias); el resto espera a Confirmar."),
+					t("On native objects and empty space the ordinary tool applies.",
+							"Sobre objetos nativos y espacio vacío actúa la herramienta ordinaria.")};
 		}
 		originRule.setText(rule);
-		originRule.setToolTipText(detail);
+		originRule.setToolTipText(GeoCeDGTooltips.lines(detail));
 	}
 
 	/** @return the radius and confirmation rule of the selected origin, or {@code null} */

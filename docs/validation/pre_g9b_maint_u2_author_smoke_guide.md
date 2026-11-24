@@ -103,17 +103,24 @@ Esperado: ningún punto creado en estos pasos; el panel cabe en la anchura de la
 
 2. Elija **Partial semantic locus length (experimental)** (ES: **Longitud semántica parcial del
    lugar geométrico (experimental)**) y pulse `h` (por ejemplo cerca de `(0.8, 2.4)`), `A` y `B`.
-3. Esperado: el diálogo **Construct a metric endpoint** ofrece **Choose a position on the
-   locus**. Al elegirlo:
-   - la lista muestra las posiciones como el panel, por ejemplo «Branch 1 · Section 1 · u =
-     …» (ES: «Rama 1 · Tramo 1 · u = …»), con el identificador técnico como ayuda
-     emergente;
+3. Esperado: el diálogo **Construct a metric endpoint** dice que `A` no tiene dirección
+   semántica sobre `h` y ofrece **Choose a position on the locus**. Al elegirlo:
+   - la lista muestra las posiciones de `h` junto a `A` como el panel, por ejemplo «Branch 1 ·
+     Section 1 · u = …» (ES: «Rama 1 · Tramo 1 · u = …»), con el identificador técnico como
+     ayuda emergente, y **ninguna fila aparece seleccionada**;
    - una línea muestra la garantía de la ruta (por ejemplo «Position verified locally»),
      con el detalle como ayuda emergente;
-   - la casilla **Allow dragging** aparece activada.
-4. Desactive **Allow dragging**, elija la posición y confirme el diálogo: se crea un punto fijo
-   sobre `h`. Un solo **Undo** lo retira.
-5. Repita y pulse **Cancel**: no se crea nada.
+   - la casilla **Allow dragging** aparece activada y **Create point** aparece desactivado.
+4. Pulse la fila: **Create point** se activa. Desactive **Allow dragging** y pulse **Create
+   point**: se crea un punto fijo sobre `h`, muy cerca de `A`; `A` no cambia y la longitud no
+   se calcula todavía. Un solo **Undo** lo retira.
+5. Repita y pulse **Cancel** (con o sin fila seleccionada): no se crea nada.
+
+> Corrección `PRE-G9B-MAINT-U2-R1`: en el candidato `98e21093d` la única fila venía
+> preseleccionada y **OK** estaba activo, así que el diálogo creaba el punto junto a `A` sin
+> una selección del usuario. La guía reducida de R1
+> ([`pre_g9b_maint_u2_r1_author_smoke_guide.md`](pre_g9b_maint_u2_r1_author_smoke_guide.md))
+> sustituye este apartado para el smoke de R1.
 
 ## 8. Rechazo «componentes no establecidas» (U2-5)
 

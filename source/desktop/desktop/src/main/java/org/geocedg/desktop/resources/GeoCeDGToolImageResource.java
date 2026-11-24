@@ -24,7 +24,13 @@ import org.geogebra.desktop.util.ImageResourceD;
 public enum GeoCeDGToolImageResource implements ImageResourceD {
 
 	LOCUS_V2("mode_locusv2"),
+	/** GeoCeDG-owned artwork of the total semantic length tool (PRE-G9B-MAINT-U2-R1). */
+	LOCUS_LENGTH_TOTAL("mode_geocedg_locuslength_total"),
+	/** GeoCeDG-owned artwork of the partial semantic length tool (PRE-G9B-MAINT-U2-R1). */
+	LOCUS_LENGTH_PARTIAL("mode_geocedg_locuslength_partial"),
 	SPLINE_V2("mode_geocedg_splinev2"),
+	/** Spline V2 artwork with a closure mark, for the closed spline tool (PRE-G9B-MAINT-U2-R1). */
+	SPLINE_V2_CLOSED("mode_geocedg_splinev2_closed"),
 	SEMANTIC_POINT("mode_geocedg_semanticpoint"),
 	RICH_RESULT("mode_geocedg_richresult"),
 	MATERIALIZE("mode_geocedg_materialize"),
@@ -68,8 +74,9 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 		switch (iconKey) {
 		case "geocedg.action.SplineV2Create":
 		case "geocedg.action.SplineV2CreateDegree":
-		case "geocedg.action.SplineV2CreateClosed":
 			return SPLINE_V2;
+		case "geocedg.action.SplineV2CreateClosed":
+			return SPLINE_V2_CLOSED;
 		case "geocedg.action.OrderedListCreate":
 			return ORDERED_LIST;
 		case "geocedg.action.WorkingLayer":
@@ -83,9 +90,11 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 		case "geocedg.action.LocusV2Point":
 			return SEMANTIC_POINT;
 		case "geocedg.action.LocusV2Create":
-		case "geocedg.action.LocusLengthTotal":
-		case "geocedg.action.LocusLengthPartial":
 			return LOCUS_V2;
+		case "geocedg.action.LocusLengthTotal":
+			return LOCUS_LENGTH_TOTAL;
+		case "geocedg.action.LocusLengthPartial":
+			return LOCUS_LENGTH_PARTIAL;
 		case "geocedg.action.ResultInspect":
 		case "geocedg.action.ResultMarkers":
 		case "geocedg.action.SemanticCurveDefinition":
@@ -113,13 +122,16 @@ public enum GeoCeDGToolImageResource implements ImageResourceD {
 			return SEMANTIC_POINT;
 		case "locusv2":
 		case "locusv2.point":
-		case "locuslength.total":
-		case "locuslength.partial":
 			return LOCUS_V2;
+		case "locuslength.total":
+			return LOCUS_LENGTH_TOTAL;
+		case "locuslength.partial":
+			return LOCUS_LENGTH_PARTIAL;
 		case "splinev2":
 		case "splinev2.degree":
-		case "splinev2.closed":
 			return SPLINE_V2;
+		case "splinev2.closed":
+			return SPLINE_V2_CLOSED;
 		case "orderedlist":
 			return ORDERED_LIST;
 		case "workinglayer":

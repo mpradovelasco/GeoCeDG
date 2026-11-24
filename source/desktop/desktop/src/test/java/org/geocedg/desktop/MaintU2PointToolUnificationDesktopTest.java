@@ -2,14 +2,10 @@
 package org.geocedg.desktop;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 
 import java.awt.Component;
 import java.awt.Container;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
@@ -23,7 +19,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 
@@ -35,7 +30,6 @@ import org.geogebra.desktop.main.undo.UndoManagerD;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 
 /**
  * PRE-G9B-MAINT-U2: one Point panel with an origin selector (click or reference Q) for Point,
@@ -353,53 +347,37 @@ class MaintU2PointToolUnificationDesktopTest {
 			assertTrue(new GeoCeDGMetricEndpointAssistance(app).isApplicable(source, a));
 			history.set(undo.getHistorySize());
 			List<GeoPoint> before = points(app);
-			try (var dialogs = Mockito.mockStatic(JOptionPane.class)) {
-				dialogs.when(() -> JOptionPane.showOptionDialog(any(), any(), anyString(), anyInt(),
-						anyInt(), any(), any(Object[].class), any())).thenAnswer(call -> {
-							Object[] routes = call.getArgument(6);
-							assertEquals("Cancel", routes[routes.length - 1]);
-							return Arrays.asList(routes).indexOf("Choose a position on the locus");
-						});
-				dialogs.when(() -> JOptionPane.showConfirmDialog(any(), any(), anyString(), anyInt(),
-						anyInt())).thenAnswer(call -> {
-							Object[] message = call.getArgument(1);
-							JList<?> list = null;
-							JLabel guarantee = null;
-							JCheckBox free = null;
-							for (Object part : message) {
-								if (part instanceof JScrollPane pane
-										&& pane.getViewport().getView() instanceof JList<?> view) { list = view; }
-								if (part instanceof JLabel label) { guarantee = label; }
-								if (part instanceof JCheckBox box) { free = box; }
-							}
-							assertNotNull(list); assertNotNull(guarantee); assertNotNull(free);
-							assertEquals("m08-endpoint-positions", list.getName());
-							assertEquals("m08-endpoint-guarantee", guarantee.getName());
-							assertEquals("m08-allow-dragging", free.getName());
-							List<String> labels = new ArrayList<>();
-							for (int i = 0; i < list.getModel().getSize(); i++) {
-								labels.add(String.valueOf(list.getModel().getElementAt(i)));
-							}
-							shown.set(labels);
-							assertFalse(labels.isEmpty());
-							assertTrue(labels.stream().allMatch(label -> label.contains("u = ")), labels.toString());
-							assertTrue(labels.stream().noneMatch(label -> label.contains("t = ")),
-									"no raw branch key");
-							assertFalse(guarantee.getText().isBlank());
-							assertNotNull(guarantee.getToolTipText());
-							assertTrue(free.isSelected(), "Allow dragging starts on, as in the panel");
-							free.setSelected(false);
-							if (list.getModel().getSize() > 1) { list.setSelectedIndex(0); }
-							assertEquals(0, list.getSelectedIndex());
-							return JOptionPane.OK_OPTION;
-						});
+			// PRE-G9B-MAINT-U2-R1: the real option panes; the user selects the position.
+			var chosen = new AtomicReference<String>();
+			var panes = new MaintU2R1SmokeCorrectionsDesktopTest.Panes(
+					pane -> MaintU2R1SmokeCorrectionsDesktopTest.press(pane, "Choose a position on the locus"),
+					pane -> {
+						var list = MaintU2R1SmokeCorrectionsDesktopTest.find(pane, JList.class, "m08-endpoint-positions");
+						var guarantee = MaintU2R1SmokeCorrectionsDesktopTest.find(pane, JLabel.class, "m08-endpoint-guarantee");
+						assertNotNull(list); assertNotNull(guarantee);
+						List<String> labels = new ArrayList<>();
+						for (int i = 0; i < list.getModel().getSize(); i++) {
+							labels.add(String.valueOf(list.getModel().getElementAt(i)));
+						}
+						shown.set(labels);
+						assertFalse(labels.isEmpty());
+						assertTrue(labels.stream().allMatch(label -> label.contains("u = ")), labels.toString());
+						assertTrue(labels.stream().noneMatch(label -> label.contains("t = ")),
+								"no raw branch key");
+						assertFalse(guarantee.getText().isBlank());
+						assertNotNull(guarantee.getToolTipText());
+						return MaintU2R1SmokeCorrectionsDesktopTest.choosePosition(0, false, "Create point", chosen)
+								.apply(pane);
+					});
+			MaintU2R1SmokeCorrectionsDesktopTest.with(panes, () -> {
 				app.setMode(EuclidianConstants.MODE_LOCUS_V2_LENGTH_BETWEEN);
 				Cu7M08SDesktopEventsTest.pointer(app, .8, 2.4);
 				Cu7M08SDesktopEventsTest.pointer(app, a.inhomX, a.inhomY);
 				assertEquals(List.of(source, a), app.getSelectionManager().getSelectedGeos(), "L then A");
 				undo.addUndoInfoStoredListener(() -> { stores.incrementAndGet(); stored.countDown(); });
 				Cu7M08SDesktopEventsTest.pointer(app, 3, -2);
-			}
+				return null;
+			});
 			var added = points(app).stream().filter(point -> !before.contains(point)).toList();
 			assertEquals(1, added.size(), "the assistance creates exactly one point");
 			created.set(added.get(0));
@@ -432,27 +410,21 @@ class MaintU2PointToolUnificationDesktopTest {
 			var a = Cu7M08SDesktopEventsTest.q(app, "A=(0.8976484384297626,1.7854818601338847)");
 			assertTrue(new GeoCeDGMetricEndpointAssistance(app).isApplicable(source, a));
 			String before = app.getXML();
-			AtomicReference<Object[]> message = new AtomicReference<>();
-			try (var dialogs = Mockito.mockStatic(JOptionPane.class)) {
-				dialogs.when(() -> JOptionPane.showOptionDialog(any(), any(), anyString(), anyInt(),
-						anyInt(), any(), any(Object[].class), any())).thenAnswer(call -> {
-							Object[] routes = call.getArgument(6);
-							assertEquals("Cancelar", routes[routes.length - 1]);
-							return Arrays.asList(routes).indexOf("Elegir una posición en el lugar");
-						});
-				dialogs.when(() -> JOptionPane.showConfirmDialog(any(), any(), anyString(), anyInt(),
-						anyInt())).thenAnswer(call -> {
-							message.set(call.getArgument(1));
-							return JOptionPane.CANCEL_OPTION;
-						});
-				assertNull(new GeoCeDGMetricEndpointAssistance(app).offer(source, a));
-			}
+			AtomicReference<JOptionPane> message = new AtomicReference<>();
+			var panes = new MaintU2R1SmokeCorrectionsDesktopTest.Panes(pane -> {
+				Object[] routes = pane.getOptions();
+				assertEquals("Cancelar", routes[routes.length - 1]);
+				return MaintU2R1SmokeCorrectionsDesktopTest.press(pane, "Elegir una posición en el lugar");
+			}, pane -> {
+				message.set(pane);
+				return MaintU2R1SmokeCorrectionsDesktopTest.press(pane, "Cancelar");
+			});
+			assertNull(MaintU2R1SmokeCorrectionsDesktopTest.with(panes,
+					() -> new GeoCeDGMetricEndpointAssistance(app).offer(source, a)));
 			assertEquals(before, app.getXML());
-			var free = Arrays.stream(message.get()).filter(JCheckBox.class::isInstance)
-					.map(JCheckBox.class::cast).findFirst().orElseThrow();
+			var free = MaintU2R1SmokeCorrectionsDesktopTest.find(message.get(), JCheckBox.class, "m08-allow-dragging");
 			assertEquals("Permitir arrastre", free.getText());
-			var list = Arrays.stream(message.get()).filter(JScrollPane.class::isInstance)
-					.map(part -> (JList<?>) ((JScrollPane) part).getViewport().getView()).findFirst().orElseThrow();
+			var list = MaintU2R1SmokeCorrectionsDesktopTest.find(message.get(), JList.class, "m08-endpoint-positions");
 			assertTrue(String.valueOf(list.getModel().getElementAt(0)).contains("u = "));
 			app.setLanguage(Locale.ENGLISH);
 		});
@@ -494,7 +466,8 @@ class MaintU2PointToolUnificationDesktopTest {
 			assertEquals("STALE_SELECTION", tool(app).lastFailure());
 			var status = Cu7M08SDesktopEventsTest.find(panel(app), JTextField.class, field -> !field.isEditable());
 			assertTrue(status.getText().startsWith("No point created: "), status.getText());
-			assertTrue(((JComponent) status).getToolTipText().endsWith("[STALE_SELECTION]"));
+			// PRE-G9B-MAINT-U2-R1: a multi-line tooltip, the code on its own last line.
+			assertTrue(((JComponent) status).getToolTipText().endsWith("<br>[STALE_SELECTION]</html>"));
 			app.setMode(EuclidianConstants.MODE_MOVE);
 		});
 	}

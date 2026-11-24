@@ -1991,18 +1991,24 @@ correspondientes. El certificador debe seguir la ruta real del productor. Esta
 conciliación focal no admite discontinuidades reales ni elimina las guardas de
 H10; el candidato P2 sigue pendiente de aceptación.
 
-Si el inspector ofrece **Construir un extremo métrico**, revise las rutas
-disponibles. **Crear punto equivalente** exige una dirección demostrada por la
-construcción, como en la clase admitida de dos traslaciones con el mismo vector.
+Si el inspector o la herramienta **Longitud semántica parcial del lugar
+geométrico** ofrecen **Construir un extremo métrico**, el diálogo indica qué
+extremo (por ejemplo `A`) carece de dirección semántica sobre la curva. Revise
+las rutas disponibles. **Crear punto equivalente** exige una dirección
+demostrada por la construcción, como en la clase admitida de dos traslaciones
+con el mismo vector.
 El nuevo punto conserva su construcción si una premisa falla temporalmente y
 puede volver a definirse cuando se restablece esa misma premisa. **Elegir una
-posición en el lugar** usa la referencia para encontrar una colocación
-admisible. Presenta las posiciones como el panel de Punto (rama, tramo y
-parámetro), indica la garantía de la ruta y ofrece **Permitir arrastre**.
-Elija la posición de forma explícita y confirme el diálogo; el punto nuevo
-seguirá el lugar en esa posición y su creación es un solo paso de Deshacer. Use el punto nuevo en la consulta de longitud. En el
-ejemplo del cono oblicuo, mover el origen métrico puede separar dos puntos
-que coinciden en la vista inicial.
+posición en el lugar** presenta las posiciones de la curva junto a `A` (radio
+de búsqueda 0,1) como el panel de Punto (rama, tramo y parámetro), indica la
+garantía de la ruta y ofrece **Permitir arrastre**. No se selecciona ninguna
+posición por usted: pulse una y después **Crear punto**; hasta que seleccione
+una posición el botón está desactivado. **Cancelar** no crea nada y, si no se
+encuentra ninguna posición, el diálogo lo indica y no crea nada. El punto
+nuevo conserva la posición elegida en el lugar, `A` no cambia y su creación es
+un solo paso de Deshacer. El punto nuevo no sustituye a `A` en la longitud:
+vuelva a medir con el punto nuevo. En el ejemplo del cono oblicuo, mover el
+origen métrico puede separar dos puntos que coinciden en la vista inicial.
 
 ### 9.4 Medir desde una intersección
 

@@ -1894,18 +1894,23 @@ must follow the actual producer's route. This focal reconciliation admits no
 real discontinuities and removes none of H10's guards; the P2 candidate remains
 pending acceptance.
 
-If the inspector offers **Construct a metric endpoint**, review the available
-routes. **Create equivalent point** requires a constructively established
+If the inspector or the **Partial semantic locus length** tool offers
+**Construct a metric endpoint**, the dialog says which endpoint (for example
+`A`) has no semantic address on the curve. Review the available routes.
+**Create equivalent point** requires a constructively established
 direction, such as two translations using the same vector.
 The new point retains its construction when a premise temporarily fails and
 can become defined again once the same premise is restored. **Choose a position
-on the locus** uses the reference to find an admissible selection. It lists the
-positions as the Point panel does (branch, section and parameter), states the
-guarantee of the route and offers **Allow dragging**. You choose the position
-explicitly and confirm the dialog; the new point follows the locus at that position,
-and creating it is one Undo step.
-Use the new point in the length query. In the oblique-cone example, shifting
-the metric origin can separate two points that coincide in the starting view.
+on the locus** lists the positions of the curve next to `A` (search radius 0.1)
+as the Point panel does (branch, section and parameter), states the guarantee
+of the route and offers **Allow dragging**. No position is selected for you:
+click one, then **Create point**; until you select a position the button stays
+disabled. **Cancel** creates nothing, and if no position is found the dialog
+says so and creates nothing. The new point keeps the selected position on the
+locus, `A` does not change, and creating the point is one Undo step.
+The new point does not replace `A` in the length: measure again with the new
+point. In the oblique-cone example, shifting the metric origin can separate
+two points that coincide in the starting view.
 
 ### 9.4 Measure from an intersection
 

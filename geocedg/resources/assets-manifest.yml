@@ -106,6 +106,42 @@
       "redistribution_status": "author-approved CC-BY-4.0 ordinary artwork"
     },
     {
+      "id": "geocedg.locus-length-total-tool-icon",
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_locuslength_total.svg",
+      "kind": "svg-tool-icon",
+      "asset_version": 1,
+      "semantic_role": "Total semantic locus length tool icon",
+      "canonical_lf_sha256": "64a3445d87b9c320363def7b2412bb93facf9bb38520380971ae265a493d22d1",
+      "provenance": "GeoCeDG-authored PRE-G9B-MAINT-U2-R1 vector source: the Locus V2 curve stroke drawn as the measured object with marked ends, and a full-width dimension line with filled arrowheads; distinct from the Locus V2 icon, no inherited icon pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "GeoCeDG-authored ordinary artwork under the CC-BY-4.0 class of the owned tool icons; PRE-G9B-MAINT-U2-R1 technical candidate pending author review"
+    },
+    {
+      "id": "geocedg.locus-length-partial-tool-icon",
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_locuslength_partial.svg",
+      "kind": "svg-tool-icon",
+      "asset_version": 1,
+      "semantic_role": "Partial semantic locus length tool icon",
+      "canonical_lf_sha256": "fd86066d789699a8d41b675641c2898acf90ac9f46871b6b0bcbe830cd1c4a38",
+      "provenance": "GeoCeDG-authored PRE-G9B-MAINT-U2-R1 vector source: the Locus V2 curve stroke with a highlighted stretch between two endpoints and a dimension line limited to that stretch; distinct from the Locus V2 icon, no inherited icon pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "GeoCeDG-authored ordinary artwork under the CC-BY-4.0 class of the owned tool icons; PRE-G9B-MAINT-U2-R1 technical candidate pending author review"
+    },
+    {
+      "id": "geocedg.spline-v2-closed-tool-icon",
+      "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_splinev2_closed.svg",
+      "kind": "svg-tool-icon",
+      "asset_version": 1,
+      "semantic_role": "Closed Semantic Spline V2 tool icon",
+      "canonical_lf_sha256": "6887685379c17b7826730e3338ad5e949f1e9a527208f56b1b181ca3006851c5",
+      "provenance": "GeoCeDG-authored PRE-G9B-MAINT-U2-R1 vector source: the Spline V2 tool artwork plus a return arrow joining the last control point to the first (closure mark); no inherited icon pixels",
+      "copyright_license_class": "geocedg-documentation-or-ordinary-art",
+      "trademark_role": "none",
+      "redistribution_status": "GeoCeDG-authored ordinary artwork under the CC-BY-4.0 class of the owned tool icons; PRE-G9B-MAINT-U2-R1 technical candidate pending author review"
+    },
+    {
       "id": "geocedg.aligned-dimension-tool-icon",
       "path": "source/shared/common/src/main/resources/org/geogebra/common/icons/svg/web/toolIcons/mode_geocedg_aligneddimension.svg",
       "kind": "svg-tool-icon",
