@@ -138,6 +138,8 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	 * lazily because views created inside the host constructor may paint first.
 	 */
 	private ExportAreaSession exportAreaSession;
+	private GeoCeDGDxfReferenceSession dxfReferenceSession;
+	private GeoCeDGDxfReferenceImport dxfReferenceImport;
 	private PictureExportService pictureExportService;
 	private GeoCeDGExportAreaPrompt exportAreaPrompt = GeoCeDGExportAreaPrompt.dialog();
 	private GeoCeDGIsoABorderPrompt isoABorderPrompt = GeoCeDGIsoABorderPrompt.swing();
@@ -593,12 +595,21 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		documentSessionReset = true;
 		closeControlLayout();
 		clearExpertSaveState();
+		// PRE-G9B-MAINT-A-DXF0 R-a: references never survive a document replacement
+		clearDxfReferences();
 		if (openRoute) {
 			getExportAreaSession().resetForDocument();
 		}
 		if (statusBar != null) {
 			statusBar.clearPasteNotice();
 			statusBar.clearPointInteractionNotice();
+		}
+	}
+
+	/** PRE-G9B-MAINT-A-DXF0 R-a: New, Open and Close clear the session references. */
+	private void clearDxfReferences() {
+		if (dxfReferenceSession != null) {
+			dxfReferenceSession.clear();
 		}
 	}
 
@@ -797,6 +808,32 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 	@Override
 	public boolean isLayerShown(int layer) {
 		return layerWorkspace == null || layerWorkspace.isLayerShown(layer);
+	}
+
+	/**
+	 * @return PRE-G9B-MAINT-A-DXF0 session store R-a of imported DXF references; never part
+	 *         of the construction, its XML or its Undo history
+	 */
+	GeoCeDGDxfReferenceSession getDxfReferenceSession() {
+		if (dxfReferenceSession == null) {
+			dxfReferenceSession = new GeoCeDGDxfReferenceSession();
+			// presentation only: the overlay repaints, the document never changes
+			dxfReferenceSession.addListener(() -> getKernel().notifyRepaint());
+		}
+		return dxfReferenceSession;
+	}
+
+	/** @return PRE-G9B-MAINT-A-DXF0 import controller of this document window */
+	GeoCeDGDxfReferenceImport getDxfReferenceImport() {
+		if (dxfReferenceImport == null) {
+			dxfReferenceImport = new GeoCeDGDxfReferenceImport(this);
+		}
+		return dxfReferenceImport;
+	}
+
+	/** File -> Import DXF reference... (import.dxf-reference). */
+	void importDxfReferenceAction() {
+		getDxfReferenceImport().run();
 	}
 
 	/** @return PRE-G9B-R6-plus-B session export-area authority */
@@ -1448,6 +1485,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		boolean cleared = super.clearConstruction();
 		if (cleared) {
 			clearExpertSaveState();
+			clearDxfReferences();
 		}
 		if (cleared) { clearPointInteractionNotice(); }
 		if (cleared && layerWorkspaceActive) {
@@ -1511,6 +1549,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 
 	@Override
 	protected void exitFrame() {
+		clearDxfReferences();
 		GeoCeDGWorkspaceController.saveCurrentLayout(this);
 		super.exitFrame();
 	}
@@ -2051,6 +2090,7 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		getKernel().initUndoInfo();
 		setCurrentFile(null);
 		setSaved();
+		clearDxfReferences();
 	}
 
 	@Override
@@ -2513,6 +2553,10 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		boolean saved = super.saveGeoGebraFile(file);
 		if (saved && expert) {
 			expertSaveState.savedCopy();
+		}
+		if (saved && dxfReferenceSession != null && !dxfReferenceSession.isEmpty()) {
+			// PRE-G9B-MAINT-A-DXF0 R-a: nothing of the references was written (non-blocking)
+			getStatusBar().showPasteNotice(layerText("DxfReference.SessionOnly"));
 		}
 		return saved;
 	}

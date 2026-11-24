@@ -244,7 +244,7 @@ Use the menu bar to find tools by task. The individual Construction tools are li
 
 | Menu | What you can do |
 |---|---|
-| **[A]** **File** | **[G]** New file and Close. **[G]** Open recent…. **[A]** Open…, Save and Save as… with the native document policy. **[A]** Print preview…, Graphics View as Picture…, PSTricks…, PGF/TikZ… and Asymptote… use the GeoCeDG export area. **[N]** **[!]** Export 2D geometry as DXF (experimental)…. **[N]** Define export area…, Show export area, Clear export area, Define ISO A export area… and Use selected ISO A border. **[A]** Use Export_1 and Export_2 activates the two-point crop explicitly. **[A]** **[!]** **Insert** brings together certified insertion, expert review, clipboard images and style transfer (section 4.2). **[N]** **[!]** Open Classic diagnostic session. |
+| **[A]** **File** | **[G]** New file and Close. **[G]** Open recent…. **[A]** Open…, Save and Save as… with the native document policy. **[A]** Print preview…, Graphics View as Picture…, PSTricks…, PGF/TikZ… and Asymptote… use the GeoCeDG export area. **[N]** **[!]** Export 2D geometry as DXF (experimental)…. **[N]** **[!]** Import DXF reference… shows the `SPLINE` curves of a DXF file as read-only references of the session (section 11.12). **[N]** Define export area…, Show export area, Clear export area, Define ISO A export area… and Use selected ISO A border. **[A]** Use Export_1 and Export_2 activates the two-point crop explicitly. **[A]** **[!]** **Insert** brings together certified insertion, expert review, clipboard images and style transfer (section 4.2). **[N]** **[!]** Open Classic diagnostic session. |
 | **[G]** **Edit** | **[G]** Undo, Redo, Move, Move around Point, Select Objects, Attach / Detach Point and Delete. **[N]** Working Layer selects the layer for new objects in the current session. See [Menus, preferences and shortcuts](#command-and-workflow-reference/16.6). |
 | **[A]** **View** | **[G]** **Views** toggles Algebra, Graphics 2, Spreadsheet, CAS and Object Properties. **[A]** **Visibility and style** includes orientation and control layout. **[G]** Show / Hide Object, Show / Hide Label and Copy Visual Style. **[N]** **[!]** Show orientation cue applies to eligible results. **[A]** **Navigation** includes Zoom to rectangle, Zoom Factor In, Zoom Factor Out and Configure navigation zoom…. **[G]** Move Graphics View, Zoom In, Zoom Out, Standard view and Show all objects. **[A]** **Construction inspection** includes the Construction protocol with adaptive row height. **[G]** Show construction navigation bar. **[N]** Inspect definition… opens the definition without changing Algebra display mode. **[A]** **Restore Construction layout** restores the CeDG Construction workspace. |
 | **[A]** **Construction** | The groups below include the semantic curves and engineering dimensions. |
@@ -2290,11 +2290,55 @@ whatever the zoom.
 
 ### 11.11 Current export boundary
 
-There is no DXF import, no viewport export, no text
-export, no export of the legacy sampled `Locus`, no implicit-curve contouring,
-no exact `SPLINE` and no 3D export. Line weight, line style, fill, opacity,
-point size and labels are not transported; layer, RGB colour, current
-visibility and the off state of hidden layers are.
+DXF import only shows `SPLINE` entities as read-only references (section
+11.12); nothing is imported as a construction object. There is no viewport
+export, no text export, no export of the legacy sampled `Locus`, no
+implicit-curve contouring, no exact `SPLINE` and no 3D export. Line weight,
+line style, fill, opacity, point size and labels are not transported; layer,
+RGB colour, current visibility and the off state of hidden layers are.
+
+### 11.12 Imported DXF references (read-only)
+
+**File → Import DXF reference…** reads the `SPLINE` entities of a 2D ASCII DXF
+file and draws them in Graphics as *references*: dashed purple curves that are
+not part of the construction.
+
+- **What is read.** Top-level model-space `SPLINE` entities defined by degree
+  (1 to 7), knots, control points (at most 1 024) and weights. A rational
+  spline keeps its weights; a file without weight values (code 41) has unit
+  weights. Each entity is admitted or rejected on its own, and the report gives
+  the typed cause of every rejection, for example `PERIODIC_UNSUPPORTED`,
+  `NOT_CLAMPED_UNSUPPORTED`, `NONPLANAR_UNSUPPORTED` or
+  `WEIGHT_COUNT_MISMATCH`. Splines with fit points only, periodic, unclamped
+  or 3D splines, paper space, block content and binary DXF are not imported.
+  A file above 64 MiB or with more than 10 000 `SPLINE` entities is refused
+  as a whole.
+- **Units and transformation.** The dialog shows the DXF units (`$INSUNITS`)
+  and the construction unit of the drawing. Nothing is scaled on its own: by
+  default one drawing unit is one model unit. You may choose an explicit
+  uniform scale or affine transformation; it moves the control points only.
+- **What a reference is not.** It is not a GeoCeDG object: it has no name, it
+  is not listed in Algebra or in the construction protocol, it cannot be
+  selected, it does not attract the cursor and no tool or command accepts it.
+  A point clicked on it is an ordinary free point. No length, intersection or
+  tangent is published for it, and the DXF and LaTeX exports leave it out.
+  Picture exports (PNG, PDF, SVG, EMF, print and the clipboard image) do not
+  include references either; only the Graphics view on screen draws them.
+- **Session only.** References belong to the session of the open window.
+  Importing, hiding and removing them creates no Undo step and does not change
+  the construction. Save writes nothing of them and shows a notice; New, Open
+  and Close remove them, so after reopening a drawing you import the file
+  again. The DXF file itself is only read.
+- **Inspection.** After an import, and whenever you run the action again while
+  references exist, the **Imported DXF references** window lists them with
+  **Inspect** (read-only: nature, contract, closure, structural continuity,
+  provenance with file and data digests, diagnostics and render tolerance),
+  **Show/Hide** and **Remove**.
+
+The curve is drawn from a polyline computed once in model units, within a
+chordal tolerance of 10⁻⁴ times the diagonal of the control polygon's box; it
+is the same at every zoom. The drawing is an estimate, never evidence about the
+curve.
 
 ---
 
@@ -2689,7 +2733,8 @@ These are the limitations that affect what you can do in the application today.
   `LWPOLYLINE`.
 - Approximation evidence is `ESTIMATED_ERROR`, not a certified global error
   bound.
-- There is no DXF import, viewport export, text export, legacy `Locus` export,
+- DXF import shows `SPLINE` entities only as read-only session references
+  (11.12). There is no viewport export, text export, legacy `Locus` export,
   implicit-curve contouring or 3D export.
 - LaTeX writes Locus V2 and Spline V2 as approximate paths with their evidence;
   there is no exact Bézier or spline output, also for cubic Spline V2 (4.5).

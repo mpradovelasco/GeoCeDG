@@ -56,3 +56,4 @@ LICENSES/manifest.json text eol=lf
 # blob PostP1BilingualUserGuideTest actually asserts against.
 docs/user/geocedg_user_guide_en.md text eol=lf
 docs/user/geocedg_user_guide_es.md text eol=lf
+source/shared/common-jre/src/test/resources/org/geocedg/common/importer/dxf/*.dxf text eol=lf

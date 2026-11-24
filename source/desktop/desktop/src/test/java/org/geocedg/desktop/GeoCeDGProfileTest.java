@@ -42,7 +42,7 @@ class GeoCeDGProfileTest {
 	void compilesManifestToolbarIntoExistingGrammar() {
 		String toolbar = GeoCeDGProfile.getToolbarDefinition();
 		assertThat(GeoCeDGProfile.getProfileId(), equalTo("geocedg-desktop"));
-		assertThat(GeoCeDGProfile.getActions(), hasSize(137));
+		assertThat(GeoCeDGProfile.getActions(), hasSize(138));
 		assertThat(GeoCeDGProfile.getActions().stream().map(GeoCeDGProfile.ActionDefinition::id).toList(),
 				org.hamcrest.Matchers.hasItem("document.insert-clipboard-image"));
 		assertThat(ToolBar.parseToolbarString(toolbar), hasSize(10));

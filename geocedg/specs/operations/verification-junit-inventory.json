@@ -5298,6 +5298,109 @@
       ]
     },
     {
+      "selection_id": "pre-g9b-maint-a-dxf0.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.math.bspline.*",
+        "org.geocedg.common.importer.dxf.*"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.math.bspline.*",
+        "--tests",
+        "org.geocedg.common.importer.dxf.*",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 1,
+      "expected_identities_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "0000000000000000000000000000000000000000",
+          "tree": "0000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-maint-a-dxf0.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PreG9BMaintADxf0DesktopTest",
+        "org.geocedg.desktop.G9U1ActionRegistryTest",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "org.geocedg.desktop.GeoCeDGProfileTest",
+        "org.geocedg.desktop.PreG9BR6PlusA1LayerWorkspaceTest",
+        "org.geocedg.desktop.PreG9BR6PlusE1LCuratedLibraryTest",
+        "org.geocedg.desktop.PreG9BR6PlusBExportSurfaceTest",
+        "org.geocedg.desktop.PreG9BR6PlusF1OrientationCueTest",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
+        "org.geocedg.desktop.PreG9BR5AGuideNavigationTest",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "org.geocedg.desktop.PostP1GuideRenderingTest",
+        "org.geocedg.desktop.PreG9BCu9GuideSearchTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BMaintADxf0DesktopTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1ActionRegistryTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1ProfileCompilerTest",
+        "--tests",
+        "org.geocedg.desktop.G9U1WorkspaceSurfaceTest",
+        "--tests",
+        "org.geocedg.desktop.GeoCeDGProfileTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusA1LayerWorkspaceTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusE1LCuratedLibraryTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusBExportSurfaceTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF1OrientationCueTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR5AGuideNavigationTest",
+        "--tests",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "--tests",
+        "org.geocedg.desktop.PostP1GuideRenderingTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu9GuideSearchTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 1,
+      "expected_identities_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "0000000000000000000000000000000000000000",
+          "tree": "0000000000000000000000000000000000000000"
+        }
+      ]
+    },
+    {
       "selection_id": "pre-g9b-maint-u2.shared",
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
