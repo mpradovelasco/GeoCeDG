@@ -1713,6 +1713,222 @@ inadmissible for the total of a declared domain stay inadmissible for that total
 bypass of geometric completeness of §26.6 stays exclusive to its typed numeric traversal,
 and the bypass of this section to the typed evidence of a route in one region.
 
+#### 28.3.1 PRE-G9B-MAINT-N1 candidate amendment: chord-scaling check (B5a)
+
+Candidate text of 2026-11-23, written under the author authorization of increment
+`PRE-G9B-MAINT-N1` and the direction of decision D-B-1a of the same day
+([amendment record](../../../docs/validation/pre_g9b_maint_n1_metrics_amendment_record.md)).
+**It is not in force.** Until the author adopts it, §28.3 above governs unchanged. Its
+author-decision status is recorded only in that record and in later author records, never
+here; the word «candidate» in its heading records the stage at which it was written. It
+changes no other section, and §28.2 in particular.
+
+On adoption, the admission of §28.3 becomes version `conditioned-length-scalar/v2`.
+Conditions 1 to 7 are unchanged and one condition is added:
+
+8. **Chord-scaling check.** The check of this subsection, under the policy
+   `conditioned-route-jump-guard/v1`, decided every accepted leaf of the estimate of the
+   route without observing the chord-scaling signature and without an inconclusive leaf,
+   within its budget.
+
+**What the check is.** A conservative numeric detection. Where it observes a numeric signature
+compatible with a discontinuity or with a singular variation of speed, the continuity that H3
+requires is not established by the check, and by conservative policy the scalar is not
+admitted. The signature does not demonstrate that H3 is false: some continuous curves whose
+speed varies extremely or is singular produce it too. The check therefore turns some
+discontinuities that leave no trace at the nodes of the traversal into diagnosed refusals,
+and may refuse some continuous routes. It is no proof of continuity and no certification: a
+route that passes keeps H1 to H4 as hypotheses, exactly as under v1. Three situations stay
+distinct:
+
+| Situation | Meaning | Effect of the check |
+|---|---|---|
+| Continuity not certified, no adverse evidence | the normal state of every conditioned region: H3 is assumed and the check observed nothing against it | none; the route is admitted as under v1 |
+| Numeric signature observed | a signature compatible with a discontinuity or with a singular variation of speed was observed on the route. The continuity that H3 requires is not established by the check; no discontinuity is demonstrated | by conservative policy the route is no number, with its own diagnostic |
+| Real discontinuity not detected | H3 is false on the route, but the discontinuity is one that finite sampling cannot observe (declared limits below) | none; the number stays an estimate under a hypothesis that is false, as under v1 |
+
+The absence of a signature never demonstrates continuity, and its presence never
+demonstrates a discontinuity.
+
+**Rationale.** Let `c(I)` be the chord of a parameter interval `I` and `I'` its half with the
+greater chord. Near a parameter where the traced curve is `C^1` with nonvanishing speed,
+`c(I')/c(I)` tends to `1/2`. At a stationary point the ratio along the halves that follow the
+greater chord falls below `1` after a bounded number of levels. At an end where the speed
+diverges as `|u − u*|^{−α}`, `0 < α < 1`, it tends to `2^{α−1}`. Across a jump of size
+`J > 0` the chord tends to `J` and the ratio to `1`. A half that keeps the chord of the whole
+over consecutive levels is the numeric signature that a jump produces; a continuous curve
+whose speed is singular or varies faster than the levels resolve can produce it as well
+(conservative refusals below). It shows also where all the chord levels of the estimator
+agree and the traversal sees nothing (probe P-1: a jump aligned with the chord).
+
+**Procedure.** For every leaf `λ` that the estimator of §25.3 accepted on the route, in
+increasing parameter order:
+
+1. `I_0` is the quarter of `λ` with the greatest chord, among the quarter chords that the
+   estimator evaluated; a tie goes to the quarter of lowest parameter. The count `r` of
+   consecutive high ratios starts at `0`.
+2. For `k = 0, 1, …, L − 1`, in this order:
+   - if `c(I_k) ≤ ε_res(λ)`, the leaf ends **below resolution**;
+   - if no midpoint of `I_k` is representable strictly inside it, the leaf ends
+     **inconclusive** when `r > 0` or `k = 0`, and **without signature** otherwise;
+   - the traced point is evaluated at the midpoint of `I_k`. A failed evaluation is a failure
+     of the result inside the stretch (§28.1): no number;
+   - `q_k = c(I_{k+1}) / c(I_k)`, where `I_{k+1}` is the half of `I_k` with the greater chord
+     (the lower half on a tie). A ratio that is not finite ends the leaf **inconclusive**;
+   - if `q_k > ρ_J`, `r` increases by one, and the leaf ends with the **signature observed**
+     when `r` reaches `m`;
+   - otherwise `r` returns to `0`, and the leaf ends **without signature** when fewer than
+     `m` levels remain (`L − 1 − k < m`).
+3. A leaf still undecided after level `L − 1` ends **inconclusive** if `r > 0`, otherwise
+   **without signature**.
+
+The check stops at the first leaf with the signature observed; an inconclusive leaf does not
+stop it. The route satisfies condition 8 when every leaf ended without signature or below
+resolution before the budget was spent. Otherwise the same estimate is published as a rich
+result with `CONDITIONED_ROUTE_NOT_ADMISSIBLE`, as under condition 4, and is no number. The
+result carries each diagnostic that applies:
+
+| Diagnostic | When | What it states |
+|---|---|---|
+| `CHORD_SCALING_JUMP_SIGNATURE` | a leaf ended with the signature observed | a numeric signature compatible with a discontinuity or with a singular variation of speed was observed in the direction of the chord, inside the interval of the decision. The continuity that H3 requires is not established by this check and, by conservative policy, the scalar is not admitted. It demonstrates neither a jump nor that H3 is false; the name of the diagnostic names the signature, not its cause |
+| `CHORD_SCALING_INCONCLUSIVE` | no signature, and a leaf ended inconclusive | the check could not decide on that leaf: the parameter resolution was reached during a run of high ratios, or a ratio was not finite |
+| `CHORD_SCALING_BUDGET_EXHAUSTED` | no signature, and the budget was spent before every leaf was decided | the check was not completed; nothing is concluded about the leaves left untested |
+
+Each diagnostic records the leaf, the interval of the decision, the ratios observed, the policy
+version and the evaluations spent. An admitted result records with its hypotheses the policy
+version, the leaves tested, those below resolution, the evaluations spent and the statement
+«no chord-scaling signature observed; this is not a proof of continuity».
+
+**Policy.** `conditioned-route-jump-guard/v1`. Its quantities are pure numbers or
+world-coordinate lengths; zoom, DPI, viewport and render policy never enter it. Its version is
+part of the evidence of the route (condition 7): another version computes the admission again.
+
+| Parameter | Candidate value | Interval admissible for `MAINT-B5a` |
+|---|---|---|
+| `ρ_J`, ratio threshold | `0.85` | `[0.80, 0.90]` |
+| `m`, consecutive high ratios | `3` | `{3, 4}` |
+| `L`, levels per leaf | `5` | `m ≤ L ≤ m + 3` |
+| `ε_res(λ)`, chord resolution | `max(τ_λ, 2^8 · u · M_λ)` | the same form, with a factor from `2^4` to `2^12` |
+| `E_cap`, evaluations per route | `8 192` | `[2 048, 16 384]` |
+
+`τ_λ` is the share of the tolerance of the leaf (§25.3), `u = 2^{−53}` the unit roundoff and
+`M_λ` the greatest absolute coordinate of the evaluated nodes of the leaf. `M_λ` depends on
+the absolute position of the leaf, not only on its geometry (numeric representation and
+translations, below). `MAINT-B5a` fixes
+the final values inside these intervals with its focal tests and records them in the policy and
+in its report. A value outside an interval needs a new amendment.
+
+The candidate values follow from an analysis in a collinear model, the worst case of an
+aligned jump, recorded in the amendment record:
+
+- a jump of size `J`, in a leaf whose quarters have width `h_0`, at speed `s`, is signalled
+  when `J` exceeds about `2.36 · s · h_0 / 2^{L−m}`, that is `0.59 · s · h_0` with the
+  candidate values;
+- an end with divergent speed is signalled when `2^{α−1} > ρ_J`, that is
+  `α > 1 + log2 ρ_J ≈ 0.766`; a fold end (`α = 1/2`, ratio `0.707`) is not;
+- a stationary point of order up to `26` gives no signature at any alignment examined; the
+  parametrizations `u ↦ u³` and `u ↦ u⁸` give none on any leaf of a uniform partition;
+- a leaf without signature costs `L − m + 1 = 3` evaluations, any leaf at most `L = 5`.
+
+**Budget.** The check spends at most `L` evaluations per leaf and at most `E_cap` per route.
+They are counted apart from the work budget of the estimator (§25.7). They are not leaves,
+change neither the value nor the error of the estimate, and are never reused across
+revisions. Spending `E_cap` before every leaf is decided gives
+`CHORD_SCALING_BUDGET_EXHAUSTED` and no number: the conservative choice. `MAINT-B5a` must show
+that it does not happen on the routes admitted today.
+
+**Declared limits.** Finite sampling cannot detect these real discontinuities, which are
+violations of H3, and the check does not claim to:
+
+1. a removable discontinuity: one different value at a parameter that is never evaluated;
+2. an excursion that leaves and comes back between two evaluated parameters, including a jump
+   and its return inside one interval;
+3. a jump below the resolution of the check: not above `ε_res(λ)`, or too small for its chord
+   to dominate the chord of the continuous part at the levels examined;
+4. a jump in a quarter or a half that the check does not follow, because another one carries a
+   greater chord;
+5. a jump in a cell narrower than the refinement stencil (§25.3) whose chord does not exceed
+   `ε_res(λ)`;
+6. a change of selection that keeps the traced position continuous: a violation of H2, not a
+   jump of the traced function.
+
+**Conservative refusals.** The check may refuse, with `CHORD_SCALING_JUMP_SIGNATURE`,
+continuous routes that have no jump: an end whose speed diverges with `α > 1 + log2 ρ_J`; a
+stationary point of very high order (from `27` in the analysis); a speed that varies faster
+than the leaf resolves, as in a spike or a fast oscillation next to a feature. In each of them
+the signature is observed and the continuity that H3 requires is not established by the
+check, but no discontinuity is demonstrated. No result reports a proven jump or a proven
+failure of H3.
+
+**Scope.** The check runs only on a route that satisfies conditions 1 to 7 and does not change
+their causes: an estimate that failed or did not converge keeps its own status and cause, as a
+fold end does today. It reads only the estimate of the route and evaluations of the traced
+point. It changes nothing in the traversal and its policy (`conditioned-traversal/v1`), the
+content identity of the evidence, the existence structure, the component inventory, the
+tokens, the semantic identity or the existence certificates; in the value and the error of the
+estimate; in §26.5 (H10), §26.6 (P2), §28.1 and §28.2; in `Intersect` and its isolation
+policy; or in serialization. It applies to no total. Deferred: the same check inside the
+traversal (`MAINT-B5b`, `conditioned-traversal/v2`) and the admission T-A (D-B-1c).
+
+**Determinism and invariance.** For a fixed revision, policy and tolerance, the leaves, the
+evaluations and the outcome are the same. Zoom, DPI, viewport and render policy never enter the
+check: the outcome does not depend on them.
+
+**Numeric representation and translations.** The mathematical check is invariant under
+translations: the chords, their ratios and the tolerance share `τ_λ` (§25.3, built on a
+translation-invariant extent) depend only on the relative geometry. Its binary64
+implementation is not exactly invariant. The evaluated points carry a rounding error that
+grows with the magnitude of their absolute coordinates, a chord computed as a difference of
+large coordinates loses relative precision, and the term `2^8 · u · M_λ` of `ε_res(λ)` grows
+with `M_λ` by construction. A translation of the whole construction may therefore change a
+decision of the check, not only the rounding of a value: a leaf may end below resolution
+instead of being tested, a ratio near `ρ_J` may fall on the other side, and the evaluations
+spent and the diagnostics may differ. The declared limits 3 and 5 widen as the coordinates
+grow: a jump observed near the origin may go unobserved far from it, and a translated route
+may be admitted where the untranslated one is refused, or the reverse. The check claims no
+exact geometric invariance under translations; the statement of §25.8 that translations leave
+results unchanged up to rounding holds for it with this proviso, since here rounding may change
+a decision. The form of `ε_res(λ)` stays a candidate and is not changed without
+characterization. Before the final policy is approved, `MAINT-B5a`:
+
+- tests the same curves (the probe P-1, the adversarial battery and the continuous references
+  of no regression) under translations of increasing magnitude, up to and beyond the
+  magnitude at which `2^8 · u · M_λ` exceeds `τ_λ`;
+- compares, for each translation and against the untranslated curve, the admissibility, the
+  evaluations spent by the check and the diagnostics, and reports every divergence with the
+  magnitude at which it appears;
+- justifies the resolution factor that it chooses inside the interval of the policy, from the
+  rounding of the chord computation and those tests, and declares the range of coordinate
+  magnitudes over which the outcome was shown to be unchanged.
+
+Another form of `ε_res(λ)` needs that characterization and a new amendment.
+
+**Compatibility.** No XML changes and no payload is persisted. A document of any version with
+`LocusLength(L, A, B)` on a conditioned route whose check observes a signature, is
+inconclusive or spends its budget shows an undefined number where 1.2.2 shows one; its rich
+result keeps the estimate with the diagnostic, and formulas that read the number become
+undefined through the DAG. The release note of `MAINT-B5a` declares it.
+
+**Validation by `MAINT-B5a`.** The acceptance criterion of the author (2026-11-23):
+
+- the probe P-1, line and arc, gives no number; the stretch before the jump stays a number; a
+  fold end keeps its current cause;
+- the adversarial battery: aligned jumps at angles from `0` to `0.35 rad` to the chord, sizes
+  from the resolution upwards by orders of magnitude, dyadic and non-dyadic positions, next to
+  an end of the route, several jumps in one route, a jump and its return in one cell, fast
+  oscillation next to the jump. What the check cannot refuse is fixed by a test as a declared
+  limit;
+- no regression of admissibility: `u ↦ u³`, `u ↦ u⁸`, stationary points of orders 1 and 2,
+  narrow closed loops and high curvature, divergent speed with `α` below the threshold, and
+  every conditioned route admitted today in the author models (`w_2`, `a_3`, `trHole`) and in
+  the post-R1 batteries, measured before and after with the evaluations of the check;
+- the three diagnostics, each produced by a test, distinct from each other;
+- the translation tests and the justification of the resolution factor of «Numeric
+  representation and translations»;
+- unchanged: the pinned traversal test
+  `aJumpAlongTheChordLeavesNoTraceAndIsNotDetected` and
+  `aRouteAcrossAJumpThatTheTraversalDoesNotSeeIsNoNumber`.
+
 ## 29. Life cycle of the private rich authority of a number (GeoCeDG 1.2.2)
 
 Closing check of GeoCeDG 1.2.2, author instruction of 2026-11-22. It states an existing
@@ -1741,3 +1957,64 @@ read. The authority is the dependency of that number alone.
   1.2.2. To give up a length, delete it; to change it, delete it and create the new one.
 - Nothing else changes: the authority is computed, published, copied and persisted as
   before, and a number with a reader keeps its value and its guarantee.
+
+### 29.1 PRE-G9B-MAINT-N1 candidate amendment: removal at the end of a redefinition (B2-F1)
+
+Candidate text of 2026-11-23, written under the author authorization of increment
+`PRE-G9B-MAINT-N1` and decision D-B-2, approved with its scope reduced to B2-F1
+([amendment record](../../../docs/validation/pre_g9b_maint_n1_metrics_amendment_record.md)).
+**It is not in force.** Until the author adopts it, §29 above governs unchanged, its declared
+limit included. Its author-decision status is recorded only in that record and in later author
+records, never here. On adoption it replaces the item «Declared limit: redefinition» of §29;
+the other items are unchanged.
+
+- **Candidate.** When a redefinition replaces the number, its private authority becomes a
+  removal candidate of that redefinition operation instead of staying. Nothing is removed
+  then: the identity guards of the redefinition transaction, which refuse to publish a graph
+  change while the redefinition is in progress, stay as they are.
+- **Removal at completion.** When the replacement of the number has succeeded, and for a batch
+  of redefinitions after its final switch, every candidate that the construction still holds
+  without a reader is removed by the ordinary removal of the item «Deletion». The removal runs
+  outside the publication lease of the redefinition and before the Undo point of the
+  operation is stored. It belongs to the same operation: the Undo point records the state
+  without the authority, and no Undo point records the intermediate state.
+- **Criterion.** An authority is removed only when all of the following hold at completion: it
+  has a private name in the reserved namespace of the construction (above); it was the rich
+  input of the number that the redefinition replaced; and no algorithm reads it. Never
+  removed: a rich result with an ordinary name, which the document owns, such as those that
+  `LocusLength` created before 1.2.0; an authority that another algorithm reads, including the
+  number that the redefinition creates; a result with its own identity and use; anything that
+  the redefinition did not make a candidate.
+- **Atomicity.** The redefinition of the number and the removal of its candidates are one
+  logical operation:
+  1. the operation succeeds only when the replacement and every mandatory removal have
+     completed; no success is declared while a mandatory removal is incomplete;
+  2. no partially updated state, such as the redefined number with its previous authority
+     still present after a failed removal, is published as the final result;
+  3. when the removal fails after the number has been replaced, the operation restores the
+     previous state coherently: the previous number, its private authority, their
+     dependencies and the identities concerned, exactly as before the operation;
+  4. a failed operation stores no Undo point;
+  5. a successful operation keeps a single Undo/Redo step.
+- **Failure.** A redefinition that fails or is reverted, before or after the replacement of the
+  number, discards its candidates. The restored state holds the number with its authority,
+  exactly as before the operation; nothing is removed in part.
+- **Undo and Redo.** Undo of the redefinition restores the previous number with its authority.
+  Redo restores the redefined number without the previous authority. Both are one step.
+- **Condition on the implementation.** If the existing transactional mechanisms cannot
+  guarantee the coherent restoration of item 3 of «Atomicity» when the removal fails after
+  the replacement of the number, the implementation `MAINT-B2` stops and asks for an
+  architectural decision before it changes the kernel. This text authorizes no new
+  transactional infrastructure, no change to the identity guards and no design of a general
+  reconstruction.
+- **Identity.** The redefinition keeps the identity of the number; it is never treated as a
+  deletion followed by a creation.
+- **No sweep when loading.** B2-F2 is not implemented (author decision of 2026-11-23). Opening
+  a document, reading a file and rebuilding a state for Undo or Redo remove nothing. An
+  authority without a reader that a document already holds, left by a redefinition before
+  this amendment or by a deletion before 1.2.2, stays: it is saved and reopened as today and
+  is computed again at every change of its source. This is a declared limitation, with no
+  migration and no silent repair.
+
+No XML changes. Loading an existing document does not change. A document saved after a
+redefinition made under this text does not hold the authority that 1.2.2 would have left.
