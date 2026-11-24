@@ -185,7 +185,7 @@ public class MaintA2BSplineFamilyTest extends BaseUnitTest {
 		add("B=(1,1)");
 		add("C=(2,-1)");
 		add("D=(3,1)");
-		GeoLocusV2 polygon = add("b=BSpline({A,B,C,D},1)");
+		final GeoLocusV2 polygon = add("b=BSpline({A,B,C,D},1)");
 		add("level:y=1");
 		GeoLocusIntersectionResult onKnot = add("R=Intersect(b,level)");
 		List<LocusIntersectionSolution2D> roots =
@@ -206,7 +206,7 @@ public class MaintA2BSplineFamilyTest extends BaseUnitTest {
 	@Test
 	void bs10SimilarityImageForwardsTheLocalCoefficients() {
 		points();
-		GeoLocusV2 curve = add("b=BSpline({A,B,C,D,E},3)");
+		final GeoLocusV2 curve = add("b=BSpline({A,B,C,D,E},3)");
 		GeoLocusV2 image = add("t=Translate(b,Vector((1,-2)))");
 		add("A2=A+(1,-2)");
 		add("B2=B+(1,-2)");

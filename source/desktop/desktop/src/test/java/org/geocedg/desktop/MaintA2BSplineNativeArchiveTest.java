@@ -122,7 +122,8 @@ class MaintA2BSplineNativeArchiveTest {
 		Path first = directory.resolve("bspline.cedg");
 		assertTrue(gui(app).saveAsTo(first.toFile()));
 		String saved = entry(first, "geogebra.xml");
-		assertTrue(saved.contains("<geocedgBSpline contract=\"bspline-2d/v1\" knots=\"explicit\"/>"));
+		assertTrue(saved.contains(
+				"<geocedgBSpline contract=\"bspline-2d/v1\" knots=\"explicit\"/>"));
 		assertTrue(saved.contains(
 				"<geocedgBSpline contract=\"bspline-2d/v1\" knots=\"clamped-uniform/v1\"/>"));
 

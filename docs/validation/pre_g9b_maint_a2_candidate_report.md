@@ -9,6 +9,7 @@ PRODUCT_PHASE_EFFECT      = PRE-G9B-MAINT-A2
 GUIDE_IMPACT              = UPDATE (sección 7, subsecciones 7.8 y 7.9; referencia de comandos)
 BOOTSTRAP_IMPACT          = NO CHANGE
 FINAL                     = NOT AUTHORIZED
+VERIFICATION_ESCALATION   = REQUESTED (FINAL o dispensa explícita del autor; §7.1)
 ```
 
 | Campo | Valor |
@@ -45,7 +46,7 @@ flotante. SplineV2 queda bit-idéntica (BS-13).
 | `org/geocedg/common/kernel/algos/AlgoBSpline.java` | algoritmo `AlgoLocusV2`; causa tipada única por revisión; contrato de redefinición `bspline-2d/v1`; elemento de familia mediante el gancho del escritor |
 | `org/geocedg/common/kernel/bspline/BSplineDefinition2D.java` | captura de entradas, regla `clamped-uniform/v1`, validación de la biblioteca, resumen de la definición (expuesto para `MAINT-A-DXF1`) |
 | `org/geocedg/common/kernel/bspline/BSplineInvalidity.java` | causas del §7 en su orden (`INPUT_UNDEFINED` + las nueve de la biblioteca) |
-| `org/geocedg/common/kernel/bspline/BSplineSemanticEvaluator2D.java` | evaluador `LocusEvaluator2D`, `LocusDifferentialEvaluator2D`, `LocalPiecewisePolynomialLocus2D` |
+| `org/geocedg/common/kernel/bspline/BSplineSemanticEvaluator2D.java` | evaluador `LocusEvaluator2D`, `OneSidedLocusDifferentialEvaluator2D` (§2.2.1), `LocalPiecewisePolynomialLocus2D` |
 | `org/geocedg/common/kernel/bspline/BSplineContractXml.java`, `BSplineContractException.java`, `BSplinePersistedContractTarget.java` | códec `<geocedgBSpline>` y bloque pasivo de procedencia |
 | `org/geogebra/common/kernel/commands/CmdBSpline.java` | procesador: solo tipos de argumento; toda precondición numérica da curva indefinida tipada |
 | `Commands`, `CommandDispatcher`, `BasicCommandProcessorFactory`, `RuntimeFeatureService`, `LocusV2PublicOperations.createBSpline`, `GeoLocusV2` (tipo «B-spline») | cableado del comando, puerta de función y fábrica con promoción de argumentos como SplineV2 |
@@ -91,6 +92,48 @@ producción**; se prueba con una envoltura de prueba que no reenvía la extensi�
 (predeterminado de la interfaz, rama heredada del accesor y conformidad de las implementaciones) y
 la clasificación de cada fichero que nombra la interfaz.
 
+#### 2.2.1 Derivada por la izquierda en el estimador métrico (opción A, decisión del autor)
+
+Problema. En un nudo `C^0` (multiplicidad `p`, por ejemplo todo nudo interior de grado 1 o el
+nudo triple de una cúbica) la derivada salta. El estimador de clase 3 integra por piezas que
+terminan en los nudos, pero tomaba la velocidad del extremo superior de una pieza con
+`evaluateDifferential`, que devuelve la derivada del tramo propietario del parámetro, es decir, el
+tramo **de la derecha**. La regla de Simpson adaptativa no convergía (`MAXIMUM_DEPTH`) y la
+longitud quedaba `LIMIT_NOT_ESTABLISHED`. Autorizado por el coordinador como extensión aditiva
+estricta del consumidor (opción A):
+
+- `locus/metric/OneSidedLocusDifferentialEvaluator2D` (nuevo, opcional): extiende
+  `LocusDifferentialEvaluator2D` con `supportsOneSidedDifferential` y
+  `evaluateDifferentialFromBelow`, la derivada del tramo que termina en el parámetro.
+- `BSplineSemanticEvaluator2D` la implementa con `BSplineEvaluation.firstDerivativeInSpan`: en el
+  inicio `u_j > a` de un tramo, el tramo no degenerado anterior; en `b`, el último tramo, también
+  en una curva cerrada exacta (cuyo propietario de la costura es el primero); en cualquier otro
+  punto, el tramo propietario. El parámetro no se identifica con `a`.
+- `LocusSimilarityEvaluator2D` la reenvía solo si su fuente la declara; para cualquier otra
+  fuente `supportsOneSidedDifferential` es `false`.
+- `LocusMetricEstimator2D` (único consumidor): en `estimate` y `estimateRange`, la velocidad del
+  extremo **superior** de una pieza es la derivada por la izquierda **solo** si el evaluador
+  diferencial declara la interfaz; el extremo inferior, los puntos interiores, el muestreo y toda
+  otra fuente conservan exactamente la aritmética anterior. Las ediciones están limitadas a la
+  ruta de búsqueda de la velocidad (líneas de la base ~181–200 y un método nuevo tras `speed`,
+  ~526), sin solaparse con los fragmentos de `MAINT-B5a`.
+- Sin cambios en propiedad del parámetro, direcciones semánticas, interacción de puntos,
+  intersecciones, tangentes ni continuidad publicada.
+
+Justificación semántica. En la pieza cerrada `[u_j, u_{j+1}]` el integrando es la norma de la
+derivada del polinomio de ese tramo, prolongado hasta su extremo: la longitud de la pieza es
+`∫ |C_j'(u)| du` sobre el intervalo cerrado, y el valor en el extremo es el límite por la izquierda.
+Cambiar el valor del integrando en un solo punto no cambia la integral (medida nula); lo que
+cambia es que la cuadratura adaptativa ve la función continua de la pieza y converge.
+
+Prueba de aditividad: `MaintA2OneSidedMetricAdditivityTest` fija el inventario (los cuatro
+ficheros de producción que nombran la interfaz y la clasificación de cada implementación de
+`LocusDifferentialEvaluator2D`: `SplineSemanticEvaluator2D` no la declara) y comprueba que
+SplineV2 y su imagen por semejanza no la declaran (ruta heredada), que la familia y su imagen
+devuelven la derivada del tramo izquierdo en el nudo triple y del último tramo en la costura, y
+que la longitud de la imagen rotada coincide con la de la fuente. El dorado BS-13 (longitudes
+`S1`–`S5`, `T1`–`T5` y longitud parcial de `S2`) sigue idéntico bit a bit.
+
 ### 2.3 Persistencia (§8)
 
 - `AlgoElement.getCmdExtensionXML` (nuevo, protegido, vacío por defecto) se escribe antes de
@@ -134,7 +177,8 @@ gráfica ni interfaz nueva de inspector.
 ### 2.5 Pruebas y verificación registradas
 
 Pruebas compartidas en `org.geocedg.common.kernel.bspline` (familia, precisión, códec,
-encaminamiento, inventario, identidad SplineV2) y `MaintA2BSplineNativeArchiveTest` en Desktop;
+encaminamiento, inventario, identidad SplineV2, longitud BS-8, persistencia BS-11/BS-12/BS-24 y
+aditividad de la opción A) y `MaintA2BSplineNativeArchiveTest` en Desktop;
 `cmdBSpline` (exigido por `SelfTest`); listas de comandos GeoCeDG en `CommandDispatcherTest`,
 `CommandFilterTest` y `CommandsValidationTest`; recuentos de la puerta R5-B (568, 517, 490);
 filas `BSpline` de la matriz GGBScript (tres formas × tres superficies × dos idiomas y seis
@@ -171,17 +215,17 @@ están registrados en `docs/upstream/modified-files.yml` junto al bloque de la b
 | 3, 15, 16 | barrido `p = 1..7`, `n + 1 ∈ {p+1, 2p+1, 32}`, nudos uniformes y aleatorios (semilla 20261124) y familias adversas (desplazamiento 1e6, separación 1e-6, puntos casi coincidentes): dentro de E1 y E3 con las constantes derivadas; el evaluador del núcleo es la evaluación de la biblioteca bit a bit (BS-15 lo prueba la biblioteca) | `MaintA2BSplineAccuracyTest` |
 | 4, 6, 7 | continuidad `C^{p-k}` exacta; degeneraciones definidas (longitud 0, `SINGULAR`); cierre solo exacto | `MaintA2BSplineFamilyTest` |
 | 5, 19 | causas tipadas sin geometría ni geometría antigua y recuperación; sin rebaja del grado; regeneración `clamped-uniform/v1` | `MaintA2BSplineFamilyTest` |
-| 8 | longitud finita; vértice de grado 1 y longitud 0 de la curva colapsada (la referencia de cuadratura de alta precisión queda en el punto abierto 7.2) | `MaintA2BSplineFamilyTest` |
+| 8 | frente a una referencia independiente (§4.2): total `C^2`, total y parcial a través de un nudo de multiplicidad 3, grado 1 (total, parcial a través de dos nudos, cerrada) y cúbica cerrada (costura), todas dentro del error declarado; longitud acumulada estrictamente monótona en la curva `C^2` y en la del nudo triple; mismo valor y mismo error declarado tras zoom ×7.5, desplazamiento y `pixelRatio = 2`; longitud 0 de la curva colapsada | `MaintA2BSplineLengthTest`, `MaintA2BSplineFamilyTest` |
 | 9 | raíz en nudo y raíz en la costura cuentan una vez | `MaintA2BSplineFamilyTest` |
 | 10 | imagen trasladada igual a la B-spline de los puntos trasladados (1e-13); reenvío de coeficientes locales | `MaintA2BSplineFamilyTest`, `MaintA2LocalPolynomialRoutingTest` |
-| 11 | mover `P_6` cambia solo los tramos de su soporte (comparación de bits); grado y nudos sin localidad | `MaintA2BSplineFamilyTest` |
-| 12 | XML guardado y recargado idéntico; identidad y dependencias; `.cedg` guardar-reabrir-guardar con la misma construcción | `MaintA2BSplineFamilyTest`, `MaintA2BSplineNativeArchiveTest` |
+| 11 | mover `P_6` cambia solo los tramos de su soporte (comparación de bits); grado y nudos sin localidad; un nudo libre `t` en `{0,0,0,0,t,4,4,4,4}`: `t = 3` recalcula la curva, `t = 5` da `KNOTS_DECREASING` sin geometría antigua, `t = 2` recupera | `MaintA2BSplineFamilyTest`, `MaintA2BSplinePersistenceTest` |
+| 12 | XML guardado y recargado idéntico; guardar-reabrir-guardar idéntico en bytes con identidad y dependencias; Deshacer/Rehacer de un movimiento y de una edición de nudo; copiar y pegar con identidad nueva; redefinición con la misma conducta que SplineV2 en las dos rutas (§4.3); sustitución por otra familia que retira el elemento; `.cedg` guardar-reabrir-guardar | `MaintA2BSplineFamilyTest`, `MaintA2BSplinePersistenceTest`, `MaintA2BSplineNativeArchiveTest` |
 | 13 | coeficientes, intersecciones, pares, interacción de puntos, longitudes y XML de SplineV2 y de sus imágenes por semejanza idénticos al dorado capturado en la base antes de cualquier edición | `MaintA2SplineV2BitIdentityTest` |
 | 20 | coeficientes locales dentro de `K_loc` en nudos cerca de 1e6, rangos amplios, `p = 7` y 125 tramos; globales correctamente redondeados; ningún consumidor lee globales; por encima de 64 tramos responde la ruta del evaluador | `MaintA2BSplineAccuracyTest`, `MaintA2LocalPolynomialRoutingTest` |
 | 21 | todas las causas; reversión completa en documento, GGT y portapapeles; mensaje tipado en la apertura nativa | `MaintA2BSplineContractCodecTest`, `MaintA2BSplineNativeArchiveTest` |
-| 22 | ver §6 | sondas fuera del árbol |
+| 22 | ver §6 | sondas registradas en `geocedg/validation/pre-g9b-maint-a2/bs22-older-reader/` |
 | 23 | la evaluación no consulta datos de renderizado | `MaintA2BSplineFamilyTest` |
-| 24 | lectura, validación de versión y conservación en el orden del infoset; aplicabilidad condicionada a `MAINT-A-DXF1` | `MaintA2BSplineContractCodecTest`, `MaintA2BSplineFamilyTest` |
+| 24 | lectura, validación de versión y conservación en el orden del infoset; el bloque sobrevive a Deshacer y a copiar; aplicabilidad condicionada a `MAINT-A-DXF1` (§7.3) | `MaintA2BSplineContractCodecTest`, `MaintA2BSplineFamilyTest`, `MaintA2BSplinePersistenceTest` |
 | 14 | `MAINT-A3` | — |
 
 ### 4.1 Constantes y medidas (§0.1, §0.2 de la matriz)
@@ -211,6 +255,49 @@ ruta global se mantendría en unos `1e5 ε S ≈ 1e-11 S`. `κ_max` sigue siendo
 para el autor; en producción la regla residual está inactiva porque todos los lectores están
 encaminados.
 
+### 4.2 BS-8: longitud frente a la referencia
+
+Referencia independiente: cuadratura de Gauss-Legendre de 20 nodos (nodos y pesos por Newton con
+80 dígitos) en `BigDecimal` con 60 dígitos significativos, de la norma de la derivada racional
+exacta (`ExactRationalBSplineReference.derivative`) de los datos binary64, **tramo a tramo** y con
+el polinomio de cada tramo sobre el tramo cerrado (los nodos son interiores, así que la referencia
+nunca toma la derivada del tramo vecino en un nudo `C^0`). Su exactitud se muestra con `m = 4` y
+`m = 8` subdivisiones por tramo (diferencia `< 1e-20` en todos los casos). Puntos de control
+`A=(0,0)`, `B=(1,2)`, `C=(3,2.5)`, `D=(4,0.5)`, `E=(6,1)`, `F=(7,3)`, `G=(5,4)`.
+
+| Caso | Estimación | Referencia (30 dígitos) | `|error|` | error declarado |
+|---|---|---|---|---|
+| total `C^2`, `BSpline({A..F},3)` | 9.297400655149506 | 9.29740065515248299003775379651 | 3.0e-12 | 2.4e-9 |
+| total con nudo triple, `BSpline({A..G},3,{0,0,0,0,1,1,1,2,2,2,2})` | 10.343231861280563 | 10.3432318612761722884626100685 | 4.4e-12 | 1.8e-9 |
+| parcial `u ∈ [0.5, 1.5]` a través del nudo triple | 5.175140592537678 | 5.17514059253186801628550216884 | 5.8e-12 | 8.5e-10 |
+| cúbica cerrada `BSpline({A,B,C,D,A},3)` (costura) | 8.220506496587502 | 8.22050649657229452315254570675 | 1.5e-11 | 1.2e-9 |
+| grado 1 total, `BSpline({A..E},1)` | 8.595241580617241 | 8.59524158061723994263975719344 | 1.1e-15 | 0 |
+| grado 1 parcial `u ∈ [0.5, 2.5]` (dos nudos) | 4.2976207903086205 | 4.29762079030861997131987859672 | 5.7e-16 | 0 |
+| grado 1 cerrada `BSpline({A,B,C,D,A},1)` | 10.564817641957685 | 10.5648176419576844939123588806 | 4.2e-16 | 0 |
+
+El importe establecido acota la discretización de la estimación, no la suma en coma flotante de
+sus hojas: en grado 1 la regla es exacta y declara 0; la prueba admite por eso, además, 16 ulp
+del valor (el error observado es inferior a 1 ulp). Es la semántica existente del importe
+establecido, común a toda fuente lineal a trozos; `A2` no la cambia. La referencia de grado 1
+coincide además con la suma de las longitudes de los segmentos.
+
+Antes de la opción A, el total con nudo triple, el parcial a través de él y los casos de grado 1
+daban `LIMIT_NOT_ESTABLISHED` (`MAXIMUM_DEPTH`); el total `C^2` ya pasaba con el mismo valor.
+
+### 4.3 BS-12: paridad de la redefinición con SplineV2
+
+Misma redefinición compatible (cambio de grado sobre la misma lista de puntos), en objetos
+nuevos para cada ruta:
+
+| Ruta | SplineV2 `SplineV2(pts,3) → SplineV2(pts,5)` | BSpline `BSpline(pts,3) → BSpline(pts,2)` |
+|---|---|---|
+| ordinaria (`changeGeoElement` sin autoridad de sustitución) | rechazada (`REDEFINE_REJECTED`: el modo `ADVANCED_RETAIN` no lo autoriza la evaluación `LEGACY_REPLACEMENT_AVAILABLE`); nada cambia, identidad conservada | idéntico |
+| sustitución explícita de ADR 0026 (`withSpatialReplacementOperation`) | aplicada; identidad durable nueva | idéntico |
+
+La identidad nueva en la ruta de sustitución no es un defecto de `A2`: es el resultado de las
+reglas existentes (§8.5 de `bspline-2d.md`: «whether the durable identity survives is decided by
+those rules, not by this family»), igual para SplineV2. La prueba fija los cuatro resultados.
+
 ## 5. Notas de versión (para la primera versión que contenga `BSpline`)
 
 - Los documentos con `BSpline` no se abren en GeoCeDG 1.2.2 ni anteriores (la validación de
@@ -221,6 +308,11 @@ encaminados.
   almacén no cambian). Los documentos existentes con una macro así siguen cargando como antes.
 
 ## 6. BS-22: lectores anteriores
+
+Evidencia registrada en `geocedg/validation/pre-g9b-maint-a2/bs22-older-reader/`: fuentes de las
+tres sondas (escritor del fixture, lector 1.2.2 y lector de la base), receta, salidas y el fixture
+`bspline-fixture.cedg` con su SHA-256
+`671ee7ad70ae8e930b84c3940fbc059fbc48811013f9c4830c6db3c708818426`.
 
 - Lector de la base (`228580e96`, y cualquier compilación anterior a `MAINT-A2`): sonda fuera del
   árbol sobre el lector compartido con un documento `BSpline` v1 simulado →
@@ -239,19 +331,77 @@ encaminados.
   disagrees with the attached geo»), que rechaza el fichero completo. Ningún documento parcial se
   presenta como completo, como predice §8.4.
 
-## 7. Riesgos y puntos abiertos
+## 7. Decisiones del autor, riesgos y puntos abiertos
 
-1. **Decisión del autor (BS-24):** la aplicabilidad de la procedencia de aproximación depende del
-   atributo de resumen que fije `MAINT-A-DXF1`; `MAINT-A2` expone el resumen de la definición
-   (`BSplineDefinition2D.getDefinitionDigestHex`) y no calcula aplicabilidad.
-2. BS-8 usa comprobaciones estructurales de longitud; la referencia de cuadratura de alta precisión
-   independiente queda pendiente.
-3. `κ_max = 2^16` es candidato (§4.1).
-4. Las selecciones históricas que contienen clases con métodos nuevos (`GeoCeDGCommandsTest`,
-   `PreG9BR6CapabilityMatrixTest`) conservan su recuento anterior hasta una actualización con
-   evidencia ejecutada; `INTEGRATION` usa `core.*` y las selecciones de esta fase, que no los
-   contienen o ya los recogen.
-5. Observación previa a `A2` (no corregida): los resultados de pares de SplineV2 por el comando
-   público ordenan el par por sus identidades durables aleatorias; el orden de las soluciones, el
-   lado evaluado y los contadores de trabajo cambian entre ejecuciones. La prueba BS-13 usa por eso
-   identidades fijas.
+### 7.1 Opción A y `VERIFICATION_ESCALATION_REQUEST`
+
+```text
+VERIFICATION_ESCALATION_REQUEST
+  motivo          = nueva interfaz genérica opcional de Locus V2
+                    (OneSidedLocusDifferentialEvaluator2D) y una rama del estimador métrico
+                    de clase 3 (LocusMetricEstimator2D), §2.2.1
+  aditividad      = solo la familia la implementa; la envoltura de semejanzas la reenvía;
+                    toda otra fuente toma la ruta anterior (inventario y pruebas de §2.2.1;
+                    dorado BS-13 idéntico bit a bit)
+  nivel pedido    = FINAL, o una dispensa explícita del autor
+  ejecutado       = STATIC, PHASE PRE-G9B-MAINT-A2 e INTEGRATION; FINAL no se ejecuta
+```
+
+La opción A es una **decisión del autor**: la autorizó el coordinador como extensión aditiva
+estricta; el autor decide si la acepta y con qué nivel de verificación.
+
+### 7.2 Otros puntos para el autor
+
+1. **BS-24:** la aplicabilidad de la procedencia de aproximación depende del atributo de resumen
+   que fije `MAINT-A-DXF1`; `MAINT-A2` expone el resumen de la definición
+   (`BSplineDefinition2D.getDefinitionDigestHex`) y no calcula aplicabilidad. Hueco declarado:
+   BS-24 queda cubierto solo en lectura, validación de versión, conservación del infoset,
+   Deshacer y copia.
+2. **`κ_max = 2^16`** es un valor candidato (§4.1); la regla residual está inactiva en
+   producción.
+3. **Notas de versión** (§5): los lectores 1.2.2 y anteriores rechazan el fichero completo
+   (BS-22); colisión K15 con una macro o herramienta llamada `BSpline`.
+
+### 7.3 Comportamiento de la base que `A2` no cambia
+
+1. **Más de 64 tramos:** la capacidad unilateral de intersección declina por su propio límite
+   existente y responde la capacidad adaptativa del evaluador; no hay motivo nuevo. Es la conducta
+   de la base para toda fuente polinómica a trozos.
+2. **Orden de pares de SplineV2 (deuda previa):** los resultados de pares de SplineV2 por el
+   comando público ordenan el par por sus identidades durables aleatorias; el orden de las
+   soluciones, el lado evaluado y los contadores de trabajo cambian entre ejecuciones. La prueba
+   BS-13 usa por eso identidades fijas.
+3. **Importe de error establecido en grado 1** (§4.2): declara 0 porque no incluye el redondeo de
+   la suma.
+4. **Identidad tras la sustitución explícita** (§4.3): nueva, igual que SplineV2.
+
+### 7.4 Selecciones del inventario JUnit
+
+Se calculó el hash de identidades de descubrimiento (`--test-dry-run`) de cada selección en la
+base `228580e96` (copia `git archive` fuera del árbol) y en el árbol del candidato, y se comparó
+con el valor guardado en cada árbol.
+
+Desactualizadas por `A2` (iguales en la base, distintas en el candidato) y actualizadas con el
+actualizador canónico a partir de evidencia de productor ejecutada (`COMPLETED`, salida 0):
+`discovery.shared` (descubrimiento), `pre-g9b-maint-a2.shared` (con las tres clases nuevas
+`MaintA2BSplineLengthTest`, `MaintA2BSplinePersistenceTest` y
+`MaintA2OneSidedMetricAdditivityTest`), `pre-g9b-r6-plus-e2.shared`,
+`pre-g9b-r6-plus-e3.shared` (método nuevo `GeoCeDGCommandsTest.cmdBSpline`),
+`pre-g9b-r6.desktop`, `pre-g9b-r6-plus-b.desktop`, `pre-g9b-r6-plus-c.desktop`,
+`pre-g9b-r6-plus-e2.desktop` y `pre-g9b-r6-plus-e3.desktop` (método nuevo
+`PreG9BR6CapabilityMatrixTest.bSplineRows`). El pin del inventario en el registro y los recuentos
+fijados en `verification-final-coverage.Tests.ps1` se actualizan en consecuencia
+(`pre-g9b-maint-a2.shared` pasa de 164 a 178 identidades).
+
+Ya desactualizadas en la base (previas; no se tocan): `geocedg-1-2-0.shared`,
+`pre-g9b-r4.shared`, `pre-g9b-r6.shared`, `pre-g9b-r6-plus-a1.shared`,
+`pre-g9b-r6-plus-b.shared`, `pre-g9b-cu2.shared`,
+`pre-g9b-cu7-general-point-interaction.shared`,
+`pre-g9b-cu7-general-point-interaction-r3.shared`,
+`pre-g9b-cu7-general-point-interaction-r4.shared`, `pre-g9b-cu7-r5.shared`,
+`post-cu4-expert-insertion.shared`, `pre-g9b-cu8-i.shared`, `post-r1-locus.shared`,
+`geocedg-1-2-0.desktop`, `final.desktop.g9u1-isolated`,
+`final.desktop.revision3-diagnostic` y `pre-g9b-cu4.desktop`.
+
+`final.shared` y `final.desktop`: no se actualizan. Son selecciones solo de `FINAL`, ya estaban
+desactualizadas en la base y también las dejan así `MAINT-U2` y `MAINT-B5a`.

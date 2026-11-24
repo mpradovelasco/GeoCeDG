@@ -25,7 +25,7 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.RepresentationRole;
 import org.geocedg.common.kernel.locus.metric.LocusDifferentialEvaluation2D;
-import org.geocedg.common.kernel.locus.metric.LocusDifferentialEvaluator2D;
+import org.geocedg.common.kernel.locus.metric.OneSidedLocusDifferentialEvaluator2D;
 import org.geocedg.common.math.bspline.BSplineCanonicalEncoding;
 import org.geocedg.common.math.bspline.BSplineData;
 import org.geocedg.common.math.bspline.BSplineEvaluation;
@@ -34,6 +34,7 @@ import org.geocedg.common.math.bspline.BSplineInteriorKnot;
 import org.geocedg.common.math.bspline.BSplineOutcome;
 import org.geocedg.common.math.bspline.BSplinePoint;
 import org.geocedg.common.math.bspline.BSplineSpanForms;
+import org.geocedg.common.math.bspline.BSplineSpanLookup;
 import org.geocedg.common.math.bspline.BSplineSpanPolynomial;
 
 /**
@@ -43,10 +44,12 @@ import org.geocedg.common.math.bspline.BSplineSpanPolynomial;
  * authority is the local power form of each non-degenerate span, published through
  * {@link LocalPiecewisePolynomialLocus2D}; the inherited global coefficients are the
  * library's correctly rounded expansion and carry no authority. For an exactly closed curve
- * the parameter {@code b} is identified with {@code a} (section 3.3).
+ * the parameter {@code b} is identified with {@code a} (section 3.3). The derivative from
+ * below at the end of a span, used only by the metric estimator, comes from the span that
+ * ends there.
  */
 public final class BSplineSemanticEvaluator2D implements LocusEvaluator2D,
-		LocusDifferentialEvaluator2D, LocalPiecewisePolynomialLocus2D {
+		OneSidedLocusDifferentialEvaluator2D, LocalPiecewisePolynomialLocus2D {
 	private static final LocusQuality2D QUALITY = new LocusQuality2D(
 			ConstructionFidelity.SEMANTICALLY_CONSTRUCTED,
 			EvaluationMethod.ANALYTIC_EVALUATION,
@@ -141,6 +144,53 @@ public final class BSplineSemanticEvaluator2D implements LocusEvaluator2D,
 					+ derivative.status());
 		}
 		return LocusDifferentialEvaluation2D.valid(derivative.x(), derivative.y());
+	}
+
+	@Override
+	public boolean supportsOneSidedDifferential(LocusDefinition2D definition) {
+		return true;
+	}
+
+	/**
+	 * Derivative of the span that ends at the parameter: at a span start {@code u_j > a} the
+	 * previous non-degenerate span, at {@code b} the last span (also for an exactly closed
+	 * curve, whose seam owner is the first span), elsewhere the owning span. The parameter is
+	 * not identified with {@code a}.
+	 */
+	@Override
+	public LocusDifferentialEvaluation2D evaluateDifferentialFromBelow(
+			LocusDefinition2D definition, String requestedBranchKey,
+			double providerCanonicalParameter, LocusEvaluationSession2D session) {
+		if (!branchKey.equals(requestedBranchKey)) {
+			return LocusDifferentialEvaluation2D.invalid("Unknown BSpline semantic branch");
+		}
+		BSplineSpanLookup owner = data.findSpan(providerCanonicalParameter);
+		if (!owner.isOk()) {
+			return LocusDifferentialEvaluation2D.invalid("BSpline derivative unavailable: "
+					+ owner.status());
+		}
+		int spanKnotIndex = owner.spanKnotIndex();
+		if (providerCanonicalParameter == data.knot(spanKnotIndex)
+				&& providerCanonicalParameter > data.domainStart()) {
+			spanKnotIndex = previousSpanKnotIndex(spanKnotIndex);
+		}
+		BSplinePoint derivative = BSplineEvaluation.firstDerivativeInSpan(data, spanKnotIndex,
+				providerCanonicalParameter);
+		if (!derivative.isOk() || !Double.isFinite(derivative.x())
+				|| !Double.isFinite(derivative.y())) {
+			return LocusDifferentialEvaluation2D.invalid("BSpline derivative unavailable: "
+					+ derivative.status());
+		}
+		return LocusDifferentialEvaluation2D.valid(derivative.x(), derivative.y());
+	}
+
+	private int previousSpanKnotIndex(int spanKnotIndex) {
+		for (int span = 1; span < data.spanCount(); span++) {
+			if (data.spanKnotIndex(span) == spanKnotIndex) {
+				return data.spanKnotIndex(span - 1);
+			}
+		}
+		return spanKnotIndex;
 	}
 
 	@Override

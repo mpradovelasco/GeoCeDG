@@ -16,10 +16,11 @@ import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.NumericGuarantee;
 import org.geocedg.common.kernel.locus.LocusSemanticMetadata2D.Regularity;
 import org.geocedg.common.kernel.locus.metric.LocusDifferentialEvaluation2D;
 import org.geocedg.common.kernel.locus.metric.LocusDifferentialEvaluator2D;
+import org.geocedg.common.kernel.locus.metric.OneSidedLocusDifferentialEvaluator2D;
 
 /** Immutable evaluator of {@code T(L(u))} over one coherent source revision. */
 public final class LocusSimilarityEvaluator2D implements LocusEvaluator2D,
-		LocusDifferentialEvaluator2D, LocalPiecewisePolynomialLocus2D,
+		OneSidedLocusDifferentialEvaluator2D, LocalPiecewisePolynomialLocus2D,
 		CertifiedAffineLocus2D {
 	private final LocusDefinition2D sourceDefinition;
 	private final LocusSimilarityTransform2D transform;
@@ -166,6 +167,42 @@ public final class LocusSimilarityEvaluator2D implements LocusEvaluator2D,
 		LocusDifferentialEvaluation2D source =
 				((LocusDifferentialEvaluator2D) sourceDefinition
 						.getEvaluatorCapability()).evaluateDifferential(
+							sourceDefinition, branchKey,
+							providerCanonicalParameter, session);
+		if (source == null || !source.isValid()) {
+			return LocusDifferentialEvaluation2D.invalid(source == null
+					? "Source differential evaluator returned null"
+					: source.getDiagnostic());
+		}
+		LocusPoint2D derivative = transform.transformDerivative(
+				source.getDerivativeX(), source.getDerivativeY());
+		return LocusDifferentialEvaluation2D.valid(derivative.getX(),
+				derivative.getY());
+	}
+
+	/** PRE-G9B-MAINT-A2: forwarded only when the source provides derivatives from below. */
+	@Override
+	public boolean supportsOneSidedDifferential(LocusDefinition2D definition) {
+		return supportsDifferential(definition)
+				&& sourceDefinition.getEvaluatorCapability()
+				instanceof OneSidedLocusDifferentialEvaluator2D
+				&& ((OneSidedLocusDifferentialEvaluator2D) sourceDefinition
+						.getEvaluatorCapability())
+						.supportsOneSidedDifferential(sourceDefinition);
+	}
+
+	@Override
+	public LocusDifferentialEvaluation2D evaluateDifferentialFromBelow(
+			LocusDefinition2D definition, String branchKey,
+			double providerCanonicalParameter,
+			LocusEvaluationSession2D session) {
+		if (!supportsOneSidedDifferential(definition)) {
+			return LocusDifferentialEvaluation2D.invalid(
+					"Source locus has no derivative from below");
+		}
+		LocusDifferentialEvaluation2D source =
+				((OneSidedLocusDifferentialEvaluator2D) sourceDefinition
+						.getEvaluatorCapability()).evaluateDifferentialFromBelow(
 							sourceDefinition, branchKey,
 							providerCanonicalParameter, session);
 		if (source == null || !source.isValid()) {

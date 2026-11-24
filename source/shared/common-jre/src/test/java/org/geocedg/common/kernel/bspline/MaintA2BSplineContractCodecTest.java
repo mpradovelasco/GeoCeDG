@@ -219,7 +219,8 @@ public class MaintA2BSplineContractCodecTest extends BaseUnitTest {
 		BSplineContractXml.write(written, contract);
 		assertEquals("\t<geocedgBSpline contract=\"bspline-2d/v1\""
 				+ " knots=\"clamped-uniform/v1\">\n"
-				+ "\t\t<approximationProvenance version=\"1\" source=\"a&amp;b&lt;&quot;c&quot;&gt;\""
+				+ "\t\t<approximationProvenance version=\"1\""
+				+ " source=\"a&amp;b&lt;&quot;c&quot;&gt;\""
 				+ " method=\"m\"/>\n</geocedgBSpline>\n", written.toString());
 	}
 }

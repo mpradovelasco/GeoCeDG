@@ -3336,7 +3336,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
       "change": "added",
-      "purpose": "Evaluate the source locus first at the unchanged semantic address and propagate affine/polynomial capabilities with bounded composition depth; expose immutable captured source and transform evidence to R1 interval certification rather than assuming flattened rounded coefficients are exact composition. PRE-G9B-MAINT-A2: forward the local span coefficients of a source that publishes them (bspline-2d.md section 9.4).",
+      "purpose": "Evaluate the source locus first at the unchanged semantic address and propagate affine/polynomial capabilities with bounded composition depth; expose immutable captured source and transform evidence to R1 interval certification rather than assuming flattened rounded coefficients are exact composition. PRE-G9B-MAINT-A2: forward the local span coefficients of a source that publishes them (bspline-2d.md section 9.4), and the derivative from below of a source that declares OneSidedLocusDifferentialEvaluator2D.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -6608,7 +6608,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricEstimator2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU1 estimator v2 of class 3, evaluator-only and differential (sections 25.3 and 25.7, N3).",
+      "purpose": "PRE-G9B-CU1 estimator v2 of class 3, evaluator-only and differential (sections 25.3 and 25.7, N3). PRE-G9B-MAINT-A2 (option A, author decision item): at the upper end of a piece the speed is the derivative from below when the source declares OneSidedLocusDifferentialEvaluator2D; every other source keeps its arithmetic.",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
@@ -7094,7 +7094,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/bspline/BSplineSemanticEvaluator2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-MAINT-A2: Locus V2 evaluator of the family over the shared library: points, first derivatives, local span coefficients as polynomial authority, correctly rounded global coefficients for conformance.",
+      "purpose": "PRE-G9B-MAINT-A2: Locus V2 evaluator of the family over the shared library: points, first derivatives, local span coefficients as polynomial authority, correctly rounded global coefficients for conformance; the derivative from below at a span end, used only by the metric estimator.",
       "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
     },
     {
@@ -7167,6 +7167,30 @@
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/MaintA2BSplineNativeArchiveTest.java",
       "change": "added",
       "purpose": "PRE-G9B-MAINT-A2: BS-12 and BS-21 on the native document: save, reopen, save; typed refusal message; Insert File admission.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/OneSidedLocusDifferentialEvaluator2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2 (option A, author decision item): optional additive extension of LocusDifferentialEvaluator2D giving the derivative from below at a piece end; read only by the class-3 metric estimator.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2BSplineLengthTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: BS-8: total and partial lengths (multiplicity-3 knot, degree 1, closed seam) against a 60-digit span-by-span Gauss-Legendre reference; monotone cumulative length; zoom and pixel-ratio invariance.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2BSplinePersistenceTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: BS-11, BS-12 and BS-24: save and reopen, Undo/Redo, copy and paste, redefinition parity with SplineV2 on the ordinary and replacement routes, knot edits without stale geometry, provenance through Undo and copy.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2OneSidedMetricAdditivityTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2 (option A): inventory of the one-sided extension and of every differential source; non-implementing sources keep the inherited path; the family and its similarity image give the derivative of the span that ends.",
       "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
     },
     {
