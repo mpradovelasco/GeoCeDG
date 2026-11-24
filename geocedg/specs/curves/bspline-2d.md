@@ -2,15 +2,15 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — PENDING AUTHOR REVIEW.** `selfApproved=false`, `authorApproved=false`. Not normative until the author accepts it explicitly |
+| Status | **APPROVED — NORMATIVE CONTRACT `bspline-2d/v1`, AUTHOR APPROVED (2026-11-24)** with the precisions of the [approval record](../../../docs/validation/pre_g9b_maint_a_n1_author_approval_record.md). The approved text is that of commit `8747c731eccc3644cd1da8b74eb3453a68511813`. `selfApproved=false`. Approval is not implementation: `MAINT-A2` is not authorized, and `bspline-2d/v2` (§14) stays designed and not authorized. Values the text marks as candidates or pending validation, such as `κ_max = 2^16`, remain so. Where the sections below call this document or ADR 0043 a candidate or proposed, that records the stage at which they were written |
 | Contract identifiers | `bspline-2d/v1` (polynomial subset, specified here for implementation); `bspline-2d/v2` (rational extension, designed in §14, not specified for implementation and not authorized) |
 | Document revision | 1, 2026-11-23 |
 | Increment that writes it | `PRE-G9B-MAINT-A-N1` (normative design only) |
 | Increment that would implement `v1` | `MAINT-A2`, **not authorized** |
 | Architectural layer | Shared Java kernel (semantic curve family publishing `GeoLocusV2`); pure mathematical library outside the kernel packages (§12) |
-| Decision | [ADR 0043](../../../docs/adr/0043-explicit-2d-bspline-family-rational-ready.md) (proposed) |
+| Decision | [ADR 0043](../../../docs/adr/0043-explicit-2d-bspline-family-rational-ready.md) (accepted, 2026-11-24) |
 | Author directions | D-A-1 to D-A-5 (architecture), D-A-8 to D-A-10 (approximation provenance), D-V4; [decision sheet](../../../docs/validation/pre_g9b_maint_p0_author_decision_sheet.md) §0 |
-| Companion contracts | [DXF reference import](../import/dxf-spline-reference.md) (candidate); [validation matrix](../../../docs/validation/pre_g9b_maint_a_n1_validation_matrix.md) (candidate); [candidate report](../../../docs/validation/pre_g9b_maint_a_n1_candidate_report.md) |
+| Companion contracts | [DXF reference import](../import/dxf-spline-reference.md) (approved, 2026-11-24); [validation matrix](../../../docs/validation/pre_g9b_maint_a_n1_validation_matrix.md) (candidate); [candidate report](../../../docs/validation/pre_g9b_maint_a_n1_candidate_report.md) |
 
 ## 0. Status and boundary
 

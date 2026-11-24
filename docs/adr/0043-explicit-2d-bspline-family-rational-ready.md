@@ -1,8 +1,15 @@
 # ADR 0043 — Explicit 2D B-spline family, rational-ready, as a Locus V2 provider
 
-- Status: **PROPOSED — CANDIDATE PENDING AUTHOR REVIEW** (`PRE-G9B-MAINT-A-N1`,
-  2026-11-23). `selfApproved=false`, `authorApproved=false`. This ADR is not accepted and
-  authorizes no implementation.
+- Status: **ACCEPTED — AUTHOR APPROVED (2026-11-24)** (proposed by `PRE-G9B-MAINT-A-N1`
+  on 2026-11-23; author instruction «GeoCeDG — PRE-G9B-MAINT. Cierre autoral coordinado de
+  N1, A-N1 y U2-R1», 2026-11-24;
+  [approval record](../validation/pre_g9b_maint_a_n1_author_approval_record.md)). The
+  accepted text is that of commit `8747c731eccc3644cd1da8b74eb3453a68511813`, with the
+  precisions of that record. `selfApproved=false`. This is an architectural decision; it
+  authorizes no implementation: `MAINT-A2`, `MAINT-A-DXF0`, `MAINT-A-DXF1`, `MAINT-A3` and
+  the native NURBS `MAINT-A-R` remain unauthorized. The words «proposed», «candidate» and
+  «pending author review» in the sections below record the stage at which each was written
+  and are superseded by this status.
 - Date: 2026-11-23.
 - Authorization of the design work: author instruction «GeoCeDG — PRE-G9B-MAINT-A-N1.
   Autorización de diseño normativo — Familia B-spline preparada para NURBS e

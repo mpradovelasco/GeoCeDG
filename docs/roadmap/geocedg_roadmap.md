@@ -4733,3 +4733,39 @@ Referencias:
 [portada del expediente](../validation/pre_g9b_maint_p0_dossier.md),
 [hoja de decisiones](../validation/pre_g9b_maint_p0_author_decision_sheet.md) y
 [plan del programa](../architecture/pre_g9b_maint_program_plan_candidate.md).
+
+## 2026-11-24 — Cierre autoral coordinado de la primera ola PRE-G9B-MAINT (N1, A-N1, U2-R1)
+
+Registro aditivo por decisión autoral de 2026-11-24 («GeoCeDG — PRE-G9B-MAINT. Cierre autoral
+coordinado de N1, A-N1 y U2-R1, integración y promoción a `main`»). No altera fechas,
+aprobaciones ni resultados anteriores.
+
+- **`PRE-G9B-MAINT-N1`** (`67663ceeefe9613dc229ba25da43af8e71557b1b`): norma adoptada por el
+  autor. §28.3.1 (B5a) y §29.1 (B2-F1) de `locus-v2-metrics.md` quedan adoptadas como norma, no
+  implementadas; los parámetros numéricos de B5a siguen siendo candidatos hasta su validación
+  focal.
+- **`PRE-G9B-MAINT-A-N1` R2** (`8747c731eccc3644cd1da8b74eb3453a68511813`): `bspline-2d/v1`,
+  ADR 0043 (aceptado) y `dxf-spline-reference/v1` (revisión 2) aprobados individualmente como
+  contratos normativos, con las precisiones del registro. Obligaciones futuras BS-11 y AP-2.
+  `MAINT-A-R` sigue diseñada y no autorizada.
+- **`PRE-G9B-MAINT-U2-R1`** (`f99a99785ffd5c733a98262888a48a8fad31ec0e`): incremento de producto
+  aprobado (U2 con su corrección R1), `AUTHOR_SMOKE = PASS — AUTHOR REPORTED`, condicionado a la
+  verificación integrada. Deudas fuera del cierre: Ctrl+clic, F8, mensajes genéricos anteriores
+  al panel y encadenamiento automático de la longitud.
+- **Integración:** rama `integration/pre-g9b-maint-first-wave` desde `e79ace7d1`, tres merges
+  `--no-ff` sin conflictos. `CHANGE_ROUTE = ORDINARY`; verificación integrada
+  `STATIC + PHASE PRE-G9B-MAINT-U2 + INTEGRATION` (`CORE + FOCUSED`, no exhaustiva);
+  `FINAL = NOT AUTHORIZED`. Los resultados del candidato integrado los informa el artefacto
+  siguiente.
+- **Dependencias habilitadas normativamente, no autorizadas:** `MAINT-B5a` y `MAINT-B2` (sobre
+  la norma N1); `MAINT-A-DXF0`, `MAINT-A2` y `MAINT-A-DXF1` (sobre los contratos de A-N1);
+  `MAINT-I2G0` y `MAINT-F8` siguen pendientes de su propia autorización. Cada uno requiere un
+  encargo expreso sobre la base publicada.
+- No autoriza la promoción de un SHA no nombrado por el autor, etiquetas, releases, paquetes ni
+  `FINAL`. G9B sigue `DESIGNED — NOT AUTHORIZED` y ninguna puerta de producto queda abierta.
+
+Referencias:
+[registro de integración](../validation/pre_g9b_maint_first_wave_integration_record.md),
+[aprobación de N1](../validation/pre_g9b_maint_n1_author_approval_record.md),
+[aprobación de A-N1](../validation/pre_g9b_maint_a_n1_author_approval_record.md) y
+[aprobación de U2-R1](../validation/pre_g9b_maint_u2_r1_author_approval_record.md).

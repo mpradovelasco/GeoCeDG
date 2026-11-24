@@ -2,14 +2,14 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — PENDING AUTHOR REVIEW.** `selfApproved=false`, `authorApproved=false`. Not normative until the author accepts it explicitly |
+| Status | **APPROVED — NORMATIVE CONTRACT `dxf-spline-reference/v1`, DOCUMENT REVISION 2, AUTHOR APPROVED (2026-11-24)** with the precisions of the [approval record](../../../docs/validation/pre_g9b_maint_a_n1_author_approval_record.md). The approved text is that of commit `8747c731eccc3644cd1da8b74eb3453a68511813`. `selfApproved=false`. Approval is not implementation: `MAINT-A-DXF0` is not authorized. The initial import limits stay revisable after characterization. Where the sections below call this document, the family specification or ADR 0043 a candidate or proposed, that records the stage at which they were written |
 | Contract identifier | `dxf-spline-reference/v1` (document revision 2, 2026-11-23: weight reconstruction of §4.6 per the author's corrective instruction; revision 1 is commit `307bc8fda`) |
 | Increment that writes it | `PRE-G9B-MAINT-A-N1` (normative design only) |
 | Increment that would implement it | `MAINT-A-DXF0`, **not authorized** |
 | Architectural layer | Import adapter outside the geometric kernel (AGENTS §4); pure mathematical library shared with the kernel family |
-| Decision | [ADR 0043](../../../docs/adr/0043-explicit-2d-bspline-family-rational-ready.md) (proposed) |
+| Decision | [ADR 0043](../../../docs/adr/0043-explicit-2d-bspline-family-rational-ready.md) (accepted, 2026-11-24) |
 | Author directions | D-A-6, D-A-7 (R-a first, R-c later, R-d not authorized), D-A-8 to D-A-10 for the reserved approximation interface, and the D-V4 conditions; [decision sheet](../../../docs/validation/pre_g9b_maint_p0_author_decision_sheet.md) §0 |
-| Companion contracts | [B-spline family `bspline-2d`](../curves/bspline-2d.md) (candidate); [validation matrix](../../../docs/validation/pre_g9b_maint_a_n1_validation_matrix.md) (candidate) |
+| Companion contracts | [B-spline family `bspline-2d`](../curves/bspline-2d.md) (approved, 2026-11-24); [validation matrix](../../../docs/validation/pre_g9b_maint_a_n1_validation_matrix.md) (candidate) |
 
 ## 0. Status and boundary
 
