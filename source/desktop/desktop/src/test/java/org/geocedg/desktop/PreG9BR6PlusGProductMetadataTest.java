@@ -560,6 +560,7 @@ class PreG9BR6PlusGProductMetadataTest {
 			String flowing = guide.replaceAll("\\s+", " ");
 			assertEquals(1, count(guide, "(?m)^# "));
 			assertEquals(16, count(guide, "(?m)^## "));
+			// PRE-G9B-MAINT-A-DXF0 adds one subsection and PRE-G9B-MAINT-A2 adds 7.8 and 7.9.
 			assertEquals(106, count(guide, "(?m)^### "));
 			assertEquals(17, count(guide, "geocedg-guide-section:"));
 			for (String shared : List.of("0.4·t", "AutoCAD 2026", "Type 1", "Ghostscript",
