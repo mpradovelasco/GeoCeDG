@@ -1,6 +1,6 @@
 # PRE-G9B-MAINT-B5a — registro de las decisiones autorales
 
-**PRE-G9B-MAINT-B5A — POLÍTICA NUMÉRICA APROBADA POR EL AUTOR — CIERRE PENDIENTE DE LA INTEGRACIÓN DE LA SEGUNDA OLA**
+**PRE-G9B-MAINT-B5A — POLÍTICA NUMÉRICA APROBADA POR EL AUTOR — L-6 CORREGIDA POR B5a-R1 — CIERRE PENDIENTE DE LA AUTORIZACIÓN DE LA SEGUNDA OLA**
 
 | Campo | Valor |
 |---|---|
@@ -41,7 +41,28 @@ Auditadas contra §28.3.1 (auditoría del coordinador, 2026-11-25). Ninguna se e
 | L-2, L-3, L-7, L-9 | lectura fiel del texto | sin efecto normativo |
 | L-1, L-4, L-8 | elección de implementación dentro del margen de la norma | se registran como política de implementación, no como norma |
 | L-5 | la negativa es la que exige la condición 8; la causa `CHORD_SCALING_INCONCLUSIVE` añade una tercera causa a las dos que enumera la norma | la causa no se eleva a norma; hoy no se activa en producción |
-| L-6 | **altera el contrato**: un fallo de evaluación de la comprobación conserva la estimación del resultado rico con estado `SUCCESS`, mientras §28.1 califica ese fallo como «fallo del resultado, nunca un valor» | **no se eleva a norma**; queda abierta como decisión pendiente del autor (corrección focal o aceptación expresa). El escalar no se publica en ningún caso |
+| L-6 | **alteraba el contrato**: un fallo de evaluación de la comprobación conservaba la estimación del resultado rico con estado `SUCCESS`, mientras §28.1 califica ese fallo como «fallo del resultado, nunca un valor» | **no se eleva a norma**; corregida por la corrección focal autorizada B5a-R1 (§2.1) |
+
+## 2.1 Corrección focal B5a-R1 (L-6)
+
+Autorizada por el autor el 2026-11-25 («GeoCeDG — PRE-G9B-MAINT-B5a-R1. Corrección focal L-6 y
+reconstrucción del candidato integrado»). Candidato `faebbe3aac7cc79556547acef84f1263a7bea106`,
+árbol `00d8e3a6140620944c59037cd7153c9ff8d15c74`, rama `phase/pre-g9b-maint-b5a-r1` (gobernanza
+`203cc4ebe`, técnico `5605357b9`, inventario `faebbe3aa`), descendiente de `65ca487da`, que se
+conserva. Un fallo de evaluación de la comprobación dentro del tramo es ahora un
+`NUMERICAL_FAILURE` con valor ausente y causa `EVALUATION_FAILED` trazable (hoja, parámetro,
+estado y diagnóstico de la evaluación), con el mecanismo tipado existente; la firma, la hoja
+inconclusa y el presupuesto conservan sus reglas. Sin cambios en parámetros, política, H1 a H4,
+rutas admitidas, recorrido, identidades, serialización, SplineV2, A2 ni A-DXF0-R1.
+
+| Perfil sobre `faebbe3aa` | Ejecución |
+|---|---|
+| `STATIC` | `verification-a37764a3da014943b6983d8b556f812c` |
+| `PHASE PRE-G9B-MAINT-B5A` | `verification-351b03cb637b4cada65e2bbd2d68af34` |
+| `INTEGRATION` | `verification-f865f2b10e4e4b51b1a29bb880463a8f` |
+
+Todas `ACCEPTED / COMPLETE` (`CORE + FOCUSED`). Informe:
+[pre_g9b_maint_b5a_r1_candidate_report.md](pre_g9b_maint_b5a_r1_candidate_report.md).
 
 ## 3. Límites
 
