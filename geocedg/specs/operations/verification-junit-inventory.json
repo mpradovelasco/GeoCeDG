@@ -10,14 +10,14 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "4351081994ae677faee82d665b027b2d80bdba872bb1be6f7ac43d45fcb44e0c",
-      "discovered_identity_count": 7207,
-      "discovered_identities_sha256": "ffae2370b1436e1d7470409e5603ebe97a2a5a81e7c02a802430a1a56036209d"
+      "discovery_evidence_sha256": "1f5acd9a9d2f12aeff8f4c4f335b25c7490411c5ef850775a805a34375ed29e8",
+      "discovered_identity_count": 7211,
+      "discovered_identities_sha256": "a9192aed3be17788f02862a2c0371f6cf6ed169fbff15bdac4e300921db1e5c4"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "4fc2efd3cfa36adffd387d0218a399627967cf1f48e355880c1e17f316aa249c",
+      "discovery_evidence_sha256": "22c1047c88c6b6fd9a121794bb31cbdf264d09c2e8f67afe0de8dbe74ee1137c",
       "discovered_identity_count": 2647,
       "discovered_identities_sha256": "e119bb28af1e0a8d93363f389aec352fd7666bb21b8b4830cd120a65b6b2674d"
     }
@@ -173,8 +173,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 7207,
-      "expected_identities_sha256": "ffae2370b1436e1d7470409e5603ebe97a2a5a81e7c02a802430a1a56036209d",
+      "expected_identity_count": 7211,
+      "expected_identities_sha256": "a9192aed3be17788f02862a2c0371f6cf6ed169fbff15bdac4e300921db1e5c4",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -231,8 +231,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 8184,
-      "expected_identities_sha256": "a57bcd8cb4ddd0a4559b7347cf3b1015c2c383b44c212b4e9b99806a9ac82daa",
+      "expected_identity_count": 8188,
+      "expected_identities_sha256": "5df55c2046dc8a93689f67fed8b175379e474643ea1a1db97dbd3e25c0557314",
       "not_applicable_allowlist": [
         {
           "identity": "shared::org.geogebra.common.euclidian.EuclidianConstantsTest::allModesShouldHaveHelpPage()::invocation[1/1]",
@@ -5728,8 +5728,8 @@
       "not_applicable_allowlist": [],
       "input_identities": [
         {
-          "commit": "5605357b9e763e3600c49c6086babd122e1f632e",
-          "tree": "4a616459a9a7a55bc0353644c8a1e22dbbbba852"
+          "commit": "028b984f7b7501d2444c3eab27f62a0d503b175c",
+          "tree": "c893ee3a42f12ab026e860a6ffe690fea1718bf2"
         }
       ]
     },
