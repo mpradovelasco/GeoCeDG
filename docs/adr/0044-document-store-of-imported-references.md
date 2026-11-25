@@ -1,9 +1,12 @@
 # ADR 0044 — Document store of imported references outside `Construction`
 
-- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R1)** (written by
-  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1`).
+- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R3)** (written by
+  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1` and
+  `PRE-G9B-MAINT-A-N2-R3`).
   `selfApproved=false`. Acceptance of this ADR would not authorize `MAINT-A-DXF0-RC-S0` or
   `MAINT-A-DXF0-RC`; each needs its own authorization on an exact base.
+- R3 changes: decision 8 records the directly measured budget and the streaming reader with
+  per-attribute bounds (pre-adoption audit M1).
 - R1 changes: decision 8 (resource policy instead of a fixed 4 MiB cap, D-R1-4); decision 3
   makes source and transformed data mandatory (D-R1-3); decision 5 covers every replacement
   route; decision 9 (Classic, D-R1-8); no derivation history (D-R1-5).
@@ -71,9 +74,14 @@ mark the document modified.
 7. **Store state is document state outside Undo.** Store operations mark the document
    modified and are covered by the save prompt; Undo/Redo never touch them.
 8. **Resource policy, not a fixed capacity.** Geometric admission, per-operation resources,
-   always-on reader safety (bounded inflation, single entry, strict parser, declared counts
-   checked before allocation) and a configurable storage budget are distinct. The budget's
-   initial values are derived from measured memory use (10 000 references, about 3 000 000 values, entry bytes derived from both; confirmed by C-4), raised only by an
+   always-on reader safety (streaming reading with a byte counter, single entry, strict parser,
+   declared counts checked before allocation, every attribute bounded while it is read) and a
+   configurable storage budget are distinct. The budget's initial values come from a direct
+   measurement of the full Open → Save → Reopen cycle on a 1 GiB heap (10 000 references,
+   1 500 000 values, entry bytes `17 × maxValues + 1 KiB × maxReferences`; the R1 value of
+   3 000 000 was measured and not confirmed; the measured corpora reach 77 % and 91 % of
+   `maxEntryBytes`) and are measured again by C-4, a closeout gate of `MAINT-A-DXF0-RC` that
+   also covers the unmeasured case at 100 % of the string allowance; they are raised only by an
    explicit administrative setting with finite values; an over-budget document is rejected with
    a typed cause and never truncated (D-R1-4). The passive scanners recognize the entry under the
    same policy instead of imposing their 4 MiB constant.
@@ -91,9 +99,11 @@ mark the document modified.
 - `dxf-spline-reference.md` §2, §4.1, §10, §11 and §12 need amendments (candidates A-IMP-1
   to A-IMP-3, A-IMP-9, A-IMP-10); ADR 0043 decision 10 gets a status pointer (A-ADR-3).
 - The initial budget never bounds the number of references below the importer's; it bounds
-  memory (about a quarter of a 1 GiB heap). Reading 10 000 typical references costs about 0.5 s
-  and about 50 MB of retained memory on the measured workstation; the importer's extreme case
-  (10 000 maximal references) needs an explicitly raised budget and more memory.
+  memory: on the measured workstation a full Open → Save → Reopen cycle needs at most about
+  256 MiB, one quarter of a 1 GiB heap, for the measured corpora at 100 % of `maxValues` and
+  77 % and 91 % of `maxEntryBytes`; the worst admissible case (the whole string allowance used)
+  was not measured and is a closeout gate of `MAINT-A-DXF0-RC` (C-4); the importer's extreme case (10 000 maximal
+  references) needs an explicitly raised budget and more memory.
 - The expert-inspection and angle-mode scanners, which today refuse any store, recognize it.
 
 ## Alternatives

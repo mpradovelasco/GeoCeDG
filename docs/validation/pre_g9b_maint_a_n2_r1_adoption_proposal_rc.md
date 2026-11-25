@@ -1,16 +1,16 @@
 # Propuesta de adopción — `cedg-reference-store/v1` (`R-c`) y ADR 0044
 
-**PROPUESTA DE APROBACIÓN — NO APROBADA.** Preparada por `PRE-G9B-MAINT-A-N2-R1`; confirmada sin cambios por `PRE-G9B-MAINT-A-N2-R2`.
+**PROPUESTA DE APROBACIÓN — NO APROBADA.** Preparada por `PRE-G9B-MAINT-A-N2-R1`; confirmada por `PRE-G9B-MAINT-A-N2-R2` y corregida por `PRE-G9B-MAINT-A-N2-R3` (M1).
 `selfApproved=false`. Este documento no registra `AUTHOR APPROVED`: la adopción exige una
 decisión expresa del autor sobre el candidato exacto.
 
 | Campo | Valor |
 |---|---|
-| Contrato | [`geocedg/specs/import/reference-store.md`](../../geocedg/specs/import/reference-store.md), `cedg-reference-store/v1`, revisión R1 |
-| ADR | [ADR 0044](../adr/0044-document-store-of-imported-references.md), propuesto, revisión R1 |
-| Candidato | commit de contenido R2 y su árbol: [informe R1](pre_g9b_maint_a_n2_r1_report.md), anexo R2 (R2 no cambia este contrato; su texto es el de R1, commit `228d91d44`) |
+| Contrato | [`geocedg/specs/import/reference-store.md`](../../geocedg/specs/import/reference-store.md), `cedg-reference-store/v1`, revisión R3 |
+| ADR | [ADR 0044](../adr/0044-document-store-of-imported-references.md), propuesto, revisión R3 |
+| Candidato | commit de contenido R3 y su árbol: [informe R3](pre_g9b_maint_a_n2_r3_report.md) §1 (un documento no puede contener su propio SHA) |
 | Historia | A-N2 `874286e95` (árbol `30c21042c`), descendiente `e7803badb`; R1 en `phase/pre-g9b-maint-a-n2-r1` |
-| `STATIC` | informe R1, anexo R2 (y §J para el candidato R1) |
+| `STATIC` | [informe R3](pre_g9b_maint_a_n2_r3_report.md) §8 |
 
 ## 1. Decisiones autorales ya fijadas que aplica
 
@@ -30,14 +30,16 @@ guardado; nunca pérdida silenciosa), D-R1-10 (sin bandera por novedad).
 | RC-D6 | Insertar archivo no transfiere referencias |
 | RC-D7 | almacén corrupto: rechazo del documento entero; «Abrir sin referencias» como incremento aparte |
 | RC-D8 | guarda `geocedg_*` y entrada única |
-| RC-D9 | valores iniciales del presupuesto, derivados de la memoria medida: 10 000 referencias (igual que el importador), unos 3 000 000 valores (un cuarto de un heap de 1 GiB), bytes de entrada derivados; C-4 los confirma |
+| RC-D9 | valores iniciales del presupuesto **medidos en R3**: 10 000 referencias (igual que el importador), 1 500 000 valores y bytes de entrada `17 × maxValues + 1 KiB × maxReferences` (asignación agregada de cadenas); ciclo completo Open → Save → Reopen dentro de un cuarto de un heap de 1 GiB para los corpus medidos (100 % de `maxValues`; 77 % y 91 % de `maxEntryBytes`); el peor caso admisible al 100 % de `maxEntryBytes` no se midió; el valor 3 000 000 de R1 se midió y no se confirmó (caso extremo 704–768 MiB); alternativa documentada: 2 000 000 valores (256–320 MiB); C-4, puerta de cierre de `MAINT-A-DXF0-RC`, los vuelve a medir sobre la implementación, incluido ese peor caso |
 | RC-D11 | nombre visible guardado solo al renombrar |
 | RC-D13 | forma normativa: contrato + enmiendas + ADR 0044 |
 | RC-D15 | configuración por preferencia GeoCeDG con anulación administrativa por propiedad del sistema; solo valores finitos |
 
-**Decisiones pendientes:** ninguna que impida la adopción. Los valores iniciales del
-presupuesto (RC-D9) se proponen con mediciones; C-4 los contrastará antes de cerrar la
-implementación.
+**Decisiones pendientes:** ninguna que impida la adopción. El autor puede elegir el valor
+alternativo de 2 000 000 valores (RC-D9); C-4 vuelve a medir el presupuesto sobre la
+implementación, incluido el caso al 100 % de `maxEntryBytes` no medido en R3, como puerta de
+cierre de `MAINT-A-DXF0-RC`. El lector incremental con límites por atributo (§5.3, clase 3)
+es una protección añadida por la medición de R3, no una decisión abierta.
 
 ## 3. Enmiendas incluidas (grupo R)
 
@@ -62,5 +64,5 @@ y después `MAINT-A-DXF0-RC`. Es requisito de los otros dos contratos (identidad
 
 ## 6. Recomendación
 
-Adoptar `cedg-reference-store/v1` revisión R1 y aceptar ADR 0044, con las enmiendas del grupo R
+Adoptar `cedg-reference-store/v1` revisión R3 y aceptar ADR 0044, con las enmiendas del grupo R
 y las decisiones de §2.

@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R1).** Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-RC-S0` and `MAINT-A-DXF0-RC` are not authorized |
-| Revision | R1 (2026-11-25): the fixed 4 MiB cap is replaced by a measured, configurable resource policy (§5.3, D-R1-4); source and transformed data stay mandatory (D-R1-3); no derivation history (D-R1-5); atomic document transition per route (§7.1); GeoCeDG Classic preserves the entry opaquely (§7.2, D-R1-8); maturity without a novelty flag (D-R1-10). The A-N2 text is commit `874286e95` |
+| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R3).** Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-RC-S0` and `MAINT-A-DXF0-RC` are not authorized |
+| Revision | R3 (2026-11-25, pre-adoption audit M1): budget measured directly; `maxValues` 1 500 000 with an aggregate string allowance instead of the R1 value 3 000 000; streaming reader with per-attribute bounds; C-4 at the budget; Classic validation scope and string limit clarified. R1 (2026-11-25): the fixed 4 MiB cap is replaced by a measured, configurable resource policy (§5.3, D-R1-4); source and transformed data stay mandatory (D-R1-3); no derivation history (D-R1-5); atomic document transition per route (§7.1); GeoCeDG Classic preserves the entry opaquely (§7.2, D-R1-8); maturity without a novelty flag (D-R1-10). The A-N2 text is commit `874286e95` |
 | Contract identifier | `cedg-reference-store/v1` (the store); its records stay `dxf-spline-reference/v1` |
 | Container | one optional ZIP entry of the native document, fixed name `geocedg_references.xml` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` |
@@ -137,7 +137,10 @@ attributes and elements.
    are recomputed (import §5, §8; §12 point 3). The tessellation is never a persisted
    representation.
 6. Strings (`text`, `baseName`, `handle`, `layer`, `acadVersion`, `documentUnit`) are
-   XML-escaped and at most 1 024 UTF-8 bytes each; the base name never carries a path (import
+   XML-escaped and at most 1 024 bytes each **after escaping**; an import whose provenance
+   string would exceed it is rejected as a whole with `STRING_TOO_LONG` (never truncated; the
+   limit is part of the contract, not of the configurable budget), and a rename beyond it is
+   refused; the base name never carries a path (import
    §9). A character that XML 1.0 cannot carry, and the backslash itself, are written as
    `\u{H…}` (one to six uppercase hexadecimal digits of the code point); the reader decodes
    exactly this form and rejects any other backslash sequence. Saving never fails because of a
@@ -147,8 +150,19 @@ attributes and elements.
 8. `<name>` is present only when the user renamed the reference; otherwise the display name
    is derived from provenance (layer · handle). A name is never identity nor association.
 9. Order is the order of the user's list; order is never identity.
+10. `<diagnostics>` is optional. `codes` lists distinct import diagnostic codes from the closed
+    enumeration of import §4.4 to §4.6 and §5, in the enumeration's order, separated by one space
+    (at most 1 024 bytes); `unrecognized` lists the distinct unrecognized DXF group codes of the
+    entity as canonical decimal integers in `0..1071`, in increasing order, separated by one
+    space (at most 1 072 codes, 5 360 bytes). Duplicates, unknown codes or out-of-range values are
+    `MALFORMED_STORE`. Their bytes count in the aggregate allowance of §5.3.
+11. `normal` records the plane normal of groups 210, 220 and 230 (import §4.3): `none` when
+    the entity carries none of the three groups, otherwise exactly three binary64 values
+    `x y z` in the form of item 2, a missing group taking its DXF default (0, 0, 1) (50 bytes;
+    numeric-list class of §5.3 kind 3); its values count in `values`. It is never used to
+    transform coordinates.
 
-### 5.3 Resource policy (R1, author decision D-R1-4)
+### 5.3 Resource policy (R1, author decision D-R1-4; budget measured in R3)
 
 There is **no arbitrary fixed capacity of the store**. Five kinds of limit are kept distinct:
 
@@ -156,22 +170,34 @@ There is **no arbitrary fixed capacity of the store**. Five kinds of limit are k
 |---|---|---|---|
 | 1. Geometric admission of an entity | one reference | the predicates of import §4.4: `1 ≤ p ≤ 7`, `p + 1 ≤ n + 1 ≤ 1 024`, `m + 1 = n + p + 2`, weight ratio `≤ 10^6`; re-checked on reading | no (contract) |
 | 2. Per-operation resources | one import, one save, one open | import §4.1 (`FILE_BYTES_MAX`, `SPLINE_ENTITIES_MAX`), the tessellation work limit of import §8; the save and open costs measured in R1 report §C | as the import constants |
-| 3. Reader safety | an untrusted archive | bounded inflation with a counter that stops at the byte budget plus one; one entry with this name; strict parser; declared `count` and `values` checked before allocation; running count of decoded values; every list length checked against its declared size | no: always on |
+| 3. Reader safety | an untrusted archive | **incremental (streaming) reading**: the entry is parsed directly from the inflating stream through a byte counter that stops at `maxEntryBytes` plus one, without buffering the whole entry; one entry with this name; strict parser; the root's declared `count` and `values` checked against the budget before anything else is read; **every attribute token bounded while it is read** (a numeric list by `17 × 1 032 − 1` bytes; a string by 1 024 bytes after escaping; `diagnostics codes` by 1 024 bytes and `diagnostics unrecognized` by 5 360 bytes (§5.2 item 10); any other attribute by 64 bytes), so that the parser never accumulates an attribute beyond that bound; running count of decoded values; every list length checked against its declared size | no: always on |
 | 4. Document storage budget | one store | three budgets of one configuration (below) | **yes** |
-| 5. Platform | the JVM | the heap of the running process (F19); an `OutOfMemoryError` is never a control path: the budgets keep the store far below it | through the launcher |
+| 5. Platform | the JVM | the heap of the running process (F19); an `OutOfMemoryError` is never a control path: the budgets are chosen so that a full Open → Save → Reopen cycle stays within about one quarter of the smallest default heap (1 GiB); the R3 measurement supports this for the measured corpora and the full-allowance worst case is a C-4 gate (§14) | through the launcher |
 
 **Storage budget (kind 4).** Configuration `cedg.references.store.budget`, read once per
 process from the GeoCeDG preferences (with an explicit administrative override by system
 property), with three values:
 
-| Budget | Proposed initial value | Derivation |
+| Budget | Initial value (measured in R3) | Derivation |
 |---|---|---|
 | `maxReferences` | 10 000 | equals the importer's `SPLINE_ENTITIES_MAX`: the number of references is never bounded below the importer's |
-| `maxValues` | 3 000 000 binary64 values | memory, not XML size (kind 5): the R1 measurements give about 80 bytes of transient plus retained memory per stored value (decoded data, tessellation, parse buffers: about 95 MB for 1.21 M values); the budget keeps a store within about one quarter of the smallest default heap (1 GiB on a 4 GiB machine, F19), i.e. about 256 MB, leaving the rest to the construction, rollback copies and the user interface |
-| `maxEntryBytes` | derived: `17 × maxValues + 7 KiB × maxReferences` (about 117 MiB) | every value costs exactly 17 bytes (§5.2); 7 KiB bounds the attributes and the six strings of one reference |
+| `maxValues` | 1 500 000 binary64 values | memory, not XML size (kind 5): measured minimum heap for a full Open → Save → Reopen cycle (previous document held, preflights without tessellation, live load with tessellation) of 192–256 MiB for a representative 1.5 M-value corpus and at most 256 MiB for 10 000 references of 1.5 M values with short strings, i.e. within one quarter of a 1 GiB heap for these corpora, which reach 100 % of `maxValues` and 77 % and 91 % of `maxEntryBytes` (R3 report §3); the worst admissible case, 10 000 references at `maxValues` with the whole string allowance used (100 % of `maxEntryBytes`), was **not** measured and is a closeout gate of C-4 (§14) |
+| `maxEntryBytes` | derived: `17 × maxValues + 1 KiB × maxReferences` (about 34.1 MiB) | every value costs exactly 17 bytes (§5.2); 1 KiB per reference is an **aggregate** allowance for the fixed attributes and ordinary strings (about 690 bytes per reference measured together) and the strings of all references, so that long strings cannot multiply the memory of the store; each string keeps its own limit (§5.2 item 6) |
 
-The values above are **proposed** and are confirmed or corrected by C-4 before
-`MAINT-A-DXF0-RC` closes; they are derived from memory, never from the size of the XML. The
+**R3 measurement (M1 of the pre-adoption audit).** The value of R1, 3 000 000 values with `7 KiB × maxReferences`, was measured directly in R3 and was **not** confirmed: a representative
+3 M-value corpus needs 448–512 MiB, and the worst admissible case (10 000 references, 3 M values,
+every string at 1 024 bytes, 119 MB entry) needs 704–768 MiB for the full cycle, held 863 MiB of
+a 1 GiB heap after a collection, and leaves less than 1.45 times margin before the rest of the
+application. The string allowance alone added about 256 MiB. The initial values are therefore
+1 500 000 values with an aggregate string allowance; 2 000 000 values (full-cycle need 256–320
+MiB, margin 3.2 to 4 times) is a documented alternative above the quarter-heap criterion. The
+values are measured on one workstation and with a probe, not with the product (R3 report §3);
+they remain a configuration, not a universal limit. The measured 1.5 M-value corpora reach
+77 % and 91 % of `maxEntryBytes`; the case at 100 % of the allowance (about 3.4 MB more string
+bytes than the measured short-string corpus) is not measured, so the quarter-heap claim is
+established only for the measured corpora. C-4 (§14) measures the cycle again on the
+implementation, including that full-allowance case, as a closeout gate of `MAINT-A-DXF0-RC`;
+a budget not confirmed there is revised on that evidence before the closeout. The
 importer's own worst case (10 000 references of 1 024 control points, about 61 M values) does
 not fit any budget sized for a default heap: such an import is rejected explicitly with the
 values it would require, and a station with more memory can raise the budget.
@@ -274,7 +300,7 @@ a failure injected after parsing.
 Classic preserves the store **opaquely**: in its non-GeoCeDG reading branch, the entry is read
 under the safety limits and the budget of §5.3 (kinds 3 and 4; Classic, which has no GeoCeDG
 preferences, uses the codec's default budget and the same administrative system property),
-its bytes are kept without being interpreted as Classic geometry, and the writer writes them
+its bytes are kept without being interpreted as Classic geometry (Classic applies the byte-level subset of kind 3: the bounded read with its byte counter, the single entry, the root's declared `count`/`values` against the budget and the per-attribute bounds; it decodes no value and validates no record: digests, transformations and predicates are re-validated by GeoCeDG on reopening), and the writer writes them
 back unchanged on every save route (Save, Save As, `.ggb`, base64 and HTML exports). An entry
 that exceeds the budget or violates a safety limit makes Classic refuse to open the document
 with a message, so that nothing can be lost afterwards. The bytes are dropped by New, `openURL`
@@ -320,8 +346,9 @@ authority of the reference.
 |---|---|
 | `UNSUPPORTED_STORE_VERSION` | `contract` other than `v1` |
 | `UNKNOWN_GEOCEDG_ENTRY` | an unknown root entry `geocedg_*`, or a duplicated store entry (RC-D8) |
-| `STORE_BUDGET_EXCEEDED` | `count`, `values` or bytes above the budget of the station (§5.3); the message states the required values |
-| `MALFORMED_STORE` | grammar, encoding, numbers, attributes, duplicates, list lengths, `w` incoherent with `weights`, bounded read exceeded before the declared content ends |
+| `STORE_BUDGET_EXCEEDED` | `count`, `values` or bytes above the budget of the station (§5.3), including the byte counter of §5.3 kind 3 reaching `maxEntryBytes` plus one; the message states the required values when they are declared |
+| `STRING_TOO_LONG` | a string above 1 024 bytes after escaping, on import or rename; on reading, a stored string above the limit is an attribute beyond its bound (§5.3 kind 3) and rejects the document with `MALFORMED_STORE` |
+| `MALFORMED_STORE` | grammar, encoding, numbers, attributes, duplicates, list lengths, `w` incoherent with `weights`, an attribute beyond its bound (§5.3 kind 3), more decoded values or references than declared in `values` or `count` |
 | `INADMISSIBLE_RECORD` | a record fails the data predicates of import §4.4 |
 | `TRANSFORM_MISMATCH`, `DIGEST_MISMATCH`, `DUPLICATE_ID` | §9 |
 
@@ -382,17 +409,29 @@ references» recovery action is a separate decision, RC-D7).
 **Unchanged:** `Construction`, `<construction>`, `MyXMLHandler`, `MyXMLio.getFullXML`,
 `doParseXML`, the Undo managers, `SpatialIdentityRegistry`, command codecs, commands, Locus V2.
 
-## 14. Required characterization before code (`MAINT-A-DXF0-RC-S0`)
+## 14. Required characterization (`MAINT-A-DXF0-RC-S0` before code; C-4 and the budget part of C-5 before the closeout of `MAINT-A-DXF0-RC`)
 
 - **C-1** every route of §7.1 with a failure injected after parsing (mandatory entry
   condition);
 - **C-2** isolated 1.2.2 with a store entry: opens, ignores, registers the empty image, drops
   on re-save;
 - **C-3** Classic with the entry: opaque preservation on every save route, or the save barrier;
-- **C-4** cost of reading, validating and tessellating at 100, 1 000 and 10 000 typical and at
-  near-maximal references, in open, save and their preflights, with heap observations, against
-  the R1 measurements;
-- **C-5** the scanners and the expert worker with stores at the budget.
+- **C-4** (a closeout gate of `MAINT-A-DXF0-RC`, run on its implementation, not in RC-S0) the
+  full Open → Save → Reopen cycle with the previous document held, at 100, 1 000 and 10 000
+  typical references and **at the budget**: a representative corpus, near-maximal references,
+  and the worst admissible case, 10 000 references at `maxValues` with the whole aggregate
+  string allowance used (an entry at 100 % of `maxEntryBytes`), which R3 did not measure; with
+  time, retained and peak heap and a minimum-heap sweep up to 1 GiB, compared with the R3
+  measurements; plus the reader-safety cases: an honest over-budget store, an under-declared
+  store, an inflation bomb and a single attribute of maximal length within the entry budget.
+  RC does not close until C-4 holds; a budget not confirmed is revised on that evidence before
+  the closeout;
+- **C-5** in two parts (R3): in `MAINT-A-DXF0-RC-S0`, the **current** behavior of the
+  expert-inspection and angle-mode scanners, the expert worker and the recovery snapshot with
+  a document carrying the entry (refusal or acceptance recorded per route, without product
+  change); and, as a closeout gate of `MAINT-A-DXF0-RC` on its implementation, the same routes
+  with stores at the budget: the entry recognized and validated under the policy, no 4 MiB
+  refusal.
 
 ## 15. Validation
 
@@ -430,7 +469,7 @@ policy that cannot reject an over-budget store without truncation.
 | RC-D6 | Insert File | never transfer references | proposed |
 | RC-D7 | Corrupt store | reject the whole document; «Open without references» as a separate increment | proposed |
 | RC-D8 | `geocedg_*` guard, single entry | yes | proposed |
-| RC-D9 | Capacity | no fixed product cap; configurable budget derived from memory (§5.3) and always-on reader safety | fixed in principle (D-R1-4); initial values proposed, confirmed by C-4 |
+| RC-D9 | Capacity | no fixed product cap; configurable budget derived from measured memory (§5.3): 10 000 references, 1 500 000 values, entry bytes `17 × maxValues + 1 KiB × maxReferences`; streaming reader with per-attribute bounds | fixed in principle (D-R1-4); initial values measured in R3 (the R1 value 3 M not confirmed), re-measured by C-4 |
 | RC-D10 | Reserved elements | `export` preference only; no derivation history | fixed (D-R1-5) |
 | RC-D11 | Display name | stored only when the user renames | proposed |
 | RC-D12 | `source` and `data` | both stored, verified bit for bit, `data` never recomputed in its place | fixed (D-R1-3) |

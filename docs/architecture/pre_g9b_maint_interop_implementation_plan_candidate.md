@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | **CANDIDATE — READY FOR AUTHOR ADOPTION (revisión R2).** Planificación, no autorización. R2 (2026-11-25): obligaciones de conformidad externa (§9) y deudas separadas DT-1 y DT-2 (§10). R1 (2026-11-25): sin historial de derivaciones, política de recursos configurable, Classic con conservación opaca, lectores AutoCAD Core Console y ezdxf, prompts candidatos en [`pre_g9b_maint_a_n2_r1_candidate_prompts/`](pre_g9b_maint_a_n2_r1_candidate_prompts/) y [propuesta de ejecución coordinada](pre_g9b_maint_a_n2_r1_coordinated_execution_proposal.md). `implementationAuthorized=false` para todos los incrementos de este plan; `selfApproved=false` |
+| Estado | **CANDIDATE — READY FOR AUTHOR ADOPTION (revisión R3).** Planificación, no autorización. R3 (2026-11-25): C-4, el ciclo completo en el presupuesto medido, pasa a ser una puerta de cierre de `MAINT-A-DXF0-RC` sobre su implementación, igual que C-5 en el presupuesto; RC-S0 cubre C-1 a C-3 y el comportamiento actual de C-5. R2 (2026-11-25): obligaciones de conformidad externa (§9) y deudas separadas DT-1 y DT-2 (§10). R1 (2026-11-25): sin historial de derivaciones, política de recursos configurable, Classic con conservación opaca, lectores AutoCAD Core Console y ezdxf, prompts candidatos en [`pre_g9b_maint_a_n2_r1_candidate_prompts/`](pre_g9b_maint_a_n2_r1_candidate_prompts/) y [propuesta de ejecución coordinada](pre_g9b_maint_a_n2_r1_coordinated_execution_proposal.md). `implementationAuthorized=false` para todos los incrementos de este plan; `selfApproved=false` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` (segunda ola publicada) |
 | Escrito por | `PRE-G9B-MAINT-A-N2` |
 | Contratos | [`cedg-reference-store/v1`](../../geocedg/specs/import/reference-store.md), [`cedg-reference-export/v1`](../../geocedg/specs/export/dxf-reference-export.md), [`dxf-spline-approximation/v1`](../../geocedg/specs/import/dxf-spline-approximation.md); [enmiendas](pre_g9b_maint_a_n2_candidate_amendments.md); ADR [0044](../adr/0044-document-store-of-imported-references.md) y [0045](../adr/0045-separate-dxf-export-of-imported-references.md) (propuestos) |
@@ -24,8 +24,8 @@
 
 | Orden | Id | Contenido | Capa | Clase propuesta | Esfuerzo |
 |---|---|---|---|---|---|
-| 1 | `MAINT-A-DXF0-RC-S0` | caracterización C-1 a C-5 del contrato `R-c` (rutas de apertura, 1.2.2 aislada, Classic, coste en límites, escáneres) | pruebas y sondas | `BOUNDED_PHASE` (`STATIC` + `PHASE`) | XS |
-| 2 | `MAINT-A-DXF0-RC` | almacén documental: códec, identidades, política de recursos configurable, preparación y confirmación en todas las rutas, estado guardado, gestor por `id`, escáneres, conservación opaca en Classic | documento + Desktop + gancho upstream mínimo en `MyXMLioJre` | `INTEGRATED_PHASE` | M |
+| 1 | `MAINT-A-DXF0-RC-S0` | caracterización C-1 a C-3 y parte actual de C-5 del contrato `R-c` (rutas de apertura, 1.2.2 aislada, Classic, comportamiento actual de los escáneres); C-4 (coste en el presupuesto) y C-5 en el presupuesto son puertas de cierre de RC | pruebas y sondas | `BOUNDED_PHASE` (`STATIC` + `PHASE`) | XS |
+| 2 | `MAINT-A-DXF0-RC` | almacén documental: códec, identidades, política de recursos configurable, preparación y confirmación en todas las rutas, estado guardado, gestor por `id`, escáneres, conservación opaca en Classic; C-4 y C-5 en el presupuesto como puertas de cierre | documento + Desktop + gancho upstream mínimo en `MyXMLioJre` | `INTEGRATED_PHASE` | M |
 | 3 | `MAINT-A-DXF0-EXP` | exportación de referencias como `SPLINE`, resolutor de estados, manifiesto v4, conformidad externa | adaptador de exportación + Desktop | `INTEGRATED_PHASE` + evidencia de lectores externos | M |
 | 4 | `MAINT-A-DXF1-S0` | caracterización NUM-1 a NUM-10 con las rutas de creación elegidas; ruta de redefinición por sustitución; estabilidad de bytes | pruebas y sondas | `BOUNDED_PHASE` | XS |
 | 5 | `MAINT-A-DXF1` | conversión exacta, aproximación con estimación, procedencia y aplicabilidad (cierra BS-24), sin historial persistente de fallos, corrección de la redefinición por sustitución | biblioteca + servicio externo + núcleo GeoCeDG aditivo + Desktop | `INTEGRATED_PHASE` | M-L |
@@ -168,7 +168,7 @@ Fijadas por las decisiones del autor RX-D18 y RX-D19 (contrato de exportación �
 |---|---|---|---|
 | Formato DXF | ninguno (texto escrito) | estructura de §4 del contrato | RX-2, RX-13 |
 | Fidelidad `REFERENCE_DEFINITION` | comprobación de escritura GeoCeDG y ezdxf con versión fijada | relectura exacta de cada valor | RX-3, RX-4, RX-17 |
-| Conformidad AutoCAD | AutoCAD Core Console, versión registrada | cada valor dentro de 4 ulp (criterio inicial de ensayo) **y** estructura **y** geometría conservadas; máximos y límites registrados | RX-16 |
+| Conformidad AutoCAD | AutoCAD Core Console, versión registrada | cada valor dentro de 4 ulp (criterio inicial de ensayo para AutoCAD 2026, `ACADVER` 25.1) **y** estructura **y** geometría conservadas; máximos y límites registrados | RX-16 |
 | Portabilidad de exponentes | todos los campos escritos desde datos | `NOT_WRITABLE`/`EXPONENT_NOT_PORTABLE`, exclusión por el usuario con diagnóstico | RX-19 |
 
 Los fixtures, scripts y salidas del piloto de R1 sirven de punto de partida; la evidencia de

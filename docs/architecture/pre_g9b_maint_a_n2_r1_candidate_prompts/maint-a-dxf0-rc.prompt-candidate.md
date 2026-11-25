@@ -49,8 +49,14 @@ applied only by the author's adoption record); `main`; push, merge, tags, releas
 <!-- geocedg-field: required_checks -->
 ## Required tests and commands
 
-RC-1 to RC-24, SEP-5 and C-1 regression; DX-1 to DX-13 non-regression; `STATIC`, `PHASE`,
-`INTEGRATION` on the frozen candidate; `git diff --check`; bootstrap impact review.
+RC-1 to RC-24, SEP-5 and C-1 regression; DX-1 to DX-13 non-regression; **C-4 as a closeout
+gate** (R3): the full Open → Save → Reopen cycle on the implementation at the budget, including
+the worst admissible case at 100 % of `maxEntryBytes`, with a minimum-heap sweep up to 1 GiB,
+compared with the R3 measurements, plus the reader-safety cases of the contract §14; **the
+budget part of C-5 as a closeout gate**: inspection and angle-mode scanners, expert worker and
+recovery snapshot with stores at the budget, the entry recognized and validated, no 4 MiB
+refusal; `STATIC`,
+`PHASE`, `INTEGRATION` on the frozen candidate; `git diff --check`; bootstrap impact review.
 
 <!-- geocedg-field: authorization_boundary -->
 ## Authorization boundary
@@ -65,4 +71,6 @@ Local branch; integration and promotion only by a later author instruction namin
 ## Stop conditions
 
 Those of `cedg-reference-store/v1` §16; a silent loss on any route; a resource policy that
-cannot reject an over-budget document without truncation.
+cannot reject an over-budget document without truncation; a C-5 route that still refuses a store at the budget; a C-4 result that does not confirm
+the budget (the increment does not close; the budget is revised on that evidence by the
+author).

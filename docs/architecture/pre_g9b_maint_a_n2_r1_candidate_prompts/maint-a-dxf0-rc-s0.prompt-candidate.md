@@ -16,11 +16,12 @@ DEPENDS_ON   = cedg-reference-store/v1 ADOPTED; ADR 0044 ACCEPTED
 Produce the evidence that `cedg-reference-store/v1` §14 requires before code: C-1 (every
 open, New, replacement, URL, Insert File and recovery route against the prepare-and-commit
 rule, with failures injected after parsing), C-2 (isolated GeoCeDG 1.2.2 with a store entry),
-C-3 (GeoCeDG Classic with the entry, for the preservation or save-barrier rule), C-4 (cost of
-reading, validating and tessellating stores at the measured budget points, in open and in the
-save preflight, with heap observations), C-5 (inspection and angle-mode scanners, recovery
-snapshot). Characterization tests live in a registered `PHASE` selection; no product file
-changes.
+C-3 (GeoCeDG Classic with the entry, for the preservation or save-barrier rule), the
+current-behavior part of C-5 (inspection and angle-mode scanners, expert worker, recovery
+snapshot with a document carrying the entry, refusal or acceptance recorded). C-4 (the full
+Open → Save → Reopen cycle at the budget) and the budget part of C-5 need the store
+implementation and are closeout gates of `MAINT-A-DXF0-RC` (R3), not part of this increment. Characterization tests live in a
+registered `PHASE` selection; no product file changes.
 
 ```text
 CHANGE_ROUTE = ORDINARY; VERIFICATION_CLASS = BOUNDED_PHASE
@@ -65,5 +66,5 @@ Local branch only; no push, merge or promotion.
 ## Stop conditions
 
 An open route that cannot respect prepare-and-commit without a non-additive change; Classic
-unable both to preserve and to block; costs that make the measured budget unsafe on the
-reference workstation.
+unable both to preserve and to block; a scanner, worker or recovery route (C-5) whose current
+behavior could not be changed to accept the store without a non-additive change.

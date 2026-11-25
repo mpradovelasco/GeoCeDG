@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R1).** Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF1-S0`, `MAINT-A-DXF1` and `MAINT-A-DXF1b` are not authorized |
-| Revision | R1 (2026-11-25): no persisted record of failed attempts and no store derivation entries (D-R1-5); certified bound separated in `MAINT-A-DXF1b` (D-R1-9); mathematical justification §5.9; maturity without a novelty flag (D-R1-10). The A-N2 text is commit `874286e95` |
+| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R3).** Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF1-S0`, `MAINT-A-DXF1` and `MAINT-A-DXF1b` are not authorized |
+| Revision | R1 (2026-11-25): no persisted record of failed attempts and no store derivation entries (D-R1-5); certified bound separated in `MAINT-A-DXF1b` (D-R1-9); mathematical justification §5.9; maturity without a novelty flag (D-R1-10). R3 (2026-11-25, pre-adoption audit): wording (reading list, stop-cause order, exact-arithmetic qualifier of conditioning, string escaping) plus two added obligations of `MAINT-A-DXF1`: fixing the constants is a closeout gate, and the persistence self-check also reads the provenance block back. The A-N2 text is commit `874286e95` |
 | Contract identifier | `dxf-spline-approximation/v1`; methods `exact-conversion/v1` and `bspline-param-lsq/v1`; provenance block `approximationProvenance version="1"` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` (second wave published) |
 | Architectural layer | Pure mathematical library (`org.geocedg.common.math.bspline`) for the computation; a creation service outside the kernel packages; additive GeoCeDG code in `org.geocedg.common.kernel.bspline` only where `bspline-2d.md` §10.5 reserves it (AGENTS §4) |
@@ -80,8 +80,9 @@ reason for the rules of §10 to §12, not a second copy of the code.
   reopen would make the correspondence of `cedg-reference-export/v1` unresolvable
   (decision AX-D1). The pure library part of the method does not depend on the store and
   may be developed before it.
-- It reads only the record's `data`, effective weights, `nature`, domain, closure and
-  provenance digests. Neither the record (`dxf-spline-reference.md` §5) nor the store is
+- It reads only the record's `data` (degree, knots, control points), effective weights,
+  `nature`, domain, closure and the provenance fields that the block copies (§10.1: digests,
+  file digest and base name, entity handle and layer, transformation). Neither the record (`dxf-spline-reference.md` §5) nor the store is
   modified by the operation, whether it succeeds or fails (§13.2).
 - User parameters for an approximation: degree `q`, tolerance `ε`, point limit `N_A`
   (§8).
@@ -209,8 +210,9 @@ checked separately (§5.6).
   guarantee. The B-spline basis is well conditioned for a fixed degree, and the samples of
   §5.5 sit at fixed relative positions in every span of `T` (every distinct source knot is a
   knot of `T`, so the common spans are exactly the spans of `T`): the conditioning depends on
-  `q` and on the relative lengths of neighboring spans, not on the absolute knot values or
-  their offset from the origin. Ill conditioning is not expected from the design;
+  `q` and on the relative lengths of neighboring spans and, in exact arithmetic, not on the
+  absolute knot values or their offset from the origin (floating effects of large offsets are
+  measured, not excluded). Ill conditioning is not expected from the design;
   a locally degenerate distribution (spans of a few ulps, where the sample computation
   itself degenerates) is caught by the guards of §5.5 and §5.7 and by the rank guard.
 - Every sample evaluation of `C` uses the homogeneous de Boor algorithm of the library;
@@ -243,8 +245,8 @@ scratch (no warm start), so the result depends only on the knot vector.
 
 Order of evaluation, so that the typed cause is deterministic: cancellation and the work limit
 are checked at every evaluation and end the operation at once (`CANCELLED` before
-`WORK_LIMIT_EXHAUSTED`); after each fit the rows above are tested from top to bottom in this
-order: success, `VERIFICATION_NOT_PASSED`, `STAGNATION`, `TOLERANCE_NOT_REACHED_ROUND_LIMIT`,
+`WORK_LIMIT_EXHAUSTED`); after each fit the remaining causes are tested in this order, which
+governs over the order of the table rows: success, `VERIFICATION_NOT_PASSED`, `STAGNATION`, `TOLERANCE_NOT_REACHED_ROUND_LIMIT`,
 `TOLERANCE_NOT_REACHED_POINT_LIMIT`.
 
 Every failure reports the best global indicator reached and its number of control points;
@@ -295,7 +297,8 @@ measured by `MAINT-A-DXF1-S0` / `MAINT-A-DXF1`). Nothing marked pending is claim
 6. **Conditioning (pending validation).** The B-spline basis of fixed degree is stable (its
    condition is bounded by a constant depending only on `q`), and the samples sit at fixed
    relative positions in each span of `T`; the condition of the least-squares matrix
-   therefore does not depend on the absolute knot values or their offset. A quantitative
+   therefore does not depend, in exact arithmetic, on the absolute knot values or their offset;
+   floating effects of large offsets are measured by AP-11. A quantitative
    bound in terms of `q` and of the ratios of neighboring span lengths is not claimed;
    AP-11 measures `κ̂` on representative and adversarial distributions.
 7. **Determinism (proved for the implementation contract).** Java `double` arithmetic is
@@ -421,7 +424,10 @@ needs no new provenance version.
 All constants are `PENDING_VALIDATION_IN_MAINT_A_DXF1` (decision AX-D6): `MAINT-A-DXF1-S0`
 and `MAINT-A-DXF1` measure success rates and costs on the matrix fixtures before the
 author fixes them. The constant set is versioned as `bspline-param-lsq-constants/v1` and
-named in the provenance block (§10.1); changing any value is a new constants version.
+named in the provenance block (§10.1); changing any value is a new constants version. Fixing
+the values, and freezing the label `bspline-param-lsq-constants/v1` with them, is a closeout
+gate of `MAINT-A-DXF1`: no block is written with candidate values outside that increment's
+tests.
 
 **Error model behind `ε_floor` (design rule, not a derived bound).** The floating evaluation
 of `C` (homogeneous de Boor followed by a division) and of `A` (polynomial de Boor) has a
@@ -466,7 +472,8 @@ the reference is simply a reference without CeDG representation.
 One empty element, child of `<geocedgBSpline>`, attributes in this order. Reals are
 binary64 bit patterns written as 16 lowercase hexadecimal digits (the pattern of
 `Double.doubleToRawLongBits`). Digests are 64 lowercase hexadecimal digits. Strings are
-XML-escaped. The block is the **only** persisted record of a successful conversion or
+XML-escaped, and a character that XML 1.0 cannot carry, and the backslash itself, are written
+with the `\u{H…}` rule of `cedg-reference-store/v1` §5.2. The block is the **only** persisted record of a successful conversion or
 approximation: the store keeps no derivation history (§13.2).
 
 | Attribute | Content | Presence |
@@ -583,8 +590,9 @@ that route is not used; if no route qualifies, stop (§19.1).
 After creation and before committing the Undo step, the service serializes the new
 objects with the document writer, parses the result in an isolated reader and compares the
 bit patterns of degree, knots and control points with the computed data, and the
-recomputed definition digest with `definitionDigest`. Any difference aborts the whole
-creation atomically with `PERSISTENCE_NOT_EXACT`.
+recomputed definition digest with `definitionDigest`, and checks that the provenance block
+reads back with identical attributes. Any difference aborts the whole creation atomically with
+`PERSISTENCE_NOT_EXACT`.
 
 ## 13. Construction, DAG, Undo and store
 

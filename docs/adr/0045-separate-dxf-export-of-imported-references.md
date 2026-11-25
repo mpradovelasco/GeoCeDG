@@ -1,12 +1,14 @@
 # ADR 0045 — Separate DXF export of imported references as `SPLINE`
 
-- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R2)** (written by
-  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1` and
-  `PRE-G9B-MAINT-A-N2-R2`).
+- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R3)** (written by
+  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1`,
+  `PRE-G9B-MAINT-A-N2-R2` and `PRE-G9B-MAINT-A-N2-R3`).
   `selfApproved=false`. Acceptance would not authorize `MAINT-A-DXF0-EXP`.
 - R1 changes: decision 4 records state 4 as alternative A (D-R1-6) and removes any failure
   state (D-R1-5); decision 6 fixes the conformance readers (D-R1-7); decision 7 records the
   availability rule (D-R1-10).
+- R3 changes: decision 5 distinguishes situations A, B and C for the sidecar; the consequences
+  name the references-only export amendment of the foundation (pre-adoption audit M2, M3).
 - R2 changes: decision 6 records the levels of evidence and the AutoCAD acceptance criteria
   (RX-D18) and decision 8 the non-portable exponent rule (RX-D19), both decided by the author.
 - Date: 2026-11-25.
@@ -64,7 +66,14 @@ re-exported.
    reference is included by default and the modified construction is exported from
    `Construction` (author decision D-R1-6). A failed approximation is a transient operation
    result, never an export state, and leaves nothing in the document (D-R1-5).
-5. **Mandatory sidecar** whenever a reference is written.
+5. **Sidecar and rejection.** With the reference option on, a completed export writes DXF and
+   sidecar as a pair whenever a reference is written (situation A) or excluded, by the user, by
+   preference or by the approved policy, including by the user after `EXPONENT_NOT_PORTABLE`,
+   which never excludes a reference automatically (situation B);
+   the sidecar records every written reference with its fidelity and every exclusion with its
+   cause. An operation rejected because an included reference is `NOT_WRITABLE` (situation C)
+   produces neither DXF nor sidecar, presents nothing partial as a success, and gives the cause
+   in its result and report. The paired-output transaction of ADR 0014 decision 7 is unchanged.
 6. **External conformance with two fixed readers.** AutoCAD Core Console and ezdxf (a pinned
    external validation tool, never a product dependency or geometric authority) check each
    golden file in two separated parts: reading of the definition as written, and
@@ -72,7 +81,8 @@ re-exported.
    evidence binds reader versions and fixtures and claims no universal interoperability
    (D-R1-7). Three levels of evidence stay distinct: DXF format compliance; the fidelity class,
    whose correctly rounded re-reading ezdxf must reproduce exactly; and AutoCAD conformance,
-   accepted when every value is within 4 ulp (an initial test criterion, not a product or reader
+   accepted when every value is within 4 ulp (an initial test criterion for AutoCAD 2026,
+   `ACADVER` 25.1, only; not a product or reader
    bound, motivated by the 1–3 ulp misreadings AutoCAD 2026 showed in the R1 pilot) **and** the
    spline structure (degree, knots and multiplicities, domain, closure, weight conditions) and
    its evaluated geometry are preserved within the test tolerances; otherwise no conformance is
@@ -94,9 +104,12 @@ re-exported.
 ## Consequences
 
 - Candidate amendments of `dxf-curve-fidelity-and-approximation.md` (§3, §4, §7, §8, §9 and
-  a new §12), `geometry-export-foundation.md` (boundary, type table, layers),
+  a new §12), `geometry-export-foundation.md` (boundary, type table, layers, entity order,
+  export area, and the «no file when the neutral model is empty» rule),
   `dxf-spline-reference.md` §0, §10, §14, §17 and `bspline-2d.md` §10.5.
-- The preflight writability rule admits a references-only export.
+- The preflight writability rule admits a references-only export when at least one reference
+  remains writable; references never enter the neutral model; with no entity and no writable
+  reference no file is written.
 - `MAINT-A-DXF0-EXP` and `MAINT-A3` share exporter files and must not run in parallel.
 
 ## Alternatives

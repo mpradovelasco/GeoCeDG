@@ -3,7 +3,8 @@
 > **Nota de R1 (2026-11-25).** Caracterización de A-N2, conservada. Las caracterizaciones
 > nuevas de R1 (capacidad y escáneres, transiciones atómicas y Classic, piloto de conformidad)
 > están en el [informe R1](pre_g9b_maint_a_n2_r1_report.md) §C y §F; el tope de 4 MiB de §2.2
-> queda sustituido por la política de recursos del contrato `R-c` R1.
+> queda sustituido por la política de recursos del contrato `R-c` R1. La medición directa del
+> presupuesto (R3) está en el [informe R3](pre_g9b_maint_a_n2_r3_report.md) §3.
 
 | Campo | Valor |
 |---|---|

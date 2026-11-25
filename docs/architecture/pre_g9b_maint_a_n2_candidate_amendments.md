@@ -2,7 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R2).** `selfApproved=false`. No approved text is changed by this document or by the increments that wrote it (`PRE-G9B-MAINT-A-N2`, refined by `PRE-G9B-MAINT-A-N2-R1` and `PRE-G9B-MAINT-A-N2-R2`) |
+| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R3).** `selfApproved=false`. No approved text is changed by this document or by the increments that wrote it (`PRE-G9B-MAINT-A-N2`, refined by `PRE-G9B-MAINT-A-N2-R1`, `PRE-G9B-MAINT-A-N2-R2` and `PRE-G9B-MAINT-A-N2-R3`) |
+| R3 changes | pre-adoption audit: A-EXP-3, A-EXP-4 and A-EXP-6 §12.6 with the sidecar situations A, B and C (M2); A-GEF-1 with the references-only export and the area rule (M3); A-EXP-5 with the X1C scope; A-IMP-7 with the reading list; A-IMP-8 with the per-span weight bound; new A-IMP-11; A-NDI-1 with the Classic opening exception; A-IMP-9 with the measured budget (M1) |
 | R2 changes | A-EXP-6 §12.8 and the new §12.9 with the author decisions RX-D18 and RX-D19; no other amendment changes |
 | R1 changes | A-IMP-7 without store derivation entries; A-IMP-9 and A-NDI-1 with the configurable resource policy instead of a fixed 4 MiB cap; A-NDI-1 also with the atomic transition in every route and the Classic rule; A-EXP-6 with state 4 and the conformance readers; the A-N2 texts are kept in commit `874286e95` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` |
@@ -26,7 +27,8 @@ relative to the target file, written out so that it does not resolve from this d
 | `dxf-spline-reference.md` | §0 «It does not change the approved DXF export contracts» | a separate export capability now writes references | A-IMP-4 | X |
 | `dxf-spline-reference.md` | §10 «outside the population of the approved semantic exports» | still true for the semantic population; the separate option must be named | A-IMP-5 | X |
 | `dxf-spline-reference.md` | §17 stop condition «the reader would need a DXF writer change or an approved export-contract change» | scope it to the reader | A-IMP-6 | X |
-| `dxf-spline-reference.md` | §14 «The record is not modified and gains no link to the result.» | the relation is recorded outside the record | A-IMP-7 | A |
+| `dxf-spline-reference.md` | §14 «It reads the immutable `data`, `nature`, `domain`, `closure` and provenance digests» and «The record is not modified and gains no link to the result.» | the operation also reads degree, knots, weights and the provenance fields the block copies; the relation is recorded outside the record | A-IMP-7 | A |
+| `dxf-spline-reference.md` | §1, table, layer 3 «a declared fit» | the relation may also be an exact conversion | A-IMP-11 | A |
 | `dxf-spline-reference.md` | §14.1 step 2 (interval arithmetic) and the last paragraph (contract of `MAINT-A-DXF1` or `MAINT-A-DXF1b`) | admit exact rational arithmetic; name the contract and the split | A-IMP-8 | A |
 | `bspline-2d.md` | §10.5 «Passive: … never read by evaluation, metrics, intersections or export» | the export resolver reads the block informatively | A-BS-1 | X |
 | `bspline-2d.md` | §10.5 «whose exact attribute grammar the approximation contract of `MAINT-A-DXF1` fixes before code»; «Applicability» | grammar fixed; states named; malformed `v1` block | A-BS-2 | A |
@@ -34,10 +36,10 @@ relative to the target file, written out so that it does not resolve from this d
 | `dxf-curve-fidelity-and-approximation.md` | §4 last paragraph «`SPLINE` remains outside the baseline until mathematical exactness and independent reader-conformance evidence are both available.» | scope it to construction geometry | A-EXP-2 | X |
 | `dxf-curve-fidelity-and-approximation.md` | §7 preflight counts; population | reference counts and writability | A-EXP-3 | X |
 | `dxf-curve-fidelity-and-approximation.md` | §8 when the sidecar is mandatory; schema | reference section, schema version 4 | A-EXP-4 | X |
-| `dxf-curve-fidelity-and-approximation.md` | §9 «It does not change G5 exact bytes» | holds only with the option off | A-EXP-5 | X |
+| `dxf-curve-fidelity-and-approximation.md` | §9 «It does not change G5 exact bytes»; staging X1C «exact rational `SPLINE`» | holds only with the option off; X1C concerns construction geometry only | A-EXP-5 | X |
 | `dxf-curve-fidelity-and-approximation.md` | (new) | the capability itself | A-EXP-6 (§12) | X |
-| `geometry-export-foundation.md` | Boundary (pipeline from GeoElements), type table (no `SPLINE`), layers (`0`, `GEOCEDG_L<n>`), entity order | a separate reference population with its own layer and order | A-GEF-1 | X |
-| `native-document-identity.md` | «Serialization and `app_code: classic`» (existing entries; CU4 amendment) | a new optional entry | A-NDI-1 | R |
+| `geometry-export-foundation.md` | Boundary (pipeline from GeoElements), type table (no `SPLINE`), layers (`0`, `GEOCEDG_L<n>`), entity order, explicit export area, «writes no file when the neutral model contains zero exportable entities» | a separate reference population with its own layer, order and area rule; a references-only export (R3, M3) | A-GEF-1 | X |
+| `native-document-identity.md` | «Serialization and `app_code: classic`» (existing entries; CU4 amendment); Classic «directly open `.cedg`» | a new optional entry; Classic refuses an over-budget store | A-NDI-1 | R |
 | ADR 0014 | decision 8 | refined for references by ADR 0045 | A-ADR-1 (status pointer) | X |
 | ADR 0043 | decision 11 «never evaluation authority»; consequences | refined by ADR 0045 decision 4 | A-ADR-2 (status pointer) | X |
 | ADR 0043 | decision 10 «session-only in the first implementation (`R-a`)» | `R-c` persists references | A-ADR-3 (status pointer) | R |
@@ -85,11 +87,11 @@ The list is kept as the record of what had to be established.»
 
 ### A-IMP-9 — `dxf-spline-reference.md` §4.1, after the table
 
-Proposed addition (R1): «These limits govern the reading of a DXF file. Admission of the
+Proposed addition (R3): «These limits govern the reading of a DXF file. Admission of the
 admitted records into the document store is additionally bounded by the configurable storage
 budget of `cedg-reference-store/v1` §5.3, which never bounds the number of references below
-`SPLINE_ENTITIES_MAX` and bounds memory (proposed initial value: about 3 000 000 binary64
-values); an import that
+`SPLINE_ENTITIES_MAX` and bounds memory (measured initial value: 1 500 000 binary64 values);
+an import that
 would exceed the budget is rejected as a whole, with no prefix admitted, for the same reason
 as `SPLINE_ENTITIES_MAX`.»
 
@@ -122,7 +124,9 @@ ADR 0044 (`R-c`), when accepted; references stay outside `Construction` and the 
 > GeoCeDG 1.2.2 included, are not supported for such documents: they ignore the entry and drop
 > it on save, and release notes say so. The GeoCeDG Classic diagnostic preserves the entry
 > opaquely on every save route or, if it cannot, refuses to save such a document; it never
-> loses it silently.
+> loses it silently. As an exception to the Classic rule «directly open `.cedg`», Classic
+> refuses, with a message, to open a document whose store entry exceeds its budget or a reader
+> safety limit, so that it cannot lose it afterwards (R3).
 
 ## 3. Group X — with `cedg-reference-export/v1`
 
@@ -186,20 +190,27 @@ mathematical exactness and independent reader-conformance evidence are both avai
 > When the separate reference option of §12 is chosen, preflight also reports references
 > included, excluded by state, excluded by the user, outside the export area and not
 > writable. The operation is writable when the construction contributes at least one entity
-> or at least one reference is included.
+> or at least one reference is included and writable after resolving preferences, states, user
+> choices and the export area (§12).
 
 ### A-EXP-4 — §8, first paragraph and schema bullet
 
-Add to the list of conditions: «and whenever at least one imported reference is written
-(§12)». Replace «with `schema_version` 2 (version 1.1; …)» by the next free version
-(`schema_version` 4 under `cedg-reference-export/v1`, with a section `external_references`;
-versions 2 and 3 keep their meaning) and state that the encoding validator counts construction
-entities and reference entities separately.
+Add to the list of conditions (R3): «and whenever the reference option of §12 is on and the
+export completes with at least one reference written or excluded (§12.6, situations A and B)».
+Add after the schema bullet: «A sidecar written under §12 uses `schema_version` 4, with a
+section `external_references`; a sidecar written without the reference option keeps the
+current version and bytes; versions 2 and 3 keep their meaning.» State that the encoding
+validator counts construction entities and reference entities separately. The new sidecar
+requirement comes only from the reference option: the filtering of construction sources by
+the export area alone still never makes the sidecar mandatory.
 
 ### A-EXP-5 — §9, first sentence
 
 Proposed addition: «With the reference option of §12 off, or without references, the bytes
-of every export are unchanged.»
+of every export are unchanged.» In the staging list, replace «X1C: implicit contouring and/or
+exact rational `SPLINE`, only under a later evidence-backed authorization» by «X1C: implicit
+contouring and/or exact rational `SPLINE` of construction geometry, only under a later
+evidence-backed authorization; the `SPLINE` of imported references is governed by §12» (R3).
 
 ### A-EXP-6 — new §12
 
@@ -227,14 +238,22 @@ of every export are unchanged.»
 > A reference whose related construction was modified is no longer validly represented and
 > is included by default, while the modified construction is exported by §1 to §11. A failed
 > approximation is never an export state.
-> 12.6 The sidecar is mandatory when a reference is written.
+> 12.6 With the reference option on: (A) when at least one reference is written, DXF and
+> sidecar are produced as a pair; (B) when the export completes and a reference is excluded, by
+> the user, by preference or by the approved policy (including by the user after
+> `EXPONENT_NOT_PORTABLE`, which never excludes a reference automatically), the
+> sidecar is produced and records each exclusion and its cause, also when no reference is
+> written; (C) when an included reference is `NOT_WRITABLE`, the strict rule rejects the
+> operation: no DXF and no sidecar, nothing partial presented as a success, the cause given by
+> the result and report of the operation.
 > 12.7 Derived constructions are exported by §1 to §11 with their guarantees; this section
 > authorizes no `SPLINE` for constructions (`MAINT-A3`).
 > 12.8 External conformance is checked with AutoCAD Core Console and a pinned ezdxf, reading
 > of the definition separated from mathematical evaluation; the evidence covers its fixtures
 > and reader versions only. DXF format compliance, the fidelity class (exact re-reading,
 > reproduced by ezdxf) and AutoCAD conformance (each value within 4 ulp as an initial test
-> criterion, not a bound of the product or of the reader, plus preserved structure and
+> criterion for AutoCAD 2026, `ACADVER` 25.1, only, not a bound of the product or of the
+> reader, plus preserved structure and
 > geometry) are distinct levels of evidence; the AutoCAD tolerance does not change the fidelity
 > class.
 > 12.9 A reference whose coordinates, knots or weights would be written with a three-digit
@@ -251,6 +270,19 @@ of every export are unchanged.»
   table only when a reference is written».
 - Entity order: «reference entities follow every construction entity; construction handles
   never change».
+- Diagnostics and failure, replacing «The Desktop controller writes no file when the neutral
+  model contains zero exportable entities.» (R3, M3): «The Desktop controller writes no file
+  when the neutral model contains zero exportable entities and no imported reference is
+  writable. The neutral model of `Construction` and the population of imported references
+  are distinct: with the reference option of `cedg-reference-export/v1` explicitly chosen,
+  an operation whose neutral model is empty is still exportable when at least one reference
+  remains included and writable after resolving preferences, states, user choices and the
+  export area; references are never added to the neutral model or turned into `GeoElement`s.
+  The ordinary export keeps exactly its behavior; the preflight is unchanged except for the
+  reference counts of A-EXP-3, and the diagnostic, paired-output and rollback rules are
+  unchanged.»
+- Explicit export area: add «an imported reference participates unless the convex hull of its
+  control polygon is proved disjoint from `R` by exact predicates; it is written whole».
 
 ### A-ADR-1 — ADR 0014, status
 
@@ -264,9 +296,16 @@ provenance block by the reference export resolver), when accepted.»
 
 ## 4. Group A — with `dxf-spline-approximation/v1`
 
-### A-IMP-7 — `dxf-spline-reference.md` §14, first paragraph, last sentence
+### A-IMP-7 — `dxf-spline-reference.md` §14, first paragraph
 
-Current: «The record is not modified and gains no link to the result.»
+Current (second sentence): «It reads the immutable `data`, `nature`, `domain`, `closure` and
+provenance digests.»
+
+Proposed (R3): «It reads the immutable `data` with its degree, knots and effective weights,
+`nature`, `domain`, `closure`, and the provenance fields that the approximation block copies
+(digests, file digest and base name, entity handle and layer, transformation).»
+
+Current (last sentence): «The record is not modified and gains no link to the result.»
 
 Proposed (R1): «The record is not modified. The relation is recorded only by the result's
 passive provenance block (`referenceId`, `bspline-2d.md` §10.5); it is not a dependency. The
@@ -282,6 +321,17 @@ in the document.»
 - Last paragraph: replace «the approximation contract of `MAINT-A-DXF1` (or `MAINT-A-DXF1b`,
   D-A-9)» by «`dxf-spline-approximation/v1` (§7: implementation by `MAINT-A-DXF1b`, author
   decision D-R1-9)».
+- Steps 5 and 6, add (R3): «The per-span lower bound `min_k ω_k` of the Bernstein coefficients of
+  `W` on a span is also valid and never smaller than `min_i w_i`, because those coefficients are
+  convex combinations of the weights; either may be used.»
+
+### A-IMP-11 — `dxf-spline-reference.md` §1, table, layer 3 (R3)
+
+Current: «a new CeDG object of the `bspline-2d` family whose relation to a reference is a
+declared fit (`MAINT-A-DXF1`)».
+
+Proposed: «a new CeDG object of the `bspline-2d` family whose relation to a reference is a
+declared exact conversion or fit (`MAINT-A-DXF1`)».
 
 ### A-BS-2 — `bspline-2d.md` §10.5
 

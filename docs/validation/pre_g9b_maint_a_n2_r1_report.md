@@ -5,6 +5,7 @@
 | Campo | Valor |
 |---|---|
 | Carácter | Informe del refinamiento normativo. `selfApproved=false`, `authorApproved=false`, `passClaimed=false`. Evidencia, no autoridad; no registra ninguna aprobación |
+| Sustituido en parte por R3 | El presupuesto de 3 000 000 valores con `7 KiB × maxReferences` que este informe propone (D-R1-4 en §B, §C) se midió directamente en R3 y **no** se confirmó; el presupuesto vigente del candidato es el del [informe R3](pre_g9b_maint_a_n2_r3_report.md) §2–§3 (1 500 000 valores, asignación agregada de cadenas) |
 | Instrucción | «GeoCeDG — PRE-G9B-MAINT-A-N2-R1. Refinamiento normativo, resolución de decisiones y preparación de implementaciones coordinadas», del autor, 2026-11-25 |
 | Prompt | [`pre-g9b-maint-a-n2-r1-normative-refinement.prompt.md`](../../.github/prompts/tasks/pre-g9b-maint-a-n2-r1-normative-refinement.prompt.md), commit de gobernanza `51d8500b5` (contrato de prompt validado: siete campos en orden, `execution_safe = true`) |
 | Ruta y clase | `CHANGE_ROUTE = ORDINARY`; `VERIFICATION_CLASS = DOCUMENTATION_STATUS_ONLY`; `REQUIRED_VERIFICATION = STATIC`; sin `PHASE`, `INTEGRATION` ni `FINAL` |
@@ -264,6 +265,10 @@ GUIDE_IMPACT             = NONE en este incremento
 Sin push, merge, `main`, etiquetas, releases ni empaquetado. El worktree se conserva.
 
 ## Anexo R2 — cierre documental de interoperabilidad AutoCAD
+
+> **Nota de R3 (2026-11-25).** La auditoría previa a la adopción encontró M1–M3; su corrección,
+> la medición directa del presupuesto (que sustituye el valor de §C) y el paquete de cierre están
+> en el [informe R3](pre_g9b_maint_a_n2_r3_report.md).
 
 **PRE-G9B-MAINT-A-N2-R2 — NORMATIVE DESIGN CANDIDATE — READY FOR AUTHOR ADOPTION**
 

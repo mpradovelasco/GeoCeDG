@@ -1,14 +1,14 @@
 # Propuesta de adopción — `cedg-reference-export/v1` y ADR 0045
 
-**PROPUESTA DE APROBACIÓN — NO APROBADA.** Preparada por `PRE-G9B-MAINT-A-N2-R1` y completada
-por `PRE-G9B-MAINT-A-N2-R2`. `selfApproved=false`. Este documento no registra `AUTHOR APPROVED`.
+**PROPUESTA DE APROBACIÓN — NO APROBADA.** Preparada por `PRE-G9B-MAINT-A-N2-R1`, completada
+por `PRE-G9B-MAINT-A-N2-R2` y corregida por `PRE-G9B-MAINT-A-N2-R3` (M2, M3). `selfApproved=false`. Este documento no registra `AUTHOR APPROVED`.
 
 | Campo | Valor |
 |---|---|
-| Contrato | [`geocedg/specs/export/dxf-reference-export.md`](../../geocedg/specs/export/dxf-reference-export.md), `cedg-reference-export/v1`, revisión R2 |
-| ADR | [ADR 0045](../adr/0045-separate-dxf-export-of-imported-references.md), propuesto, revisión R2 |
-| Candidato | commit de contenido R2 y su árbol: [informe R1](pre_g9b_maint_a_n2_r1_report.md), anexo R2 (un documento no puede contener su propio SHA) |
-| `STATIC` | informe R1, anexo R2 |
+| Contrato | [`geocedg/specs/export/dxf-reference-export.md`](../../geocedg/specs/export/dxf-reference-export.md), `cedg-reference-export/v1`, revisión R3 |
+| ADR | [ADR 0045](../adr/0045-separate-dxf-export-of-imported-references.md), propuesto, revisión R3 |
+| Candidato | commit de contenido R3 y su árbol: [informe R3](pre_g9b_maint_a_n2_r3_report.md) §1 (un documento no puede contener su propio SHA) |
+| `STATIC` | [informe R3](pre_g9b_maint_a_n2_r3_report.md) §8 |
 
 ## 1. Decisiones autorales ya fijadas que aplica
 
@@ -18,7 +18,8 @@ por `PRE-G9B-MAINT-A-N2-R2`. `selfApproved=false`. Este documento no registra `A
 - **RX-D18 (R2):** alternativa A con condiciones. Tres niveles de evidencia distintos
   (cumplimiento del formato DXF; fidelidad `REFERENCE_DEFINITION`, cuya relectura correctamente
   redondeada ezdxf debe reproducir **exactamente**; conformidad AutoCAD). Para AutoCAD: cada
-  valor dentro de 4 ulp como criterio inicial de ensayo, no como cota del producto ni del
+  valor dentro de 4 ulp como criterio inicial de ensayo para AutoCAD 2026 (`ACADVER` 25.1), no
+  como cota del producto ni del
   lector; además estructura conservada (grado, nudos y multiplicidades, dominio, cierre,
   condiciones de pesos) y geometría evaluada dentro de la tolerancia; si una de estas falla, no
   hay conformidad aunque todos los valores estén dentro de 4 ulp; se registran lector, versión,
@@ -44,7 +45,7 @@ por `PRE-G9B-MAINT-A-N2-R2`. `selfApproved=false`. Este documento no registra `A
 | RX-D9 | área de exportación por la envolvente del polígono de control |
 | RX-D10 | conmutadores por operación; preferencia persistente en el gestor |
 | RX-D11 | sistema de coordenadas del modelo (`data`) |
-| RX-D12 | manifiesto obligatorio con referencias (versión 4) |
+| RX-D12 | manifiesto obligatorio con referencias (versión 4): DXF y manifiesto emparejados en las situaciones A y B; en la situación C, ni DXF ni manifiesto (R3) |
 | RX-D13 | dependencia estricta del contrato y de los hitos RC-M y DXF1-M; integración tras RC |
 | RX-D15 | referencias con datos idénticos: ambas incluidas y señaladas |
 
@@ -53,7 +54,9 @@ verificables y se ejecutan en `MAINT-A-DXF0-EXP` (RX-16, RX-17, RX-19).
 
 ## 3. Enmiendas incluidas (grupo X)
 
-A-IMP-4, A-IMP-5, A-IMP-6, A-BS-1, A-EXP-1 a A-EXP-6 (con §12.8 y §12.9 de R2), A-GEF-1, A-ADR-1
+A-IMP-4, A-IMP-5, A-IMP-6, A-BS-1, A-EXP-1 a A-EXP-6 (con §12.6 de R3, §12.8 y §12.9 de R2;
+A-EXP-5 con el alcance de X1C), A-GEF-1 (con la exportación solo de referencias y la regla de
+área, R3), A-ADR-1
 y A-ADR-2 del [conjunto de enmiendas](../architecture/pre_g9b_maint_a_n2_candidate_amendments.md).
 
 ## 4. Garantías y límites
@@ -63,9 +66,16 @@ y A-ADR-2 del [conjunto de enmiendas](../architecture/pre_g9b_maint_a_n2_candida
   comprobada antes de promover; no afirma nada sobre el archivo original.
 - Racionales como `SPLINE` racional, nunca como polilínea.
 - Inclusión por asociación explícita vigente; nunca por coordenadas.
-- ezdxf: lectura exacta exigida. AutoCAD: conformidad por criterios de ensayo (4 ulp, estructura,
+- ezdxf: lectura exacta exigida. AutoCAD: conformidad por criterios de ensayo (4 ulp para AutoCAD 2026, `ACADVER` 25.1; estructura,
   geometría) para las versiones y fixtures registrados; no es una garantía universal.
 - Límite: una referencia con exponentes no portables no se exporta mientras no se excluya.
+- Manifiesto (R3, M2): con la opción activada, una exportación completada produce DXF y
+  manifiesto emparejados si alguna referencia se escribe (A) o se excluye, por el usuario, por
+  preferencia o por la política aprobada (B); una operación rechazada por una referencia
+  `NOT_WRITABLE` no produce DXF ni manifiesto y da la causa en su resultado (C).
+- Exportación solo de referencias (R3, M3): posible cuando el modelo neutral está vacío y al menos
+  una referencia queda incluida y escribible; sin entidades ni referencias escribibles no se
+  escribe archivo; las referencias nunca entran en el modelo neutral.
 
 ## 5. Dependencias
 
@@ -76,5 +86,5 @@ paralelo con `MAINT-A3`.
 
 ## 6. Recomendación
 
-Adoptar `cedg-reference-export/v1` revisión R2 y aceptar ADR 0045 revisión R2, con las enmiendas
+Adoptar `cedg-reference-export/v1` revisión R3 y aceptar ADR 0045 revisión R3, con las enmiendas
 del grupo X.

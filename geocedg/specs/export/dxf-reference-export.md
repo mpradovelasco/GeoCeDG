@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R2).** Normative design written by `PRE-G9B-MAINT-A-N2`, refined by `PRE-G9B-MAINT-A-N2-R1` and completed for AutoCAD interoperability by `PRE-G9B-MAINT-A-N2-R2`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-EXP` is not authorized. It does not change the approved export contracts until the author approves the candidate amendments that reference it |
-| Revision | R1 (2026-11-25): state 4 fixed as alternative A (D-R1-6); no failure state and no store derivation history (D-R1-5); resolved-state model §6.4 with the eight cases mapped in §6.5; conformance with AutoCAD Core Console and ezdxf (D-R1-7, §12.1); no novelty flag (D-R1-10). R2 (2026-11-25): RX-D18 (levels of evidence and AutoCAD acceptance criteria, §12.3) and RX-D19 (`EXPONENT_NOT_PORTABLE`, §5.2) decided by the author. The A-N2 text is commit `874286e95`; the R1 text is commit `228d91d44` |
+| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R3).** Normative design written by `PRE-G9B-MAINT-A-N2`, refined by `PRE-G9B-MAINT-A-N2-R1`, completed for AutoCAD interoperability by `PRE-G9B-MAINT-A-N2-R2` and corrected by `PRE-G9B-MAINT-A-N2-R3`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-EXP` is not authorized. It does not change the approved export contracts until the author approves the candidate amendments that reference it |
+| Revision | R1 (2026-11-25): state 4 fixed as alternative A (D-R1-6); no failure state and no store derivation history (D-R1-5); resolved-state model §6.4 with the eight cases mapped in §6.5; conformance with AutoCAD Core Console and ezdxf (D-R1-7, §12.1); no novelty flag (D-R1-10). R2 (2026-11-25): RX-D18 (levels of evidence and AutoCAD acceptance criteria, §12.3) and RX-D19 (`EXPONENT_NOT_PORTABLE`, §5.2) decided by the author. R3 (2026-11-25, pre-adoption audit): sidecar situations A, B and C (§10, M2); references-only export bounded by writable references (§9, M3); 4 ulp tied to AutoCAD 2026; feature identifiers. The A-N2 text is commit `874286e95`; the R1 text is commit `228d91d44`; the R2 text is commit `101f574ab` |
 | Contract identifier | `cedg-reference-export/v1` (policy and population); fidelity class `REFERENCE_DEFINITION` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` |
 | Architectural layer | Export adapter outside the geometric kernel (AGENTS §4, §13); a separate read-only reference adapter beside the construction adapters |
@@ -131,10 +131,11 @@ pilot showed that AutoCAD 2026 silently truncates it to two exponent digits (`4.
    with reason `EXPONENT_NOT_PORTABLE`; the diagnostic names the field kind, the index and the
    value.
 2. It is never written silently, never rewritten in another decimal form, never replaced by a
-   polyline, never approximated. The strict rule of §7.3 applies: the operation is blocked until
-   the user excludes the reference; the exclusion keeps the diagnostic in the report and in the
-   sidecar (`USER_EXCLUDED` with `EXPONENT_NOT_PORTABLE`), which is written for that reason
-   (§10).
+   polyline, never approximated. The strict rule of §7.3 applies: while such a reference is
+   included, the operation is rejected (situation C of §10: no DXF and no sidecar; the cause is
+   in the operation result and report); once the user excludes it, the export can complete and
+   the sidecar records the exclusion with its cause (situation B of §10: `USER_EXCLUDED` with
+   the diagnostic `EXPONENT_NOT_PORTABLE`).
 3. The rule is a portability policy for the AutoCAD destination, not a DXF format violation and
    not a limitation of every reader. A plain-decimal writing (without exponent) is a later
    improvement, adopted only if conformance tests prove both its AutoCAD compatibility and its
@@ -282,11 +283,14 @@ off (the default of every export), no reference is written.
 ### 7.3 Strictness
 
 A reference included by default or by the user that cannot be written as `SPLINE` with
-`REFERENCE_DEFINITION` blocks the operation (strict default, ADR 0014 decision 6) until the
-user excludes it; it is never omitted silently and never replaced by a polyline. Every
-record admissible under `dxf-spline-reference/v1` is writable in principle, except a record with non-portable exponents (§5.2); a block can
-only come from §5.2 (`WRITE_ROUND_TRIP_FAILED`, `EXPONENT_NOT_PORTABLE`) or from a
-conformance restriction fixed later.
+`REFERENCE_DEFINITION` makes the operation rejected (strict default, ADR 0014 decision 6;
+situation C of §10): no DXF and no sidecar are produced, nothing partial is presented as a
+success, and the result and report of the operation give the cause; the user may change the
+selection and export again. Such a reference is never omitted silently and never replaced by a
+polyline. Every record admissible under `dxf-spline-reference/v1` is writable in principle,
+except a record with non-portable exponents (§5.2); a rejection can only come from §5.2
+(`WRITE_ROUND_TRIP_FAILED`, `EXPONENT_NOT_PORTABLE`) or from a conformance restriction
+fixed later.
 
 ## 8. Extension point
 
@@ -313,15 +317,27 @@ The construction adapters (`GeoElementGeometryExportAdapter`, `G9X1GeometryExpor
 
 Preflight counts, separately from construction outcomes: references included, excluded as
 validly represented (`REPRESENTED_EXACT`, `REPRESENTED_APPROXIMATION`), excluded by the user or
-by preference, outside the export area, and not writable. The writability rule becomes: writable when the construction contributes at least
-one entity **or** at least one reference is included. A references-only export is
-therefore possible.
+by preference, outside the export area, and not writable. The writability rule becomes:
+writable when the construction contributes at least one entity **or** at least one reference is
+included and writable after resolving preferences, states, user choices and the export area. A
+references-only export is therefore possible; references never enter the neutral model as
+model entities. When neither an entity nor a writable reference remains, no file is written
+(the approved rule of the foundation, amendment A-GEF-1). With the option off nothing changes.
 
 ## 10. Sidecar
 
-Mandatory whenever at least one reference is written (decision RX-D12), and whenever the option
-is on and a reference was excluded for `EXPONENT_NOT_PORTABLE` (§5.2): the DXF alone
-cannot say that an entity is external data, nor under which transformation. Schema
+The rule distinguishes three situations of an operation with the reference option on (decision
+RX-D12):
+
+| Situation | Outcome | Sidecar |
+|---|---|---|
+| **A.** at least one reference admitted and written | DXF and sidecar, paired | mandatory: every written reference with its definition and fidelity; every excluded one with its cause |
+| **B.** the export completes and at least one reference is excluded, by the user, by preference or by the approved policy (represented, outside the area, or excluded by the user after `EXPONENT_NOT_PORTABLE`; that cause alone never excludes a reference automatically: while it stays included the situation is C) | DXF (construction entities and any written references) and sidecar, paired | mandatory: records every exclusion and its cause, also when no reference is written |
+| **C.** the operation is rejected because an included reference is `NOT_WRITABLE` (§7.3) | no DXF and no sidecar; nothing partial presented as a success | none: the rejection and its cause are given by the result and report of the operation; the user may change the selection and retry |
+
+In A and B the sidecar is mandatory because the DXF alone cannot say that an entity is external
+data, under which transformation, or which references were left out and why. When no entity and
+no writable reference remain, no file is written (§9). Schema
 `org.geocedg.dxf.fidelity-manifest` with the next free `schema_version` (4, coordinated with
 any `MAINT-A3` amendment; version 3 keeps its meaning). New section `external_references`:
 
@@ -364,8 +380,10 @@ Compact (D-A-N2-5). In the existing DXF dialog, and only when the document has r
   identifiers, digests, related constructions, fidelity and what it does not claim;
 - the option is part of the existing DXF export action, with no activation flag of its own
   (author decision D-R1-10); its visible texts never say «experimental». Reconciliation with
-  AGENTS §5 (proposed): the option inherits the formal state of that action (`export.dxf-2d`,
-  whose flag predates this contract and is not a novelty flag); while `MAINT-A-DXF0-EXP` is open
+  AGENTS §5 (proposed): the option inherits the formal state of that action (profile action
+  `export.dxf-2d`, governed by the existing feature flags `cedg.export.dxf.2d` and
+  `cedg.export.dxf.extended`, both `experimental` in `geocedg/features/experimental.yml`; these flags
+  predate this contract and are not novelty flags); while `MAINT-A-DXF0-EXP` is open
   the option exists only on its branch, and its state is declared by the author at closeout.
 
 ## 12. Validation obligations
@@ -447,7 +465,9 @@ AutoCAD conformance criteria (alternative A of RX-D18, with the author's conditi
    correctly rounded re-reading.
 2. **Per-value criterion:** every value read through `entget` is within **4 ulp** of the
    written binary64 value. This threshold is the initial acceptance criterion of the AutoCAD
-   conformance tests only; it is neither a bound of the product nor a property of the reader.
+   conformance tests for AutoCAD 2026 (`ACADVER` 25.1) only; it is neither a bound of the
+   product nor a property of the reader. Another AutoCAD version reopens the criterion on its own
+   evidence.
 3. **Structural criterion**, required in addition: the degree; the number of knots and of
    control points; the knot multiplicities (values equal in the record stay equal, distinct
    values stay distinct, the order is preserved); the domain `[u_p, u_{n+1}]` stays non-empty
@@ -504,11 +524,11 @@ correspondence would need a DAG dependency; the implementation would need the co
 | RX-D9 | Export area | conservative control-polygon hull | alternatives: ignore the area, or exclude all references |
 | RX-D10 | Dialog toggles | per operation; persistent preference only in the manager | exporting never dirties the document |
 | RX-D11 | Coordinate system | model (`data`) | a source-system option later |
-| RX-D12 | Sidecar | mandatory with references | always paired output |
+| RX-D12 | Sidecar | mandatory with references | paired output in situations A and B of §10; in situation C neither DXF nor sidecar (R3) |
 | RX-D13 | Sequence | strict: this contract, the store model types of `R-c` (milestone RC-M) and the read-only provenance parser with applicability (milestone DXF1-M); integration after `MAINT-A-DXF0-RC` in the author's order; may precede A-DXF1 (before it only `NO_CEDG_REPRESENTATION`, case 7 and user choices occur) | aligned with the implementation plan §2 |
 | RX-D16 | Conformance readers | AutoCAD Core Console and ezdxf (pinned), definition reading separated from evaluation (§12.1) | **fixed by the author (D-R1-7)** |
 | RX-D17 | Failed approximations | never an export state; no persisted history | **fixed by the author (D-R1-5)** |
-| RX-D18 | AutoCAD definition-reading rule | alternative A with the author's conditions: three levels of evidence; ezdxf exact; AutoCAD within 4 ulp per value as an initial test criterion, plus structural and geometric criteria; recorded maxima and limits (§12.3) | **fixed by the author** (instruction R2 of 2026-11-25) |
+| RX-D18 | AutoCAD definition-reading rule | alternative A with the author's conditions: three levels of evidence; ezdxf exact; AutoCAD within 4 ulp per value as an initial test criterion for AutoCAD 2026 (`ACADVER` 25.1), plus structural and geometric criteria; recorded maxima and limits (§12.3) | **fixed by the author** (instruction R2 of 2026-11-25) |
 | RX-D19 | Values with three-digit exponents | `NOT_WRITABLE`/`EXPONENT_NOT_PORTABLE` for coordinates, knots and weights, both exponent signs; no polyline, no silent rewrite; user exclusion keeps the diagnostic; plain-decimal writing only as a later improvement proved by tests (§5.2) | **fixed by the author** (instruction R2 of 2026-11-25) |
 | RX-D15 | References with identical data (case 7) | both included by default as distinct references; the summary line and «Review…» flag them with `SAME_DATA_AS_REFERENCE`; the user may exclude either | deduplicating by data would be an association by coordinates (D-A-N2-3); the automatic-duplication rule concerns a reference and a construction that represents it |
 | RX-D14 | Normative form | this contract + amendments + ADR 0045 | — |
