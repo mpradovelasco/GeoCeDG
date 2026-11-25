@@ -521,6 +521,12 @@ public final class LocusMetricEngine2D {
 		if (run.admits()) {
 			return between.asConditionedRoute(admitted.withJumpGuard(run.record()));
 		}
+		if (run.hasEvaluationFailure()) {
+			// PRE-G9B-MAINT-B5a-R1 (section 28.1): an evaluation that fails inside the stretch
+			// is a failure of the result, never a value; the estimate is not published
+			return between.asConditionedFailure(MetricComputationStatus.NUMERICAL_FAILURE,
+					run.refusal());
+		}
 		return between.asConditioned(run.refusal());
 	}
 

@@ -273,6 +273,39 @@ public final class LocusMetricResult2D {
 	}
 
 	/**
+	 * PRE-G9B-MAINT-B5a-R1: package-only publication of a route of conditioned regions whose
+	 * computation failed after the estimate, as when an evaluation of the chord-scaling check
+	 * fails inside the stretch ({@code locus-v2-metrics.md} sections 28.1 and 28.3.1). The
+	 * result is a failure with an absent value: no estimate, error, contribution, numeric
+	 * traversal or admitted route of the same computation survives as a measure. The route,
+	 * the provenance and the diagnostics stay as evidence.
+	 *
+	 * @param status failure status, never {@code SUCCESS}
+	 * @param failure diagnostics of the failure, appended to those of this result
+	 * @return the failure result
+	 */
+	LocusMetricResult2D asConditionedFailure(MetricComputationStatus status,
+			List<MetricDiagnostic2D> failure) {
+		if (Objects.requireNonNull(status) == MetricComputationStatus.SUCCESS) {
+			throw new IllegalArgumentException("Failure status cannot be SUCCESS");
+		}
+		ArrayList<MetricDiagnostic2D> all = new ArrayList<>(diagnostics);
+		if (diagnostics.stream().noneMatch(d ->
+				d.getCode() == MetricDiagnosticCode2D.EXISTENCE_NOT_CERTIFIED)) {
+			all.add(new MetricDiagnostic2D(MetricDiagnosticCode2D.EXISTENCE_NOT_CERTIFIED,
+					"Measured on conditioned regions: existence and continuity are assumed "
+							+ "under the declared hypotheses, not certified"));
+		}
+		all.addAll(failure);
+		return new LocusMetricResult2D(new AbsentMetricValue2D(), MetricCoverage.INCOMPLETE,
+				status, MetricRectifiability.UNDETERMINED, traversalOutcome, routeEvidence,
+				constructionFidelity, evaluatorMethod, metricMethod,
+				MetricRepresentationRole2D.DIAGNOSTIC_PARTIAL_VALUE,
+				MetricErrorEvidence2D.notApplicable("conditioned route: computation failed"),
+				unit, provenance, Collections.emptyList(), all);
+	}
+
+	/**
 	 * Package-only publication of a length measured on a route that lies in one
 	 * conditioned region and meets the admission of section 28.3 of the metric contract
 	 * (decision DN-2): the same value, with incomplete geometric coverage, declared

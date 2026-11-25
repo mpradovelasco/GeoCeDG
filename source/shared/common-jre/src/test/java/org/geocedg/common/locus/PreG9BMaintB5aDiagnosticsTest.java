@@ -149,7 +149,8 @@ final class PreG9BMaintB5aDiagnosticsTest {
 
 	/**
 	 * A failed evaluation of the traced point at a parameter of the check, inside the
-	 * stretch, is a failure of the result (section 28.1): no number. The parameter is one
+	 * stretch, is a failure of the result (section 28.1): no number and, since
+	 * PRE-G9B-MAINT-B5a-R1 (L-6), no value of the rich result either. The parameter is one
 	 * that only the check evaluates (the last evaluations of the computation are those of the
 	 * check, which runs after the estimate).
 	 */
@@ -167,11 +168,15 @@ final class PreG9BMaintB5aDiagnosticsTest {
 		double target = evaluated.get(evaluated.size() - (int) checked / 2);
 		Route failing = PreG9BMaintB5aRoutes.route(u -> u == target ? null : straight.at(u),
 				straight, 0, 1, 0, 1);
-		assertRefusedWithItsEstimate(failing);
+		assertEquals(MetricComputationStatus.NUMERICAL_FAILURE,
+				failing.result.getComputationStatus(), failing.toString());
+		assertTrue(Double.isNaN(failing.value()), "no value: " + failing);
+		assertFalse(failing.admitted(), failing.toString());
+		assertFalse(failing.result.getConditionedRoute().isPresent());
+		assertTrue(failing.has(MetricDiagnosticCode2D.CONDITIONED_ROUTE_NOT_ADMISSIBLE));
 		assertTrue(failing.has(MetricDiagnosticCode2D.EVALUATION_FAILED), failing.toString());
 		assertEquals(List.of(), checkCodes(failing));
 		assertTrue(failing.message(MetricDiagnosticCode2D.EVALUATION_FAILED)
 				.contains("is a failure of the result, never a value"));
-		assertEquals(recorded.value(), failing.value(), 0, "the estimate is the same");
 	}
 }

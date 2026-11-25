@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import org.geocedg.common.kernel.locus.LocusEvaluation2D;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 
 /**
@@ -83,9 +84,10 @@ public final class LocusConditionedRouteJumpGuard2D {
 	interface TracedPoint {
 		/**
 		 * @param parameter canonical driver parameter
-		 * @return the traced point, or {@code null} when the evaluation fails
+		 * @return the evaluation of the traced point (PRE-G9B-MAINT-B5a-R1: with its status
+		 *         and diagnostic when it fails), or {@code null} when no evaluation exists
 		 */
-		LocusPoint2D at(double parameter);
+		LocusEvaluation2D at(double parameter);
 	}
 
 	/** How one leaf ended. */
@@ -291,13 +293,17 @@ public final class LocusConditionedRouteJumpGuard2D {
 				}
 				evaluations++;
 				spent++;
-				LocusPoint2D middlePoint = point.at(middle);
-				if (middlePoint == null) {
+				LocusEvaluation2D evaluation = point.at(middle);
+				if (evaluation == null || !evaluation.isValid()) {
+					// PRE-G9B-MAINT-B5a-R1: the typed cause, traced to the failed evaluation
 					failure = "the traced point could not be evaluated at " + middle
 							+ " inside the stretch (leaf " + leaves + " [" + leaf.getLower()
-							+ ", " + leaf.getUpper() + "])";
+							+ ", " + leaf.getUpper() + "], status "
+							+ (evaluation == null ? "NO_EVALUATION" : evaluation.getStatus()
+									+ ", " + evaluation.getDiagnostic()) + ")";
 					return;
 				}
+				LocusPoint2D middlePoint = evaluation.getPoint();
 				double first = distance(lowPoint, middlePoint);
 				double second = distance(middlePoint, highPoint);
 				double next;
@@ -350,6 +356,17 @@ public final class LocusConditionedRouteJumpGuard2D {
 			}
 		}
 
+		/**
+		 * PRE-G9B-MAINT-B5a-R1: an evaluation of the check failed inside the stretch. It is a
+		 * failure of the result (section 28.1), distinct from a signature, an inconclusive
+		 * leaf and an exhausted budget, which keep the estimate as a rich result.
+		 *
+		 * @return whether an evaluation of the check failed
+		 */
+		boolean hasEvaluationFailure() {
+			return failure != null;
+		}
+
 		/** @return whether the route satisfies condition 8 */
 		boolean admits() {
 			return !isStopped() && inconclusive == 0;
@@ -373,8 +390,11 @@ public final class LocusConditionedRouteJumpGuard2D {
 			List<MetricDiagnostic2D> diagnostics = new ArrayList<>();
 			String spent = "; " + evaluations + " evaluation(s) spent by the check";
 			if (failure != null) {
-				diagnostics.add(notAdmissible("an evaluation of the check failed inside the "
-						+ "stretch"));
+				diagnostics.add(new MetricDiagnostic2D(
+						MetricDiagnosticCode2D.CONDITIONED_ROUTE_NOT_ADMISSIBLE, "Condition 8 of "
+								+ LocusMetricConditionedRoute2D.VERSION + " (" + VERSION + "): an "
+								+ "evaluation of the check failed inside the stretch; the result "
+								+ "is a failure of the evaluation and publishes no value"));
 				diagnostics.add(new MetricDiagnostic2D(MetricDiagnosticCode2D.EVALUATION_FAILED,
 						VERSION + ": " + failure + "; a failed evaluation inside the stretch "
 								+ "is a failure of the result, never a value" + spent));

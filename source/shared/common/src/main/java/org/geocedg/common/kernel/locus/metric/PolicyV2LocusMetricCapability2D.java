@@ -377,7 +377,7 @@ public final class PolicyV2LocusMetricCapability2D
 					stretch.getUpper(), parameter -> {
 						LocusEvaluation2D evaluation = lineage.root.evaluateInComponent(
 								branchKey, stretch, parameter, session);
-						return evaluation.isValid() ? evaluation.getPoint() : null;
+						return evaluation;
 					});
 		}
 	}
