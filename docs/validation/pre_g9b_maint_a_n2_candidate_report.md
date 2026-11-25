@@ -204,8 +204,24 @@ que EXP y EXP antes que DXF1. Ningún worktree de implementación se ha creado.
 
 ## 9. Identidad del candidato y `STATIC`
 
-Se registra en un descendiente documental de este commit, tras ejecutar `STATIC` sobre el
-commit de contenido: un documento no puede contener su propio SHA.
+Registrado en un descendiente documental del commit de contenido (un documento no puede
+contener su propio SHA). El descendiente solo cambia este informe.
+
+| Elemento | Valor |
+|---|---|
+| Commit de gobernanza (prompt) | `567c8714a`, padre `a9ee803bf` |
+| **Candidato de contenido** | `874286e95564234d27094c9c983e69f9bff160bf`, árbol `30c21042c4b18a1416374a1ea0cfd9a4802cf6fa`, padre `567c8714a` |
+| Orden | `tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts\agent\pre-g9b-maint-a-n2-static-874286e9`, ejecutada desde el worktree A-N2 (PowerShell 7, directorio de proceso fijado al worktree; consola redirigida a la carpeta temporal de la sesión) |
+| Código de salida | `0` |
+| Ejecución | `verification-d3df6431fbfb4f64a893fb6af812525a`; plan `25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52` |
+| Identidad ligada | `candidate_commit = 874286e95…`, `candidate_tree = 30c21042c…` (el árbol estaba limpio y confirmado) |
+| Veredictos | aceptación `ACCEPTED`; cobertura `COMPLETE` |
+| Diagnósticos | 1 hallazgo: `diagnostic.governance` `DIAGNOSTIC_FINDING` (diagnóstico permanente de gobernanza, sin efecto en la aceptación); `diagnostic.historical-consistency` `DIAGNOSTIC_UNAVAILABLE`; documentación, estructura de guías, estilo y espacios en blanco `DIAGNOSTIC_CLEAR` |
+| Informe | `artifacts/agent/pre-g9b-maint-a-n2-static-874286e9/verification-result.json` del worktree (ignorado), SHA-256 `707a273ecf438dff21802a54e537616c80817fbdf980dadf4bbed0aa9a043a27` |
+| Comprobaciones previas | validación del contrato del prompt (`execution_safe = true`); enlaces relativos, UTF-8 y LF de los documentos nuevos; `git diff --check` limpio |
+
+`STATIC` es una aceptación técnica de la forma del candidato; no es aprobación del autor ni
+valida el contenido normativo.
 
 ## 10. Cuadro final de decisiones por contrato
 
