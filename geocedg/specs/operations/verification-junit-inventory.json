@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "4e9c4bc53daf16360454d9d097c2137f9ba46a18ae8cee962419c8dc8c0703db",
-      "discovered_identity_count": 7057,
-      "discovered_identities_sha256": "2ce2118ec1dc827e413087529914b42a499d5f70ce30420982cb55315ffcb4cf"
+      "discovery_evidence_sha256": "d5ace21f60484117425ca00903efc73ab3f03e11b393f70ec4409f63a23cf78e",
+      "discovered_identity_count": 7100,
+      "discovered_identities_sha256": "e9f18b35d6159943fad1bbb864e4949420205eab447216185f2bf57b3dba00e5"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "4cda97b0f08c13aec7cf95b127ae2d06cb31723140a5735f93905001772d4385",
-      "discovered_identity_count": 2627,
-      "discovered_identities_sha256": "e34b7b46e04724e74899dafd0e8d02014ceb0bd871cb77453cee9f21f2dc2683"
+      "discovery_evidence_sha256": "2027fe6091d052ff047f433dd976c51d7d6aae1a6d6b0303f62a4532b1b610f0",
+      "discovered_identity_count": 2630,
+      "discovered_identities_sha256": "c6028cf2622274db582815905f5336c6976008cf08e9905c2f1604017e45719a"
     }
   ],
   "selections": [
@@ -173,8 +173,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 7057,
-      "expected_identities_sha256": "2ce2118ec1dc827e413087529914b42a499d5f70ce30420982cb55315ffcb4cf",
+      "expected_identity_count": 7100,
+      "expected_identities_sha256": "e9f18b35d6159943fad1bbb864e4949420205eab447216185f2bf57b3dba00e5",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -202,8 +202,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2627,
-      "expected_identities_sha256": "e34b7b46e04724e74899dafd0e8d02014ceb0bd871cb77453cee9f21f2dc2683",
+      "expected_identity_count": 2630,
+      "expected_identities_sha256": "c6028cf2622274db582815905f5336c6976008cf08e9905c2f1604017e45719a",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -5504,6 +5504,136 @@
         {
           "commit": "ae688c3939ca9ee9bc6fe65f3a9a47dd9a0af990",
           "tree": "84b47674b13374fdce6df608d806633c372b5ab2"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-maint-b5a.shared",
+      "module": "shared",
+      "gradle_task": ":shared:common-jre:test",
+      "test_filters": [
+        "org.geocedg.common.locus.PreG9BMaintB5aChordScalingCheckTest",
+        "org.geocedg.common.locus.PreG9BMaintB5aAdversarialBatteryTest",
+        "org.geocedg.common.locus.PreG9BMaintB5aContinuousReferencesTest",
+        "org.geocedg.common.locus.PreG9BMaintB5aDiagnosticsTest",
+        "org.geocedg.common.locus.PreG9BMaintB5aDeclaredLimitsTest",
+        "org.geocedg.common.locus.PreG9BMaintB5aTranslationTest",
+        "org.geocedg.common.locus.PreG9BMaintB5aPostR1RoutesTest",
+        "org.geocedg.common.locus.PreG9BMaintB4SliderPieceReorderingTest",
+        "org.geocedg.common.locus.PostR1ConditionedMetricTest",
+        "org.geocedg.common.locus.PostR1ConditionedEvidenceTest",
+        "org.geocedg.common.locus.PostR1ConditionedScalarCauseTest",
+        "org.geocedg.common.locus.PostR1ConditionedSimilarityTest",
+        "org.geocedg.common.locus.PostR1ConditionedDependentLocusTest",
+        "org.geocedg.common.locus.PostR1DeclaredPieceIdentityTest",
+        "org.geocedg.common.locus.PostR1PrivateMetricAuthorityTest",
+        "org.geocedg.common.locus.PreG9BCu1EstimatorTest",
+        "org.geocedg.common.locus.PreG9BCu1MetricClassesTest",
+        "org.geocedg.common.locus.PreG9BCu2ConditionedEstimateTest",
+        "org.geocedg.common.locus.P2ConditionalNumericEstimateTest",
+        "org.geocedg.common.locus.GeoCeDG120MetricPublicContractTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":shared:common-jre:test",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BMaintB5aChordScalingCheckTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BMaintB5aAdversarialBatteryTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BMaintB5aContinuousReferencesTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BMaintB5aDiagnosticsTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BMaintB5aDeclaredLimitsTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BMaintB5aTranslationTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BMaintB5aPostR1RoutesTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BMaintB4SliderPieceReorderingTest",
+        "--tests",
+        "org.geocedg.common.locus.PostR1ConditionedMetricTest",
+        "--tests",
+        "org.geocedg.common.locus.PostR1ConditionedEvidenceTest",
+        "--tests",
+        "org.geocedg.common.locus.PostR1ConditionedScalarCauseTest",
+        "--tests",
+        "org.geocedg.common.locus.PostR1ConditionedSimilarityTest",
+        "--tests",
+        "org.geocedg.common.locus.PostR1ConditionedDependentLocusTest",
+        "--tests",
+        "org.geocedg.common.locus.PostR1DeclaredPieceIdentityTest",
+        "--tests",
+        "org.geocedg.common.locus.PostR1PrivateMetricAuthorityTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BCu1EstimatorTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BCu1MetricClassesTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BCu2ConditionedEstimateTest",
+        "--tests",
+        "org.geocedg.common.locus.P2ConditionalNumericEstimateTest",
+        "--tests",
+        "org.geocedg.common.locus.GeoCeDG120MetricPublicContractTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 171,
+      "expected_identities_sha256": "04be7728dec695d536332e8d1ac4e59f37d5aeb4faa122163424e61c0262c9f3",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "de7c70741d7195f2ccdb04340ece8ef8ef9f6b6f",
+          "tree": "85fcdc59820b8853435d2a170b931131d760c705"
+        }
+      ]
+    },
+    {
+      "selection_id": "pre-g9b-maint-b5a.desktop",
+      "module": "desktop",
+      "gradle_task": ":desktop:desktop:test",
+      "test_filters": [
+        "org.geocedg.desktop.PreG9BMaintB5aAuthorModelDesktopTest",
+        "org.geocedg.desktop.PostR1ConditionedLengthDesktopTest",
+        "org.geocedg.desktop.PostR1LengthDeletionDesktopTest",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest"
+      ],
+      "excluded_test_filters": [],
+      "effective_arguments": [
+        ":desktop:desktop:test",
+        "--tests",
+        "org.geocedg.desktop.PreG9BMaintB5aAuthorModelDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.PostR1ConditionedLengthDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.PostR1LengthDeletionDesktopTest",
+        "--tests",
+        "org.geocedg.desktop.PostP1BilingualUserGuideTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "--rerun-tasks",
+        "--no-build-cache",
+        "--no-daemon",
+        "--no-problems-report",
+        "--console=plain",
+        "-Dorg.gradle.java.installations.auto-download=false"
+      ],
+      "expected_identity_count": 46,
+      "expected_identities_sha256": "2faf454a86f16f048b93052133224632c0f1c9550124a3b25ea0bfbd7b1ec5fc",
+      "not_applicable_allowlist": [],
+      "input_identities": [
+        {
+          "commit": "de7c70741d7195f2ccdb04340ece8ef8ef9f6b6f",
+          "tree": "85fcdc59820b8853435d2a170b931131d760c705"
         }
       ]
     },

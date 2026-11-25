@@ -7,6 +7,7 @@ package org.geocedg.common.kernel.locus.metric;
 
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -21,8 +22,11 @@ import org.geocedg.common.kernel.locus.LocusInterval2D;
  * proves no existence, continuity, completeness, incidence or intersection.
  */
 public final class LocusMetricConditionedRoute2D {
-	/** Version of the admission rule of section 28.3. */
-	public static final String VERSION = "conditioned-length-scalar/v1";
+	/**
+	 * Version of the admission rule of section 28.3: version 2 adds condition 8, the
+	 * chord-scaling check of section 28.3.1 ({@code conditioned-route-jump-guard/v1}).
+	 */
+	public static final String VERSION = "conditioned-length-scalar/v2";
 
 	/** The hypotheses assumed between the evaluated nodes of the spans of the route. */
 	public static final String HYPOTHESES = "H1, H2, H3, H4";
@@ -35,10 +39,21 @@ public final class LocusMetricConditionedRoute2D {
 	private final String traversalPolicyVersion;
 	private final long semanticRevision;
 	private final Set<String> spanClasses;
+	/** Record of the chord-scaling check that admitted the route, or {@code null}. */
+	private final LocusConditionedRouteJumpGuard2D.Record jumpGuard;
 
 	LocusMetricConditionedRoute2D(String branchKey, LocusInterval2D region,
 			double routeLower, double routeUpper, String evidenceContentIdentity,
 			String traversalPolicyVersion, long semanticRevision, Set<String> spanClasses) {
+		this(branchKey, region, routeLower, routeUpper, evidenceContentIdentity,
+				traversalPolicyVersion, semanticRevision, spanClasses, null);
+	}
+
+	private LocusMetricConditionedRoute2D(String branchKey, LocusInterval2D region,
+			double routeLower, double routeUpper, String evidenceContentIdentity,
+			String traversalPolicyVersion, long semanticRevision, Set<String> spanClasses,
+			LocusConditionedRouteJumpGuard2D.Record jumpGuard) {
+		this.jumpGuard = jumpGuard;
 		this.branchKey = Objects.requireNonNull(branchKey);
 		this.region = Objects.requireNonNull(region);
 		if (!(region.getLower() <= routeLower && routeLower <= routeUpper
@@ -103,12 +118,30 @@ public final class LocusMetricConditionedRoute2D {
 		return spanClasses;
 	}
 
+	/**
+	 * @return the record of the chord-scaling check (section 28.3.1) under which the route was
+	 *         admitted: policy version, leaves tested, leaves below resolution, evaluations
+	 *         and the statement that it is no proof of continuity; empty when the check did
+	 *         not run because conditions 5 to 7 were not met
+	 */
+	public Optional<LocusConditionedRouteJumpGuard2D.Record> getJumpGuard() {
+		return Optional.ofNullable(jumpGuard);
+	}
+
+	/** @return the same route evidence with the record of the check that admitted it */
+	LocusMetricConditionedRoute2D withJumpGuard(LocusConditionedRouteJumpGuard2D.Record record) {
+		return new LocusMetricConditionedRoute2D(branchKey, region, routeLower, routeUpper,
+				evidenceContentIdentity, traversalPolicyVersion, semanticRevision, spanClasses,
+				Objects.requireNonNull(record));
+	}
+
 	@Override
 	public String toString() {
 		return VERSION + " branch=" + branchKey + " region=[" + region.getLower() + ", "
 				+ region.getUpper() + "] route=[" + routeLower + ", " + routeUpper
 				+ "] hypotheses=" + HYPOTHESES + " spans=" + spanClasses + " policy="
 				+ traversalPolicyVersion + " content=" + evidenceContentIdentity
-				+ " revision=" + semanticRevision;
+				+ " revision=" + semanticRevision
+				+ (jumpGuard == null ? "" : " check=[" + jumpGuard + "]");
 	}
 }

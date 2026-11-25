@@ -73,7 +73,25 @@ public enum MetricDiagnosticCode2D {
 	CONDITIONED_ROUTE_ADMITTED,
 	/**
 	 * Section 28.3: the route lies in one conditioned region but the certificate of the
-	 * branch names, on it, a cause under which no conditioned length is a number.
+	 * branch names, on it, a cause under which no conditioned length is a number; or, under
+	 * version 2, the chord-scaling check of section 28.3.1 did not admit it.
 	 */
-	CONDITIONED_ROUTE_NOT_ADMISSIBLE
+	CONDITIONED_ROUTE_NOT_ADMISSIBLE,
+	/**
+	 * Section 28.3.1: a leaf of the route ended with the chord-scaling signature, a numeric
+	 * signature compatible with a discontinuity or with a singular variation of speed. The
+	 * continuity that H3 requires is not established by the check; it demonstrates neither a
+	 * jump nor that H3 is false.
+	 */
+	CHORD_SCALING_JUMP_SIGNATURE,
+	/**
+	 * Section 28.3.1: no signature, and the check could not decide on a leaf: the parameter
+	 * resolution was reached during a run of high ratios, or a ratio was not finite.
+	 */
+	CHORD_SCALING_INCONCLUSIVE,
+	/**
+	 * Section 28.3.1: no signature, and the evaluations of the check per route were spent
+	 * before every leaf was decided; nothing is concluded about the leaves left untested.
+	 */
+	CHORD_SCALING_BUDGET_EXHAUSTED
 }

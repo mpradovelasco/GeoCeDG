@@ -1228,6 +1228,20 @@ the point created on it stays undefined
 until the root returns to the region where it was created: GeoCeDG does not move
 it to another root by proximity.
 
+Before the length between two points becomes a number, GeoCeDG runs a
+**chord-scaling check** on the route: it bisects the pieces of the measured
+stretch and looks at how their chords shrink. A jump along the direction of the
+trace keeps the chord of the whole at every level, a numeric signature that the
+traversal of the regions cannot see. When the check observes that signature,
+cannot decide a piece, or runs out of its evaluation budget, the length stays
+undefined; the rich result keeps the estimate, and its diagnostic names which of
+the three causes applies. The signature is compatible with a jump or with a
+speed that varies too abruptly, so it does not prove a discontinuity, and a
+route that passes the check is still an estimate, not a proof of continuity:
+very small jumps, a single wrong point and jumps that go and come back between
+evaluated points are not detected. Documents made with GeoCeDG 1.2.2 can show
+such a length as undefined where 1.2.2 showed a number.
+
 Semantic export (DXF and LaTeX) omits the conditioned regions and declares it,
 beside the certified components, which are exported as before. A picture export
 of a view exports what the view draws.
