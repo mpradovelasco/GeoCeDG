@@ -61,7 +61,7 @@ o publica la misma estimación con `asConditioned(diagnósticos)`.
 | `PolicyV2LocusMetricCapability2D` | `buildConditionedEstimateState(..., retainLeafNodes)` y `checkConditionedRoute`, que evalúa el punto trazado de la fuente medida con la misma rama y extensión que el estimador |
 | `LocusMetricEngine2D` | retención solo para los tramos de ruta (`conditionedRegionState`); los totales y las piezas declaradas no cambian |
 | `LocusMetricConditionedRoute2D` | `VERSION = conditioned-length-scalar/v2`; `getJumpGuard()` con el registro |
-| `MetricDiagnosticCode2D` | `CHORD_SCALING_JUMP_SIGNATURE`, `CHORD_SCALING_INCONCLUSIVE`, `CHORD_SCALING_BUDGET_EXHAUSTED` |
+| `MetricDiagnosticCode2D` | `CHORD_SCALING_JUMP_SIGNATURE`, `CHORD_SCALING_INCONCLUSIVE`, `CHORD_SCALING_BUDGET_EXHAUSTED`, con sus etiquetas EN/ES en los paquetes `menu*.properties` (§8.1) |
 
 `LocusConditionedTraversal2D`, su política, la identidad de contenido de la evidencia, los
 tokens, la evidencia de existencia, los certificados, la serialización, §26.5, §26.6, §28.1,
@@ -303,13 +303,39 @@ conservados). Desktop: `PreG9BMaintB5aAuthorModelDesktopTest` (3, con la prueba 
 Selección `PHASE PRE-G9B-MAINT-B5A`: compartida (las ocho clases nuevas, las clases post-R1 de
 métrica condicionada y las de estimador de CU1/CU2/P2) y Desktop (la prueba nueva,
 `PostR1ConditionedLengthDesktopTest`, `PostR1LengthDeletionDesktopTest` y las tres pruebas de
-la guía): 171 y 46 identidades de evidencia ejecutada; descubrimiento compartido 7 057 → 7 100
+la guía; desde §8.1 también `G9U0LocalizationHelpTest`): 171 y 50 identidades de evidencia
+ejecutada; descubrimiento compartido 7 057 → 7 100
 y Desktop 2 627 → 2 630 (evidencia `--test-dry-run`); pin del inventario en el registro y
 recuentos de `verification-final-coverage.Tests.ps1` (102 selecciones, 91 fases) actualizados.
 Las selecciones `final.*` no se refrescan porque solo `FINAL` las exige y `FINAL` no está
 autorizado (precedente U2). Regresión compartida completa en el árbol de trabajo:
 8 076 pruebas, 0 fallos, 10 omitidas. En Desktop se ejecutaron la selección de la fase y las
-clases `PostR1Conditioned*Desktop*`, sin fallos; la batería Desktop completa no se ejecutó.
+clases `PostR1Conditioned*Desktop*`, sin fallos; la batería Desktop completa no se ejecutó en esa ronda (sí en §8.1).
+
+### 8.1 Corrección focal: etiquetas de los diagnósticos
+
+El ensayo de integración de la segunda ola ejecutó la batería Desktop completa y encontró que
+`G9U0LocalizationHelpTest.l02RichStatusAndDiagnosticLabelsAreLocalized`, que exige una etiqueta
+`LocusV2.Results.Value.<constante>` por cada constante de `MetricDiagnosticCode2D`, fallaba solo
+con B5a: los tres códigos nuevos no tenían etiqueta. Esa clase no estaba en ninguna selección de
+B5a ni en el núcleo de `INTEGRATION`. Corrección autorizada por el coordinador: las tres
+etiquetas en `menu.properties`, `menu_en.properties` (inglés) y `menu_es.properties` (español,
+con escapes `\uXXXX`), insertadas tras `CONDITIONED_ROUTE_NOT_ADMISSIBLE` con fin de línea LF y
+sin tocar ninguna otra línea de esos ficheros de finales mixtos (`git diff --numstat`: 3
+inserciones por fichero). La clase pasa a la selección Desktop de la fase.
+
+Comprobación de causa raíz sobre el árbol corregido (commit base `69347d9f6` más las
+etiquetas):
+
+| Batería | Resultado |
+|---|---|
+| Compartida completa (`:shared:common-jre:test --rerun-tasks`) | 8 077 pruebas, 0 fallos, 10 omitidas |
+| Desktop completa, ejecución del productor `final.desktop` (evidencia no incorporada al inventario) | 2 676 pruebas, 1 fallo, 1 omitida; el fallo es el histórico `PreG9BCu2AuthorModelConsumerTest.theCertificateIsTheSingleClosureAuthority` (`e_2`, `seam=[INTERIOR]`), previo a B5a; `G9U0LocalizationHelpTest` pasa |
+
+Ninguna otra selección del inventario cubre clases que B5a cambie o añada, salvo las suyas; la
+selección Desktop de la fase pasa de 46 a 50 identidades con `G9U0LocalizationHelpTest`
+(evidencia ejecutada), con el pin del registro actualizado. El descubrimiento no cambia
+(7 100 y 2 630) y `final.*` no se refresca.
 
 ## 9. Nota de versión (compatibilidad)
 

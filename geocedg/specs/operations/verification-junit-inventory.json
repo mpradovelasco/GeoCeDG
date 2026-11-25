@@ -5722,7 +5722,8 @@
         "org.geocedg.desktop.PostR1LengthDeletionDesktopTest",
         "org.geocedg.desktop.PostP1BilingualUserGuideTest",
         "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
-        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest"
+        "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "org.geocedg.desktop.locus.G9U0LocalizationHelpTest"
       ],
       "excluded_test_filters": [],
       "effective_arguments": [
@@ -5739,6 +5740,8 @@
         "org.geocedg.desktop.PreG9BR5AGuideOutlineTest",
         "--tests",
         "org.geocedg.desktop.PreG9BCu0GuideCoverageMatrixTest",
+        "--tests",
+        "org.geocedg.desktop.locus.G9U0LocalizationHelpTest",
         "--rerun-tasks",
         "--no-build-cache",
         "--no-daemon",
@@ -5746,8 +5749,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 46,
-      "expected_identities_sha256": "2faf454a86f16f048b93052133224632c0f1c9550124a3b25ea0bfbd7b1ec5fc",
+      "expected_identity_count": 50,
+      "expected_identities_sha256": "f37c5ed6a0f60d319b57f33f3782fa3c4f46d453c38bd31772ea06d1c49b36b9",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
