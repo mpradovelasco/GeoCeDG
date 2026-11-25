@@ -184,6 +184,37 @@ final class PreG9BMaintB5aRoutes {
 	 */
 	static Route route(Curve curve, Curve traversed, Selection selection, double lower,
 			double upper, double a, double b) {
+		return route(new Session(false), 1, curve, traversed, selection, lower, upper, a, b);
+	}
+
+	/**
+	 * PRE-G9B-MAINT-B5a-R1: one metric engine and shared owner kept across queries and
+	 * revisions, so a test can observe caches, query order and recovery after a change.
+	 */
+	static final class Session {
+		final LocusMetricInstrumentation2D instrumentation = new LocusMetricInstrumentation2D();
+		final LocusMetricSharedOwner2D owner = new LocusMetricSharedOwner2D("b5a-route",
+				instrumentation);
+		final LocusMetricEngine2D engine = new LocusMetricEngine2D();
+		/** Held by a persistent session: an owner without a lease is released. */
+		final LocusMetricOwnerLease2D held;
+
+		/** A persistent session, whose owner stays active between queries. */
+		Session() {
+			this(true);
+		}
+
+		private Session(boolean persistent) {
+			held = persistent ? owner.acquireLease() : null;
+		}
+	}
+
+	/**
+	 * Measures the route {@code a -> b} at a semantic revision of the source, inside a
+	 * session whose engine and owner persist between calls.
+	 */
+	static Route route(Session measuring, long revision, Curve curve, Curve traversed,
+			Selection selection, double lower, double upper, double a, double b) {
 		LocusInterval2D domain = new LocusInterval2D(lower, upper, true, true);
 		LocusExistenceStructure2D structure = LocusExistenceStructure2D.notEstablished(BRANCH,
 				domain, DomainTopology.BOUNDED, LocusCoverageCause2D.NOT_CERTIFIED,
@@ -194,7 +225,7 @@ final class PreG9BMaintB5aRoutes {
 				Orientation.INCREASING, "b5a-fixture/v1", LocusLineage2D.unchanged(),
 				EnumSet.of(BranchProperty.FINITE), LocusQuality2D.analyticDoubleSemantic());
 		long[] evaluations = {0};
-		LocusDefinition2D definition = new LocusDefinition2D("b5a-route", 1,
+		LocusDefinition2D definition = new LocusDefinition2D("b5a-route", revision,
 				DefinitionStatus.VALID, provider, List.of(branch),
 				(source, semanticBranch, parameter, session) -> {
 					evaluations[0]++;
@@ -206,8 +237,9 @@ final class PreG9BMaintB5aRoutes {
 									semanticBranch.getQuality());
 				}, Determinism.POINTWISE_DETERMINISTIC, "b5a-fixture/v1",
 				new LocusInstrumentation2D());
-		LocusConditionedEvidence2D evidence = LocusConditionedTraversal2D.traverse(BRANCH, 1,
-				lower, upper, LocusConditionedTraversalPolicy2D.v1(), Collections.emptyList(),
+		LocusConditionedEvidence2D evidence = LocusConditionedTraversal2D.traverse(BRANCH,
+				revision, lower, upper, LocusConditionedTraversalPolicy2D.v1(),
+				Collections.emptyList(),
 				t -> {
 					LocusPoint2D point = traversed.at(t);
 					return point == null ? LocusConditionedSample2D.failed("b5a fixture")
@@ -218,10 +250,9 @@ final class PreG9BMaintB5aRoutes {
 											selection.at(t), 1)));
 				});
 		LocusMetricPolicy2D policy = LocusMetricPolicy2D.cu1PublicV2();
-		LocusMetricInstrumentation2D instrumentation = new LocusMetricInstrumentation2D();
-		LocusMetricSharedOwner2D owner = new LocusMetricSharedOwner2D("b5a-route",
-				instrumentation);
-		LocusMetricEngine2D engine = new LocusMetricEngine2D();
+		LocusMetricInstrumentation2D instrumentation = measuring.instrumentation;
+		LocusMetricSharedOwner2D owner = measuring.owner;
+		LocusMetricEngine2D engine = measuring.engine;
 		engine.setConditionedSource(key -> BRANCH.equals(key) ? evidence : null);
 		BetweenPositionsMetricQuery query = new BetweenPositionsMetricQuery(
 				addressed(definition, branch, a, curve), addressed(definition, branch, b, curve),
@@ -234,7 +265,7 @@ final class PreG9BMaintB5aRoutes {
 					List.of(new PolicyV2LocusMetricCapability2D())), owner,
 					LocusMetricIndexMode.LAZY_COMPONENT_REVISION, instrumentation, "b5a-test");
 		} catch (LocusMetricComponentBuildException exception) {
-			result = LocusMetricResults2D.failure("b5a-route", 1, policy,
+			result = LocusMetricResults2D.failure("b5a-route", revision, policy,
 					exception.getComputationStatus(), Optional.empty(),
 					exception.getDiagnostics());
 		}

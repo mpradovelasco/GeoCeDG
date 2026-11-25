@@ -5531,7 +5531,8 @@
         "org.geocedg.common.locus.PreG9BCu1MetricClassesTest",
         "org.geocedg.common.locus.PreG9BCu2ConditionedEstimateTest",
         "org.geocedg.common.locus.P2ConditionalNumericEstimateTest",
-        "org.geocedg.common.locus.GeoCeDG120MetricPublicContractTest"
+        "org.geocedg.common.locus.GeoCeDG120MetricPublicContractTest",
+        "org.geocedg.common.locus.PreG9BMaintB5aR1GuardFailureTest"
       ],
       "excluded_test_filters": [],
       "effective_arguments": [
@@ -5576,6 +5577,8 @@
         "org.geocedg.common.locus.P2ConditionalNumericEstimateTest",
         "--tests",
         "org.geocedg.common.locus.GeoCeDG120MetricPublicContractTest",
+        "--tests",
+        "org.geocedg.common.locus.PreG9BMaintB5aR1GuardFailureTest",
         "--rerun-tasks",
         "--no-build-cache",
         "--no-daemon",
