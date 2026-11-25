@@ -38,9 +38,12 @@ final class GeoCeDGDxfReferenceImport {
 		@CheckForNull DxfAffineTransform ask(AppGeoCeDG app, DxfImportReport preview);
 	}
 
-	/** Shows a read-only text (report, inspector, messages). */
+	/**
+	 * Shows a read-only text (report, inspector, messages): a compact text for ordinary use and,
+	 * when present, a details text shown only on request (PRE-G9B-MAINT-A-DXF0-R1).
+	 */
 	interface Presenter {
-		void show(AppGeoCeDG app, String title, String text);
+		void show(AppGeoCeDG app, String title, String text, @CheckForNull String details);
 	}
 
 	/** Opens the session manager. */
@@ -103,11 +106,12 @@ final class GeoCeDGDxfReferenceImport {
 		} catch (IOException exception) {
 			presenter.show(app, app.layerText("DxfReference.Report.Title"),
 					app.layerText("DxfReference.ReadFailed", file.getName(),
-							String.valueOf(exception.getMessage())));
+							String.valueOf(exception.getMessage())), null);
 			return null;
 		}
 		if (preview.fileCause() != null || preview.records().isEmpty()) {
 			presenter.show(app, app.layerText("DxfReference.Report.Title"),
+					GeoCeDGDxfReferenceText.summary(app, preview),
 					GeoCeDGDxfReferenceText.report(app, preview));
 			return preview;
 		}
@@ -120,6 +124,7 @@ final class GeoCeDGDxfReferenceImport {
 						DxfImportLimits.DEFAULT);
 		app.getDxfReferenceSession().addAll(report.records());
 		presenter.show(app, app.layerText("DxfReference.Report.Title"),
+				GeoCeDGDxfReferenceText.summary(app, report),
 				GeoCeDGDxfReferenceText.report(app, report));
 		return report;
 	}

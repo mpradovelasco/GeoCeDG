@@ -18,7 +18,7 @@
     {"contract_id":"workspace.profile-authority","semantic_domain":"PRODUCT","inputs":[
       {"path":"source/desktop/desktop/build.gradle.kts","sha256":"3a59919354f3c633cb67fd6d7a5adf08cd43d64d610cdaf31565e3ef21b4dcdf"},
       {"path":"gradle/libs.versions.toml","sha256":"6c4bdfa7611575b35e6d346112b064e40860f2f8fcdd3e5ea9252cad8d0bc2a4"},
-      {"path":"tools/agent/workspace-profile-validation.ps1","sha256":"09034613eaf597693e7b823424a0c284d8caa44d1d8c425d7c06aca55abdbe52"}
+      {"path":"tools/agent/workspace-profile-validation.ps1","sha256":"91ac3db11613edf242c90df1395b8da85942d0c63d01cb7da5f71b7edba515cf"}
     ]},
     {"contract_id":"scientific.python-reference-inputs","semantic_domain":"SCIENTIFIC","inputs":[
       {"path":"geocedg/validation/locus-v2/g7a/generate_metric_references.py","sha256":"b23a3e824cb4e70f83d499a0c7601950fb13458c9a77e7ba69d6ca886d7eb3a8"},

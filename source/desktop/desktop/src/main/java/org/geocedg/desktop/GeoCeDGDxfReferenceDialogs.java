@@ -33,7 +33,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.geocedg.common.importer.dxf.DxfAffineTransform;
 import org.geocedg.common.importer.dxf.DxfImportReport;
-import org.geocedg.common.importer.dxf.DxfSplineReference;
 
 /**
  * Swing projections of the DXF reference import: file chooser, units and transformation
@@ -132,6 +131,41 @@ final class GeoCeDGDxfReferenceDialogs {
 		return result;
 	}
 
+	/**
+	 * PRE-G9B-MAINT-A-DXF0-R1: a compact text; when details exist, a Details... button shows
+	 * them in a second read-only window, so technical data never fill the ordinary dialog.
+	 */
+	static void showText(AppGeoCeDG app, String title, String text, @CheckForNull String details) {
+		if (details == null) {
+			showText(app, title, text);
+			return;
+		}
+		JTextArea area = new JTextArea(text, Math.min(12, Math.max(3, lines(text))), 60);
+		area.setEditable(false);
+		area.setLineWrap(true);
+		area.setWrapStyleWord(true);
+		area.setFont(app.getPlainFont());
+		String detailsLabel = app.layerText("DxfReference.Inspect");
+		String closeLabel = app.layerText("DxfReference.Close");
+		Object[] options = {detailsLabel, closeLabel};
+		int answer = JOptionPane.showOptionDialog(app.getMainComponent(), new JScrollPane(area),
+				title, JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options,
+				closeLabel);
+		if (answer == 0) {
+			showText(app, title + " - " + app.layerText("DxfReference.DetailsTitle"), details);
+		}
+	}
+
+	private static int lines(String text) {
+		int count = 1;
+		for (int i = 0; i < text.length(); i++) {
+			if (text.charAt(i) == '\n') {
+				count++;
+			}
+		}
+		return count;
+	}
+
 	static void showText(AppGeoCeDG app, String title, String text) {
 		JTextArea area = new JTextArea(text, 18, 72);
 		area.setEditable(false);
@@ -155,11 +189,8 @@ final class GeoCeDGDxfReferenceDialogs {
 			List<GeoCeDGDxfReferenceSession.Entry> entries = app.getDxfReferenceSession()
 					.entries();
 			for (GeoCeDGDxfReferenceSession.Entry entry : entries) {
-				DxfSplineReference record = entry.reference();
-				model.addElement(record.file().fileBaseName() + " #" + record.ordinal() + " "
-						+ record.handle() + " - " + record.nature().name()
-						+ (entry.isVisible() ? "" : " (" + app.layerText(
-								"DxfReference.Hidden") + ")"));
+				// PRE-G9B-MAINT-A-DXF0-R1: recognizable name, nature and visibility only
+				model.addElement(GeoCeDGDxfReferenceText.listLine(app, entry));
 			}
 			if (entries.isEmpty()) {
 				model.addElement(app.layerText("DxfReference.Empty"));

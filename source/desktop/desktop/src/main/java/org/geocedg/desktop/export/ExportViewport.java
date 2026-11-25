@@ -43,6 +43,7 @@ public final class ExportViewport extends EuclidianViewD {
 	private double outputScaleY = 1;
 	private double physicalStyleScale;
 	private double physicalMarkerScale;
+	private ExportPresentationOverlay overlay;
 
 	private ExportViewport(EuclidianView source) {
 		super(new EuclidianControllerD(source.getKernel()), new boolean[] { false, false },
@@ -179,6 +180,44 @@ public final class ExportViewport extends EuclidianViewD {
 	void setOutputScale(double scaleX, double scaleY) {
 		outputScaleX = scaleX;
 		outputScaleY = scaleY;
+	}
+
+	/**
+	 * PRE-G9B-MAINT-A-DXF0-R1: presentation drawn after the construction objects.
+	 *
+	 * @param overlay overlay, or null for none
+	 */
+	void setPresentationOverlay(ExportPresentationOverlay overlay) {
+		this.overlay = overlay;
+	}
+
+	/** @return the live view this viewport exports */
+	public EuclidianView getSource() {
+		return source;
+	}
+
+	/**
+	 * Draws the construction objects, then the presentation overlay inside the same clip
+	 * (PRE-G9B-MAINT-A-DXF0-R1). The overlay never adds drawables.
+	 */
+	@Override
+	public void drawObjects(GGraphics2D g2) {
+		super.drawObjects(g2);
+		paintPresentationOverlay(g2);
+	}
+
+	/**
+	 * @param g2 output graphics of this viewport
+	 */
+	void paintPresentationOverlay(GGraphics2D g2) {
+		if (hasPresentationOverlayContent()) {
+			overlay.paint(source, this, g2);
+		}
+	}
+
+	/** @return whether the presentation overlay draws anything for the exported view */
+	boolean hasPresentationOverlayContent() {
+		return overlay != null && source != null && overlay.hasContent(source);
 	}
 
 	/** @return exact canvas width in viewport pixels */

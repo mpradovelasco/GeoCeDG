@@ -26,6 +26,63 @@ final class GeoCeDGDxfReferenceText {
 	private GeoCeDGDxfReferenceText() {
 	}
 
+	/**
+	 * PRE-G9B-MAINT-A-DXF0-R1: recognizable name of a reference: its DXF layer and entity
+	 * handle as read, which is how the drawing names it. Never an identity (contract section 9).
+	 */
+	static String displayName(DxfSplineReference record) {
+		return record.layer() + " \u00b7 " + record.handle();
+	}
+
+	/** @return the localized geometric nature of a record (contract section 3) */
+	static String natureLabel(AppGeoCeDG app, DxfSplineReference record) {
+		return app.layerText("DxfReference.Nature." + record.nature().name());
+	}
+
+	/** @return one compact line of the session manager: name, file, nature, visibility */
+	static String listLine(AppGeoCeDG app, GeoCeDGDxfReferenceSession.Entry entry) {
+		DxfSplineReference record = entry.reference();
+		return displayName(record) + " (" + record.file().fileBaseName() + ") \u2014 "
+				+ natureLabel(app, record) + (entry.isVisible() ? ""
+						: " (" + app.layerText("DxfReference.Hidden") + ")");
+	}
+
+	/**
+	 * PRE-G9B-MAINT-A-DXF0-R1: the ordinary import report: file name, admitted references by
+	 * name and nature, and brief notices. Hashes, versions, counts by type, transformation,
+	 * structural data, rejection causes and diagnostics are in {@link #report}, shown on
+	 * request.
+	 */
+	static String summary(AppGeoCeDG app, DxfImportReport report) {
+		StringBuilder text = new StringBuilder();
+		text.append(app.layerText("DxfReference.Report.FileName", report.file().fileBaseName()))
+				.append('\n');
+		if (report.fileCause() != null) {
+			text.append(app.layerText("DxfReference.Report.FileRejected",
+					report.fileCause().name())).append('\n');
+		}
+		text.append(app.layerText("DxfReference.Report.Admitted",
+				Integer.toString(report.records().size()))).append('\n');
+		int notices = report.diagnostics().size();
+		for (DxfSplineReference record : report.records()) {
+			text.append("  ").append(displayName(record)).append(" \u2014 ")
+					.append(natureLabel(app, record)).append('\n');
+			notices += record.diagnostics().size();
+		}
+		if (report.file().unitsDiffer()) {
+			text.append(app.layerText("DxfReference.Transform.UnitsDiffer")).append('\n');
+		}
+		if (!report.rejected().isEmpty()) {
+			text.append(app.layerText("DxfReference.Report.RejectedSummary",
+					Integer.toString(report.rejected().size()))).append('\n');
+		}
+		if (notices > 0) {
+			text.append(app.layerText("DxfReference.Report.NoticesSummary",
+					Integer.toString(notices))).append('\n');
+		}
+		return text.toString().trim();
+	}
+
 	static String report(AppGeoCeDG app, DxfImportReport report) {
 		StringBuilder text = new StringBuilder();
 		text.append(app.layerText("DxfReference.Report.File", report.file().fileBaseName(),
@@ -100,8 +157,13 @@ final class GeoCeDGDxfReferenceText {
 		DxfSplineReference record = entry.reference();
 		StringBuilder text = new StringBuilder();
 		text.append(app.layerText("DxfReference.ReadOnlyState")).append('\n');
-		line(app, text, "Contract", record.contract());
-		line(app, text, "Nature", record.nature().name());
+		// PRE-G9B-MAINT-A-DXF0-R1: what identifies and manages the reference first
+		line(app, text, "Name", displayName(record) + " (" + record.file().fileBaseName() + ")");
+		line(app, text, "Nature", natureLabel(app, record));
+		line(app, text, "Visible", app.layerText(entry.isVisible() ? "DxfReference.Yes"
+				: "DxfReference.No"));
+		text.append('\n').append(app.layerText("DxfReference.DetailsTitle")).append('\n');
+		line(app, text, "Contract", record.contract() + ", " + record.nature().name());
 		line(app, text, "Representation", (record.rationalFlagSet() ? "SET" : "CLEAR") + ", "
 				+ record.weightProvenance().name());
 		line(app, text, "Degree", Integer.toString(record.data().degree()));
@@ -131,7 +193,6 @@ final class GeoCeDGDxfReferenceText {
 		line(app, text, "Render", app.layerText("DxfReference.Inspector.RenderValue",
 				Integer.toString(render.size()), Double.toString(render.tolerance()),
 				render.isComplete() ? "COMPLETE" : "INCOMPLETE"));
-		line(app, text, "Visible", Boolean.toString(entry.isVisible()));
 		text.append(app.layerText("DxfReference.Inspector.Authority"));
 		return text.toString();
 	}

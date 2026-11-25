@@ -313,7 +313,9 @@ reference's provenance identity.
   `Length`/`LocusLength`, a transformation source or a list element.
 - References are not `GeoElement`s, so they are outside the population of the approved
   semantic exports (DXF, semantic LaTeX); GeoCeDG never rewrites a foreign entity as its
-  own. Picture exports of a view: open question Q-DXF-3 (§17).
+  own. Picture exports of a view: Q-DXF-3, resolved by the author on 2026-11-25
+  (§17): the picture outputs of the first Graphics view present its visible references
+  as presentation, with no semantic claim; the second Graphics view is deferred.
 - Visibility of a reference is a session presentation state; it is not a layer of the
   construction's layer domain and does not mean existence or geometric visibility.
 
@@ -459,5 +461,5 @@ Open decisions for the author:
 |---|---|---|
 | Q-DXF-1 | Limits `FILE_BYTES_MAX`, `SPLINE_ENTITIES_MAX`, `N_MAX_IMPORT`, `W_RATIO_MAX`, `RENDER_REL_TOL` | 64 MiB, 10 000, 1 024, `10^6`, `10^-4` |
 | Q-DXF-2 | Rational flag and code-41 weights | revision 2: policy of §4.6, fixed by the author's corrective instruction of 2026-11-23 after contrast with the DXF reference; only incoherences that are real (non-unit weights without the flag, partial lists) are rejected, consistent with D-A-6. The contract as a whole remains a candidate |
-| Q-DXF-3 | Picture exports (PNG, PDF, SVG of a view) when references are visible | reproduce the view as presentation, with no semantic claim, as for any view content; semantic exports exclude references |
+| Q-DXF-3 | Picture exports (PNG, PDF, SVG of a view) when references are visible | **resolved by the author on 2026-11-25 (`MAINT-A-DXF0-R1`):** the picture outputs of the first Graphics view (screen, PNG, SVG, PDF, EMF, print, clipboard) reproduce its visible references as presentation, with no semantic claim, vector where the format allows; the second Graphics view is deferred; semantic exports exclude references |
 | Q-DXF-4 | Location of this contract | new directory `geocedg/specs/import/`, parallel to `export/` |

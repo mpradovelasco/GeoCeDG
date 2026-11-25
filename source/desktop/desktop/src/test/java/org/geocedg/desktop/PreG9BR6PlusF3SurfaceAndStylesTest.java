@@ -94,7 +94,9 @@ class PreG9BR6PlusF3SurfaceAndStylesTest {
 		assertTrue(openIndex >= 0 && insertIndex > openIndex);
 		assertEquals("Insert", insert.getText());
 		assertEquals(List.of("document.insert-file", "document.insert-expert",
-				"document.insert-clipboard-image", "document.apply-styles"), actionIds(insert));
+				"document.insert-clipboard-image", "document.apply-styles",
+				// PRE-G9B-MAINT-A-DXF0-R1: the DXF reference import is the last Insert entry
+				"import.dxf-reference"), actionIds(insert));
 		for (Component child : insert.getMenuComponents()) {
 			assertNull(((JMenuItem) child).getAccelerator(), "no accelerator");
 		}

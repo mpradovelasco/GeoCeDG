@@ -2417,7 +2417,7 @@
       "id": "action:export.dxf-2d",
       "kind": "action",
       "source": "apps/geocedg/application-profile.yml:2389",
-      "label_en": "Export 2D geometry as DXF (experimental)…",
+      "label_en": "Export 2D geometry as DXF…",
       "coverage": "COVERED",
       "anchors": {
         "en": [
@@ -2438,14 +2438,14 @@
         ]
       },
       "notes": "The File entry is listed directly; the linked procedures give input, destination or selection and relevant constraints.",
-      "label_es": "Exportar geometría 2D como DXF (experimental)…",
+      "label_es": "Exportar geometría 2D como DXF…",
       "classification_group": "file-dxf"
     },
     {
       "id": "action:import.dxf-reference",
       "kind": "action",
       "source": "apps/geocedg/application-profile.yml:2427",
-      "label_en": "Import DXF reference…",
+      "label_en": "Import DXF Reference…",
       "coverage": "COVERED",
       "anchors": {
         "en": [
@@ -2459,7 +2459,7 @@
           "dxf-export/11.12"
         ]
       },
-      "notes": "PRE-G9B-MAINT-A-DXF0: the File entry is listed directly; section 11.12 gives the admitted entities, units and transformation, the read-only session behaviour and the inspector.",
+      "notes": "PRE-G9B-MAINT-A-DXF0 (R1: last entry of File > Insert): the entry is listed in section 3.2; section 11.12 gives the admitted entities, units and transformation, the read-only session behaviour and the inspector.",
       "label_es": "Importar referencia DXF…",
       "classification_group": "file-dxf-reference"
     },
@@ -6281,8 +6281,8 @@
           "!"
         ],
         "text": {
-          "en": "Export 2D geometry as DXF (experimental)…",
-          "es": "Exportar geometría 2D como DXF (experimental)…"
+          "en": "Export 2D geometry as DXF…",
+          "es": "Exportar geometría 2D como DXF…"
         }
       },
       "file-dxf-reference": {
@@ -6292,7 +6292,7 @@
           "!"
         ],
         "text": {
-          "en": "Import DXF reference…",
+          "en": "Import DXF Reference…",
           "es": "Importar referencia DXF…"
         }
       },
@@ -7632,8 +7632,8 @@
           "!"
         ],
         "text": {
-          "en": "The experimental 2D DXF exporter includes the supported extended curve scope described here",
-          "es": "El exportador DXF 2D experimental incluye el alcance ampliado de curvas que se describe aquí"
+          "en": "The 2D DXF exporter includes the supported extended curve scope described here",
+          "es": "El exportador DXF 2D incluye el alcance ampliado de curvas que se describe aquí"
         }
       },
       "zoom-preferences": {
