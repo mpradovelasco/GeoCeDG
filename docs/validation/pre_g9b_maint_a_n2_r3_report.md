@@ -13,8 +13,10 @@
 
 ## 1. Candidato R3
 
-Commit de contenido y árbol: se registran en el descendiente documental de este informe (§8),
-porque un documento no puede contener su propio SHA.
+**Candidato de contenido R3:** `da27d459091341b4952d4fc14250fc6e29b838aa`, árbol
+`c0aa42375cda55dd0109b3f981f788a62f6e2d75`, padre `39f57ec12` (prompt R3). Registrado en un
+descendiente documental que solo cambia este informe (un documento no puede contener su propio
+SHA); `STATIC` en §8.
 
 ## 2. M1 — diagnóstico y resolución
 
@@ -218,7 +220,28 @@ documentales de §8.
 
 ## 8. Identidad y resultado de `STATIC`
 
-Se registran en el descendiente documental del commit de contenido R3.
+Registrados en un descendiente documental del commit de contenido R3; el descendiente solo
+cambia este informe. Las tres propuestas de adopción remiten a esta sección.
+
+| Elemento | Valor |
+|---|---|
+| **Candidato de contenido R3** | `da27d459091341b4952d4fc14250fc6e29b838aa`, árbol `c0aa42375cda55dd0109b3f981f788a62f6e2d75`, padre `39f57ec12` |
+| Orden | `tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts\agent\pre-g9b-maint-a-n2-r3-static-da27d459`, desde el worktree |
+| Código de salida | `0` |
+| Ejecución | `verification-1ac443edea2d43b8b845963c575e680e`; plan `25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52` |
+| Identidad ligada | `candidate_commit = da27d4590…`, `candidate_tree = c0aa42375…`; resumen del resultado recalculado igual al almacenado |
+| Veredictos | aceptación `ACCEPTED` (3 satisfechas, 0 violadas); cobertura `COMPLETE` |
+| Diagnósticos | 1 hallazgo: `diagnostic.governance` `DIAGNOSTIC_FINDING` (permanente, protocolo de recuperación); `diagnostic.historical-consistency` `DIAGNOSTIC_UNAVAILABLE` (permanente); el resto `DIAGNOSTIC_CLEAR` |
+| Informe | `artifacts/agent/pre-g9b-maint-a-n2-r3-static-da27d459/verification-result.json` (ignorado), SHA-256 `3c42e71a87ad21658771d8a450752ed55b2e526ef44df744d6c0dbb807e8d80b` |
+| Comprobaciones previas | dos revisiones independientes (§7); contrato de prompt de la tarea R3 y de los prompts candidatos RC-S0 y RC (`execution_safe = true`); enlaces relativos, LF, columnas de tablas y `git diff --check` limpios |
+
+`STATIC` es aceptación técnica de la forma del candidato; no es adopción autoral. El
+descendiente corrige además dos menciones de §12 (puertas C-4 y C-5 de RC) que el commit de
+contenido ya aplicaba en el contrato, la matriz, el plan y los prompts candidatos.
+
+**Estado:** `PRE-G9B-MAINT-A-N2-R3 — NORMATIVE DESIGN CANDIDATE — READY FOR AUTHOR ADOPTION`;
+`selfApproved = false`, `authorApproved = false`; sin push, merge, `main`, etiquetas, releases
+ni empaquetado.
 
 ## 9. Contratos y ADR listos para aprobación
 
@@ -263,7 +286,7 @@ candidato R3 exacto, con este contenido:
 
 | Registro | Contenido |
 |---|---|
-| `R-c` y ADR 0044 | contrato `cedg-reference-store/v1` R3 y ADR 0044 R3 con SHA y árbol del candidato; decisiones D-R1-1 a D-R1-5, D-R1-8, D-R1-10 y RC-D1 a RC-D15; enmiendas del grupo R; presupuesto medido y puerta C-4; dependencias: ninguna; habilita `MAINT-A-DXF0-RC-S0` y `MAINT-A-DXF0-RC` con autorización aparte |
+| `R-c` y ADR 0044 | contrato `cedg-reference-store/v1` R3 y ADR 0044 R3 con SHA y árbol del candidato; decisiones D-R1-1 a D-R1-5, D-R1-8, D-R1-10 y RC-D1 a RC-D15; enmiendas del grupo R; presupuesto medido y puertas C-4 y C-5 de RC; dependencias: ninguna; habilita `MAINT-A-DXF0-RC-S0` y `MAINT-A-DXF0-RC` con autorización aparte |
 | exportación y ADR 0045 | contrato `cedg-reference-export/v1` R3 y ADR 0045 R3; decisiones D-R1-5 a D-R1-7, D-R1-10, RX-D18, RX-D19 y RX-D1 a RX-D17; situaciones A, B y C; exportación solo de referencias; enmiendas del grupo X; dependencia: `R-c` adoptado; habilita `MAINT-A-DXF0-EXP` |
 | A-DXF1 | contrato `dxf-spline-approximation/v1` R3; decisiones D-R1-5, D-R1-9, D-R1-10 y AX-D1 a AX-D14; enmiendas del grupo A; constantes pendientes de medición; dependencia: `R-c` adoptado; habilita `MAINT-A-DXF1-S0` y `MAINT-A-DXF1`; `MAINT-A-DXF1b` aparte |
 
@@ -308,9 +331,9 @@ verificador ni empaquetado.
 Los cinco [prompts candidatos](../architecture/pre_g9b_maint_a_n2_r1_candidate_prompts/) y la
 [propuesta de ejecución coordinada](../architecture/pre_g9b_maint_a_n2_r1_coordinated_execution_proposal.md)
 siguen preparados (hitos RC-M y DXF1-M, puntos de sincronización P1 a P6, integración RC → EXP →
-DXF1). M1 sí exigió cambiar dos: el prompt candidato de RC-S0 ya no incluye C-4 y el de RC lo
-incluye como puerta de cierre; el plan operativo (estado R3, filas 1 y 2) y la propuesta de
-ejecución (P1) se ajustaron igual. M2 y M3 no exigen cambiarlos. Ningún
+DXF1). M1 sí exigió cambiar dos: el prompt candidato de RC-S0 ya no incluye C-4 ni la parte de
+C-5 en el presupuesto, y el de RC las incluye como puertas de cierre; el plan operativo (estado
+R3, filas 1 y 2) y la propuesta de ejecución (P1) se ajustaron igual. M2 y M3 no exigen cambiarlos. Ningún
 incremento se ejecuta ni se crea su worktree.
 
 ## Evidencia
