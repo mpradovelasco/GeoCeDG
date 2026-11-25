@@ -6524,7 +6524,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6PlusGProductMetadataTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-G focused tests (PM-11): product-name authority; strict record reader; the four distribution states from fixture records, including every mismatch, COMMERCIAL and not-authorized records; the build binding; build-identity rendering; About content and order in English and Spanish; licensing consistency with its authorities; the inherited Classic About route; bilingual guide coverage at structure level. PRE-G9B-CU9: Reconcile the expanded guide structure and visible version wording.",
+      "purpose": "PRE-G9B-R6-plus-G focused tests (PM-11): product-name authority; strict record reader; the four distribution states from fixture records, including every mismatch, COMMERCIAL and not-authorized records; the build binding; build-identity rendering; About content and order in English and Spanish; licensing consistency with its authorities; the inherited Classic About route; bilingual guide coverage at structure level. PRE-G9B-CU9: Reconcile the expanded guide structure and visible version wording. PRE-G9B-MAINT-A2: the level-3 heading count of both guides moves to 105 for the B-spline subsections 7.8 and 7.9.",
       "authority": "docs/architecture/pre_g9b_r6_plus_g_product_metadata_contract_candidate.md"
     },
     {

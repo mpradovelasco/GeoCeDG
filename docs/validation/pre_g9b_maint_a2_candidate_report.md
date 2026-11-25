@@ -394,7 +394,6 @@ fijados en `verification-final-coverage.Tests.ps1` se actualizan en consecuencia
 (`pre-g9b-maint-a2.shared` pasa de 164 a 178 identidades).
 
 Ya desactualizadas en la base (previas; no se tocan): `geocedg-1-2-0.shared`,
-`pre-g9b-r4.shared`, `pre-g9b-r6.shared`, `pre-g9b-r6-plus-a1.shared`,
 `pre-g9b-r6-plus-b.shared`, `pre-g9b-cu2.shared`,
 `pre-g9b-cu7-general-point-interaction.shared`,
 `pre-g9b-cu7-general-point-interaction-r3.shared`,
@@ -405,3 +404,26 @@ Ya desactualizadas en la base (previas; no se tocan): `geocedg-1-2-0.shared`,
 
 `final.shared` y `final.desktop`: no se actualizan. Son selecciones solo de `FINAL`, ya estaban
 desactualizadas en la base y también las dejan así `MAINT-U2` y `MAINT-B5a`.
+
+#### 7.4.1 Corrección tras el ensayo de integración de la segunda ola
+
+El ensayo encontró dos defectos propios de `A2`, que la campaña anterior no veía:
+
+1. `PreG9BR6PlusGProductMetadataTest.bothGuidesCoverTheR6PlusCapabilitiesAtStructureLevel`
+   cuenta los encabezados `###` de las dos guías; §7.8 y §7.9 los llevan de 103 a 105 y el
+   literal no se había movido. La prueba no está en ninguna selección de `A2` ni en el núcleo de
+   `INTEGRATION`. Literal corregido a 105.
+2. `pre-g9b-r4.shared`, `pre-g9b-r6.shared` y `pre-g9b-r6-plus-a1.shared` contienen
+   `GeoCeDGCommandsTest` y quedaron desactualizadas por `cmdBSpline`. La clasificación anterior
+   como «previas» se basaba en el descubrimiento `--test-dry-run`, que en estas selecciones cuenta
+   menos identidades que la ejecución. Con ejecuciones reales: 9, 15 y 21 identidades, y al quitar
+   `cmdBSpline` se reproduce exactamente el hash guardado. Se actualizan con el actualizador
+   canónico, el pin del registro y los recuentos de `verification-final-coverage.Tests.ps1`.
+
+Comprobación de causa raíz sobre el árbol corregido: suite Desktop completa (productor `final.desktop`
+ejecutado con el bloqueo de estación) con 2677 casos, 2675 superados, 1 omitido y un único fallo,
+el histórico `PreG9BCu2AuthorModelConsumerTest.theCertificateIsTheSingleClosureAuthority`; suite
+compartida completa (`final.shared` ejecutado) con 8126 casos, 0 fallos y 10 omitidos. Cada
+selección Desktop que cubre una clase o un método añadido o cambiado por `A2` coincide con su
+valor guardado al filtrar la ejecución completa; en las compartidas, las que cubren clases de `A2`
+proceden de ejecuciones propias. `final.*` no se actualiza.
