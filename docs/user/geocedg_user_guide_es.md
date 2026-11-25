@@ -251,7 +251,7 @@ Use la barra de menús para encontrar herramientas por tarea. Las herramientas d
 
 | Menú | Acciones disponibles |
 |---|---|
-| **[A]** **Archivo** | **[G]** Nuevo archivo y Cerrar. **[G]** Abrir reciente…. **[A]** Abrir…, Guardar y Guardar como… con la política de documento nativo. **[A]** Vista previa de impresión…, Vista gráfica como imagen…, PSTricks…, PGF/TikZ… y Asymptote… usan el área de exportación de GeoCeDG. **[N]** **[!]** Exportar geometría 2D como DXF (experimental)…. **[N]** Definir área de exportación…, Mostrar área de exportación, Borrar área de exportación, Definir área de exportación ISO A… y Usar el marco ISO A seleccionado. **[A]** Usar Export_1 y Export_2 activa explícitamente el recorte entre los dos puntos. **[A]** **[!]** **Insertar** reúne la inserción certificada, la revisión experta, las imágenes del portapapeles y la transferencia de estilos (sección 4.2). **[N]** **[!]** Abrir sesión de diagnóstico Classic. |
+| **[A]** **Archivo** | **[G]** Nuevo archivo y Cerrar. **[G]** Abrir reciente…. **[A]** Abrir…, Guardar y Guardar como… con la política de documento nativo. **[A]** Vista previa de impresión…, Vista gráfica como imagen…, PSTricks…, PGF/TikZ… y Asymptote… usan el área de exportación de GeoCeDG. **[N]** **[!]** Exportar geometría 2D como DXF (experimental)…. **[N]** **[!]** Importar referencia DXF… muestra las curvas `SPLINE` de un archivo DXF como referencias de solo lectura de la sesión (sección 11.12). **[N]** Definir área de exportación…, Mostrar área de exportación, Borrar área de exportación, Definir área de exportación ISO A… y Usar el marco ISO A seleccionado. **[A]** Usar Export_1 y Export_2 activa explícitamente el recorte entre los dos puntos. **[A]** **[!]** **Insertar** reúne la inserción certificada, la revisión experta, las imágenes del portapapeles y la transferencia de estilos (sección 4.2). **[N]** **[!]** Abrir sesión de diagnóstico Classic. |
 | **[G]** **Editar** | **[G]** Deshacer, Rehacer, Mueve, Gira en torno a un punto, Seleccionar objetos, Limitar/liberar punto y Borrar. **[N]** Capa de trabajo elige la capa de los objetos nuevos de la sesión. Consulte [Menús, preferencias y atajos](#command-and-workflow-reference/16.6). |
 | **[A]** **Vista** | **[G]** **Views** activa o desactiva Álgebra, Graphics2 (segunda vista gráfica), Hoja de Cálculo, Cálculo Simbólico (CAS) y Propiedades del objeto. **[A]** **Visibilidad y estilo** incluye la orientación y la disposición de controles. **[G]** Mostrar/ocultar objeto, Mostrar/ocultar etiqueta y Copiar estilo visual. **[N]** **[!]** Mostrar indicación de orientación se aplica a resultados admitidos. **[A]** **Navegación** incluye Zoom por rectángulo, Acercar por factor, Alejar por factor y Configurar zoom de navegación…. **[G]** Desplaza Vista Gráfica, Aproximar, Alejar, Vista estándar y Mostrar todos los objetos. **[A]** **Inspección de la construcción** incluye el Protocolo de construcción con altura de filas adaptativa. **[G]** Mostrar barra de navegación de la construcción. **[N]** Inspeccionar definición… abre la definición sin cambiar el modo de Álgebra. **[A]** **Restaurar distribución de Construcción** restaura el espacio de Construcción CeDG. |
 | **[A]** **Construcción** | Los grupos de abajo incluyen las curvas semánticas y las cotas de ingeniería. |
@@ -2418,12 +2418,58 @@ población, sea cual sea el zoom.
 
 ### 11.11 Frontera actual de exportación
 
-No hay importación DXF, exportación de viewport, exportación de texto,
-exportación del `Locus` muestreado heredado, contorneado de curvas implícitas,
-`SPLINE` exacta ni exportación 3D. El grosor y estilo de línea, el relleno, la
-opacidad, el tamaño de punto y las etiquetas no se transportan; la capa, el
-color RGB, la visibilidad vigente y el estado desactivado de las capas ocultas
-sí.
+La importación DXF solo muestra entidades `SPLINE` como referencias de solo
+lectura (sección 11.12); nada se importa como objeto de la construcción. No hay
+exportación de viewport, exportación de texto, exportación del `Locus`
+muestreado heredado, contorneado de curvas implícitas, `SPLINE` exacta ni
+exportación 3D. El grosor y estilo de línea, el relleno, la opacidad, el tamaño
+de punto y las etiquetas no se transportan; la capa, el color RGB, la
+visibilidad vigente y el estado desactivado de las capas ocultas sí.
+
+### 11.12 Referencias DXF importadas (solo lectura)
+
+**Archivo → Importar referencia DXF…** lee las entidades `SPLINE` de un archivo
+DXF ASCII 2D y las dibuja en la primera vista gráfica como *referencias*:
+curvas discontinuas de color morado que no forman parte de la construcción.
+
+- **Qué se lee.** Entidades `SPLINE` de primer nivel en el espacio modelo,
+  definidas por grado (de 1 a 7), nudos, puntos de control (como máximo 1 024)
+  y pesos. Una spline racional conserva sus pesos; un archivo sin valores de
+  peso (código 41) tiene pesos unitarios. Cada entidad se admite o se rechaza
+  por separado, y el informe da la causa tipada de cada rechazo, por ejemplo
+  `PERIODIC_UNSUPPORTED`, `NOT_CLAMPED_UNSUPPORTED`, `NONPLANAR_UNSUPPORTED` o
+  `WEIGHT_COUNT_MISMATCH`. No se importan las splines solo con puntos de
+  ajuste, periódicas, no ancladas o 3D, el espacio papel, el contenido de
+  bloques ni el DXF binario. Un archivo de más de 64 MiB o con más de 10 000
+  entidades `SPLINE` se rechaza entero.
+- **Unidades y transformación.** El diálogo muestra las unidades DXF
+  (`$INSUNITS`) y la unidad de construcción del dibujo. Nada se escala por sí
+  solo: por defecto una unidad de dibujo es una unidad del modelo. Puede elegir
+  una escala uniforme o una transformación afín explícitas; solo mueven los
+  puntos de control.
+- **Qué no es una referencia.** No es un objeto de GeoCeDG: no tiene nombre, no
+  aparece en Álgebra ni en el protocolo de construcción, no se puede
+  seleccionar, no atrae el cursor y ninguna herramienta ni comando la acepta.
+  Un punto pulsado sobre ella es un punto libre corriente. No se publica para
+  ella ninguna longitud, intersección ni tangente, y las exportaciones DXF y
+  LaTeX la omiten. Las exportaciones de imagen (PNG, PDF, SVG, EMF, impresión
+  e imagen del portapapeles) tampoco incluyen referencias; solo las dibuja la
+  vista gráfica en pantalla.
+- **Solo de sesión.** Las referencias pertenecen a la sesión de la ventana
+  abierta. Importarlas, ocultarlas y quitarlas no crea ningún paso de Deshacer
+  ni cambia la construcción. Guardar no escribe nada de ellas y muestra un
+  aviso; Nuevo, Abrir y Cerrar las retiran, de modo que al reabrir un dibujo
+  hay que importar de nuevo el archivo. El archivo DXF solo se lee.
+- **Inspección.** Tras una importación, y siempre que vuelva a ejecutar la
+  acción con referencias presentes, la ventana **Referencias DXF importadas**
+  las lista con **Inspeccionar** (solo lectura: naturaleza, contrato, cierre,
+  continuidad estructural, procedencia con resúmenes del archivo y de los datos,
+  diagnósticos y tolerancia del render), **Mostrar/Ocultar** y **Quitar**.
+
+La curva se dibuja a partir de una poligonal calculada una sola vez en unidades
+del modelo, con una tolerancia cordal de 10⁻⁴ veces la diagonal de la caja del
+polígono de control; es la misma con cualquier zoom. El dibujo es una
+estimación, nunca una prueba sobre la curva.
 
 ---
 
@@ -2841,9 +2887,10 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
   `LWPOLYLINE` aproximada.
 - La evidencia de aproximación es `ESTIMATED_ERROR`, no una cota de error global
   certificada.
-- No hay importación DXF, exportación de viewport, exportación de texto,
-  exportación del `Locus` heredado, contorneado de curvas implícitas ni
-  exportación 3D.
+- La importación DXF solo muestra entidades `SPLINE` como referencias de
+  sesión de solo lectura (11.12). No hay exportación de viewport, exportación
+  de texto, exportación del `Locus` heredado, contorneado de curvas implícitas
+  ni exportación 3D.
 - LaTeX escribe Locus V2 y Spline V2 como trayectos aproximados con su
   evidencia; no hay salida exacta de Bézier ni de spline, tampoco para un
   Spline V2 cúbico (4.5).

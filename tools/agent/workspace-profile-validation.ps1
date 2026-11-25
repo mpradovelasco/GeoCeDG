@@ -106,12 +106,15 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
     # GeoCeDG 1.2.0 author-approved clipboard image action; G0 reconciles its
     # exact ID while the single live profile owns the complete runtime record.
     $geoCeDG120ClipboardImageActionIds = @("document.insert-clipboard-image")
+    # PRE-G9B-MAINT-A-DXF0, authorized by the author on 2026-11-24: one read-only File
+    # action importing DXF SPLINE references into the document session (R-a).
+    $maintADxf0ActionIds = @("import.dxf-reference")
     $approvedIds = @($candidate.actions.id + $postG9U1A7ActionIds + $preG9BR4ActionIds +
         $preG9BR6PlusA1ActionIds + $preG9BR6PlusBActionIds + $preG9BR6PlusD1ActionIds +
         $preG9BR6PlusE2ActionIds + $preG9BR6PlusE3ActionIds + $preG9BR6PlusF1ActionIds +
         $preG9BR6PlusF3ActionIds + $cu7M08SReferenceActionIds +
         $expertInsertionActionIds + $controlLayoutActionIds +
-        $geoCeDG120ClipboardImageActionIds | Sort-Object -CaseSensitive)
+        $geoCeDG120ClipboardImageActionIds + $maintADxf0ActionIds | Sort-Object -CaseSensitive)
     $liveIds = @($actionIds | Sort-Object -CaseSensitive)
     if (@(Compare-Object $approvedIds $liveIds -CaseSensitive).Count -ne 0) {
         throw "Live action IDs differ from the G9U1 catalog plus its approved amendments and the authorized Desktop actions."
@@ -149,6 +152,12 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
         $controlLayoutAction.target.symbol -cne "geocedg.presentation.control-layout" -or
         ($controlLayoutAction.feature_requirements -join ",") -cne "cedg.presentation.control-layout") {
         throw "Control layout must retain its experimental, feature-controlled action."
+    }
+    $dxfReferenceAction = $profile.actions | Where-Object id -CEQ "import.dxf-reference"
+    if ($dxfReferenceAction.maturity -cne "experimental" -or
+        $dxfReferenceAction.target.symbol -cne "geocedg.import.dxf-reference" -or
+        $dxfReferenceAction.effect_profile_id -cne "read-only") {
+        throw "The DXF reference import must stay a read-only experimental action."
     }
     if ($profile.product_policies.continuity.value -ne $false -or
         $profile.product_policies.continuity.locked -ne $true -or

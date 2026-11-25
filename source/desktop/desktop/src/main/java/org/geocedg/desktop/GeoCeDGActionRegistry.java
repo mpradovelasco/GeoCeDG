@@ -79,7 +79,8 @@ public final class GeoCeDGActionRegistry {
 			"geocedg.document.units", "geocedg.presentation.orientation-cue",
 			"geocedg.presentation.control-layout",
 			"geocedg.document.insert-file", "geocedg.document.apply-styles",
-			"geocedg.document.insert-expert", "geocedg.document.insert-clipboard-image");
+			"geocedg.document.insert-expert", "geocedg.document.insert-clipboard-image",
+			"geocedg.import.dxf-reference");
 
 	private final AppD app;
 	private final Map<String, Action> actions = new LinkedHashMap<>();
@@ -404,6 +405,10 @@ public final class GeoCeDGActionRegistry {
 			break;
 		case "geocedg.export.dxf.dialog":
 			new GeoCeDGDxfExportController(app).showExportDialog();
+			break;
+		case "geocedg.import.dxf-reference":
+			// PRE-G9B-MAINT-A-DXF0: read-only session references, never construction objects
+			((AppGeoCeDG) app).importDxfReferenceAction();
 			break;
 		case "host.export.picture":
 			gui.showGraphicExport();
