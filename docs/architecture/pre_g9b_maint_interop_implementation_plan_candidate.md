@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | **CANDIDATE — READY FOR AUTHOR ADOPTION (revisión R1).** Planificación, no autorización. R1 (2026-11-25): sin historial de derivaciones, política de recursos configurable, Classic con conservación opaca, lectores AutoCAD Core Console y ezdxf, prompts candidatos en [`pre_g9b_maint_a_n2_r1_candidate_prompts/`](pre_g9b_maint_a_n2_r1_candidate_prompts/) y [propuesta de ejecución coordinada](pre_g9b_maint_a_n2_r1_coordinated_execution_proposal.md). `implementationAuthorized=false` para todos los incrementos de este plan; `selfApproved=false` |
+| Estado | **CANDIDATE — READY FOR AUTHOR ADOPTION (revisión R2).** Planificación, no autorización. R2 (2026-11-25): obligaciones de conformidad externa (§9) y deudas separadas DT-1 y DT-2 (§10). R1 (2026-11-25): sin historial de derivaciones, política de recursos configurable, Classic con conservación opaca, lectores AutoCAD Core Console y ezdxf, prompts candidatos en [`pre_g9b_maint_a_n2_r1_candidate_prompts/`](pre_g9b_maint_a_n2_r1_candidate_prompts/) y [propuesta de ejecución coordinada](pre_g9b_maint_a_n2_r1_coordinated_execution_proposal.md). `implementationAuthorized=false` para todos los incrementos de este plan; `selfApproved=false` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` (segunda ola publicada) |
 | Escrito por | `PRE-G9B-MAINT-A-N2` |
 | Contratos | [`cedg-reference-store/v1`](../../geocedg/specs/import/reference-store.md), [`cedg-reference-export/v1`](../../geocedg/specs/export/dxf-reference-export.md), [`dxf-spline-approximation/v1`](../../geocedg/specs/import/dxf-spline-approximation.md); [enmiendas](pre_g9b_maint_a_n2_candidate_amendments.md); ADR [0044](../adr/0044-document-store-of-imported-references.md) y [0045](../adr/0045-separate-dxf-export-of-imported-references.md) (propuestos) |
@@ -158,3 +158,32 @@ incremento toca guías o diagnósticos.
 | D-P-5 | Orden relativo de EXP y `MAINT-A3` | EXP antes; A3 después, nunca en paralelo | A3 añadirá la `SPLINE` de construcciones que EXP no toca |
 | D-P-6 | DXF1 sobre `R-c` | estricto (AX-D1) | DXF1 no empieza su servicio antes de integrar RC |
 | D-P-7 | Hito DXF1-M (analizador del bloque y aplicabilidad) | sí, primer commit de DXF1, fusionado en EXP | EXP prueba su resolutor con bloques reales sin tocar el núcleo; RX-7 y RX-18 pasan a DXF1 |
+
+## 9. Obligaciones de conformidad externa (R2)
+
+Fijadas por las decisiones del autor RX-D18 y RX-D19 (contrato de exportación §5.2, §12.1 a
+§12.3) y ejecutadas por `MAINT-A-DXF0-EXP` antes de su cierre:
+
+| Nivel | Lector | Obligación | Casos |
+|---|---|---|---|
+| Formato DXF | ninguno (texto escrito) | estructura de §4 del contrato | RX-2, RX-13 |
+| Fidelidad `REFERENCE_DEFINITION` | comprobación de escritura GeoCeDG y ezdxf con versión fijada | relectura exacta de cada valor | RX-3, RX-4, RX-17 |
+| Conformidad AutoCAD | AutoCAD Core Console, versión registrada | cada valor dentro de 4 ulp (criterio inicial de ensayo) **y** estructura **y** geometría conservadas; máximos y límites registrados | RX-16 |
+| Portabilidad de exponentes | todos los campos escritos desde datos | `NOT_WRITABLE`/`EXPONENT_NOT_PORTABLE`, exclusión por el usuario con diagnóstico | RX-19 |
+
+Los fixtures, scripts y salidas del piloto de R1 sirven de punto de partida; la evidencia de
+cierre se genera con el escritor del producto. Ninguna limitación de AutoCAD se atribuye a
+ezdxf ni al formato.
+
+## 10. Deudas separadas registradas por R2 (no implementadas)
+
+Mantenimientos focales propuestos, independientes de los tres contratos de A-N2 y sin
+modificarlos; cada uno requiere su propia autorización sobre una base exacta:
+
+| Prioridad | Id propuesto | Deuda | Impacto en la interoperabilidad | Alcance propuesto |
+|---|---|---|---|---|
+| 1 | `MAINT-DXF-IMPORT-CLOSED-FLAG` (DT-2) | una spline cerrada guardada de nuevo por AutoCAD lleva `70 = 15` (bit 2 «periódica») sin ser periódica, y la importación aprobada la rechaza como `PERIODIC_UNSUPPORTED` | alto y frecuente: impide reimportar cualquier referencia cerrada que haya pasado por AutoCAD; el fallo es explícito, no silencioso | caracterizar qué datos acompañan a `70 = 15` en AutoCAD (nudos anclados, cierre exacto) y decidir en una enmienda del contrato de importación si se admite como no periódica bajo una regla explícita sobre los datos, nunca sobre la bandera sola |
+| 2 | `MAINT-DXF-EXPORT-EXPONENT-PORTABILITY` (DT-1) | la exportación DXF ordinaria aprobada escribe `Double.toString`, y AutoCAD trunca en silencio los exponentes de tres cifras | grave pero infrecuente: valores de construcción con `\|x\| < 10^-99` o `\|x\| ≥ 10^100` en unidades del modelo son raros, pero el error es silencioso | caracterizar qué campos de la exportación ordinaria pueden llevar tales valores y decidir, por enmienda del contrato de exportación aprobado, un resultado tipado equivalente o una escritura sin exponente probada |
+
+La prioridad pondera frecuencia y visibilidad: DT-2 afecta a un flujo habitual (ida y vuelta
+por AutoCAD); DT-1 es raro, aunque silencioso. El autor puede invertirla.

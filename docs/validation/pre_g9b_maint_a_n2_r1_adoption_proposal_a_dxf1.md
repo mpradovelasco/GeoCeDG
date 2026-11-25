@@ -1,14 +1,14 @@
 # Propuesta de adopción — `dxf-spline-approximation/v1` (A-DXF1)
 
-**PROPUESTA DE APROBACIÓN — NO APROBADA.** Preparada por `PRE-G9B-MAINT-A-N2-R1`.
+**PROPUESTA DE APROBACIÓN — NO APROBADA.** Preparada por `PRE-G9B-MAINT-A-N2-R1`; confirmada sin cambios por `PRE-G9B-MAINT-A-N2-R2`.
 `selfApproved=false`. Este documento no registra `AUTHOR APPROVED`.
 
 | Campo | Valor |
 |---|---|
 | Contrato | [`geocedg/specs/import/dxf-spline-approximation.md`](../../geocedg/specs/import/dxf-spline-approximation.md), `dxf-spline-approximation/v1`, revisión R1 |
 | ADR | ninguno nuevo: ADR 0043 decisión 11 ya sitúa el bloque de procedencia; ADR 0045 registra su lectura informativa por la exportación |
-| Candidato | commit de contenido R1 y su árbol: [informe R1](pre_g9b_maint_a_n2_r1_report.md) §J |
-| `STATIC` | informe R1 §J |
+| Candidato | commit de contenido R2 y su árbol: [informe R1](pre_g9b_maint_a_n2_r1_report.md), anexo R2 (R2 no cambia este contrato; su texto es el de R1, commit `228d91d44`) |
+| `STATIC` | informe R1, anexo R2 (y §J para el candidato R1) |
 
 ## 1. Decisiones autorales ya fijadas que aplica
 

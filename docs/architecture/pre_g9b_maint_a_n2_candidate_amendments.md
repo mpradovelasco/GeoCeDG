@@ -2,7 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R1).** `selfApproved=false`. No approved text is changed by this document or by the increments that wrote it (`PRE-G9B-MAINT-A-N2`, refined by `PRE-G9B-MAINT-A-N2-R1`) |
+| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R2).** `selfApproved=false`. No approved text is changed by this document or by the increments that wrote it (`PRE-G9B-MAINT-A-N2`, refined by `PRE-G9B-MAINT-A-N2-R1` and `PRE-G9B-MAINT-A-N2-R2`) |
+| R2 changes | A-EXP-6 §12.8 and the new §12.9 with the author decisions RX-D18 and RX-D19; no other amendment changes |
 | R1 changes | A-IMP-7 without store derivation entries; A-IMP-9 and A-NDI-1 with the configurable resource policy instead of a fixed 4 MiB cap; A-NDI-1 also with the atomic transition in every route and the Classic rule; A-EXP-6 with state 4 and the conformance readers; the A-N2 texts are kept in commit `874286e95` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` |
 | Purpose | the exact amendments that the three A-N2 candidate contracts need in texts already approved, kept apart from those texts until the author decides |
@@ -231,7 +232,14 @@ of every export are unchanged.»
 > authorizes no `SPLINE` for constructions (`MAINT-A3`).
 > 12.8 External conformance is checked with AutoCAD Core Console and a pinned ezdxf, reading
 > of the definition separated from mathematical evaluation; the evidence covers its fixtures
-> and reader versions only.
+> and reader versions only. DXF format compliance, the fidelity class (exact re-reading,
+> reproduced by ezdxf) and AutoCAD conformance (each value within 4 ulp as an initial test
+> criterion, not a bound of the product or of the reader, plus preserved structure and
+> geometry) are distinct levels of evidence; the AutoCAD tolerance does not change the fidelity
+> class.
+> 12.9 A reference whose coordinates, knots or weights would be written with a three-digit
+> exponent is `NOT_WRITABLE` (`EXPONENT_NOT_PORTABLE`); it is never rewritten or replaced by a
+> polyline, and the user may exclude it with the diagnostic kept.
 
 ### A-GEF-1 — `geometry-export-foundation.md`
 

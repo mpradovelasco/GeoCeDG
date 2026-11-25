@@ -1,11 +1,14 @@
 # ADR 0045 — Separate DXF export of imported references as `SPLINE`
 
-- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R1)** (written by
-  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1`).
+- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R2)** (written by
+  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1` and
+  `PRE-G9B-MAINT-A-N2-R2`).
   `selfApproved=false`. Acceptance would not authorize `MAINT-A-DXF0-EXP`.
 - R1 changes: decision 4 records state 4 as alternative A (D-R1-6) and removes any failure
   state (D-R1-5); decision 6 fixes the conformance readers (D-R1-7); decision 7 records the
   availability rule (D-R1-10).
+- R2 changes: decision 6 records the levels of evidence and the AutoCAD acceptance criteria
+  (RX-D18) and decision 8 the non-portable exponent rule (RX-D19), both decided by the author.
 - Date: 2026-11-25.
 - Authorization of the design work: author instruction «GeoCeDG — PRE-G9B-MAINT-A-N2»
   (2026-11-25); execution contract
@@ -67,13 +70,26 @@ re-exported.
    golden file in two separated parts: reading of the definition as written, and
    mathematical evaluation, recording any normalization a reader's math object applies. The
    evidence binds reader versions and fixtures and claims no universal interoperability
-   (D-R1-7). The R1 pilot showed exact reading by ezdxf and decimal misreadings of 1–3 ulp
-   and truncated three-digit exponents by AutoCAD 2026; the reading rule for AutoCAD and the
-   treatment of such exponents are pending author decisions RX-D18 and RX-D19 of the contract.
+   (D-R1-7). Three levels of evidence stay distinct: DXF format compliance; the fidelity class,
+   whose correctly rounded re-reading ezdxf must reproduce exactly; and AutoCAD conformance,
+   accepted when every value is within 4 ulp (an initial test criterion, not a product or reader
+   bound, motivated by the 1–3 ulp misreadings AutoCAD 2026 showed in the R1 pilot) **and** the
+   spline structure (degree, knots and multiplicities, domain, closure, weight conditions) and
+   its evaluated geometry are preserved within the test tolerances; otherwise no conformance is
+   declared. The fidelity class is unaffected by that tolerance: it keeps referring to the binary64
+   data represented in the DXF and their correctly rounded re-reading. Reader, version, fixtures,
+   observed maxima and test limits are recorded (RX-D18).
 7. **No novelty flag.** The option belongs to the existing DXF export action; it adds no
    activation flag and no «experimental» wording; it inherits the formal AGENTS §5 state of the
    existing DXF export action, and the author declares its state at the closeout of the
    implementing increment (D-R1-10).
+8. **Non-portable exponents are not written silently.** A reference with a coordinate, knot or
+   weight whose decimal token would carry a three-digit exponent (`|x| < 10^-99` non-zero, or
+   `|x| ≥ 10^100`, either sign), which AutoCAD 2026 truncates silently, is
+   `NOT_WRITABLE`/`EXPONENT_NOT_PORTABLE`; it is never replaced by a polyline or rewritten;
+   the user may exclude it and the diagnostic is kept. Writing plain decimals is a later
+   improvement, adopted only on conformance evidence (RX-D19). The limitation is AutoCAD's, not
+   the DXF format's nor ezdxf's.
 
 ## Consequences
 

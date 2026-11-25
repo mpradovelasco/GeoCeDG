@@ -1,6 +1,6 @@
 # Propuesta de adopción — `cedg-reference-store/v1` (`R-c`) y ADR 0044
 
-**PROPUESTA DE APROBACIÓN — NO APROBADA.** Preparada por `PRE-G9B-MAINT-A-N2-R1`.
+**PROPUESTA DE APROBACIÓN — NO APROBADA.** Preparada por `PRE-G9B-MAINT-A-N2-R1`; confirmada sin cambios por `PRE-G9B-MAINT-A-N2-R2`.
 `selfApproved=false`. Este documento no registra `AUTHOR APPROVED`: la adopción exige una
 decisión expresa del autor sobre el candidato exacto.
 
@@ -8,9 +8,9 @@ decisión expresa del autor sobre el candidato exacto.
 |---|---|
 | Contrato | [`geocedg/specs/import/reference-store.md`](../../geocedg/specs/import/reference-store.md), `cedg-reference-store/v1`, revisión R1 |
 | ADR | [ADR 0044](../adr/0044-document-store-of-imported-references.md), propuesto, revisión R1 |
-| Candidato | commit de contenido R1 y su árbol: [informe R1](pre_g9b_maint_a_n2_r1_report.md) §J (un documento no puede contener su propio SHA) |
+| Candidato | commit de contenido R2 y su árbol: [informe R1](pre_g9b_maint_a_n2_r1_report.md), anexo R2 (R2 no cambia este contrato; su texto es el de R1, commit `228d91d44`) |
 | Historia | A-N2 `874286e95` (árbol `30c21042c`), descendiente `e7803badb`; R1 en `phase/pre-g9b-maint-a-n2-r1` |
-| `STATIC` | informe R1 §J |
+| `STATIC` | informe R1, anexo R2 (y §J para el candidato R1) |
 
 ## 1. Decisiones autorales ya fijadas que aplica
 

@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R1).** Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-EXP` is not authorized. It does not change the approved export contracts until the author approves the candidate amendments that reference it |
-| Revision | R1 (2026-11-25): state 4 fixed as alternative A (D-R1-6); no failure state and no store derivation history (D-R1-5); resolved-state model §6.4 with the eight cases mapped in §6.5; conformance with AutoCAD Core Console and ezdxf (D-R1-7, §12.1); no novelty flag (D-R1-10). The A-N2 text is commit `874286e95` |
+| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R2).** Normative design written by `PRE-G9B-MAINT-A-N2`, refined by `PRE-G9B-MAINT-A-N2-R1` and completed for AutoCAD interoperability by `PRE-G9B-MAINT-A-N2-R2`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-EXP` is not authorized. It does not change the approved export contracts until the author approves the candidate amendments that reference it |
+| Revision | R1 (2026-11-25): state 4 fixed as alternative A (D-R1-6); no failure state and no store derivation history (D-R1-5); resolved-state model §6.4 with the eight cases mapped in §6.5; conformance with AutoCAD Core Console and ezdxf (D-R1-7, §12.1); no novelty flag (D-R1-10). R2 (2026-11-25): RX-D18 (levels of evidence and AutoCAD acceptance criteria, §12.3) and RX-D19 (`EXPONENT_NOT_PORTABLE`, §5.2) decided by the author. The A-N2 text is commit `874286e95`; the R1 text is commit `228d91d44` |
 | Contract identifier | `cedg-reference-export/v1` (policy and population); fidelity class `REFERENCE_DEFINITION` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` |
 | Architectural layer | Export adapter outside the geometric kernel (AGENTS §4, §13); a separate read-only reference adapter beside the construction adapters |
@@ -114,13 +114,32 @@ makes that reference `NOT_WRITABLE` (an outcome of the reference axis, never the
 construction outcome `UNSUPPORTED`) with reason `WRITE_ROUND_TRIP_FAILED` and blocks the
 strict operation (§7.3).
 
-**Portable exponents (pending author decision RX-D19).** `Double.toString` writes values with
-`|x| < 10^-99` (non-zero) or `|x| ≥ 10^100` with a three-digit exponent, and the R1 pilot
-showed that AutoCAD 2026 silently truncates such exponents to two digits (`4.9E-324` read as
-`4.9e-32`), while a plain-decimal form of `Double.MAX_VALUE` made it hang. Proposed rule: a
-reference containing such a value is `NOT_WRITABLE` with reason `EXPONENT_NOT_PORTABLE`
-(strict, never silently rewritten). Alternative: plain decimals for the small values and
-refusal of the large ones.
+**Portable exponents (author decision RX-D19 of 2026-11-25, R2).** The rule is on the token: a
+value is non-portable when the decimal token that the writer would emit has an exponent of three
+digits. With the `Double.toString` of the product's Java runtime this happens exactly for
+non-zero values with `|x| < 10^-99` (negative exponent, `E-100` to `E-324`) or
+`|x| ≥ 10^100` (positive exponent, `E100` to `E308`), for either sign of the value; the
+range is explanatory and the token test decides.
+Such a token is valid DXF and is read correctly by ezdxf and by the GeoCeDG reader, but the R1
+pilot showed that AutoCAD 2026 silently truncates it to two exponent digits (`4.9E-324` read as
+`4.9e-32`, `1.0E100` as `1e10`). The initial, conservative policy is:
+
+1. Before writing, every numeric field of the entity that the writer emits from data (control
+   point coordinates `x` and `y`, knots, weights) is checked; the fixed fields (`z = 0.0`, the
+   normal `0/0/1`) never need it. A reference with at least one value whose token would carry a
+   three-digit exponent, whatever the sign of the exponent or of the value, is `NOT_WRITABLE`
+   with reason `EXPONENT_NOT_PORTABLE`; the diagnostic names the field kind, the index and the
+   value.
+2. It is never written silently, never rewritten in another decimal form, never replaced by a
+   polyline, never approximated. The strict rule of §7.3 applies: the operation is blocked until
+   the user excludes the reference; the exclusion keeps the diagnostic in the report and in the
+   sidecar (`USER_EXCLUDED` with `EXPONENT_NOT_PORTABLE`), which is written for that reason
+   (§10).
+3. The rule is a portability policy for the AutoCAD destination, not a DXF format violation and
+   not a limitation of every reader. A plain-decimal writing (without exponent) is a later
+   improvement, adopted only if conformance tests prove both its AutoCAD compatibility and its
+   fidelity; the R1 pilot found plain decimals correct for subnormal values but a hang of
+   AutoCAD on a plain-decimal `Double.MAX_VALUE`.
 
 ### 5.3 Four roundings kept apart
 
@@ -265,8 +284,9 @@ off (the default of every export), no reference is written.
 A reference included by default or by the user that cannot be written as `SPLINE` with
 `REFERENCE_DEFINITION` blocks the operation (strict default, ADR 0014 decision 6) until the
 user excludes it; it is never omitted silently and never replaced by a polyline. Every
-record admissible under `dxf-spline-reference/v1` is writable in principle; a block can
-only come from §5.2 or from a conformance restriction fixed later.
+record admissible under `dxf-spline-reference/v1` is writable in principle, except a record with non-portable exponents (§5.2); a block can
+only come from §5.2 (`WRITE_ROUND_TRIP_FAILED`, `EXPONENT_NOT_PORTABLE`) or from a
+conformance restriction fixed later.
 
 ## 8. Extension point
 
@@ -299,7 +319,8 @@ therefore possible.
 
 ## 10. Sidecar
 
-Mandatory whenever at least one reference is written (decision RX-D12): the DXF alone
+Mandatory whenever at least one reference is written (decision RX-D12), and whenever the option
+is on and a reference was excluded for `EXPONENT_NOT_PORTABLE` (§5.2): the DXF alone
 cannot say that an entity is external data, nor under which transformation. Schema
 `org.geocedg.dxf.fidelity-manifest` with the next free `schema_version` (4, coordinated with
 any `MAINT-A3` amendment; version 3 keeps its meaning). New section `external_references`:
@@ -318,7 +339,8 @@ any `MAINT-A3` amendment; version 3 keeps its meaning). New section `external_re
   `OUTSIDE_EXPORT_AREA`) and, when represented, the construction sources that represent it;
 - diagnostics `RELATED_CONSTRUCTION_MODIFIED`, `DUPLICATE_REPRESENTATION`,
   `ASSOCIATION_UNRESOLVABLE`, `ORPHAN_REFERENCE_PROVENANCE`, `SAME_DATA_AS_REFERENCE`,
-  `PARTICIPATION_CONSERVATIVE`.
+  `PARTICIPATION_CONSERVATIVE`, and `EXPONENT_NOT_PORTABLE` (field kind, index, value) for a
+  reference excluded by the user for that reason.
 
 The DXF SHA-256 link, paired output and rollback follow the DXF contract §8 unchanged.
 
@@ -353,8 +375,10 @@ Round trip and binary64 comparison (cases RX-1 to RX-18 of the
 
 - re-import with the GeoCeDG reader: the new record's `sourceData` equals the exported
   `data` under `==`; nature equal; weights explicit iff written;
-- extreme values: subnormals, the largest finite values, `-0.0`, values needing 17
-  significant digits;
+- extreme values whose tokens keep at most two exponent digits (from `1.0E-99` to
+  `Math.nextDown(1.0E100)`, both signs), `-0.0`, values needing 17 significant digits;
+  subnormals, `Double.MAX_VALUE` and every other value with a three-digit exponent are covered by
+  the refusal of §5.2 (RX-19);
 - ordinary export byte identity with the option off or without references;
 - the eight cases of §6.5 and the transitions of §6.6 built by identifiers; a construction
   identical to a reference but without block is `NO_CEDG_REPRESENTATION` for that
@@ -376,15 +400,15 @@ in two separated parts:
 
 | Part | What is compared | Rule |
 |---|---|---|
-| **Definition reading** | entity type, degree, original knots, original control points, weights, flags, counts, domain `[u_p, u_{n+1}]` as read from the entity data (AutoLISP `entget`; ezdxf entity attributes, never its derived math object) | equal to the written decimals under the nearest-binary64 rule, every value compared exactly and as an ulp distance; any difference is a failure for ezdxf; for AutoCAD the rule of RX-D18 applies |
+| **Definition reading** | entity type, degree, original knots, original control points, weights, flags, counts, domain `[u_p, u_{n+1}]` as read from the entity data (AutoLISP `entget`; ezdxf entity attributes, never its derived math object) | equal to the written decimals under the nearest-binary64 rule, every value compared exactly and as an ulp distance; any difference is a failure for ezdxf; AutoCAD follows §12.3 |
 | **Mathematical evaluation** | points on the curve at declared parameters, behavior at a multiple knot, rational arcs on the unit circle, orientation (start `P_0`, end `P_n`), closure | the reader's evaluation (ezdxf `ezdxf.math.BSpline` built from the raw lists, never `construction_tool()`; AutoCAD `vlax-curve-getPointAtParam`) against an independent exact-rational reference within a tolerance relative to the largest control-point magnitude; subnormal-width spans excluded |
 
 A reader's math object may normalize or correct data when it builds its curve (for example
 knot rescaling, weight normalization, flag inference). Every such transformation is
 recorded and compared with the rules of §4; it never counts as a reading of the definition.
 Evidence binds the reader name, version and fixtures; it covers those fixtures only. Passing
-it is not a claim of universal interoperability. A reader that rejects or misreads a rational
-`SPLINE` definition is a stop condition (§14), subject to decision RX-D18 below.
+it is not a claim of universal interoperability. A reader that rejects a rational `SPLINE`
+definition, or reads it outside the acceptance criteria of §12.3, is a stop condition (§14).
 
 ### 12.2 Pilot evidence of R1 (2026-11-25)
 
@@ -404,13 +428,44 @@ Console 2026 (`ACADVER` 25.1) and ezdxf 1.4.2:
   unit-scale fixtures, at a double knot, at the ends and on the unit circle. A span of
   subnormal width defeats both: such spans are excluded from evaluation claims.
 
-**Pending author decision RX-D18 (AutoCAD reading rule).** Either (A, recommended) the
-definition-reading check keeps exact equality for ezdxf and, for AutoCAD, records the ulp
-distance of every value and accepts at most 4 ulp as a documented limitation of that reader's
-decimal parsing (the fourth rounding of §5.3, outside the `REFERENCE_DEFINITION` claim); or
-(B) AutoCAD's misreading is the stop condition of §14. The class `REFERENCE_DEFINITION` itself
-is unaffected: it is defined by the nearest-binary64 rule, which ezdxf and the GeoCeDG reader
-follow exactly.
+### 12.3 Levels of evidence and acceptance criteria (author decision RX-D18, R2)
+
+Three levels are kept distinct; the limitations of one reader are never attributed to the
+others:
+
+| Level | What it establishes | Criterion |
+|---|---|---|
+| **DXF format compliance** | the entity follows §4 and the DXF reference structure | checked on the written text (groups, counts, flags, order); independent of any reader |
+| **Fidelity `REFERENCE_DEFINITION`** | the written decimals denote the record's binary64 values | the correctly rounded (nearest-binary64) re-reading of every value equals the record (§5.1, §5.2); verified by the GeoCeDG write check and by **ezdxf**, whose definition reading must be **exact** for every value |
+| **AutoCAD conformance** | AutoCAD Core Console reads and evaluates the entity acceptably | the criteria below |
+
+AutoCAD conformance criteria (alternative A of RX-D18, with the author's conditions):
+
+1. The 1–3 ulp differences observed in AutoCAD 2026 are an **empirical limitation of that
+   reader's decimal parsing** (the fourth rounding of §5.3). They do not change the fidelity
+   class, which keeps referring to the binary64 data represented in the DXF and to their
+   correctly rounded re-reading.
+2. **Per-value criterion:** every value read through `entget` is within **4 ulp** of the
+   written binary64 value. This threshold is the initial acceptance criterion of the AutoCAD
+   conformance tests only; it is neither a bound of the product nor a property of the reader.
+3. **Structural criterion**, required in addition: the degree; the number of knots and of
+   control points; the knot multiplicities (values equal in the record stay equal, distinct
+   values stay distinct, the order is preserved); the domain `[u_p, u_{n+1}]` stays non-empty
+   with the same clamped structure; closure (exact equality of `P_0` and `P_n` in the record is
+   preserved, and inequality is not turned into equality); the weight conditions (positivity,
+   all-equal weights stay all-equal, unit weights stay unit, the rational or polynomial nature
+   unchanged). AutoCAD's own normalizations recorded in §12.2 (inferred closure reported as
+   `70 = 15` without periodic treatment, ignored 42/43) are accepted only as listed there.
+4. **Geometric criterion**, required in addition: the points AutoCAD evaluates at the declared
+   parameters agree with the exact-rational reference within the test tolerance (relative to
+   the largest control-point magnitude), including at multiple knots and at the ends.
+5. If a difference changes a structural property or produces a geometric deviation outside
+   the test tolerance, AutoCAD conformance is **not** declared for that fixture, even when every
+   value is within 4 ulp.
+6. The evidence records the reader name and version, the fixtures and their SHA-256, the
+   maximum observed ulp distance per field kind (coordinates, knots, weights), the maximum
+   geometric deviation, and the limits of the test (fixtures covered, excluded subnormal-width
+   spans, the values checked by §5.2 that are never written).
 
 ## 13. Risks
 
@@ -422,12 +477,13 @@ follow exactly.
 | X-4 | `schema_version` collision with `MAINT-A3` | coordinate in the amendment; serialize EXP and A3 |
 | X-5 | an exact conversion exported as an approximate polyline until `MAINT-A3` while its reference is excluded | stated by the dialog; it is the author's rule (D-A-N2-3) |
 | X-6 | stale state after Undo | states are computed, never stored |
-| X-7 | AutoCAD misreads some decimals by 1–3 ulp and truncates three-digit exponents (R1 pilot) | RX-D18, RX-D19; recorded per reader version |
-| X-8 | a closed reference re-saved by AutoCAD carries `70 = 15` (bit 2) and the approved import rejects it as `PERIODIC_UNSUPPORTED` | outside this contract: an import-contract question for the author (R1 report §K) |
+| X-7 | AutoCAD misreads some decimals by 1–3 ulp and truncates three-digit exponents (R1 pilot) | acceptance criteria of §12.3 (RX-D18) and `EXPONENT_NOT_PORTABLE` (§5.2, RX-D19); recorded per reader version |
+| X-8 | a closed reference re-saved by AutoCAD carries `70 = 15` (bit 2) and the approved import rejects it as `PERIODIC_UNSUPPORTED` | outside this contract: separate maintenance debt DT-2 (R1 report, annex R2) |
+| X-9 | the approved ordinary DXF export also writes `Double.toString` and has the same exponent issue with AutoCAD | outside this contract: separate maintenance debt DT-1 (R1 report, annex R2) |
 
 ## 14. Stop conditions
 
-Stop if: a conformance reader rejects or misreads the rational `SPLINE`; writing would need
+Stop if: a conformance reader rejects the rational `SPLINE`, or reads it outside §12.3 (any inexact definition reading for ezdxf; any per-value, structural or geometric failure for AutoCAD); writing would need
 transforming or recomputing data beyond formatting; the ordinary export changes one byte;
 an association would need proximity, data digests, labels or handles; the
 correspondence would need a DAG dependency; the implementation would need the construction
@@ -452,7 +508,7 @@ correspondence would need a DAG dependency; the implementation would need the co
 | RX-D13 | Sequence | strict: this contract, the store model types of `R-c` (milestone RC-M) and the read-only provenance parser with applicability (milestone DXF1-M); integration after `MAINT-A-DXF0-RC` in the author's order; may precede A-DXF1 (before it only `NO_CEDG_REPRESENTATION`, case 7 and user choices occur) | aligned with the implementation plan §2 |
 | RX-D16 | Conformance readers | AutoCAD Core Console and ezdxf (pinned), definition reading separated from evaluation (§12.1) | **fixed by the author (D-R1-7)** |
 | RX-D17 | Failed approximations | never an export state; no persisted history | **fixed by the author (D-R1-5)** |
-| RX-D18 | AutoCAD definition-reading rule | A: exact for ezdxf; AutoCAD within 4 ulp, recorded as a reader limitation; B: stop condition | **pending author decision** (§12.2) |
-| RX-D19 | Values with three-digit exponents | refuse as `NOT_WRITABLE`/`EXPONENT_NOT_PORTABLE`; alternative: plain decimals for small values | **pending author decision** (§5.2) |
+| RX-D18 | AutoCAD definition-reading rule | alternative A with the author's conditions: three levels of evidence; ezdxf exact; AutoCAD within 4 ulp per value as an initial test criterion, plus structural and geometric criteria; recorded maxima and limits (§12.3) | **fixed by the author** (instruction R2 of 2026-11-25) |
+| RX-D19 | Values with three-digit exponents | `NOT_WRITABLE`/`EXPONENT_NOT_PORTABLE` for coordinates, knots and weights, both exponent signs; no polyline, no silent rewrite; user exclusion keeps the diagnostic; plain-decimal writing only as a later improvement proved by tests (§5.2) | **fixed by the author** (instruction R2 of 2026-11-25) |
 | RX-D15 | References with identical data (case 7) | both included by default as distinct references; the summary line and «Review…» flag them with `SAME_DATA_AS_REFERENCE`; the user may exclude either | deduplicating by data would be an association by coordinates (D-A-N2-3); the automatic-duplication rule concerns a reference and a construction that represents it |
 | RX-D14 | Normative form | this contract + amendments + ADR 0045 | — |

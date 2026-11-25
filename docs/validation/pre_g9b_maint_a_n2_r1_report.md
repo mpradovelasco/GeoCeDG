@@ -129,7 +129,7 @@ carpeta ignorada, cargada en solo lectura; nada se instaló):
   tramo de anchura subnormal los derrota a ambos.
 
 **[política]** RX-D4 un código 41 tras cada punto de control; RX-D5 bandera 1 solo con cierre
-exacto; RX-D6 escribir 210/220/230 = 0/0/1 y omitir 42/43. **[pendiente]** RX-D18 y RX-D19 (§K).
+exacto; RX-D6 escribir 210/220/230 = 0/0/1 y omitir 42/43. **[pendiente en R1; decididas en R2]** RX-D18 y RX-D19 (§K y anexo R2).
 
 ## G. Matemática y persistencia de A-DXF1
 
@@ -201,6 +201,11 @@ contenido normativo.
 
 ## K. Decisiones todavía pendientes
 
+> **Nota de R2 (2026-11-25).** RX-D18 y RX-D19 fueron decididas por el autor en
+> `PRE-G9B-MAINT-A-N2-R2`; N-R1-1 y N-R1-2 quedan registradas como deudas separadas DT-1 y
+> DT-2. Véase el [anexo R2](#anexo-r2--cierre-documental-de-interoperabilidad-autocad). La tabla
+> siguiente conserva el estado de R1.
+
 | Id | Contrato | Cuestión | Recomendación | Por qué es del autor |
 |---|---|---|---|---|
 | RX-D18 | exportación | regla de lectura de AutoCAD, que yerra 1–3 ulp en ≈10 % de los decimales largos | A: exactitud para ezdxf; AutoCAD ≤ 4 ulp como limitación documentada del lector; B: condición de parada | cambia qué garantía de interoperabilidad se afirma |
@@ -209,7 +214,7 @@ contenido normativo.
 | N-R1-2 | importación aprobada | una referencia cerrada guardada de nuevo por AutoCAD lleva `70 = 15` y la importación la rechaza como `PERIODIC_UNSUPPORTED` aunque no sea periódica | estudiarlo en un mantenimiento de la importación; no se cambia aquí | afecta a un contrato aprobado |
 | AX-D6 | A-DXF1 | constantes del método | fijarlas tras las mediciones de DXF1-S0 y DXF1 | pendiente de validación |
 
-Ninguna impide adoptar `R-c` ni A-DXF1; RX-D18 y RX-D19 deben decidirse con la adopción del
+Estado en R1: ninguna impide adoptar `R-c` ni A-DXF1; RX-D18 y RX-D19 deben decidirse con la adopción del
 contrato de exportación o antes de cerrar `MAINT-A-DXF0-EXP`.
 
 ## L. Paquete de adopción normativa
@@ -217,7 +222,7 @@ contrato de exportación o antes de cerrar `MAINT-A-DXF0-EXP`.
 | Contrato | Propuesta | Enmiendas | Pendiente |
 |---|---|---|---|
 | `cedg-reference-store/v1` + ADR 0044 | [propuesta R-c](pre_g9b_maint_a_n2_r1_adoption_proposal_rc.md) | grupo R | ninguna |
-| `cedg-reference-export/v1` + ADR 0045 | [propuesta de exportación](pre_g9b_maint_a_n2_r1_adoption_proposal_export.md) | grupo X | RX-D18, RX-D19 |
+| `cedg-reference-export/v1` + ADR 0045 | [propuesta de exportación](pre_g9b_maint_a_n2_r1_adoption_proposal_export.md) | grupo X | ninguna (RX-D18 y RX-D19 decididas en R2) |
 | `dxf-spline-approximation/v1` | [propuesta A-DXF1](pre_g9b_maint_a_n2_r1_adoption_proposal_a_dxf1.md) | grupo A | constantes (validación) |
 
 Cada propuesta indica contrato y revisión, candidato, decisiones fijadas y propuestas,
@@ -257,3 +262,56 @@ GUIDE_IMPACT             = NONE en este incremento
 ```
 
 Sin push, merge, `main`, etiquetas, releases ni empaquetado. El worktree se conserva.
+
+## Anexo R2 — cierre documental de interoperabilidad AutoCAD
+
+**PRE-G9B-MAINT-A-N2-R2 — NORMATIVE DESIGN CANDIDATE — READY FOR AUTHOR ADOPTION**
+
+| Campo | Valor |
+|---|---|
+| Instrucción | «GeoCeDG — PRE-G9B-MAINT-A-N2-R2. Cierre documental focal de interoperabilidad AutoCAD», del autor, 2026-11-25: corrección exclusivamente documental limitada a RX-D18 y RX-D19 y sus consecuencias directas |
+| Base | descendiente R1 `f76a8f84f9f04ea8687f971e5ddd74528bcdeb68`, árbol `845b6e37c84ce9da04bd7596751d11823baf39c3` (verificados); commits de A-N2 y R1 conservados |
+| Rama / worktree | `phase/pre-g9b-maint-a-n2-r2`, desde `f76a8f84f`, en el worktree reutilizado `GeoCeDG-wt-maint-a-n2` (limpio y libre) |
+| Ruta y clase | `ORDINARY`; `DOCUMENTATION_STATUS_ONLY`; `STATIC`; sin pruebas productivas, `PHASE`, `INTEGRATION` ni `FINAL` |
+
+### R2.1 Decisiones del autor aplicadas
+
+| Decisión | Contenido | Dónde |
+|---|---|---|
+| RX-D18 | alternativa A con seis condiciones: la fidelidad sigue refiriéndose a los binary64 del DXF y a su relectura correctamente redondeada; 1–3 ulp de AutoCAD 2026 son una limitación empírica del lector; 4 ulp es criterio inicial de ensayo, no cota del producto ni del lector; además se exige estructura (grado, nudos, multiplicidades, dominio, cierre, condiciones de pesos); una alteración estructural o geométrica impide declarar conformidad aunque todo esté dentro de 4 ulp; se registran lector, versión, fixtures, máximos y límites | exportación §12.1 y §12.3 (nueva), RX-D18; ADR 0045 decisión 6; enmienda A-EXP-6 §12.8; matriz RX-16; plan §9 |
+| RX-D19 | política conservadora: valores con exponente de tres cifras (`\|x\| < 10^-99` no nulo o `\|x\| ≥ 10^100`, ambos signos del exponente y del valor) en coordenadas, nudos o pesos → `NOT_WRITABLE`/`EXPONENT_NOT_PORTABLE`; sin polilínea ni reescritura silenciosa; exclusión por el usuario con diagnóstico conservado; escritura sin exponente solo como mejora probada | exportación §5.2, §7.3, §10, RX-D19; ADR 0045 decisión 8 (nueva); enmienda A-EXP-6 §12.9 (nueva); matriz RX-4 y RX-19 (nueva); prompt candidato de EXP; plan §9 |
+| Niveles de evidencia | formato DXF, fidelidad (ezdxf exacto) y conformidad AutoCAD distintos; las limitaciones de AutoCAD no se atribuyen a otros lectores | exportación §12.3; ADR 0045 decisiones 6 y 8 |
+
+### R2.2 Deudas separadas (registradas, no implementadas)
+
+| Id | Deuda | Prioridad propuesta | Mantenimiento propuesto |
+|---|---|---|---|
+| DT-2 | splines cerradas guardadas por AutoCAD con `70 = 15` rechazadas como `PERIODIC_UNSUPPORTED` por la importación aprobada | 1 (frecuente; fallo explícito) | `MAINT-DXF-IMPORT-CLOSED-FLAG` |
+| DT-1 | exponentes de tres cifras en la exportación DXF ordinaria aprobada | 2 (infrecuente; silencioso) | `MAINT-DXF-EXPORT-EXPONENT-PORTABILITY` |
+
+Ningún contrato aprobado de importación ni de exportación se modifica (plan §10).
+
+### R2.3 Conciliación
+
+- **Documentos cambiados:** contrato de exportación (revisión R2), ADR 0045 (revisión R2),
+  enmiendas (A-EXP-6), matriz (RX-4, RX-16, RX-19), prompt candidato de EXP, plan (§9, §10),
+  propuesta de ejecución coordinada (P4), tres propuestas de adopción (candidato R2) y este
+  anexo.
+- **Intactos:** `cedg-reference-store/v1` (capacidad, persistencia de `source` y `data`,
+  atomicidad, Classic, ausencia de historial) y `dxf-spline-approximation/v1` (sin historial de
+  fallos, A-DXF1b separado, §5.9); ADR 0044 sin cambios; ninguna especificación aprobada tocada.
+- **Lectores:** AutoCAD Core Console y ezdxf siguen como lectores independientes, con niveles de
+  evidencia diferenciados.
+
+**Alineaciones de la propuesta de exportación.** RX-D4 a RX-D6 se expresan con los valores que el
+contrato ya fijaba en R1 tras el piloto (antes decía «según la evidencia del piloto»), y RX-D13
+nombra el hito DXF1-M que el contrato R1 ya incluía; no son decisiones nuevas.
+
+### R2.4 Decisiones normativas bloqueantes
+
+Ninguna. Quedan solo valores pendientes de validación que no bloquean la adopción: las
+constantes de A-DXF1 (AX-D6) y la confirmación del presupuesto inicial de `R-c` por C-4.
+
+### R2.5 Candidato y `STATIC`
+
+Se registran en un descendiente documental del commit de contenido R2.

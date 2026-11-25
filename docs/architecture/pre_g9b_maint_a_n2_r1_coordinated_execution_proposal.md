@@ -34,7 +34,7 @@ propia caracterización de coste y una autorización posterior. `MAINT-A3` tambi
 | S2 | RC-M en la rama RC; DXF1-M en la rama DXF1 | **P2**: RC-M y DXF1-M congelados; EXP fusiona ambos y DXF1 fusiona RC-M (merge, nunca copia) |
 | S3 | RC ∥ EXP ∥ biblioteca de DXF1 | sin fusiones cruzadas salvo RC-M y DXF1-M |
 | S4 | integración de RC (`STATIC` + `PHASE` + `INTEGRATION`) | **P3**: RC integrado; DXF1 integra su servicio sobre él |
-| S5 | integración de EXP, conformidad AutoCAD/ezdxf | **P4**: evidencia RX-16/RX-17 revisada |
+| S5 | integración de EXP, conformidad AutoCAD/ezdxf | **P4**: evidencia RX-16, RX-17 y RX-19 revisada con los criterios del contrato de exportación §12.3 (ezdxf exacto; AutoCAD dentro de 4 ulp por valor, estructura y geometría conservadas; máximos y límites registrados) y la regla `EXPONENT_NOT_PORTABLE`; un fixture que no cumpla detiene y se eleva al autor |
 | S6 | DXF1 completo e integración | **P5**: candidato integrado con verificación `CORE + FOCUSED` |
 | S7 | informe consolidado único, guías de smoke | **P6**: parada para smoke y revisión autoral |
 
