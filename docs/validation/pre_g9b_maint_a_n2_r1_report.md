@@ -314,4 +314,23 @@ constantes de A-DXF1 (AX-D6) y la confirmación del presupuesto inicial de `R-c`
 
 ### R2.5 Candidato y `STATIC`
 
-Se registran en un descendiente documental del commit de contenido R2.
+Registrados en un descendiente documental del commit de contenido R2; el descendiente solo
+cambia este informe. Las tres propuestas de adopción remiten a esta sección.
+
+| Elemento | Valor |
+|---|---|
+| **Candidato de contenido R2** | `101f574ab2929e09ed8295f427c7c67c4f951f06`, árbol `14fa0d1d8fc7c9c7955c87d4c81bc73d350c02fc`, padre `f76a8f84f` |
+| Orden | `tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts\agent\pre-g9b-maint-a-n2-r2-static-101f574a`, desde el worktree |
+| Código de salida | `0` |
+| Ejecución | `verification-51940d378fe7439ebaebc868ff831cf7`; plan `25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52` |
+| Identidad ligada | `candidate_commit = 101f574ab…`, `candidate_tree = 14fa0d1d8…` |
+| Veredictos | aceptación `ACCEPTED`; cobertura `COMPLETE` |
+| Diagnósticos | 1 hallazgo: `diagnostic.governance` `DIAGNOSTIC_FINDING` (permanente); `diagnostic.historical-consistency` `DIAGNOSTIC_UNAVAILABLE`; el resto `DIAGNOSTIC_CLEAR` |
+| Informe | `artifacts/agent/pre-g9b-maint-a-n2-r2-static-101f574a/verification-result.json` (ignorado), SHA-256 `880f973fbb7b277aa02f1575bccb4d783aea1fd28827de2693f55562b647b1f2` |
+| Comprobaciones previas | revisión cruzada independiente (1 hallazgo bloqueante y 4 importantes de coherencia, corregidos antes del commit: condición de parada de §14, excepción de §7.3, valores extremos del ida y vuelta, pesos admisibles en RX-19, manifiesto para exclusiones por exponente); contrato del prompt candidato de EXP; enlaces, LF, tablas y `git diff --check` |
+
+`STATIC` es aceptación técnica de la forma del candidato; no es adopción autoral.
+
+**Estado:** `PRE-G9B-MAINT-A-N2-R2 — NORMATIVE DESIGN CANDIDATE — READY FOR AUTHOR ADOPTION`;
+`selfApproved = false`, `authorApproved = false`; sin push, merge, `main`, etiquetas, releases
+ni empaquetado.
