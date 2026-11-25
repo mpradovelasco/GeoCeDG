@@ -8,7 +8,6 @@ package org.geocedg.desktop;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
-import org.geocedg.common.importer.dxf.DxfTessellation;
 import org.geocedg.common.kernel.geos.GeoLocusIntersectionResult;
 import org.geocedg.common.kernel.locus.LocusPoint2D;
 import org.geocedg.common.kernel.locus.intersection.LocusIntersectionSolution2D;
@@ -16,7 +15,6 @@ import org.geocedg.desktop.export.ExportArea;
 import org.geogebra.common.awt.AwtFactory;
 import org.geogebra.common.awt.GBasicStroke;
 import org.geogebra.common.awt.GColor;
-import org.geogebra.common.awt.GGeneralPath;
 import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.awt.GPoint;
 import org.geogebra.common.awt.GPoint2D;
@@ -36,8 +34,6 @@ import org.geogebra.desktop.geogebra3D.euclidianFor3D.EuclidianViewFor3DD;
 public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 	private static final GColor EXPORT_AREA_OVERLAY = GColor.newColor(230, 120, 0);
 	private static final GColor INTERSECTION_BADGE_BACKGROUND = GColor.newColor(0, 90, 125);
-	private static final GColor DXF_REFERENCE_COLOR = GColor.newColor(150, 60, 170);
-	private static final GColor DXF_INCOMPLETE_COLOR = GColor.newColor(200, 0, 0);
 	private GeoCeDGControlLayoutWorkspace controlLayout;
 
 	/** Creates the regular Desktop view with a non-semantic overlay. */
@@ -147,44 +143,16 @@ public final class GeoCeDGEuclidianView extends EuclidianViewFor3DD {
 
 	/**
 	 * PRE-G9B-MAINT-A-DXF0: imported DXF references in their own presentation (dashed,
-	 * reference colour), drawn from the record tessellation computed once in model units;
-	 * the view only maps model to screen coordinates, so the drawn polyline is the same at
-	 * every zoom and DPI. An incomplete render carries a visible mark at its last point. Live
-	 * paint only: references are not GeoElements, have no drawable, no hit test and no snap,
-	 * and {@code exportPaint} never calls this method.
+	 * reference colour), drawn by {@link GeoCeDGDxfReferencePainter} from the record
+	 * tessellation computed once in model units; the view only maps model to screen
+	 * coordinates, so the drawn polyline is the same at every zoom and DPI. References are not
+	 * GeoElements: no drawable, no hit test and no snap. Since PRE-G9B-MAINT-A-DXF0-R1 the
+	 * picture-export service of Graphics 1 draws the same presentation through its overlay;
+	 * the host {@code exportPaint} of this live view (document thumbnail) still does not.
 	 */
 	private void paintDxfReferences(GGraphics2D graphics) {
-		if (!(getApplication() instanceof AppGeoCeDG app)
-				|| app.getDxfReferenceSession().isEmpty()) {
-			return;
-		}
-		graphics.setColor(DXF_REFERENCE_COLOR);
-		graphics.setStroke(AwtFactory.getPrototype().newBasicStroke(1.5,
-				GBasicStroke.CAP_BUTT, GBasicStroke.JOIN_ROUND, 10, new double[] {7, 3}));
-		for (GeoCeDGDxfReferenceSession.Entry entry : app.getDxfReferenceSession().entries()) {
-			if (!entry.isVisible()) {
-				continue;
-			}
-			DxfTessellation render = entry.reference().tessellation();
-			GGeneralPath path = AwtFactory.getPrototype().newGeneralPath();
-			for (int i = 0; i < render.size(); i++) {
-				double x = toScreenCoordXd(render.x(i));
-				double y = toScreenCoordYd(render.y(i));
-				if (i == 0) {
-					path.moveTo(x, y);
-				} else {
-					path.lineTo(x, y);
-				}
-			}
-			graphics.draw(path);
-			if (!render.isComplete() && render.size() > 0) {
-				double x = toScreenCoordXd(render.x(render.size() - 1));
-				double y = toScreenCoordYd(render.y(render.size() - 1));
-				graphics.setColor(DXF_INCOMPLETE_COLOR);
-				graphics.drawLine((int) x - 6, (int) y - 6, (int) x + 6, (int) y + 6);
-				graphics.drawLine((int) x - 6, (int) y + 6, (int) x + 6, (int) y - 6);
-				graphics.setColor(DXF_REFERENCE_COLOR);
-			}
+		if (getApplication() instanceof AppGeoCeDG app) {
+			GeoCeDGDxfReferencePainter.paint(app.getDxfReferenceSession(), this, graphics, 1);
 		}
 	}
 

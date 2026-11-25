@@ -2429,7 +2429,7 @@
       "target": {
         "symbol": "geocedg.import.dxf-reference"
       },
-      "maturity": "experimental",
+      "maturity": "stable",
       "feature_requirements": [],
       "selection_contract_ref": "geocedg.dxf-spline-reference-session",
       "effect_profile_id": "read-only",
@@ -2439,7 +2439,7 @@
       "command_surface_profile_id": "action-only",
       "planning_disposition": "must",
       "implementation_state": "new-frontend",
-      "notes": "PRE-G9B-MAINT-A-DXF0 (dxf-spline-reference/v1 revision 2, persistence R-a): read-only import of 2D ASCII DXF SPLINE entities as session references outside Construction and the DAG; never a GeoElement, a tool or command input, a snapping target or a metric authority; no Undo entry; New, Open and Close clear the session store; Save writes nothing of it."
+      "notes": "PRE-G9B-MAINT-A-DXF0 (dxf-spline-reference/v1 revision 2, persistence R-a): read-only import of 2D ASCII DXF SPLINE entities as session references outside Construction and the DAG; never a GeoElement, a tool or command input, a snapping target or a metric authority; no Undo entry; New, Open and Close clear the session store; Save writes nothing of it. PRE-G9B-MAINT-A-DXF0-R1 (author decision of 2026-11-25): last entry of File > Insert; available without a feature flag and not labelled experimental; maturity stable bounded to the implemented contract, that is session references R-a only (no document persistence R-c, no conversion or approximation A-DXF1); visible references are drawn by the picture-export service of Graphics 1 as presentation."
     },
     {
       "id": "export.picture",
@@ -3611,7 +3611,8 @@
     {
       "id": "file-insert",
       "name_key": "Group.File.Insert",
-      "action_ids": ["document.insert-file", "document.insert-expert", "document.insert-clipboard-image", "document.apply-styles"],
+      "action_ids": ["document.insert-file", "document.insert-expert", "document.insert-clipboard-image", "document.apply-styles",
+        "import.dxf-reference"],
       "toolbar_action_ids": []
     },
     {
@@ -3630,7 +3631,7 @@
       "id": "file-import-export",
       "name_key": "Group.File.ImportExport",
       "action_ids": ["export.picture", "export.dxf-2d", "export.pstricks", "export.pgf",
-        "export.asymptote", "import.dxf-reference"],
+        "export.asymptote"],
       "toolbar_action_ids": []
     },
     {
@@ -4961,26 +4962,26 @@
     "ExportArea.Invalid": {"en": "The export area needs four finite numbers that span a rectangle of non-zero width and height. The previous export area is kept.", "es": "El área de exportación necesita cuatro números finitos que formen un rectángulo de anchura y altura no nulas. Se conserva el área de exportación anterior."},
     "ExportArea.ExportPointsUnavailable": {"en": "Export_1 and Export_2 must both be defined points that span a rectangle of non-zero width and height.", "es": "Export_1 y Export_2 deben ser puntos definidos que formen un rectángulo de anchura y altura no nulas."},
     "geocedg.action.ExportDxf.name": {
-      "en": "Export 2D geometry as DXF (experimental)…",
-      "es": "Exportar geometría 2D como DXF (experimental)…"
+      "en": "Export 2D geometry as DXF…",
+      "es": "Exportar geometría 2D como DXF…"
     },
     "geocedg.action.ExportDxf.short_help": {
-      "en": "Export supported 2D construction geometry through the experimental DXF adapter.",
-      "es": "Exporta la geometría 2D compatible mediante el adaptador DXF experimental."
+      "en": "Export supported 2D construction geometry through the DXF adapter.",
+      "es": "Exporta la geometría 2D compatible mediante el adaptador DXF."
     },
     "geocedg.action.ExportDxf.long_help": {
       "en": "Open the DXF preflight dialog, review supported entities and fidelity limits, then choose a destination; export reads the document without becoming geometric authority.",
       "es": "Abra el diálogo de preflight DXF, revise las entidades compatibles y los límites de fidelidad y elija un destino; la exportación lee el documento sin convertirse en autoridad geométrica."
     },
     "geocedg.action.ExportDxf.status": {
-      "en": "Ready: Export 2D geometry as DXF (experimental)…",
-      "es": "Disponible: Exportar geometría 2D como DXF (experimental)…"
+      "en": "Ready: Export 2D geometry as DXF…",
+      "es": "Disponible: Exportar geometría 2D como DXF…"
     },
     "geocedg.action.ExportDxf.error": {
-      "en": "Cannot perform Export 2D geometry as DXF (experimental)… in the current context.",
-      "es": "No se puede ejecutar Exportar geometría 2D como DXF (experimental)… en el contexto actual."
+      "en": "Cannot perform Export 2D geometry as DXF… in the current context.",
+      "es": "No se puede ejecutar Exportar geometría 2D como DXF… en el contexto actual."
     },
-    "geocedg.action.ImportDxfReference.name": {"en": "Import DXF reference…", "es": "Importar referencia DXF…"},
+    "geocedg.action.ImportDxfReference.name": {"en": "Import DXF Reference…", "es": "Importar referencia DXF…"},
     "geocedg.action.ImportDxfReference.short_help": {"en": "Show 2D SPLINE entities of an ASCII DXF file as read-only references of this session.", "es": "Muestra las entidades SPLINE 2D de un archivo DXF ASCII como referencias de solo lectura de esta sesión."},
     "geocedg.action.ImportDxfReference.long_help": {"en": "The file is only read. References are not construction objects: they cannot be selected, snapped to or used by tools and commands, they are not saved, and New, Open and Close remove them.", "es": "El archivo solo se lee. Las referencias no son objetos de la construcción: no se pueden seleccionar, no atraen el cursor ni sirven a herramientas o comandos, no se guardan y Nuevo, Abrir y Cerrar las retiran."},
     "geocedg.action.ImportDxfReference.status": {"en": "Ready: Import DXF reference…", "es": "Disponible: Importar referencia DXF…"},
@@ -4990,7 +4991,7 @@
     "DxfReference.Empty": {"en": "No DXF reference in this session.", "es": "No hay referencias DXF en esta sesión."},
     "DxfReference.Hidden": {"en": "hidden", "es": "oculta"},
     "DxfReference.Import": {"en": "Import DXF file…", "es": "Importar archivo DXF…"},
-    "DxfReference.Inspect": {"en": "Inspect", "es": "Inspeccionar"},
+    "DxfReference.Inspect": {"en": "Details…", "es": "Detalles…"},
     "DxfReference.ToggleVisibility": {"en": "Show/Hide", "es": "Mostrar/Ocultar"},
     "DxfReference.Remove": {"en": "Remove", "es": "Quitar"},
     "DxfReference.Close": {"en": "Close", "es": "Cerrar"},
@@ -5038,6 +5039,16 @@
     "DxfReference.Inspector.RenderValue": {"en": "%0 points, chordal tolerance %1 model units (estimate), %2", "es": "%0 puntos, tolerancia cordal %1 unidades del modelo (estimación), %2"},
     "DxfReference.Inspector.Visible": {"en": "Visible in this session", "es": "Visible en esta sesión"},
     "DxfReference.Inspector.Authority": {"en": "No length, intersection, tangent, incidence or point on the curve is published for a reference.", "es": "No se publica ninguna longitud, intersección, tangente, incidencia ni punto sobre la curva de una referencia."},
+    "DxfReference.DetailsTitle": {"en": "Details", "es": "Detalles"},
+    "DxfReference.Report.FileName": {"en": "File: %0", "es": "Archivo: %0"},
+    "DxfReference.Report.RejectedSummary": {"en": "Entities not imported: %0 (causes in the details).", "es": "Entidades no importadas: %0 (causas en los detalles)."},
+    "DxfReference.Report.NoticesSummary": {"en": "Notices: %0 (in the details).", "es": "Avisos: %0 (en los detalles)."},
+    "DxfReference.Nature.POLYNOMIAL": {"en": "Polynomial spline", "es": "Spline polinómica"},
+    "DxfReference.Nature.RATIONAL_EQUAL_WEIGHTS": {"en": "Spline with equal weights", "es": "Spline de pesos iguales"},
+    "DxfReference.Nature.RATIONAL": {"en": "Rational spline", "es": "Spline racional"},
+    "DxfReference.Inspector.Name": {"en": "Reference", "es": "Referencia"},
+    "DxfReference.Yes": {"en": "yes", "es": "sí"},
+    "DxfReference.No": {"en": "no", "es": "no"},
     "upstream.help.Input.name": {
       "en": "Input help",
       "es": "Ayuda de entrada"

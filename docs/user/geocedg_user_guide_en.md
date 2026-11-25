@@ -74,7 +74,7 @@ revision `9b93256b7df401ff056c37b502d82df4d72b1522`.
 | Presentation and layers | **[A]** The inherited object styles and numeric layers gain presentation controls and a working layer. | Preferences, Working Layer, layer visibility | Group construction objects by layer and hide auxiliary work while checking the drawing. | [Presentation](#presentation-and-visualization) · [Working layer](#presentation-and-visualization/12.5) |
 | Native documents and insertion | **[N]** Use the native `.cedg` document. **[A]** **[!]** Insert File checks the construction before adding it. **[N]** **[!]** Expert review runs a trial on a copy. **[A]** **[!]** Clipboard images let you choose a layer and a construction position. | Save as…, Insert File…, Insert with expert review…, Image from clipboard… | Bring an existing construction or image into a drawing; review construction changes before confirming when expert review is available. | [Document formats](#documents/4.1) · [Insertion](#documents/4.2) |
 | Controls and panels | **[G]** Sliders, buttons, check boxes and input boxes. **[N]** **[!]** Fixed or canvas-anchored panels for eligible controls in Graphics 1. | Slider, Button, Check Box, Input Box, Control layout | Keep controls together when you move around the drawing. | [Control panels](#presentation-and-visualization/12.6) |
-| DXF exchange | **[N]** **[!]** Export supported 2D objects, with fidelity and approximation information. | Export 2D geometry as DXF (experimental)… | Hand off linework to CAD after checking what the export can represent. | [DXF export](#dxf-export) |
+| DXF exchange | **[N]** **[!]** Export supported 2D objects, with fidelity and approximation information. | Export 2D geometry as DXF… | Hand off linework to CAD after checking what the export can represent. | [DXF export](#dxf-export) |
 | User tools and Classic | **[G]** Custom tools can be stored in `.ggb` drawings. **[A]** Tool management adds persistent choices and toolbar pins. **[N]** **[!]** The installed library and the separate Classic diagnostic session have their own availability. | User tools, Open Classic diagnostic session | Reuse a tool or check an older construction within the compatibility limits. | [User tools](#user-tools-and-automation) · [Classic](#classic-compatibility-and-diagnostics) |
 
 
@@ -244,7 +244,7 @@ Use the menu bar to find tools by task. The individual Construction tools are li
 
 | Menu | What you can do |
 |---|---|
-| **[A]** **File** | **[G]** New file and Close. **[G]** Open recent…. **[A]** Open…, Save and Save as… with the native document policy. **[A]** Print preview…, Graphics View as Picture…, PSTricks…, PGF/TikZ… and Asymptote… use the GeoCeDG export area. **[N]** **[!]** Export 2D geometry as DXF (experimental)…. **[N]** **[!]** Import DXF reference… shows the `SPLINE` curves of a DXF file as read-only references of the session (section 11.12). **[N]** Define export area…, Show export area, Clear export area, Define ISO A export area… and Use selected ISO A border. **[A]** Use Export_1 and Export_2 activates the two-point crop explicitly. **[A]** **[!]** **Insert** brings together certified insertion, expert review, clipboard images and style transfer (section 4.2). **[N]** **[!]** Open Classic diagnostic session. |
+| **[A]** **File** | **[G]** New file and Close. **[G]** Open recent…. **[A]** Open…, Save and Save as… with the native document policy. **[A]** Print preview…, Graphics View as Picture…, PSTricks…, PGF/TikZ… and Asymptote… use the GeoCeDG export area. **[N]** **[!]** Export 2D geometry as DXF…. **[N]** Define export area…, Show export area, Clear export area, Define ISO A export area… and Use selected ISO A border. **[A]** Use Export_1 and Export_2 activates the two-point crop explicitly. **[A]** **[!]** **Insert** brings together certified insertion, expert review, clipboard images and style transfer (section 4.2). **[N]** **[!]** Import DXF Reference…, its last entry, shows the `SPLINE` curves of a DXF file as read-only references of the session (section 11.12). **[N]** **[!]** Open Classic diagnostic session. |
 | **[G]** **Edit** | **[G]** Undo, Redo, Move, Move around Point, Select Objects, Attach / Detach Point and Delete. **[N]** Working Layer selects the layer for new objects in the current session. See [Menus, preferences and shortcuts](#command-and-workflow-reference/16.6). |
 | **[A]** **View** | **[G]** **Views** toggles Algebra, Graphics 2, Spreadsheet, CAS and Object Properties. **[A]** **Visibility and style** includes orientation and control layout. **[G]** Show / Hide Object, Show / Hide Label and Copy Visual Style. **[N]** **[!]** Show orientation cue applies to eligible results. **[A]** **Navigation** includes Zoom to rectangle, Zoom Factor In, Zoom Factor Out and Configure navigation zoom…. **[G]** Move Graphics View, Zoom In, Zoom Out, Standard view and Show all objects. **[A]** **Construction inspection** includes the Construction protocol with adaptive row height. **[G]** Show construction navigation bar. **[N]** Inspect definition… opens the definition without changing Algebra display mode. **[A]** **Restore Construction layout** restores the CeDG Construction workspace. |
 | **[A]** **Construction** | The groups below include the semantic curves and engineering dimensions. |
@@ -613,7 +613,7 @@ copy in GeoCeDG if your document uses higher layers.
 **[A]** PNG, PDF, SVG, EMF, EMF+ and clipboard image output retain the inherited formats and use the GeoCeDG export area.
 
 **File** offers **Graphics View as Picture…** (PNG, PDF,
-SVG, EMF and EMF+), **Export 2D geometry as DXF (experimental)…** (section 11),
+SVG, EMF and EMF+), **Export 2D geometry as DXF…** (section 11),
 **PSTricks…**, **PGF/TikZ…** and **Asymptote…**; **Print preview…** (in File) prints the same picture. STL, Collada, HTML Collada, Dynamic Worksheet and
 upload, Animated GIF and WebM are not offered.
 
@@ -2186,9 +2186,9 @@ line explicitly — for example `a: y = 0` — and select that line.
 
 ### 11.1 What DXF export is, and is not
 
-**[N]** **[!]** The experimental 2D DXF exporter includes the supported extended curve scope described here.
+**[N]** **[!]** The 2D DXF exporter includes the supported extended curve scope described here.
 
-**[N]** **[!]** **File → Export 2D geometry as DXF (experimental)…**
+**[N]** **[!]** **File → Export 2D geometry as DXF…**
 writes an ASCII DXF (AC1015) drawing from already-resolved 2D model geometry.
 
 It is an interoperability adapter. It is not a screenshot, it does not clip to
@@ -2369,7 +2369,7 @@ RGB colour, current visibility and the off state of hidden layers are.
 
 ### 11.12 Imported DXF references (read-only)
 
-**File → Import DXF reference…** reads the `SPLINE` entities of a 2D ASCII DXF
+**File → Insert → Import DXF Reference…** reads the `SPLINE` entities of a 2D ASCII DXF
 file and draws them in the first Graphics view as *references*: dashed purple
 curves that are not part of the construction.
 
@@ -2392,18 +2392,25 @@ curves that are not part of the construction.
   selected, it does not attract the cursor and no tool or command accepts it.
   A point clicked on it is an ordinary free point. No length, intersection or
   tangent is published for it, and the DXF and LaTeX exports leave it out.
-  Picture exports (PNG, PDF, SVG, EMF, print and the clipboard image) do not
-  include references either; only the Graphics view on screen draws them.
+- **Pictures.** Visible references of the first Graphics view also appear in its
+  picture outputs (PNG, PDF, SVG, EMF, print, print preview and the clipboard
+  image), with the same style, inside the export area. PDF, SVG and EMF keep them
+  as vector paths. Hidden references are left out, and the second Graphics view
+  does not draw references. A picture is presentation, never evidence about the
+  curve.
 - **Session only.** References belong to the session of the open window.
   Importing, hiding and removing them creates no Undo step and does not change
   the construction. Save writes nothing of them and shows a notice; New, Open
   and Close remove them, so after reopening a drawing you import the file
   again. The DXF file itself is only read.
-- **Inspection.** After an import, and whenever you run the action again while
-  references exist, the **Imported DXF references** window lists them with
-  **Inspect** (read-only: nature, contract, closure, structural continuity,
-  provenance with file and data digests, diagnostics and render tolerance),
-  **Show/Hide** and **Remove**.
+- **Inspection.** After an import, a short report names the admitted references
+  (layer and handle of the entity) with their nature and brief notices;
+  **Details…** shows the file digest, version, counts, transformation, structural
+  data and the cause of every rejection. Whenever you run the action again while
+  references exist, the **Imported DXF references** window lists them by name,
+  file and nature with **Details…** (read-only: name, nature and visibility first;
+  then contract, closure, structural continuity, provenance with file and data
+  digests, diagnostics and render tolerance), **Show/Hide** and **Remove**.
 
 The curve is drawn from a polyline computed once in model units, within a
 chordal tolerance of 10⁻⁴ times the diagonal of the control polygon's box; it
@@ -2897,7 +2904,7 @@ These are the limitations that affect what you can do in the application today.
 | **[A]** **[!]** Rotate | same | `Rotate(S,angle,center)` | new semantic curve | lengths preserved |
 | **[A]** **[!]** Reflect | same | `Reflect(S,line)` / `Mirror(S,line)` | new semantic curve | construct the mirror line explicitly; axes are not selectable |
 | **[A]** **[!]** Dilate | same | `Dilate(S,k,O)` | new semantic curve | length scales by `abs(k)`; `k=0` collapses but keeps its domain |
-| **[N]** **[!]** Export DXF | File → Export 2D geometry as DXF (experimental)… | — | DXF file (+ manifest) | preflight first; strict complete request by default |
+| **[N]** **[!]** Export DXF | File → Export 2D geometry as DXF… | — | DXF file (+ manifest) | preflight first; strict complete request by default |
 | **[A]** Export a picture | File → Graphics View as Picture… | `ExportImage` | PNG, PDF, SVG, EMF/EMF+ file | exact export area (section 4.5) |
 | **[N]** Choose the export area | File → Define export area… | — | — | session only; the outline is never exported |
 | **[N]** Use a sheet as the export area | File → Use selected ISO A border | — | session state | the paper boundary, live, never the frame; released by undo, redo and deletion |
@@ -3016,7 +3023,7 @@ file extensions and code literals are identifiers and are never translated.
 | **[G]** `Tab` | move through controls |
 | **[A]** `Ctrl`+`Shift`+`U` | Graphics View as Picture… |
 | **[A]** `Ctrl`+`Shift`+`C` | copy the Graphics view as an image of the export area |
-| **[N]** **[!]** `Ctrl`+`Shift`+`D` | Export 2D geometry as DXF (experimental)… |
+| **[N]** **[!]** `Ctrl`+`Shift`+`D` | Export 2D geometry as DXF… |
 
 ### 16.5 Using construction tools
 

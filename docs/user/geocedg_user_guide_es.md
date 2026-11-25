@@ -76,7 +76,7 @@ en la revisión `9b93256b7df401ff056c37b502d82df4d72b1522`.
 | Presentación y capas | **[A]** Los estilos de objeto y las capas numéricas heredadas se amplían con controles de presentación y una capa de trabajo. | Preferencias, Capa de trabajo, visibilidad de capas | Agrupe objetos por capa y oculte elementos auxiliares al revisar el dibujo. | [Presentación](#presentation-and-visualization) · [Capa de trabajo](#presentation-and-visualization/12.5) |
 | Documento nativo e inserción | **[N]** Use el documento nativo `.cedg`. **[A]** **[!]** Insertar archivo comprueba la construcción antes de incorporarla. **[N]** **[!]** La revisión experta realiza un ensayo en una copia. **[A]** **[!]** Las imágenes del portapapeles permiten elegir la capa y la posición de construcción. | Guardar como…, Insertar archivo…, Insertar con revisión experta…, Imagen desde el portapapeles… | Incorpore una construcción existente o una imagen; revise los cambios de construcción antes de confirmar cuando esté disponible la revisión experta. | [Formatos](#documents/4.1) · [Inserción](#documents/4.2) |
 | Controles y paneles | **[G]** Deslizadores, botones, casillas y campos de entrada. **[N]** **[!]** Paneles fijos o vinculados al lienzo para controles aptos en Gráficos 1. | Deslizador, Botón, Casilla de control, Casilla de Entrada, Disposición de controles | Mantenga juntos los controles al desplazarse por el dibujo. | [Paneles de controles](#presentation-and-visualization/12.6) |
-| Intercambio DXF | **[N]** **[!]** Exportación de objetos 2D admitidos, con información sobre fidelidad y aproximaciones. | Exportar geometría 2D como DXF (experimental)… | Entregue un trazado a CAD tras comprobar qué objetos se pueden representar. | [Exportación DXF](#dxf-export) |
+| Intercambio DXF | **[N]** **[!]** Exportación de objetos 2D admitidos, con información sobre fidelidad y aproximaciones. | Exportar geometría 2D como DXF… | Entregue un trazado a CAD tras comprobar qué objetos se pueden representar. | [Exportación DXF](#dxf-export) |
 | Herramientas de usuario y Classic | **[G]** Las herramientas personalizadas se pueden guardar en dibujos `.ggb`. **[A]** La gestión de herramientas incorpora opciones persistentes y acceso fijo desde la barra. **[N]** **[!]** La biblioteca instalada y la sesión separada de diagnóstico Classic tienen su propia disponibilidad. | Herramientas de usuario, Abrir sesión de diagnóstico Classic | Reutilice una herramienta o compruebe una construcción antigua dentro de los límites de compatibilidad. | [Herramientas de usuario](#user-tools-and-automation) · [Classic](#classic-compatibility-and-diagnostics) |
 
 
@@ -251,7 +251,7 @@ Use la barra de menús para encontrar herramientas por tarea. Las herramientas d
 
 | Menú | Acciones disponibles |
 |---|---|
-| **[A]** **Archivo** | **[G]** Nuevo archivo y Cerrar. **[G]** Abrir reciente…. **[A]** Abrir…, Guardar y Guardar como… con la política de documento nativo. **[A]** Vista previa de impresión…, Vista gráfica como imagen…, PSTricks…, PGF/TikZ… y Asymptote… usan el área de exportación de GeoCeDG. **[N]** **[!]** Exportar geometría 2D como DXF (experimental)…. **[N]** **[!]** Importar referencia DXF… muestra las curvas `SPLINE` de un archivo DXF como referencias de solo lectura de la sesión (sección 11.12). **[N]** Definir área de exportación…, Mostrar área de exportación, Borrar área de exportación, Definir área de exportación ISO A… y Usar el marco ISO A seleccionado. **[A]** Usar Export_1 y Export_2 activa explícitamente el recorte entre los dos puntos. **[A]** **[!]** **Insertar** reúne la inserción certificada, la revisión experta, las imágenes del portapapeles y la transferencia de estilos (sección 4.2). **[N]** **[!]** Abrir sesión de diagnóstico Classic. |
+| **[A]** **Archivo** | **[G]** Nuevo archivo y Cerrar. **[G]** Abrir reciente…. **[A]** Abrir…, Guardar y Guardar como… con la política de documento nativo. **[A]** Vista previa de impresión…, Vista gráfica como imagen…, PSTricks…, PGF/TikZ… y Asymptote… usan el área de exportación de GeoCeDG. **[N]** **[!]** Exportar geometría 2D como DXF…. **[N]** Definir área de exportación…, Mostrar área de exportación, Borrar área de exportación, Definir área de exportación ISO A… y Usar el marco ISO A seleccionado. **[A]** Usar Export_1 y Export_2 activa explícitamente el recorte entre los dos puntos. **[A]** **[!]** **Insertar** reúne la inserción certificada, la revisión experta, las imágenes del portapapeles y la transferencia de estilos (sección 4.2). **[N]** **[!]** Importar referencia DXF…, su última entrada, muestra las curvas `SPLINE` de un archivo DXF como referencias de solo lectura de la sesión (sección 11.12). **[N]** **[!]** Abrir sesión de diagnóstico Classic. |
 | **[G]** **Editar** | **[G]** Deshacer, Rehacer, Mueve, Gira en torno a un punto, Seleccionar objetos, Limitar/liberar punto y Borrar. **[N]** Capa de trabajo elige la capa de los objetos nuevos de la sesión. Consulte [Menús, preferencias y atajos](#command-and-workflow-reference/16.6). |
 | **[A]** **Vista** | **[G]** **Views** activa o desactiva Álgebra, Graphics2 (segunda vista gráfica), Hoja de Cálculo, Cálculo Simbólico (CAS) y Propiedades del objeto. **[A]** **Visibilidad y estilo** incluye la orientación y la disposición de controles. **[G]** Mostrar/ocultar objeto, Mostrar/ocultar etiqueta y Copiar estilo visual. **[N]** **[!]** Mostrar indicación de orientación se aplica a resultados admitidos. **[A]** **Navegación** incluye Zoom por rectángulo, Acercar por factor, Alejar por factor y Configurar zoom de navegación…. **[G]** Desplaza Vista Gráfica, Aproximar, Alejar, Vista estándar y Mostrar todos los objetos. **[A]** **Inspección de la construcción** incluye el Protocolo de construcción con altura de filas adaptativa. **[G]** Mostrar barra de navegación de la construcción. **[N]** Inspeccionar definición… abre la definición sin cambiar el modo de Álgebra. **[A]** **Restaurar distribución de Construcción** restaura el espacio de Construcción CeDG. |
 | **[A]** **Construcción** | Los grupos de abajo incluyen las curvas semánticas y las cotas de ingeniería. |
@@ -638,7 +638,7 @@ utiliza capas superiores.
 **[A]** PNG, PDF, SVG, EMF, EMF+ y la copia como imagen conservan los formatos heredados y usan el área de exportación de GeoCeDG.
 
 **Archivo** ofrece **Vista gráfica como imagen…** (PNG,
-PDF, SVG, EMF y EMF+), **Exportar geometría 2D como DXF (experimental)…**
+PDF, SVG, EMF y EMF+), **Exportar geometría 2D como DXF…**
 (sección 11), **PSTricks…**, **PGF/TikZ…** y **Asymptote…**; **Vista previa de
 impresión…** (en Archivo) imprime la misma imagen. No se ofrecen STL, Collada,
 Collada HTML, la hoja dinámica y su publicación, GIF animado ni WebM.
@@ -2297,10 +2297,10 @@ selecciónela.
 
 ### 11.1 Qué es y qué no es la exportación DXF
 
-**[N]** **[!]** El exportador DXF 2D experimental incluye el alcance ampliado de curvas que se describe aquí.
+**[N]** **[!]** El exportador DXF 2D incluye el alcance ampliado de curvas que se describe aquí.
 
-**[N]** **[!]** **Archivo → Exportar geometría 2D como DXF
-(experimental)…** escribe un dibujo DXF ASCII (AC1015) a partir de geometría 2D
+**[N]** **[!]** **Archivo → Exportar geometría 2D como DXF…**
+escribe un dibujo DXF ASCII (AC1015) a partir de geometría 2D
 del modelo ya resuelta.
 
 Es un adaptador de interoperabilidad. No es una captura de pantalla, no recorta a
@@ -2488,7 +2488,7 @@ visibilidad vigente y el estado desactivado de las capas ocultas sí.
 
 ### 11.12 Referencias DXF importadas (solo lectura)
 
-**Archivo → Importar referencia DXF…** lee las entidades `SPLINE` de un archivo
+**Archivo → Insertar → Importar referencia DXF…** lee las entidades `SPLINE` de un archivo
 DXF ASCII 2D y las dibuja en la primera vista gráfica como *referencias*:
 curvas discontinuas de color morado que no forman parte de la construcción.
 
@@ -2512,19 +2512,28 @@ curvas discontinuas de color morado que no forman parte de la construcción.
   seleccionar, no atrae el cursor y ninguna herramienta ni comando la acepta.
   Un punto pulsado sobre ella es un punto libre corriente. No se publica para
   ella ninguna longitud, intersección ni tangente, y las exportaciones DXF y
-  LaTeX la omiten. Las exportaciones de imagen (PNG, PDF, SVG, EMF, impresión
-  e imagen del portapapeles) tampoco incluyen referencias; solo las dibuja la
-  vista gráfica en pantalla.
+  LaTeX la omiten.
+- **Imágenes.** Las referencias visibles de la primera vista gráfica aparecen
+  también en sus salidas de imagen (PNG, PDF, SVG, EMF, impresión, vista previa
+  de impresión e imagen del portapapeles), con el mismo estilo y dentro del área
+  de exportación. PDF, SVG y EMF las conservan como trayectorias vectoriales. Las
+  referencias ocultas se omiten y la segunda vista gráfica no dibuja referencias.
+  Una imagen es presentación, nunca una prueba sobre la curva.
 - **Solo de sesión.** Las referencias pertenecen a la sesión de la ventana
   abierta. Importarlas, ocultarlas y quitarlas no crea ningún paso de Deshacer
   ni cambia la construcción. Guardar no escribe nada de ellas y muestra un
   aviso; Nuevo, Abrir y Cerrar las retiran, de modo que al reabrir un dibujo
   hay que importar de nuevo el archivo. El archivo DXF solo se lee.
-- **Inspección.** Tras una importación, y siempre que vuelva a ejecutar la
-  acción con referencias presentes, la ventana **Referencias DXF importadas**
-  las lista con **Inspeccionar** (solo lectura: naturaleza, contrato, cierre,
-  continuidad estructural, procedencia con resúmenes del archivo y de los datos,
-  diagnósticos y tolerancia del render), **Mostrar/Ocultar** y **Quitar**.
+- **Inspección.** Tras una importación, un informe breve nombra las referencias
+  admitidas (capa e identificador de la entidad) con su naturaleza y avisos
+  breves; **Detalles…** muestra el resumen del archivo, la versión, los
+  recuentos, la transformación, los datos estructurales y la causa de cada
+  rechazo. Siempre que vuelva a ejecutar la acción con referencias presentes, la
+  ventana **Referencias DXF importadas** las lista por nombre, archivo y
+  naturaleza con **Detalles…** (solo lectura: primero nombre, naturaleza y
+  visibilidad; después contrato, cierre, continuidad estructural, procedencia con
+  resúmenes del archivo y de los datos, diagnósticos y tolerancia del render),
+  **Mostrar/Ocultar** y **Quitar**.
 
 La curva se dibuja a partir de una poligonal calculada una sola vez en unidades
 del modelo, con una tolerancia cordal de 10⁻⁴ veces la diagonal de la caja del
@@ -3045,7 +3054,7 @@ Estas son las limitaciones que afectan a lo que hoy puede hacer en la aplicació
 | **[A]** **[!]** Rotar | ídem | `Rotate(S,angle,center)` | nueva curva semántica | conserva las longitudes |
 | **[A]** **[!]** Reflejar | ídem | `Reflect(S,line)` / `Mirror(S,line)` | nueva curva semántica | construya la recta espejo explícitamente; los ejes no son seleccionables |
 | **[A]** **[!]** Homotecia | ídem | `Dilate(S,k,O)` | nueva curva semántica | la longitud se escala por `abs(k)`; en `k=0` colapsa pero conserva su dominio |
-| **[N]** **[!]** Exportar DXF | Archivo → Exportar geometría 2D como DXF (experimental)… | — | archivo DXF (+ manifiesto) | preflight primero; petición completa estricta por defecto |
+| **[N]** **[!]** Exportar DXF | Archivo → Exportar geometría 2D como DXF… | — | archivo DXF (+ manifiesto) | preflight primero; petición completa estricta por defecto |
 | **[A]** Exportar una imagen | Archivo → Vista gráfica como imagen… | `ExportImage` | archivo PNG, PDF, SVG, EMF/EMF+ | área de exportación exacta (sección 4.5) |
 | **[N]** Elegir el área de exportación | Archivo → Definir área de exportación… | — | — | solo de sesión; el contorno nunca se exporta |
 | **[N]** Usar una lámina como área de exportación | Archivo → Usar el marco ISO A seleccionado | — | estado de sesión | el borde del papel, en vivo, nunca el marco; deshacer, rehacer y borrar lo liberan |
@@ -3168,7 +3177,7 @@ y no se traducen nunca.
 | **[G]** `Tab` | recorrer los controles |
 | **[A]** `Ctrl`+`Mayús`+`U` | Vista gráfica como imagen… |
 | **[A]** `Ctrl`+`Mayús`+`C` | copiar la vista gráfica como imagen del área de exportación |
-| **[N]** **[!]** `Ctrl`+`Mayús`+`D` | Exportar geometría 2D como DXF (experimental)… |
+| **[N]** **[!]** `Ctrl`+`Mayús`+`D` | Exportar geometría 2D como DXF… |
 
 ### 16.5 Uso de las herramientas de construcción
 

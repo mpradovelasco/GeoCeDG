@@ -92,7 +92,7 @@ class GeoCeDGProfileTest {
 	@Test
 	void exposesExperimentalDxfOnlyThroughGeoCeDGMenu() {
 		assertThat(GeoCeDGMenuBar.DXF_ACTION_TEXT,
-				equalTo("Export 2D geometry as DXF (experimental)..."));
+				equalTo("Export 2D geometry as DXF..."));
 		assertThat(GeoCeDGMenuBar.PRODUCT_MENU_MNEMONIC, equalTo((int) 'G'));
 		assertThat(GeoCeDGMenuBar.DXF_ACTION_ACCELERATOR.getKeyCode(),
 				equalTo(KeyEvent.VK_D));

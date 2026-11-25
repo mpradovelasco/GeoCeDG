@@ -143,7 +143,7 @@ class G9U1WorkspaceSurfaceTest {
 		assertEquals(List.of("document.new", "document.open", "document.open-recent",
 				"diagnostic.open-classic", "document.save", "document.save-as",
 				"document.print-preview", "export.picture", "export.dxf-2d",
-				"export.pstricks", "export.pgf", "export.asymptote", "import.dxf-reference",
+				"export.pstricks", "export.pgf", "export.asymptote",
 				"export.area.define-rectangle", "export.area.use-export-points",
 				"export.area.show", "export.area.clear", "export.area.iso-a",
 				"export.area.use-iso-a-border", "document.close"),

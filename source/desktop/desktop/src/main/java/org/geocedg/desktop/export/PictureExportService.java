@@ -76,6 +76,7 @@ public final class PictureExportService implements PictureExportRoute {
 	private final App app;
 	private final ExportAreaSession session;
 	private Consumer<BufferedImage> clipboardSink;
+	private ExportPresentationOverlay overlay;
 
 	/**
 	 * @param app application whose 2D views are exported
@@ -94,6 +95,21 @@ public final class PictureExportService implements PictureExportRoute {
 	 */
 	public void setClipboardSink(Consumer<BufferedImage> sink) {
 		clipboardSink = sink;
+	}
+
+	/**
+	 * PRE-G9B-MAINT-A-DXF0-R1: presentation drawn on top of the construction objects by every
+	 * picture route of this service (raster, PDF, SVG, EMF, print, clipboard, preview).
+	 *
+	 * @param overlay overlay, or null for none
+	 */
+	public void setPresentationOverlay(ExportPresentationOverlay overlay) {
+		this.overlay = overlay;
+	}
+
+	/** @return the presentation overlay of the picture routes, or null */
+	public ExportPresentationOverlay getPresentationOverlay() {
+		return overlay;
 	}
 
 	@Override
@@ -279,6 +295,14 @@ public final class PictureExportService implements PictureExportRoute {
 				graphics.draw(drawable, new GGraphics2DD(graphics));
 			}
 			graphics.endGroup("layer" + currentLayer);
+			// PRE-G9B-MAINT-A-DXF0-R1: presentation overlay as its own vector group, written
+			// only when it draws something, so an export without it keeps its bytes
+			viewport.setPresentationOverlay(overlay);
+			if (viewport.hasPresentationOverlayContent()) {
+				graphics.startGroup("presentation");
+				viewport.paintPresentationOverlay(new GGraphics2DD(graphics));
+				graphics.endGroup("presentation");
+			}
 			graphics.endExport();
 			exportGraphics.resetClip();
 		} finally {
@@ -418,6 +442,7 @@ public final class PictureExportService implements PictureExportRoute {
 			double markerScale, boolean transparent, ExportType type) {
 		ExportViewport viewport = ExportViewport.create(view, area, styleScale, markerScale);
 		viewport.setOutputScale(scaleX, scaleY);
+		viewport.setPresentationOverlay(overlay);
 		viewport.exportPaint(graphics, exportScale, transparent, type);
 	}
 

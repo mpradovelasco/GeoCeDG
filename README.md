@@ -254,8 +254,8 @@ de referencia; no sustituye ni redefine la toolbar estable de G2. El flujo de
 ingest y promoción se documenta en
 [la especificación de integración legacy](geocedg/specs/legacy/controlled-integration.md).
 
-La exportación experimental de geometría 2D se invoca desde
-`GeoCeDG > Export 2D geometry as DXF (experimental)...`. Su alcance exacto,
+La exportación de geometría 2D se invoca desde
+`GeoCeDG > Export 2D geometry as DXF...`. Su alcance exacto,
 unidades, entidades soportadas y warnings se documentan en
 [la guía de usuario](docs/user/geocedg_user_guide_es.md#11-exportación-dxf).
 

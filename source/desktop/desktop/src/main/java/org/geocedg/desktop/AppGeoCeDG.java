@@ -53,7 +53,9 @@ import org.geocedg.desktop.export.DrawingScaleHolder;
 import org.geocedg.desktop.export.ExportArea;
 import org.geocedg.desktop.export.ExportAreaSession;
 import org.geocedg.desktop.export.ExportAreaUnavailableException;
+import org.geocedg.desktop.export.ExportPresentationOverlay;
 import org.geocedg.desktop.export.ExportScalePresentation;
+import org.geocedg.desktop.export.ExportViewport;
 import org.geocedg.desktop.export.GeoCeDGGeoGebraToAsymptote;
 import org.geocedg.desktop.export.GeoCeDGGeoGebraToPgf;
 import org.geocedg.desktop.export.GeoCeDGGeoGebraToPstricks;
@@ -62,6 +64,7 @@ import org.geocedg.desktop.export.PictureExportService;
 import org.geocedg.desktop.resources.GeoCeDGBrandingResource;
 import org.geogebra.common.awt.GBufferedImage;
 import org.geogebra.common.awt.GColor;
+import org.geogebra.common.awt.GGraphics2D;
 import org.geogebra.common.awt.MyImage;
 import org.geogebra.common.euclidian.EuclidianController;
 import org.geogebra.common.euclidian.EuclidianView;
@@ -859,6 +862,24 @@ public final class AppGeoCeDG extends App3D implements DrawingScaleHolder {
 		if (pictureExportService == null) {
 			pictureExportService = new PictureExportService(this, getExportAreaSession(),
 					AppGeoCeDG::copyToSystemClipboard);
+			// PRE-G9B-MAINT-A-DXF0-R1: picture outputs of Graphics 1 present the visible
+			// session references as the live view does; Graphics 2 stays without them
+			pictureExportService.setPresentationOverlay(new ExportPresentationOverlay() {
+				@Override
+				public boolean hasContent(EuclidianView source) {
+					return source.getViewID() == VIEW_EUCLIDIAN
+							&& GeoCeDGDxfReferencePainter.hasVisible(dxfReferenceSession);
+				}
+
+				@Override
+				public void paint(EuclidianView source, ExportViewport viewport,
+						GGraphics2D graphics) {
+					if (hasContent(source)) {
+						GeoCeDGDxfReferencePainter.paint(dxfReferenceSession, viewport,
+								graphics, viewport.getPhysicalStyleScale());
+					}
+				}
+			});
 		}
 		return pictureExportService;
 	}

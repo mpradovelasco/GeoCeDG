@@ -35,7 +35,7 @@ final class GeoCeDGMenuBar extends GeoGebraMenuBar {
 	static final KeyStroke DXF_ACTION_ACCELERATOR = KeyStroke.getKeyStroke(
 			KeyEvent.VK_D, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK);
 	static final String DXF_ACTION_TEXT =
-			"Export 2D geometry as DXF (experimental)...";
+			"Export 2D geometry as DXF...";
 	private final AppD app;
 	private GeoCeDGActionRegistry registry;
 	private boolean legacyFallback;

@@ -134,7 +134,8 @@ class PreG9BMaintADxf0DesktopTest {
 			AtomicInteger managerOpenings) {
 		List<String> shown = new ArrayList<>();
 		app.getDxfReferenceImport().setPorts(host -> file, (host, preview) -> transform,
-				(host, title, text) -> shown.add(title + "\n" + text),
+				(host, title, text, details) -> shown.add(title + "\n" + text
+						+ (details == null ? "" : "\n" + details)),
 				host -> managerOpenings.incrementAndGet());
 		return shown;
 	}
@@ -215,7 +216,7 @@ class PreG9BMaintADxf0DesktopTest {
 		GeoCeDGActionRegistry registry = ((GuiManagerGeoCeDG) app.getGuiManager())
 				.getActionRegistry();
 		assertTrue(registry.ids().contains("import.dxf-reference"));
-		assertEquals("Import DXF reference…",
+		assertEquals("Import DXF Reference…",
 				registry.get("import.dxf-reference").getValue(Action.NAME));
 		assertEquals("Importar referencia DXF…", GeoCeDGProfile.getText(
 				"geocedg.action.ImportDxfReference.name", "es"));
@@ -365,13 +366,13 @@ class PreG9BMaintADxf0DesktopTest {
 
 	/**
 	 * DX-6 / SEP-4 (partial): semantic exports (DXF and the three LaTeX dialects) exclude
-	 * references. Q-DXF-3 characterization: every picture route (PNG and clipboard, print,
-	 * PDF, SVG, EMF, host export image, host print paint) paints through exportPaint, which
-	 * never draws the live overlay, so no picture export contains a reference; only the live
-	 * paint shows it.
+	 * references. Q-DXF-3, resolved by the author on 2026-11-25 (A-DXF0-R1): the picture
+	 * routes of the picture-export service (PNG and clipboard, print, PDF, SVG, EMF) present
+	 * visible references of Graphics 1 as the live view does; the host's own exportPaint of the
+	 * live view (export image, print paint, used for the document thumbnail) does not.
 	 */
 	@Test
-	void exportsExcludeReferencesAndOnlyTheLivePaintShowsThem() throws Exception {
+	void semanticExportsExcludeReferencesAndPictureRoutesPresentThem() throws Exception {
 		AppGeoCeDG app = app();
 		EuclidianView view = app.getEuclidianView1();
 		geo(app, "s=Segment((-3,-2),(3,-2))");
@@ -379,9 +380,13 @@ class PreG9BMaintADxf0DesktopTest {
 		Map<String, Object> without = exports(app, view);
 		importFile(app, dxfFile());
 		Map<String, Object> with = exports(app, view);
+		Set<String> pictureRoutes = Set.of("PNG (picture service, also the clipboard image)",
+				"print (picture service)", "PDF", "SVG", "EMF");
 		for (String route : without.keySet()) {
-			assertTrue(same(without.get(route), with.get(route)), route);
-			System.out.println("DXF0-Q-DXF-3 route=" + route + " referencesIncluded=false");
+			boolean included = !same(without.get(route), with.get(route));
+			assertEquals(pictureRoutes.contains(route), included, route);
+			System.out.println("DXF0-R1-Q-DXF-3 route=" + route + " referencesIncluded="
+					+ included);
 		}
 		BufferedImage liveAfter = paint(view);
 		assertEquals(0, referencePixels(liveBefore));
@@ -517,7 +522,7 @@ class PreG9BMaintADxf0DesktopTest {
 		assertEquals("Millimeters", report.file().insUnitsName());
 		// Cancelling the transformation imports nothing.
 		app.getDxfReferenceImport().setPorts(host -> null, (host, preview) -> null,
-				(host, title, text) -> { }, host -> { });
+				(host, title, text, details) -> { }, host -> { });
 		int size = app.getDxfReferenceSession().size();
 		assertTrue(app.getDxfReferenceImport().importFile(dxfFile()) == null);
 		assertEquals(size, app.getDxfReferenceSession().size());

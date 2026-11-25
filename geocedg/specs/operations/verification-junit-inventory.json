@@ -5356,7 +5356,13 @@
         "org.geocedg.desktop.PreG9BR5AGuideNavigationTest",
         "org.geocedg.desktop.PostP1BilingualUserGuideTest",
         "org.geocedg.desktop.PostP1GuideRenderingTest",
-        "org.geocedg.desktop.PreG9BCu9GuideSearchTest"
+        "org.geocedg.desktop.PreG9BCu9GuideSearchTest",
+        "org.geocedg.desktop.PreG9BMaintADxf0R1DesktopTest",
+        "org.geocedg.desktop.PreG9BR6PlusBPictureFidelityTest",
+        "org.geocedg.desktop.PreG9BR6PlusD1ExportRegressionTest",
+        "org.geocedg.desktop.PostE2P1R2PhysicalPdfStyleTest",
+        "org.geocedg.desktop.PostE2P1R2BaseFingerprintTest",
+        "org.geocedg.desktop.PreG9BR6PlusF4DEmbeddedFontPdfTest"
       ],
       "excluded_test_filters": [],
       "effective_arguments": [
@@ -5399,6 +5405,18 @@
         "org.geocedg.desktop.PostP1GuideRenderingTest",
         "--tests",
         "org.geocedg.desktop.PreG9BCu9GuideSearchTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BMaintADxf0R1DesktopTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusBPictureFidelityTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusD1ExportRegressionTest",
+        "--tests",
+        "org.geocedg.desktop.PostE2P1R2PhysicalPdfStyleTest",
+        "--tests",
+        "org.geocedg.desktop.PostE2P1R2BaseFingerprintTest",
+        "--tests",
+        "org.geocedg.desktop.PreG9BR6PlusF4DEmbeddedFontPdfTest",
         "--rerun-tasks",
         "--no-build-cache",
         "--no-daemon",
@@ -5406,13 +5424,13 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 274,
-      "expected_identities_sha256": "d7fee86229be69c20de849b0bc070e78e26af6275e6db86c763b60bbd4ffcf40",
+      "expected_identity_count": 313,
+      "expected_identities_sha256": "cf47d14ad46331a5a8b3f9ddb6c6104d565895bb6e092130cf1c095b13d85a0a",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
-          "commit": "a29309affd0ce5a22e61c4f73c1064980e1fb023",
-          "tree": "5e4623409dc0d6f096bcccab6a0e913478575f0a"
+          "commit": "902f8d4f9d8b686aa6da09b9c73fee6b72086560",
+          "tree": "1a68b78673d423282e8be20d9a39d01bedc11687"
         }
       ]
     },

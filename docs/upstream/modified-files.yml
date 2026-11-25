@@ -5372,7 +5372,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/ExportViewport.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-B offscreen export viewport: own controller and view id, never attached to the kernel, exact canvas and clip. PRE-G9B-R6-plus-C: the printing scale follows the application physical export scale. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md. POST-E2-P1-R2: create(view, area, styleScale) sets the physical presentation scale before the drawables are created and reports it through getPhysicalStyleScale (1 by default). Authority: geocedg/specs/export/physical-pdf-style-sizes.md (PROPOSED). POST-E2-P1-R2 smoke follow-up A: create(view, area, styleScale, markerScale) also sets the point-marker scale.",
+      "purpose": "PRE-G9B-R6-plus-B offscreen export viewport: own controller and view id, never attached to the kernel, exact canvas and clip. PRE-G9B-R6-plus-C: the printing scale follows the application physical export scale. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md. POST-E2-P1-R2: create(view, area, styleScale) sets the physical presentation scale before the drawables are created and reports it through getPhysicalStyleScale (1 by default). Authority: geocedg/specs/export/physical-pdf-style-sizes.md (PROPOSED). POST-E2-P1-R2 smoke follow-up A: create(view, area, styleScale, markerScale) also sets the point-marker scale. PRE-G9B-MAINT-A-DXF0-R1: an optional presentation overlay drawn after the construction objects inside the export clip.",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
@@ -5390,7 +5390,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/PictureExportService.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6-plus-B picture-export service: raster grid, exact PDF page, exact SVG viewBox, EMF device bounds, preview, print and clipboard from one ExportArea. PRE-G9B-R6-plus-C: physical sizing from the drawing scale and the construction unit, the opt-in exact EMF frame, PDF page limits and physical SVG size. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md. POST-E2-P1-R2: a physical PDF is painted with the style scale 0.8 pt / pdfPointsPerPixel, so one style pixel is 0.8 pt and a stroke of thickness t is 0.4 t pt; every other route keeps 1. Authority: geocedg/specs/export/physical-pdf-style-sizes.md (PROPOSED). POST-E2-P1-R2 smoke follow-up A: a physical PDF also gets the marker scale of 0.5 pt per marker style pixel (PGF marker geometry).",
+      "purpose": "PRE-G9B-R6-plus-B picture-export service: raster grid, exact PDF page, exact SVG viewBox, EMF device bounds, preview, print and clipboard from one ExportArea. PRE-G9B-R6-plus-C: physical sizing from the drawing scale and the construction unit, the opt-in exact EMF frame, PDF page limits and physical SVG size. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md. POST-E2-P1-R2: a physical PDF is painted with the style scale 0.8 pt / pdfPointsPerPixel, so one style pixel is 0.8 pt and a stroke of thickness t is 0.4 t pt; every other route keeps 1. Authority: geocedg/specs/export/physical-pdf-style-sizes.md (PROPOSED). POST-E2-P1-R2 smoke follow-up A: a physical PDF also gets the marker scale of 0.5 pt per marker style pixel (PGF marker geometry). PRE-G9B-MAINT-A-DXF0-R1: every picture route paints the optional presentation overlay (SVG in its own group).",
       "authority": "docs/validation/pre_g9b_r6_plus_b_candidate_report.md"
     },
     {
@@ -7348,6 +7348,24 @@
       "change": "added",
       "purpose": "PRE-G9B-MAINT-A2 (option A): inventory of the one-sided extension and of every differential source; non-implementing sources keep the inherited path; the family and its similarity image give the derivative of the span that ends.",
       "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/GeoCeDGDxfReferencePainter.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0-R1 single presentation of imported DXF references from the model-unit tessellation, shared by the live Graphics 1 paint and the picture-export overlay; never construction objects.",
+      "authority": "geocedg/specs/import/dxf-spline-reference.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/export/ExportPresentationOverlay.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0-R1 non-semantic presentation overlay drawn by the picture-export service after the construction objects of an export viewport.",
+      "authority": "geocedg/specs/import/dxf-spline-reference.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BMaintADxf0R1DesktopTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A-DXF0-R1 Desktop tests: File > Insert placement and names, maturity and DXF export names, reference presentation in the Graphics 1 picture routes, zoom/output-scale/font independence, Graphics 2 and semantic exports without references, compact report, list and inspector.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a-dxf0-r1-focal-corrections.prompt.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/CircleDriverRootStructure2D.java",

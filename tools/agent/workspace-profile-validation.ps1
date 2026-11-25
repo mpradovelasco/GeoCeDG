@@ -154,10 +154,13 @@ function Assert-GeoCeDGLiveWorkspaceProfile {
         throw "Control layout must retain its experimental, feature-controlled action."
     }
     $dxfReferenceAction = $profile.actions | Where-Object id -CEQ "import.dxf-reference"
-    if ($dxfReferenceAction.maturity -cne "experimental" -or
+    # PRE-G9B-MAINT-A-DXF0-R1 (author decision of 2026-11-25): stable, without a feature flag,
+    # bounded to the implemented contract (session references R-a).
+    if ($dxfReferenceAction.maturity -cne "stable" -or
+        @($dxfReferenceAction.feature_requirements).Count -ne 0 -or
         $dxfReferenceAction.target.symbol -cne "geocedg.import.dxf-reference" -or
         $dxfReferenceAction.effect_profile_id -cne "read-only") {
-        throw "The DXF reference import must stay a read-only experimental action."
+        throw "The DXF reference import must stay a read-only stable action without a feature flag."
     }
     if ($profile.product_policies.continuity.value -ne $false -or
         $profile.product_policies.continuity.locked -ne $true -or
