@@ -1,0 +1,24 @@
+GeoGebra 5.4.928.0 28 July 2026 Java 25.0.4-64bit
+
+PROBE loaded=false
+PROBE keptStillPresent=true
+PROBE objectCount=1
+PROBE typedMessages=[]
+PROBE log ERROR unknown tag in <command>: geocedgBSpline
+PROBE log WARN command not found / CAS command called:BSpline
+PROBE log DEBUG <- org.geogebra.common.kernel.commands.CommandNotFoundError: Unknown command : BSpline
+PROBE log DEBUG <- org.geogebra.common.main.MyError: Command LocusLength:
+Illegal argument: Number b
+
+Syntax:
+LocusLength( <Locus V2> )
+LocusLength( <Locus V2>, <Start Semantic Point>, <End Semantic Point> )
+LocusLength( <Locus V2>, <Start Semantic Point>, <End Semantic Point>, <Direction>, <Boundary Policy>, <Same-position Policy> )
+PROBE log DEBUG <- org.geogebra.common.main.MyError: Command LocusLength:
+Illegal argument: Number ¥¦§¨©ª_{1}
+
+Syntax:
+LocusLength( <Locus V2> )
+LocusLength( <Locus V2>, <Start Semantic Point>, <End Semantic Point> )
+LocusLength( <Locus V2>, <Start Semantic Point>, <End Semantic Point>, <Direction>, <Boundary Policy>, <Same-position Policy> )
+PROBE log DEBUG <- org.geocedg.common.kernel.spatial.identity.SpatialIdentityException: MALFORMED_RECORD: Construction identity base contract disagrees with the attached geo [subject=geo:1278944d7acbcd831f87f26bb77dbc74]

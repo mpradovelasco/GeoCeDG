@@ -1,0 +1,16 @@
+// PRE-G9B-MAINT-A2 BS-22: adds the fixture-writer probe to the Desktop test source set.
+// From the repository root (README.md of this folder gives the full command):
+//   gradlew :desktop:desktop:test --init-script <this file>
+//     --tests org.geocedg.desktop.A2FixtureWriterProbeTest
+//     -Da2.probeSource=<absolute path of fixture-writer-probe> -Da2.fixtureOut=<output .cedg>
+def target = java.nio.file.Paths.get('source', 'desktop', 'desktop')
+allprojects { p ->
+    if (p.projectDir.toPath().endsWith(target)) {
+        p.afterEvaluate {
+            p.sourceSets.test.java.srcDir(System.getProperty('a2.probeSource'))
+            p.tasks.withType(Test).configureEach {
+                systemProperty 'a2.fixtureOut', System.getProperty('a2.fixtureOut')
+            }
+        }
+    }
+}

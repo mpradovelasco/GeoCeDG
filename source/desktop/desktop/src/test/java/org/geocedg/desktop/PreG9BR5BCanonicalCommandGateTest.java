@@ -67,9 +67,10 @@ class PreG9BR5BCanonicalCommandGateTest {
 			// complete inventory: 567 stored names, 516 with E(k), 489 displayed (3D included;
 			// PRE-G9B-R6-plus-E2 adds AlignedDimension and LinearDimension, PRE-G9B-R6-plus-E3
 			// adds IsoABorder)
-			assertEquals(567, Commands.values().length);
-			assertEquals(516, gate.getHeads().size(), language.toString());
-			assertEquals(489, gate.getDisplayed().size(), language.toString());
+			// PRE-G9B-MAINT-A2 adds the GeoCeDG command BSpline.
+			assertEquals(568, Commands.values().length);
+			assertEquals(517, gate.getHeads().size(), language.toString());
+			assertEquals(490, gate.getDisplayed().size(), language.toString());
 			for (String name : List.of("LocusV2", "LocusLength", "SplineV2", "Length",
 					"OrthogonalLine", "Mirror", "LaTeX", "Defined", "PolyLine")) {
 				assertTrue(gate.getDisplayed().contains(name), name);

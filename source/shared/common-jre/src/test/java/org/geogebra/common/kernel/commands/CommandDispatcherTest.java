@@ -51,6 +51,7 @@ class CommandDispatcherTest extends BaseAppTestSetup {
 					new Command(getKernel(), cmd.name(), false)) == null).toList();
 		// Classic also hides the registered, default-off GeoCeDG commands.
 		assertEquals(List.of(Commands.LocusV2, Commands.LocusLength, Commands.SplineV2,
+				Commands.BSpline,
 				ImplicitSurface, Polyhedron, Evaluate, SolveQuartic), undef);
 	}
 

@@ -30,6 +30,8 @@ import java.util.TreeMap;
 import org.geocedg.common.document.controls.ControlLayoutException;
 import org.geocedg.common.document.controls.ControlLayoutException.Code;
 import org.geocedg.common.document.controls.ControlLayoutXml;
+import org.geocedg.common.kernel.bspline.BSplineContractXml;
+import org.geocedg.common.kernel.bspline.BSplinePersistedContractTarget;
 import org.geocedg.common.kernel.layers.HiddenLayerMetadataException;
 import org.geocedg.common.kernel.layers.HiddenLayerSet;
 import org.geocedg.common.kernel.layers.HiddenLayersXml;
@@ -149,6 +151,8 @@ public class MyXMLHandler implements DocHandler {
 	private static final int MODE_CONST_COMMAND = 302;
 	private static final int MODE_CONST_SPATIAL_IDENTITY = 303;
 	private static final int MODE_CONST_UNITS = 304;
+	/** PRE-G9B-MAINT-A2: inside the family element of a native BSpline command. */
+	private static final int MODE_CONST_BSPLINE_CONTRACT = 305;
 
 	private static final int MODE_GUI = 400;
 	private static final int MODE_GUI_PERSPECTIVES = 401; // <perspectives>
@@ -198,6 +202,8 @@ public class MyXMLHandler implements DocHandler {
 
 	private GeoCasCell geoCasCell;
 	private Command cmd;
+	/** PRE-G9B-MAINT-A2: family-contract reader of the current native BSpline command. */
+	private BSplineContractXml.CommandReader bsplineContract;
 	private Macro macro;
 	/** application */
 	@Weak
@@ -307,6 +313,7 @@ public class MyXMLHandler implements DocHandler {
 
 		mode = MODE_INVALID;
 		constMode = MODE_CONSTRUCTION;
+		bsplineContract = null;
 		hasGuiElement = false;
 		compLayout = new CompatibilityLayout();
 		initKernelVars();
@@ -358,6 +365,10 @@ public class MyXMLHandler implements DocHandler {
 
 	@Override
 	public void recordDuplicateAttribute(String tag) {
+		if (bsplineContract != null && (constMode == MODE_CONST_COMMAND
+				|| constMode == MODE_CONST_BSPLINE_CONTRACT)) {
+			bsplineContract.duplicateAttribute(tag);
+		}
 		duplicateLayoutAttribute = true;
 	}
 
@@ -370,6 +381,9 @@ public class MyXMLHandler implements DocHandler {
 		if (constMode == MODE_CONST_UNITS && !str.trim().isEmpty()) {
 			throw new UnitMetadataException(UnitMetadataException.Code.MALFORMED_ELEMENT,
 					"geocedgUnits cannot contain text");
+		}
+		if (constMode == MODE_CONST_BSPLINE_CONTRACT && bsplineContract != null) {
+			bsplineContract.text(str);
 		}
 		if (mode == MODE_GEOCEDG_HIDDEN_LAYERS && !str.trim().isEmpty()) {
 			throw new HiddenLayerMetadataException(
@@ -3406,6 +3420,14 @@ public class MyXMLHandler implements DocHandler {
 				cons.setOutputGeo(null);
 				constMode = MODE_CONST_COMMAND;
 				cmd = getCommand(attrs);
+				// PRE-G9B-MAINT-A2 (bspline-2d.md section 8): only a command that resolves to
+				// the native BSpline carries the family contract; a macro of that name keeps
+				// the previous behaviour, and no other command is inspected.
+				String commandName = attrs.get("name");
+				bsplineContract = BSplineContractXml.COMMAND.equals(commandName)
+						? BSplineContractXml.CommandReader.begin(commandName,
+								kernel.getMacro(commandName) != null)
+						: null;
 			} else if ("expression".equals(eName)) {
 				startExpressionElement(attrs);
 			} else if ("cascell".equals(eName)) {
@@ -3446,6 +3468,9 @@ public class MyXMLHandler implements DocHandler {
 
 		case MODE_CONST_COMMAND:
 			startCommandElement(eName, attrs);
+			break;
+		case MODE_CONST_BSPLINE_CONTRACT:
+			bsplineContract.startNested(eName, attrs);
 			break;
 		case MODE_CONST_SPATIAL_IDENTITY:
 			if (spatialIdentityRecordDepth != 0) {
@@ -3520,6 +3545,12 @@ public class MyXMLHandler implements DocHandler {
 				cons.setOutputGeo(null);
 				casMap = null;
 				constMode = MODE_CONSTRUCTION;
+				bsplineContract = null;
+			}
+			break;
+		case MODE_CONST_BSPLINE_CONTRACT:
+			if (bsplineContract.endNested(eName)) {
+				constMode = MODE_CONST_COMMAND;
 			}
 			break;
 		case MODE_CONST_UNITS:
@@ -3818,11 +3849,28 @@ public class MyXMLHandler implements DocHandler {
 	private void startCommandElement(String eName,
 			Map<String, String> attrs) {
 		boolean ok = true;
+		if (bsplineContract != null) {
+			// PRE-G9B-MAINT-A2: the family element is read and every contract check throws
+			// here, outside the command-processing error collection of handleCmdOutput.
+			if (BSplineContractXml.ELEMENT.equals(eName)) {
+				bsplineContract.startFamilyElement(attrs);
+				constMode = MODE_CONST_BSPLINE_CONTRACT;
+				return;
+			}
+			bsplineContract.beforeCommandChild(eName,
+					cmd == null ? 0 : cmd.getArgumentNumber());
+		}
 
 		if ("input".equals(eName)) {
 			ok = handleCmdInput(attrs);
 		} else if ("output".equals(eName)) {
+			if (bsplineContract != null) {
+				cmdOutput = null;
+			}
 			ok = handleCmdOutput(attrs);
+			if (bsplineContract != null) {
+				restoreBSplineContract();
+			}
 		} else if ("outputSizes".equals(eName)) {
 			ok = handleCmdOutputSizes(attrs);
 		} else if ("casMap".equals(eName)) {
@@ -3836,6 +3884,15 @@ public class MyXMLHandler implements DocHandler {
 
 		if (!ok) {
 			Log.error("error in <command>: " + eName);
+		}
+	}
+
+	private void restoreBSplineContract() {
+		if (cmdOutput != null && cmdOutput.length > 0 && cmdOutput[0] != null
+				&& cmdOutput[0].getParentAlgorithm()
+						instanceof BSplinePersistedContractTarget) {
+			((BSplinePersistedContractTarget) cmdOutput[0].getParentAlgorithm())
+					.restorePersistedContract(bsplineContract.getContract());
 		}
 	}
 

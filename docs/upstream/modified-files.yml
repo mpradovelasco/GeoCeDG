@@ -90,7 +90,7 @@
     {
       "path": "source/desktop/desktop/src/main/java/org/geocedg/desktop/AppGeoCeDG.java",
       "change": "added",
-      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: focus the SplineV2 Input Help entry by command identity, the authority of the canonical tree. PRE-G9B-R6-plus-A-1: own the session layer workspace, answer the layer seams, attach the status bar to the free SOUTH slot of the application panel, and initialize the session after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: own the session ExportArea and the picture-export service, answer the export seams (frame size, animated export, upstream entries, save preview, picture route), route the graphics clipboard through the service, consume Ctrl+Shift+W and Ctrl+Shift+M, run only the GeoCeDG DXF action for Ctrl+Shift+D, and reset the area after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: own the Document Units action, dialog and status refresh, apply the new-document defaults to blank documents only and inside the undo baseline, track clipboard provenance, show the paste notice and localize unit load errors. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: the document hidden-layer hooks, the commit of a parsed set in document transitions only (native Open, loadXML(String), clearing setXML, startup), the save relevance of a non-empty set and the localized fail-closed diagnostics. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 2: Base64 and non-native file or URL replacements commit the document hidden-layer set through the same commit logic. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 3 (OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT, pre-existing): a completed File > New, after the host preference reload and the new-document defaults, is the saved baseline. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-C: own the per-window drawing scale and reset it at the document-replacement boundaries E1-E6 only, the export-scale presentation, the physical export scale, the export-area seams of the LaTeX exporters and of the DXF export context, and the GeoCeDG LaTeX exporters. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md. PRE-G9B-R6-plus-E2 smoke follow-up: provide the Dimension presentation preferences panel; new-document defaults include the suffix policy. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md. POST-E2-P1-R2 smoke follow-up C: the status bar registers one drawing-scale listener for its lifetime. Authority: docs/validation/post_e2_p1_r2_smoke_followup_report.md. PRE-G9B-R6-plus-E3: own the ISO A sheet prompt and tool, the explicit activation of a sheet as the export area, ISO_A_SELECTION, the identity validation of the link, the physical-size and scale-label coherence, Use sheet scale and the transient sheet status. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-R6-plus-F1: owner of the global orientation-cue user preference (default OFF), its listeners and the propagation of a change to every GeoCeDG window; presentation only, no document, saved-state or undo change. Authority: docs/validation/pre_g9b_r6_plus_f1_candidate_report.md. PRE-G9B-R6-plus-F2-R1: resolve the NORMAL / MEMORY_ENABLED behaviour of Parallel and Perpendicular in setMode(int, ModeSetter) before the inherited activation (same-mode behaviour change cancels the partial gesture), classify an unmarked single-argument setMode(int) (toolbar button, menus, registry, user tools, scripting GgbAPI.setMode) as a genuine NORMAL request (Option O1; the original GgbAPID is kept), and keep the active tool and behaviour across the inherited language change; refresh the tool-memory status segment. Authority: docs/validation/pre_g9b_r6_plus_f2_r1_candidate_report.md. PRE-G9B-R6-plus-F3: stateless getUndoManager factory installing GeoCeDGUndoManager; hidden insertion helpers that never publish to the recent-file list and are released after every outcome; Insert File and Apply Styles entry points; serious-failure isolation guards (no save, save prompt, global keys or picture copy of an uncertified drawing) and the prompt-free Close exit. PRE-G9B-R6-plus-F3-R1: a released insertion helper unregisters every hidden application window it registered (as the inherited insertFile disposes its helper frame), drops its source file and restores the previously active window, so Open Recent, the title and the application exit are no longer affected. PRE-G9B-R6-plus-G-R1: every committed document transition (native Open E2, non-native replacement E3, API setXML E5, and the File > Open, file-drop and loadXML(String) routes) clears the previous document's paste notice (DQ-D1-9) and an approved Open route - File > Open of .html/.htm, API openFile of native documents, URL drops and the existing loadFile routes - resets the export-area session exactly once after commitment (AQ-X2); tool replacement, Insert File, Apply Styles and the undecided API transports keep their export area. PRE-G9B-CU3 increment E1: offer the explicit adoption of constructive-authority/v1 with its impact report when a form of CU3 is refused in a document governed by the legacy policy; only an accepted offer adopts it, inside the explicit input transaction that offered it. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md. M08-S-R2 Desktop Events: embedded confirmation/policy above native AlgebraInputD, stable L across same-mode synchronization and policy edits, local Swing keyboard ownership; no kernel/codec change. Authority: docs/architecture/pre_g9b_cu7_i1_r2_desktop_events_candidate.md. I0: refresh the displayed kernel angle mode after a committed document replacement and completed New. Authority: docs/architecture/post_cu4_angle_preferences_observation.md. POST-CU4 I3–I5: Activate expert review explicitly and maintain its session Save As requirement. Authority: geocedg/specs/ui/expert-document-insertion-candidate.md. POST-CU4 closeout: use the profile default for expert insertion and retain the explicit diagnostic override. PRE-G9B-CU8-I: Route the feature-gated layout action and invalidate its active gesture on host mode or document transitions. Authority: geocedg/specs/ui/control-layout-v1.md. PRE-G9B-CU9: Let an active guide search consume Escape before closing the guide.",
+      "purpose": "Instantiate the GeoCeDG profile and enforce the .cedg-only native save, product-window and parser-preflight policy while retaining the Classic internal app code and feature gates. G9U1: Apply approved Construction workspace, language and Continuity policy without changing Classic or geometry. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. G9U1 review round 1: suppress the inherited startup perspective popup and separate document-local macro preference snapshots from explicit application-library installation; Classic and document macro serialization remain unchanged. G9U1 review round 3: resolve the tracked GeoCeDG frame icon and startup resource without upstream branding fallback. PRE-G9B-S2: keep default GUI typography anchored to the GeoCeDG platform default when construction-object font size changes, while honoring an explicit GUI font preference. PRE-G9B-S4: own five independent application presentation sizes, live refresh and toolbar/font decoupling without construction or document semantics. PRE-G9B-S4-R1: add the independent General UI owner, revised fresh defaults and toolbar-specific resource refresh while preserving all specific owners. PRE-G9B-R4 corrective: when the user shows Input Help while a SplineV2 tool is active, select the existing localized SplineV2 syntax and the corrected Algebra Input tooltip; tool activation never shows Input Help. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: focus the SplineV2 Input Help entry by command identity, the authority of the canonical tree. PRE-G9B-R6-plus-A-1: own the session layer workspace, answer the layer seams, attach the status bar to the free SOUTH slot of the application panel, and initialize the session after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_a1_candidate_report.md. PRE-G9B-R6-plus-B: own the session ExportArea and the picture-export service, answer the export seams (frame size, animated export, upstream entries, save preview, picture route), route the graphics clipboard through the service, consume Ctrl+Shift+W and Ctrl+Shift+M, run only the GeoCeDG DXF action for Ctrl+Shift+D, and reset the area after New and Open without writing the document. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: own the Document Units action, dialog and status refresh, apply the new-document defaults to blank documents only and inside the undo baseline, track clipboard provenance, show the paste notice and localize unit load errors. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: the document hidden-layer hooks, the commit of a parsed set in document transitions only (native Open, loadXML(String), clearing setXML, startup), the save relevance of a non-empty set and the localized fail-closed diagnostics. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 2: Base64 and non-native file or URL replacements commit the document hidden-layer set through the same commit logic. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-A-2 revision 3 (OBS-R6PLUS-NEW-DOCUMENT-PREFERENCE-NUMERIC-SAVE-PROMPT, pre-existing): a completed File > New, after the host preference reload and the new-document defaults, is the saved baseline. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-R6-plus-C: own the per-window drawing scale and reset it at the document-replacement boundaries E1-E6 only, the export-scale presentation, the physical export scale, the export-area seams of the LaTeX exporters and of the DXF export context, and the GeoCeDG LaTeX exporters. Authority: docs/validation/pre_g9b_r6_plus_c_candidate_report.md. PRE-G9B-R6-plus-E2 smoke follow-up: provide the Dimension presentation preferences panel; new-document defaults include the suffix policy. Authority: docs/validation/pre_g9b_r6_plus_e2_smoke_followup_report.md. POST-E2-P1-R2 smoke follow-up C: the status bar registers one drawing-scale listener for its lifetime. Authority: docs/validation/post_e2_p1_r2_smoke_followup_report.md. PRE-G9B-R6-plus-E3: own the ISO A sheet prompt and tool, the explicit activation of a sheet as the export area, ISO_A_SELECTION, the identity validation of the link, the physical-size and scale-label coherence, Use sheet scale and the transient sheet status. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-R6-plus-F1: owner of the global orientation-cue user preference (default OFF), its listeners and the propagation of a change to every GeoCeDG window; presentation only, no document, saved-state or undo change. Authority: docs/validation/pre_g9b_r6_plus_f1_candidate_report.md. PRE-G9B-R6-plus-F2-R1: resolve the NORMAL / MEMORY_ENABLED behaviour of Parallel and Perpendicular in setMode(int, ModeSetter) before the inherited activation (same-mode behaviour change cancels the partial gesture), classify an unmarked single-argument setMode(int) (toolbar button, menus, registry, user tools, scripting GgbAPI.setMode) as a genuine NORMAL request (Option O1; the original GgbAPID is kept), and keep the active tool and behaviour across the inherited language change; refresh the tool-memory status segment. Authority: docs/validation/pre_g9b_r6_plus_f2_r1_candidate_report.md. PRE-G9B-R6-plus-F3: stateless getUndoManager factory installing GeoCeDGUndoManager; hidden insertion helpers that never publish to the recent-file list and are released after every outcome; Insert File and Apply Styles entry points; serious-failure isolation guards (no save, save prompt, global keys or picture copy of an uncertified drawing) and the prompt-free Close exit. PRE-G9B-R6-plus-F3-R1: a released insertion helper unregisters every hidden application window it registered (as the inherited insertFile disposes its helper frame), drops its source file and restores the previously active window, so Open Recent, the title and the application exit are no longer affected. PRE-G9B-R6-plus-G-R1: every committed document transition (native Open E2, non-native replacement E3, API setXML E5, and the File > Open, file-drop and loadXML(String) routes) clears the previous document's paste notice (DQ-D1-9) and an approved Open route - File > Open of .html/.htm, API openFile of native documents, URL drops and the existing loadFile routes - resets the export-area session exactly once after commitment (AQ-X2); tool replacement, Insert File, Apply Styles and the undecided API transports keep their export area. PRE-G9B-CU3 increment E1: offer the explicit adoption of constructive-authority/v1 with its impact report when a form of CU3 is refused in a document governed by the legacy policy; only an accepted offer adopts it, inside the explicit input transaction that offered it. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md. M08-S-R2 Desktop Events: embedded confirmation/policy above native AlgebraInputD, stable L across same-mode synchronization and policy edits, local Swing keyboard ownership; no kernel/codec change. Authority: docs/architecture/pre_g9b_cu7_i1_r2_desktop_events_candidate.md. I0: refresh the displayed kernel angle mode after a committed document replacement and completed New. Authority: docs/architecture/post_cu4_angle_preferences_observation.md. POST-CU4 I3–I5: Activate expert review explicitly and maintain its session Save As requirement. Authority: geocedg/specs/ui/expert-document-insertion-candidate.md. POST-CU4 closeout: use the profile default for expert insertion and retain the explicit diagnostic override. PRE-G9B-CU8-I: Route the feature-gated layout action and invalidate its active gesture on host mode or document transitions. Authority: geocedg/specs/ui/control-layout-v1.md. PRE-G9B-CU9: Let an active guide search consume Escape before closing the guide. PRE-G9B-MAINT-A2: typed load-failure message for a BSpline family-contract rejection.",
       "authority": "geocedg/specs/ui/native-document-identity.md"
     },
     {
@@ -366,7 +366,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/geos/GeoLocusV2.java",
       "change": "added",
-      "purpose": "Retain the public persistent semantic locus, ordinary curve style and presentation-only repaint boundary. R1 additionally honors the existing exact G9A serialization overlay for a staged replacement element without attaching live identity, broadening redefine compatibility, or adopting Path.",
+      "purpose": "Retain the public persistent semantic locus, ordinary curve style and presentation-only repaint boundary. R1 additionally honors the existing exact G9A serialization overlay for a staged replacement element without attaching live identity, broadening redefine compatibility, or adopting Path. PRE-G9B-MAINT-A2: type string B-spline for BSpline outputs.",
       "authority": "docs/architecture/g9s1_r1_structural_spline_continuity.md"
     },
     {
@@ -2004,13 +2004,13 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLHandler.java",
       "change": "modified",
-      "purpose": "PRE-G9B-CU6: Validate and commit explicit numeric layers for the actual owner in a preservation load. Authority: geocedg/specs/ui/native-document-identity.md. Parse the versioned flat GeoCeDG spatial identity section and carry the explicit native, clipboard, macro, redefine, or rollback load purpose. PRE-G9B-R6-plus-D1: parse the versioned geocedgUnits construction element, apply it only for clearing document, undo and rollback loads, and fail closed on the five recognized defects; paste, evalXML, macro and preferences contexts ignore it. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: read the document-level geocedgHiddenLayers element in document parses only, fail closed on the recognized defects and report the set to the application after a completed parse; rollback restores validate without reporting and non-document parses log and ignore the element. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. CU7 R3 F7: opt into focal empty-leaf and duplicate-attribute rules for the new conic state and private rollback binding, without changing unrelated XML consumers. Candidate authority: docs/architecture/pre_g9b_cu7_general_point_interaction_r3_candidate.md. PRE-G9B-CU4: report whether a document parse supplied an explicit labeling policy. Authority: docs/validation/pre_g9b_cu4_author_design_approval_record.md. PRE-G9B-CU8-I: Stage layout metadata, claim owners by element instance and publish only a validated complete registry. Authority: geocedg/specs/ui/control-layout-v1.md. PRE-G9B-CU8-I-R1: Read and gate the optional CU8 appearance attribute with the layout.",
+      "purpose": "PRE-G9B-CU6: Validate and commit explicit numeric layers for the actual owner in a preservation load. Authority: geocedg/specs/ui/native-document-identity.md. Parse the versioned flat GeoCeDG spatial identity section and carry the explicit native, clipboard, macro, redefine, or rollback load purpose. PRE-G9B-R6-plus-D1: parse the versioned geocedgUnits construction element, apply it only for clearing document, undo and rollback loads, and fail closed on the five recognized defects; paste, evalXML, macro and preferences contexts ignore it. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: read the document-level geocedgHiddenLayers element in document parses only, fail closed on the recognized defects and report the set to the application after a completed parse; rollback restores validate without reporting and non-document parses log and ignore the element. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. CU7 R3 F7: opt into focal empty-leaf and duplicate-attribute rules for the new conic state and private rollback binding, without changing unrelated XML consumers. Candidate authority: docs/architecture/pre_g9b_cu7_general_point_interaction_r3_candidate.md. PRE-G9B-CU4: report whether a document parse supplied an explicit labeling policy. Authority: docs/validation/pre_g9b_cu4_author_design_approval_record.md. PRE-G9B-CU8-I: Stage layout metadata, claim owners by element instance and publish only a validated complete registry. Authority: geocedg/specs/ui/control-layout-v1.md. PRE-G9B-CU8-I-R1: Read and gate the optional CU8 appearance attribute with the layout. PRE-G9B-MAINT-A2: read the geocedgBSpline family element of a native BSpline command (not of a macro named BSpline) and throw its typed fail-closed exception outside the command-error collection.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/io/MyXMLio.java",
       "change": "modified",
-      "purpose": "PRE-G9B-CU6: Bind numeric layer parsing and rollback to the existing document parse lifecycle. Authority: geocedg/specs/ui/native-document-identity.md. Write the deterministic identity section and atomically restore the complete pre-parse construction after rejected identity-bearing native XML, with non-reentrant and macro-kernel rollback guards. PRE-G9B-R6-plus-D1: classify the unit load at parse start and treat a unit-metadata rejection like a rejected spatial parse, restoring the complete pre-parse construction. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: write the hidden-layer element into the full document only, classify and report the hidden-layer load, and restore the complete pre-parse construction after a hidden-layer rejection. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-CU8-I: Propagate layout context across native load, Undo and complete reconstruction while protecting generic XML boundaries. Authority: geocedg/specs/ui/control-layout-v1.md.",
+      "purpose": "PRE-G9B-CU6: Bind numeric layer parsing and rollback to the existing document parse lifecycle. Authority: geocedg/specs/ui/native-document-identity.md. Write the deterministic identity section and atomically restore the complete pre-parse construction after rejected identity-bearing native XML, with non-reentrant and macro-kernel rollback guards. PRE-G9B-R6-plus-D1: classify the unit load at parse start and treat a unit-metadata rejection like a rejected spatial parse, restoring the complete pre-parse construction. Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-A-2: write the hidden-layer element into the full document only, classify and report the hidden-layer load, and restore the complete pre-parse construction after a hidden-layer rejection. Authority: docs/validation/pre_g9b_r6_plus_a2_candidate_report.md. PRE-G9B-CU8-I: Propagate layout context across native load, Undo and complete reconstruction while protecting generic XML boundaries. Authority: geocedg/specs/ui/control-layout-v1.md. PRE-G9B-MAINT-A2: rethrow a BSpline family-contract rejection on every route and restore the entry construction.",
       "authority": "geocedg/specs/spatial/g9-spatial-projection-semantics.md"
     },
     {
@@ -2634,19 +2634,19 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/Commands.java",
       "change": "modified",
-      "purpose": "Register separate experimental LocusV2 and LocusLength command identities without redefining legacy Locus. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: register IsoABorder in TABLE_GEOMETRY; every existing command is unchanged. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): register the experimental SplineV2 command identity in TABLE_FUNCTION; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
+      "purpose": "Register separate experimental LocusV2 and LocusLength command identities without redefining legacy Locus. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: register IsoABorder in TABLE_GEOMETRY; every existing command is unchanged. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): register the experimental SplineV2 command identity in TABLE_FUNCTION; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14). PRE-G9B-MAINT-A2: register the BSpline command of the family bspline-2d/v1 after SplineV2.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/BasicCommandProcessorFactory.java",
       "change": "modified",
-      "purpose": "Dispatch the experimental public Locus V2 creation and rich metric processors through the existing command architecture. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: create the IsoABorder processor. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): create the experimental SplineV2 processor; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
+      "purpose": "Dispatch the experimental public Locus V2 creation and rich metric processors through the existing command architecture. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: create the IsoABorder processor. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): create the experimental SplineV2 processor; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14). PRE-G9B-MAINT-A2: create the BSpline command processor.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CommandDispatcher.java",
       "change": "modified",
-      "purpose": "Hide default-off Locus V2 commands from discovery while retaining processor-level typed failures and native file reconstruction. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: dispatch IsoABorder to the basic processor factory. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): dispatch SplineV2 to the basic processor factory; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
+      "purpose": "Hide default-off Locus V2 commands from discovery while retaining processor-level typed failures and native file reconstruction. PRE-G9B-R6-plus-E2: register AlignedDimension and LinearDimension in TABLE_GEOMETRY; Dimension and every existing command are unchanged. PRE-G9B-R6-plus-E3: dispatch IsoABorder to the basic processor factory. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): dispatch SplineV2 to the basic processor factory; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14). PRE-G9B-MAINT-A2: route BSpline through the basic command group.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2688,7 +2688,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/main/feature/RuntimeFeatureService.java",
       "change": "added",
-      "purpose": "Separate default-off interactive Locus V2 creation from native file-load preservation and expose the independent default-off G9X1 extended-DXF runtime gate.",
+      "purpose": "Separate default-off interactive Locus V2 creation from native file-load preservation and expose the independent default-off G9X1 extended-DXF runtime gate. PRE-G9B-MAINT-A2: BSpline is a dedicated Locus V2 command (feature gate, command filter, user-tool body refusal).",
       "authority": "geocedg/specs/export/dxf-curve-fidelity-and-approximation.md"
     },
     {
@@ -2718,37 +2718,37 @@
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default command names and overload help for the experimental Locus V2 surface. G9U1: Align owned SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: AlignedDimension and LinearDimension names and syntax. PRE-G9B-R6-plus-E3: the IsoABorder name and syntax. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): the default SplineV2 command name and syntax; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
+      "purpose": "Add GeoCeDG-authored default command names and overload help for the experimental Locus V2 surface. G9U1: Align owned SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: AlignedDimension and LinearDimension names and syntax. PRE-G9B-R6-plus-E3: the IsoABorder name and syntax. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): the default SplineV2 command name and syntax; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14). PRE-G9B-MAINT-A2: BSpline command name and syntax.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English command names and overload help for the experimental Locus V2 surface. G9U1: Align English SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: AlignedDimension and LinearDimension names and syntax. PRE-G9B-R6-plus-E3: the IsoABorder name and syntax. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): the English SplineV2 command name and syntax; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
+      "purpose": "Add GeoCeDG-authored English command names and overload help for the experimental Locus V2 surface. G9U1: Align English SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: AlignedDimension and LinearDimension names and syntax. PRE-G9B-R6-plus-E3: the IsoABorder name and syntax. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): the English SplineV2 command name and syntax; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14). PRE-G9B-MAINT-A2: BSpline command name and syntax.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/command_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish command names and overload help for the experimental Locus V2 surface. G9U1: Align Spanish SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: CotaAlineada and CotaLineal aliases and Spanish syntax. PRE-G9B-R6-plus-E3: the Spanish name MarcoISOA and syntax of IsoABorder. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): the Spanish SplineV2 command name and syntax; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14).",
+      "purpose": "Add GeoCeDG-authored Spanish command names and overload help for the experimental Locus V2 surface. G9U1: Align Spanish SplineV2 help grammar with the existing three-point minimum. Authority: geocedg/specs/ui/g9u1-construction-interaction.md. PRE-G9B-R6-plus-E2: CotaAlineada and CotaLineal aliases and Spanish syntax. PRE-G9B-R6-plus-E3: the Spanish name MarcoISOA and syntax of IsoABorder. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. G9S1 (de33f3a8): the Spanish SplineV2 command name and syntax; authority geocedg/specs/curves/semantic-spline-2d.md (purpose completed by PRE-G9B-R6-plus-G, 2026-10-14). PRE-G9B-MAINT-A2: BSpline command name (no alias, ADR 0031) and Spanish syntax placeholders.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: labels of the intersection diagnostics CERTIFIED_EXISTENCE_ESTABLISHED, CONSTRUCTIVE_ADMISSION_NOT_ESTABLISHED, CONTACT_EVIDENCE_CLASSIFIED and CONTRADICTED_BY_CERTIFIED_EVIDENCE. PRE-G9B-CU3 increment E1: field and value labels of the existence grade, the contact evidence and the constructive admission of a solution. PRE-G9B-CU3 increment CU3-B1: labels of the three fold-contact diagnostics. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority. P2 author-authorized localization correction: supply the missing CONDITIONAL_NUMERIC_ESTIMATE inspector-role label; no metric or certificate semantic change.",
+      "purpose": "Add GeoCeDG-authored default type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds the deterministic-selection status diagnostic; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds the default user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the default SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: labels of the intersection diagnostics CERTIFIED_EXISTENCE_ESTABLISHED, CONSTRUCTIVE_ADMISSION_NOT_ESTABLISHED, CONTACT_EVIDENCE_CLASSIFIED and CONTRADICTED_BY_CERTIFIED_EVIDENCE. PRE-G9B-CU3 increment E1: field and value labels of the existence grade, the contact evidence and the constructive admission of a solution. PRE-G9B-CU3 increment CU3-B1: labels of the three fold-contact diagnostics. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority. P2 author-authorized localization correction: supply the missing CONDITIONAL_NUMERIC_ESTIMATE inspector-role label; no metric or certificate semantic change. PRE-G9B-MAINT-A2: B-spline type name.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_en.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: English labels of the four new intersection diagnostics. PRE-G9B-CU3 increment E1: English field and value labels of the existence grade, the contact evidence and the constructive admission. PRE-G9B-CU3 increment CU3-B1: labels of the three fold-contact diagnostics. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority. P2 author-authorized localization correction: supply the missing CONDITIONAL_NUMERIC_ESTIMATE inspector-role label; no metric or certificate semantic change.",
+      "purpose": "Add GeoCeDG-authored English type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Point on semantic curve and adds complete English user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the English SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the ISO A Border tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: English labels of the four new intersection diagnostics. PRE-G9B-CU3 increment E1: English field and value labels of the existence grade, the contact evidence and the constructive admission. PRE-G9B-CU3 increment CU3-B1: labels of the three fold-contact diagnostics. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority. P2 author-authorized localization correction: supply the missing CONDITIONAL_NUMERIC_ESTIMATE inspector-role label; no metric or certificate semantic change. PRE-G9B-MAINT-A2: B-spline type name.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
       "path": "source/shared/common-jre/src/main/resources/org/geogebra/common/jre/properties/menu_es.properties",
       "change": "modified",
-      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the Spanish CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add the Spanish WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: Spanish names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the Spanish Marco ISO A tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: Spanish labels of the four new intersection diagnostics. PRE-G9B-CU3 increment E1: Spanish field and value labels of the existence grade, the contact evidence and the constructive admission. PRE-G9B-CU3 increment CU3-B1: Spanish labels of the three fold-contact diagnostics. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority. P2 author-authorized localization correction: supply the missing CONDITIONAL_NUMERIC_ESTIMATE inspector-role label; no metric or certificate semantic change.",
+      "purpose": "Add GeoCeDG-authored Spanish type, action, help, and typed-error strings for Locus V2; G9U0-R4 adds deterministic-selection diagnostics; G9S1-R1 completes pair-certification labels. G9U1 Round 3 generalizes Punto sobre curva semántica and adds complete Spanish user-tool definition/icon and menu-presentation text. PRE-G9B-R4 adds the Spanish SplineV2 and ordered-list tool names, help and degree prompt. Authority: geocedg/specs/ui/spline-v2-and-ordered-list-authoring.md. PRE-G9B-R5-B: add the Spanish CANONICAL_HEAD_SHADOWED and SCRIPT_TOKEN_AMBIGUOUS messages. PRE-G9B-R6-plus-A-1: add the Spanish WorkingLayer.Tool and WorkingLayer.Help. PRE-G9B-R6-plus-E2: Spanish names, help and invalid-placement messages of the two dimension tools. PRE-G9B-R6-plus-E3: the Spanish Marco ISO A tool name and help. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU3 increment E1: Spanish labels of the four new intersection diagnostics. PRE-G9B-CU3 increment E1: Spanish field and value labels of the existence grade, the contact evidence and the constructive admission. PRE-G9B-CU3 increment CU3-B1: Spanish labels of the three fold-contact diagnostics. P2 conditional numeric estimate: guarded full-domain numeric traversal and orthogonal geometric evidence, inspector properties or focal scientific regression coverage as applicable; preserve strict H10 and certificate authority. P2 author-authorized localization correction: supply the missing CONDITIONAL_NUMERIC_ESTIMATE inspector-role label; no metric or certificate semantic change. PRE-G9B-MAINT-A2: B-spline type name.",
       "authority": "geocedg/specs/locus/locus-v2-public-surface.md"
     },
     {
@@ -2898,7 +2898,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusV2PublicOperations.java",
       "change": "added",
-      "purpose": "Retain centralized feature-gated public operations and add R6 interaction-owned point creation/move with exact address-state encoding, stable role checks and host Construction snapshot atomicity around mutation/publication, without changing the explicit Point command. PRE-G9B-R3: publish construction participation records under the version-2 transitive durable frontier and require every declared Locus V2 dependency to lie in that frontier. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-CU3 increment E1: createDriverCorrespondencePoint, the ordinary point of Point(L, D) and Intersect(L, r, D) with its own durable identity, failing closed with CONSTRUCTIVE_AUTHORITY_REQUIRED in a legacy document outside file loading. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md. PRE-G9B-CU3 piece I-6: a kernel axis dependency is a reserved reference, never promoted, labelled or attached. PRE-G9B-CU3 increment E2: a structural point computes its evidence again once its batch has published the durable identities of its inputs, which the key of a constructive identity certificate reads.",
+      "purpose": "Retain centralized feature-gated public operations and add R6 interaction-owned point creation/move with exact address-state encoding, stable role checks and host Construction snapshot atomicity around mutation/publication, without changing the explicit Point command. PRE-G9B-R3: publish construction participation records under the version-2 transitive durable frontier and require every declared Locus V2 dependency to lie in that frontier. Authority: geocedg/specs/spatial/durable-dependency-projection.md. PRE-G9B-CU3 increment E1: createDriverCorrespondencePoint, the ordinary point of Point(L, D) and Intersect(L, r, D) with its own durable identity, failing closed with CONSTRUCTIVE_AUTHORITY_REQUIRED in a legacy document outside file loading. Authority: geocedg/specs/locus/locus-v2-constructive-authority.md. PRE-G9B-CU3 piece I-6: a kernel axis dependency is a reserved reference, never promoted, labelled or attached. PRE-G9B-CU3 increment E2: a structural point computes its evidence again once its batch has published the durable identities of its inputs, which the key of a constructive identity certificate reads. PRE-G9B-MAINT-A2: createBSpline factory with the SplineV2 argument promotion and durable-identity batch.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -3336,7 +3336,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocusSimilarityEvaluator2D.java",
       "change": "added",
-      "purpose": "Evaluate the source locus first at the unchanged semantic address and propagate affine/polynomial capabilities with bounded composition depth; expose immutable captured source and transform evidence to R1 interval certification rather than assuming flattened rounded coefficients are exact composition.",
+      "purpose": "Evaluate the source locus first at the unchanged semantic address and propagate affine/polynomial capabilities with bounded composition depth; expose immutable captured source and transform evidence to R1 interval certification rather than assuming flattened rounded coefficients are exact composition. PRE-G9B-MAINT-A2: forward the local span coefficients of a source that publishes them (bspline-2d.md section 9.4), and the derivative from below of a source that declares OneSidedLocusDifferentialEvaluator2D.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -3474,7 +3474,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PiecewisePolynomialPairIntersectionCapability2D.java",
       "change": "added",
-      "purpose": "Provide symmetric deterministic polynomial-pair evidence while consuming each provider's coherent x/y snapshot once and enforcing captured-composition depth/work limits, still withholding materialization absent certified pair uniqueness.",
+      "purpose": "Provide symmetric deterministic polynomial-pair evidence while consuming each provider's coherent x/y snapshot once and enforcing captured-composition depth/work limits, still withholding materialization absent certified pair uniqueness. PRE-G9B-MAINT-A2: read span coefficients through the shared accessor; local coefficients are re-expanded only onto a clipped part, every other source keeps its arithmetic bit for bit.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -3486,7 +3486,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/intersection/PolynomialTargetIntersectionCapability2D.java",
       "change": "added",
-      "purpose": "Retain one-sided floating spline root discovery but require current structural interval proof for authenticated spline REGULAR_POLYNOMIAL_IMPLICIT targets before simple-root publication; other target adapters remain under their historical contracts.",
+      "purpose": "Retain one-sided floating spline root discovery but require current structural interval proof for authenticated spline REGULAR_POLYNOMIAL_IMPLICIT targets before simple-root publication; other target adapters remain under their historical contracts. PRE-G9B-MAINT-A2: read span coefficients through the shared accessor; local coefficients are used directly, every other source keeps its arithmetic bit for bit.",
       "authority": "docs/adr/0022-structural-spline-continuity.md"
     },
     {
@@ -3528,7 +3528,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/interaction/LocusPointInteractionResolver2D.java",
       "change": "added",
-      "purpose": "Preserve bounded R6 semantic inverse resolution and evaluator fail-closed coverage. R1 orders the existing strict nonminimum exclusion before singular-center/guard rejection so excluded distance maxima cannot obstruct unrelated regular preimages; genuinely singular minima and one-address components retain their original fail-closed checks. No new tolerance, identity, Classic or frontend authority.",
+      "purpose": "Preserve bounded R6 semantic inverse resolution and evaluator fail-closed coverage. R1 orders the existing strict nonminimum exclusion before singular-center/guard rejection so excluded distance maxima cannot obstruct unrelated regular preimages; genuinely singular minima and one-address components retain their original fail-closed checks. No new tolerance, identity, Classic or frontend authority. PRE-G9B-MAINT-A2: read span coefficients through the shared accessor; a local source is searched in its span variable, every other source keeps its arithmetic bit for bit.",
       "authority": "geocedg/specs/locus/locus-v2-point-interaction.md"
     },
     {
@@ -3582,19 +3582,19 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/commands/CommandDispatcherTest.java",
       "change": "modified",
-      "purpose": "Preserve complete command registration checks while explicitly testing default-off Classic and opted-in GeoCeDG command availability.",
+      "purpose": "Preserve complete command registration checks while explicitly testing default-off Classic and opted-in GeoCeDG command availability. PRE-G9B-MAINT-A2: BSpline joins the default-off GeoCeDG commands of Classic.",
       "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/commands/CommandFilterTest.java",
       "change": "modified",
-      "purpose": "Retain inherited no-CAS filter assertions in the enabled context and independently verify the default-off V2 feature gate without command exclusions.",
+      "purpose": "Retain inherited no-CAS filter assertions in the enabled context and independently verify the default-off V2 feature gate without command exclusions. PRE-G9B-MAINT-A2: BSpline joins the dedicated GeoCeDG commands.",
       "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
     },
     {
       "path": "source/shared/common-jre/src/test/java/org/geogebra/common/kernel/commands/CommandsValidationTest.java",
       "change": "modified",
-      "purpose": "Retain argument-count/type and CAS-table validation while testing both default-off feature rejection and opted-in V2 argument validation.",
+      "purpose": "Retain argument-count/type and CAS-table validation while testing both default-off feature rejection and opted-in V2 argument validation. PRE-G9B-MAINT-A2: BSpline joins the dedicated GeoCeDG commands.",
       "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
     },
     {
@@ -3606,7 +3606,7 @@
     {
       "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/commands/GeoCeDGCommandsTest.java",
       "change": "added",
-      "purpose": "Provide executable LocusV2, LocusLength and SplineV2 command cases discoverable by the inherited command-coverage inventory and the composed GeoCeDG test selection. PRE-G9B-R6-plus-E2: SelfTest coverage cmdAlignedDimension and cmdLinearDimension. PRE-G9B-R6-plus-E3: the IsoABorder processor contract. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "Provide executable LocusV2, LocusLength and SplineV2 command cases discoverable by the inherited command-coverage inventory and the composed GeoCeDG test selection. PRE-G9B-R6-plus-E2: SelfTest coverage cmdAlignedDimension and cmdLinearDimension. PRE-G9B-R6-plus-E3: the IsoABorder processor contract. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-MAINT-A2: cmdBSpline coverage required by SelfTest.",
       "authority": "docs/architecture/verification-baseline-compatibility-repair.md"
     },
     {
@@ -4964,7 +4964,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5AGuideOutlineTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R5-A: verify the bilingual anchor vectors, outline hierarchy, additive anchor emission and negative marker fixtures. PRE-G9B-R6-plus-B: the guide outline with section 4.5, Picture export and the export area. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the outline with guide section 4.6 Document units (102 entries, 85 of level 3). Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E2: the guide outline with section 9.5, Engineering dimensions (103 entries). PRE-G9B-R6-plus-E3: the guide outline with section 4.7 (104 entries, 87 level-3 headings). Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU9: Verify the expanded bilingual outline of 118 derived entries. PRE-G9B-CU9-R1: Check links against derived anchors and preserve the bilingual outline.",
+      "purpose": "PRE-G9B-R5-A: verify the bilingual anchor vectors, outline hierarchy, additive anchor emission and negative marker fixtures. PRE-G9B-R6-plus-B: the guide outline with section 4.5, Picture export and the export area. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-D1: the outline with guide section 4.6 Document units (102 entries, 85 of level 3). Authority: docs/validation/pre_g9b_r6_plus_d1_candidate_report.md. PRE-G9B-R6-plus-E2: the guide outline with section 9.5, Engineering dimensions (103 entries). PRE-G9B-R6-plus-E3: the guide outline with section 4.7 (104 entries, 87 level-3 headings). Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-CU9: Verify the expanded bilingual outline of 118 derived entries. PRE-G9B-CU9-R1: Check links against derived anchors and preserve the bilingual outline. PRE-G9B-MAINT-A2: guide outline pins move for the B-spline subsections 7.8 and 7.9.",
       "authority": "geocedg/specs/operations/documentation-maintenance.md"
     },
     {
@@ -5012,7 +5012,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/algos/AlgoElement.java",
       "change": "modified",
-      "purpose": "PRE-G9B-R5-B (ADR 0031): take the localized-template definition head and the Vector wrapper head from the command-head authority; non-localizing templates keep the internal name.",
+      "purpose": "PRE-G9B-R5-B (ADR 0031): take the localized-template definition head and the Vector wrapper head from the command-head authority; non-localizing templates keep the internal name. PRE-G9B-MAINT-A2: additive protected getCmdExtensionXML hook written before <input>, empty by default so every other algorithm keeps its bytes.",
       "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
     },
     {
@@ -5144,7 +5144,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR5BCanonicalCommandGateTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R5-B T-GATE, T-INPUT, T-COLLISION: the complete-inventory gate with the French negative control, the English-bundle authority and lookups and reverse tables identical to P_DOTXML. PRE-G9B-R6-plus-E2: ADR 0031 complete-inventory pins 566/515/488 with AlignedDimension and LinearDimension. PRE-G9B-R6-plus-E3: the complete inventory with IsoABorder (567 stored names, 516 with an English head, 489 displayed). Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "PRE-G9B-R5-B T-GATE, T-INPUT, T-COLLISION: the complete-inventory gate with the French negative control, the English-bundle authority and lookups and reverse tables identical to P_DOTXML. PRE-G9B-R6-plus-E2: ADR 0031 complete-inventory pins 566/515/488 with AlignedDimension and LinearDimension. PRE-G9B-R6-plus-E3: the complete inventory with IsoABorder (567 stored names, 516 with an English head, 489 displayed). Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-MAINT-A2: inventory pins move for the command BSpline (568 constants, 517 heads, 490 displayed).",
       "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
     },
     {
@@ -5174,7 +5174,7 @@
     {
       "path": "source/desktop/desktop/src/test/resources/org/geocedg/desktop/pre-g9b-r5-b/pre-g9b-r5-b-base-fingerprints.json",
       "change": "added",
-      "purpose": "PRE-G9B-R5-B test data: command-name surface fingerprints computed on the unchanged P_DOTXML tree by a scratch probe; not runtime authority. PRE-G9B-R6-plus-E2: regenerated with the original R5-B probe; differs from the P_DOTXML fixture only by the additive AlignedDimension and LinearDimension entries: every regime-independent summary equals its P_DOTXML value once the E2 lines are removed, the P_DOTXML-regime Spanish blocks are retained and the Spanish E2 syntax lines come from the Classic alias-head regime. PRE-G9B-R6-plus-E3: regenerated over ff56099184544e5988c63e0ea3339e3d0fe01fac; every summary and list equals the E2 fixture once the IsoABorder and MarcoISOA lines are removed, and the Classic Spanish syntax without IsoABorder equals the committed text; only the additive IsoABorder entries differ. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "PRE-G9B-R5-B test data: command-name surface fingerprints computed on the unchanged P_DOTXML tree by a scratch probe; not runtime authority. PRE-G9B-R6-plus-E2: regenerated with the original R5-B probe; differs from the P_DOTXML fixture only by the additive AlignedDimension and LinearDimension entries: every regime-independent summary equals its P_DOTXML value once the E2 lines are removed, the P_DOTXML-regime Spanish blocks are retained and the Spanish E2 syntax lines come from the Classic alias-head regime. PRE-G9B-R6-plus-E3: regenerated over ff56099184544e5988c63e0ea3339e3d0fe01fac; every summary and list equals the E2 fixture once the IsoABorder and MarcoISOA lines are removed, and the Classic Spanish syntax without IsoABorder equals the committed text; only the additive IsoABorder entries differ. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-MAINT-A2: additive BSpline entries regenerated by a scratch probe; every summary equals the previous fixture once the BSpline lines are removed.",
       "authority": "docs/adr/0031-canonical-english-command-surface-compatibility.md"
     },
     {
@@ -5222,7 +5222,7 @@
     {
       "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/PreG9BR6CapabilityMatrixTest.java",
       "change": "added",
-      "purpose": "PRE-G9B-R6 executable authority of the GGBScript capability matrix: completeness with negative controls and every row and lookup probe on ALGEBRA_INPUT, GGBSCRIPT and GGBSCRIPT_EXECUTE under EN and ES. PRE-G9B-R6-plus-B: execute the ExportImage rows and pin the derived inventory with ExportImage. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-E2: the derived inventory with AlignedDimension and LinearDimension and their row methods, executed in a fresh JVM so that the complete Desktop suite retains none of their hosts. PRE-G9B-R6-plus-E3: IsoABorder in the derived inventory and the child-JVM execution of its matrix rows. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md.",
+      "purpose": "PRE-G9B-R6 executable authority of the GGBScript capability matrix: completeness with negative controls and every row and lookup probe on ALGEBRA_INPUT, GGBSCRIPT and GGBSCRIPT_EXECUTE under EN and ES. PRE-G9B-R6-plus-B: execute the ExportImage rows and pin the derived inventory with ExportImage. Authority: docs/validation/pre_g9b_r6_plus_b_candidate_report.md. PRE-G9B-R6-plus-E2: the derived inventory with AlignedDimension and LinearDimension and their row methods, executed in a fresh JVM so that the complete Desktop suite retains none of their hosts. PRE-G9B-R6-plus-E3: IsoABorder in the derived inventory and the child-JVM execution of its matrix rows. Authority: docs/validation/pre_g9b_r6_plus_e3_candidate_report.md. PRE-G9B-MAINT-A2: BSpline joins the derived inventory; bSplineRows executes its matrix rows.",
       "authority": "docs/validation/pre_g9b_r6_candidate_report.md"
     },
     {
@@ -6608,7 +6608,7 @@
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/LocusMetricEstimator2D.java",
       "change": "added",
-      "purpose": "PRE-G9B-CU1 estimator v2 of class 3, evaluator-only and differential (sections 25.3 and 25.7, N3).",
+      "purpose": "PRE-G9B-CU1 estimator v2 of class 3, evaluator-only and differential (sections 25.3 and 25.7, N3). PRE-G9B-MAINT-A2 (option A, author decision item): at the upper end of a piece the speed is the derivative from below when the source declares OneSidedLocusDifferentialEvaluator2D; every other source keeps its arithmetic.",
       "authority": "geocedg/specs/locus/locus-v2-metrics.md"
     },
     {
@@ -7210,6 +7210,144 @@
       "change": "added",
       "purpose": "PRE-G9B-MAINT-A-DXF0 Desktop tests DX-5, DX-6, DX-7, DX-12, the File action and the Q-DXF-3 picture-export characterization.",
       "authority": "docs/validation/pre_g9b_maint_a_n1_validation_matrix.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/algos/AlgoBSpline.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Reconstructible normal-DAG parent of one public BSpline (bspline-2d/v1): typed causes of section 7, provider-proved existence, exact structural continuity, the family element through the writer hook.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/bspline/BSplineContractException.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Typed fail-closed rejection of the persisted BSpline family contract (sections 8.3 and 10.5).",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/bspline/BSplineContractXml.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Writer and reader of the geocedgBSpline family element and the passive approximation provenance block (attributes only, preserved in order).",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/bspline/BSplineDefinition2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Captured definition of one BSpline revision over the shared library validation, the clamped-uniform/v1 rule and the definition digest.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/bspline/BSplineInvalidity.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Typed causes of an undefined BSpline revision in the order of section 7.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/bspline/BSplinePersistedContractTarget.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Receives the contract read from the family element after a BSpline command is rebuilt.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/bspline/BSplineSemanticEvaluator2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Locus V2 evaluator of the family over the shared library: points, first derivatives, local span coefficients as polynomial authority, correctly rounded global coefficients for conformance; the derivative from below at a span end, used only by the metric estimator.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/LocalPiecewisePolynomialLocus2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Additive optional extension of PiecewisePolynomialLocus2D publishing local span coefficients (bspline-2d.md section 11.3).",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/PolynomialSpanCoefficients2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Single shared accessor of span coefficients (local when published, otherwise the inherited global read unchanged) and the residual rule of section 11.3.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geogebra/common/kernel/commands/CmdBSpline.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Feature-gated BSpline command processor: argument types only, numeric preconditions become typed undefined curves.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2BSplineAccuracyTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: BS-3, BS-15, BS-16, BS-20: kernel evaluator against the exact rational reference with the derived constants; local and global coefficient accuracy and kappa.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2BSplineContractCodecTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: BS-21, BS-24 reader: typed fail-closed rejections with rollback on the document, GGT and clipboard routes; legacy leniency of other commands; macro named BSpline.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2BSplineFamilyTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: BS-1, BS-2, BS-4 to BS-7, BS-9 to BS-12, BS-17 to BS-19, BS-23, BS-24 through the public command.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2DeterministicDump.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Deterministic hexadecimal dump of Locus V2 results for the BS-13 golden comparison.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2GlobalCoefficientInventoryTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Inventory over production code: global coefficient reads and classification of every user of PiecewisePolynomialLocus2D.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2LocalPolynomialRoutingTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: Routing of every polynomial consumer to local coefficients (trap wrapper), similarity forwarding, the 64-span decline and the residual rule.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2SplineV2BitIdentityTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: BS-13: SplineV2 coefficients and consumer results bit-identical to the golden captured on the base.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/resources/org/geocedg/common/kernel/bspline/maint-a2-splinev2-golden.txt",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: BS-13 golden captured on the A2 base before any product edit (provenance in its header).",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/desktop/desktop/src/test/java/org/geocedg/desktop/MaintA2BSplineNativeArchiveTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: BS-12 and BS-21 on the native document: save, reopen, save; typed refusal message; Insert File admission.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/metric/OneSidedLocusDifferentialEvaluator2D.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2 (option A, author decision item): optional additive extension of LocusDifferentialEvaluator2D giving the derivative from below at a piece end; read only by the class-3 metric estimator.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2BSplineLengthTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: BS-8: total and partial lengths (multiplicity-3 knot, degree 1, closed seam) against a 60-digit span-by-span Gauss-Legendre reference; monotone cumulative length; zoom and pixel-ratio invariance.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2BSplinePersistenceTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2: BS-11, BS-12 and BS-24: save and reopen, Undo/Redo, copy and paste, redefinition parity with SplineV2 on the ordinary and replacement routes, knot edits without stale geometry, provenance through Undo and copy.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
+    },
+    {
+      "path": "source/shared/common-jre/src/test/java/org/geocedg/common/kernel/bspline/MaintA2OneSidedMetricAdditivityTest.java",
+      "change": "added",
+      "purpose": "PRE-G9B-MAINT-A2 (option A): inventory of the one-sided extension and of every differential source; non-implementing sources keep the inherited path; the family and its similarity image give the derivative of the span that ends.",
+      "authority": ".github/prompts/tasks/pre-g9b-maint-a2-bspline-kernel-family.prompt.md"
     },
     {
       "path": "source/shared/common/src/main/java/org/geocedg/common/kernel/locus/exact/CircleDriverRootStructure2D.java",

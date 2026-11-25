@@ -191,7 +191,8 @@ final class LocusMetricEstimator2D {
 		for (int index = 0; index + 1 < parameters.length; index++) {
 			refine(parameters[index], parameters[index + 1], samples.points[index],
 					samples.points[index + 1], samples.speeds[index],
-					samples.speeds[index + 1], null, Double.NaN, depth, true,
+					oneSided() ? speedFromBelow(parameters[index + 1])
+							: samples.speeds[index + 1], null, Double.NaN, depth, true,
 					tolerance, width, leaves);
 		}
 		return new Estimate(leaves);
@@ -209,7 +210,8 @@ final class LocusMetricEstimator2D {
 		if (lower < upper) {
 			refine(lower, upper, point(lower), point(upper),
 					mode == Mode.DIFFERENTIAL ? speed(lower) : Double.NaN,
-					mode == Mode.DIFFERENTIAL ? speed(upper) : Double.NaN, null,
+					oneSided() ? speedFromBelow(upper)
+							: mode == Mode.DIFFERENTIAL ? speed(upper) : Double.NaN, null,
 					Double.NaN, 0, true, tolerance, componentWidth, leaves);
 		}
 		return new Estimate(leaves);
@@ -524,6 +526,39 @@ final class LocusMetricEstimator2D {
 		instrumentation.recordDerivativeCall();
 		LocusDifferentialEvaluation2D evaluation = differential
 				.evaluateDifferential(definition, branchKey, parameter, session);
+		if (evaluation == null || !evaluation.isValid()) {
+			throw new EstimatorFailure(MetricComputationStatus.NUMERICAL_FAILURE,
+					MetricDiagnosticCode2D.EVALUATION_FAILED, MetricWorkLimit2D.NONE,
+					evaluation == null ? "Differential evaluator returned null"
+							: evaluation.getDiagnostic());
+		}
+		double speed = evaluation.getSpeed();
+		if (!Double.isFinite(speed) || speed < 0) {
+			throw new EstimatorFailure(MetricComputationStatus.NUMERICAL_FAILURE,
+					MetricDiagnosticCode2D.NUMERICAL_FAILURE, MetricWorkLimit2D.NONE,
+					"Metric speed must be finite and non-negative");
+		}
+		return speed;
+	}
+
+	/**
+	 * PRE-G9B-MAINT-A2: the speed at the upper end of a piece is the limit from below when
+	 * the source declares {@link OneSidedLocusDifferentialEvaluator2D}; every other source
+	 * keeps {@link #speed(double)}.
+	 */
+	private boolean oneSided() {
+		return mode == Mode.DIFFERENTIAL
+				&& differential instanceof OneSidedLocusDifferentialEvaluator2D
+				&& ((OneSidedLocusDifferentialEvaluator2D) differential)
+						.supportsOneSidedDifferential(definition);
+	}
+
+	private double speedFromBelow(double parameter) {
+		chargeEvaluation();
+		instrumentation.recordDerivativeCall();
+		LocusDifferentialEvaluation2D evaluation = ((OneSidedLocusDifferentialEvaluator2D)
+				differential).evaluateDifferentialFromBelow(definition, branchKey, parameter,
+						session);
 		if (evaluation == null || !evaluation.isValid()) {
 			throw new EstimatorFailure(MetricComputationStatus.NUMERICAL_FAILURE,
 					MetricDiagnosticCode2D.EVALUATION_FAILED, MetricWorkLimit2D.NONE,

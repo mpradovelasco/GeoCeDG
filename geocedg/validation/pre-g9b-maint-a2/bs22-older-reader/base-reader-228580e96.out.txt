@@ -1,0 +1,25 @@
+PROBE S defined=true id=geo:f94120972e8585e080210995f1eb1050
+PROBE WRITER <command name="SplineV2">|	<input a0="l1" a1="a"/>|	<output a0="S"/>|</command>
+PROBE SPATIAL <geocedgSpatial version="1">|		<geo id="geo:59412ca14fe6fef0a1b542a3ec6279b9" provider="geocedg-construction-provider/v1" family="NUMERIC" schema="geocedg-construction-geo" schemaVersion="2" authority="CONSTRUCTION_DEFINED" bindingRole="NOT_APPLICABLE" outputRole="VALUE" cardinality="1" definitionRevision="0" topologyRevision="0"/>|		<geo id="geo:a5e0abc5540034767146a38b99655d56" provider="geocedg-construction-provider/v1" family="LIST" schema="geocedg-construction-geo" schemaVersion="2" authority="CONSTRUCTION_DEFINED" bindingRole="NOT_APPLICABLE" outputRole="VALUE" cardinality="1" definitionRevision="0" topologyRevision="0"/>|		<geo id="geo:f94120972e8585e080210995f1eb1050" provider="geocedg-construction-provider/v1" family="LOCUS_V2" schema="geocedg-construction-geo" schemaVersion="2" authority="CONSTRUCTION_DEFINED" bindingRole="NOT_APPLICABLE" outputRole="VALUE" cardinality="1" dependencies="geo:59412ca14fe6fef0a1b542a3ec6279b9 geo:a5e0abc5540034767146a38b99655d56" definitionRevision="0" topologyRevision="0"/>|	</geocedgSpatial>
+unknown tag in <command>: geocedgBSpline
+PROBE P1-unknown-child-in-SplineV2 LOADED hasErrors=false
+PROBE P1-unknown-child-in-SplineV2 AFTER A:point:true, B:point:true, C:point:true, D:point:true, l1:list:true:Expression, a:numeric:true, S:locusv2:true:SplineV2
+PROBE P0-reload-original LOADED hasErrors=false
+PROBE P0-reload-original AFTER A:point:true, B:point:true, C:point:true, D:point:true, l1:list:true:Expression, a:numeric:true, S:locusv2:true:SplineV2
+unknown tag in <command>: geocedgBSpline
+command not found / CAS command called:BSpline
+error in <command>: output
+GeoFactory: element of type locusv2 could not be created.
+MALFORMED_RECORD: Construction identity base contract disagrees with the attached geo [subject=geo:f94120972e8585e080210995f1eb1050]
+PROBE P2-future-BSpline-document THREW <- org.geocedg.common.kernel.spatial.identity.SpatialIdentityException: MALFORMED_RECORD: Construction identity base contract disagrees with the attached geo [subject=geo:f94120972e8585e080210995f1eb1050]
+PROBE P2-future-BSpline-document AFTER A:point:true, B:point:true, C:point:true, D:point:true, l1:list:true:Expression, a:numeric:true, S:locusv2:true:SplineV2
+PROBE P0b-reload-original LOADED hasErrors=false
+PROBE P0b-reload-original AFTER A:point:true, B:point:true, C:point:true, D:point:true, l1:list:true:Expression, a:numeric:true, S:locusv2:true:SplineV2
+unknown tag in <command>: geocedgBSpline
+command not found / CAS command called:BSpline
+error in <command>: output
+GeoFactory: element of type locusv2 could not be created.
+GEO_ATTACHMENT_MISSING: Geo attachment has no staged geo record [subject=geo:59412ca14fe6fef0a1b542a3ec6279b9]
+PROBE P3-future-BSpline-without-identity-section THREW <- org.geocedg.common.kernel.spatial.identity.SpatialIdentityException: GEO_ATTACHMENT_MISSING: Geo attachment has no staged geo record [subject=geo:59412ca14fe6fef0a1b542a3ec6279b9]
+PROBE P3-future-BSpline-without-identity-section AFTER A:point:true, B:point:true, C:point:true, D:point:true, l1:list:true:Expression, a:numeric:true, S:locusv2:true:SplineV2
+probe end

@@ -309,6 +309,8 @@ public class BasicCommandProcessorFactory implements CommandProcessorFactory {
 			return new CmdSpline(kernel);
 		case SplineV2:
 			return new CmdSplineV2(kernel);
+		case BSpline:
+			return new CmdBSpline(kernel);
 		case BezierCurve:
 			return new CmdBezierCurve(kernel);
 		case FormulaText:

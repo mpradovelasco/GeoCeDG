@@ -1486,6 +1486,8 @@ public abstract class AlgoElement extends ConstructionElement
 
 			((CasEvaluableFunction) getInput(0)).printCASEvalMapXML(sb);
 		}
+		// GeoCeDG PRE-G9B-MAINT-A2: optional command children written before <input>
+		getCmdExtensionXML(sb, tpl);
 		// add input information
 		if (input != null) {
 			sb.startTag("input");
@@ -1579,6 +1581,17 @@ public abstract class AlgoElement extends ConstructionElement
 		}
 
 		return input[i];
+	}
+
+	/**
+	 * GeoCeDG PRE-G9B-MAINT-A2 ({@code bspline-2d.md} section 8.1): optional children of
+	 * {@code <command>} written before {@code <input>}. The default writes nothing, so the
+	 * bytes of every other algorithm are unchanged. An override must not throw.
+	 * @param sb current string builder
+	 * @param tpl template for string
+	 */
+	protected void getCmdExtensionXML(XMLStringBuilder sb, StringTemplate tpl) {
+		// no extension
 	}
 
 	/**

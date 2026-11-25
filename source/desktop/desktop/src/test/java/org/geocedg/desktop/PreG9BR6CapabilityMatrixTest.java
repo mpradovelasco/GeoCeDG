@@ -45,7 +45,7 @@ class PreG9BR6CapabilityMatrixTest {
 		Matrix matrix = PreG9BR6CapabilityMatrix.load();
 		Inventory inventory = inventory();
 
-		assertEquals(PreG9BR6CapabilityMatrix.setOf("AlignedDimension", "Dilate",
+		assertEquals(PreG9BR6CapabilityMatrix.setOf("AlignedDimension", "BSpline", "Dilate",
 				"ExportImage", "Intersect", "IsoABorder", "Length", "LinearDimension",
 				"LocusLength", "LocusV2", "Mirror", "Point", "Rotate", "SplineV2", "Translate"),
 				inventory.roles().keySet(), "derived inventory changed");
@@ -90,6 +90,12 @@ class PreG9BR6CapabilityMatrixTest {
 
 	@Test
 	void splineV2Rows(TestInfo test, @TempDir Path directory) throws Exception {
+		executeRows(test, directory);
+	}
+
+	/** PRE-G9B-MAINT-A2: the three forms of BSpline on every surface and locale. */
+	@Test
+	void bSplineRows(TestInfo test, @TempDir Path directory) throws Exception {
 		executeRows(test, directory);
 	}
 

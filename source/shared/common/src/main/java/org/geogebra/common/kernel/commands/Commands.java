@@ -363,6 +363,8 @@ public enum Commands implements CommandsConstants,
 	Spline(TABLE_FUNCTION),
 	/** GeoCeDG semantic piecewise-polynomial spline. */
 	SplineV2(TABLE_FUNCTION),
+	/** GeoCeDG control-point B-spline family bspline-2d/v1 (PRE-G9B-MAINT-A2). */
+	BSpline(TABLE_FUNCTION),
 
 	BezierCurve(TABLE_FUNCTION),
 

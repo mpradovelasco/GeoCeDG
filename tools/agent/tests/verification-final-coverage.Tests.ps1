@@ -121,7 +121,7 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
         'pre-g9b-r6.shared')[0].expected_identity_count -eq 14) `
         'PRE-G9B-R6 shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6.desktop')[0].expected_identity_count -eq 57) `
+        'pre-g9b-r6.desktop')[0].expected_identity_count -eq 58) `
         'PRE-G9B-R6 Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'pre-g9b-r6-plus-a1.shared')[0].expected_identity_count -eq 20) `
@@ -133,13 +133,13 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
         'pre-g9b-r6-plus-b.shared')[0].expected_identity_count -eq 21) `
         'PRE-G9B-R6-plus-B shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6-plus-b.desktop')[0].expected_identity_count -eq 244) `
+        'pre-g9b-r6-plus-b.desktop')[0].expected_identity_count -eq 245) `
         'PRE-G9B-R6-plus-B Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'pre-g9b-r6-plus-c.shared')[0].expected_identity_count -eq 101) `
         'PRE-G9B-R6-plus-C shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6-plus-c.desktop')[0].expected_identity_count -eq 272) `
+        'pre-g9b-r6-plus-c.desktop')[0].expected_identity_count -eq 273) `
         'PRE-G9B-R6-plus-C Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'pre-g9b-r6-plus-c-x1.desktop')[0].expected_identity_count -eq 41) `
@@ -154,10 +154,10 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
         'pre-g9b-r6-plus-e1-p-x1.desktop')[0].expected_identity_count -eq 19) `
         'PRE-G9B-R6-plus-E1-P-X1 Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6-plus-e2.shared')[0].expected_identity_count -eq 76) `
+        'pre-g9b-r6-plus-e2.shared')[0].expected_identity_count -eq 77) `
         'PRE-G9B-R6-plus-E2 shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6-plus-e2.desktop')[0].expected_identity_count -eq 283) `
+        'pre-g9b-r6-plus-e2.desktop')[0].expected_identity_count -eq 284) `
         'PRE-G9B-R6-plus-E2 Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'post-e2-p1.desktop')[0].expected_identity_count -eq 6) `
@@ -181,10 +181,10 @@ Invoke-Case 'tracked JUnit inventory is compact and selection based' {
         'post-e2-p4.desktop')[0].expected_identity_count -eq 59) `
         'POST-E2-P4 Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6-plus-e3.shared')[0].expected_identity_count -eq 39) `
+        'pre-g9b-r6-plus-e3.shared')[0].expected_identity_count -eq 40) `
         'PRE-G9B-R6-plus-E3 shared inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
-        'pre-g9b-r6-plus-e3.desktop')[0].expected_identity_count -eq 330) `
+        'pre-g9b-r6-plus-e3.desktop')[0].expected_identity_count -eq 331) `
         'PRE-G9B-R6-plus-E3 Desktop inventory changed.'
     Assert-Case (@($inventory.selections|Where-Object selection_id -CEQ `
         'pre-g9b-r6-plus-e3-r1.shared')[0].expected_identity_count -eq 63) `

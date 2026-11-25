@@ -1455,6 +1455,66 @@ Igual que Locus V2, la creación de Spline V2 es comportamiento normal de GeoCeD
 sin argumento de arranque, conserva la madurez `experimental` y no está
 disponible en la sesión de diagnóstico Classic.
 
+### 7.8 Curvas B-spline a partir de puntos de control
+
+**[N]** **[!]** `BSpline` construye una B-spline de puntos de control: la curva
+se acerca a sus puntos de control pero en general no pasa por ellos, salvo por
+el primero y el último. Es una familia distinta de Spline V2, que interpola sus
+puntos. No hay herramienta; escriba el comando.
+
+```text
+BSpline( <List of Points> )
+BSpline( <List of Points>, <Degree> )
+BSpline( <List of Points>, <Degree>, <List of Knots> )
+```
+
+- El grado va de 1 a 7; por defecto es 3. Se necesitan al menos grado + 1 y
+  como máximo 128 puntos de control. El grado nunca se rebaja por usted: con
+  pocos puntos la curva queda indefinida e indica el motivo.
+- Sin lista de nudos, los nudos se generan con la regla `clamped-uniform/v1`:
+  la curva empieza en el primer punto de control con parámetro 0 y termina en
+  el último, y cada tramo mide 1. Con lista de nudos se dan `n + p + 2` números
+  para `n + 1` puntos y grado `p`; la lista no puede decrecer, debe repetir su
+  primer y su último valor `p + 1` veces y ningún valor interior puede aparecer
+  más de `p` veces.
+- El parámetro es el de sus nudos. `Point(b, "bspline-2d/main", u)` sitúa un
+  punto en el parámetro `u`; un `u` en un nudo interior pertenece al tramo de su
+  derecha.
+- Si el primer y el último punto de control son el mismo punto o tienen
+  exactamente las mismas coordenadas, la curva es cerrada, con una posible
+  esquina en la costura. Puntos casi iguales la dejan abierta.
+- Ejemplo: `A=(0,0)`, `B=(1,2)`, `C=(3,2)`, `D=(4,0)`, `E=(5,1)` y después
+  `b=BSpline({A,B,C,D,E})` da una cúbica con tramos `[0,1]` y `[1,2]`, y
+  `b2=BSpline({A,B,C,D,E},3,{0,0,0,0,1,4,4,4,4})` los mismos puntos con nudos
+  desigualmente espaciados.
+
+### 7.9 Qué garantiza una B-spline
+
+- Los valores, las longitudes y las intersecciones son evaluaciones en coma
+  flotante de la definición exacta, no resultados certificados. La longitud es
+  una estimación con su estimación de error. Las intersecciones con rectas,
+  segmentos, semirrectas, circunferencias, cónicas y curvas polinómicas usan
+  los tramos de la curva hasta 64 tramos; por encima responde una búsqueda
+  adaptativa sin afirmar completitud. Las intersecciones de dos curvas son
+  solo resultados enriquecidos.
+- La continuidad en un nudo se informa de forma exacta a partir de su
+  repetición: un nudo repetido `k` veces da `C^(p-k)`. No se afirma la
+  suavidad de la forma (sin cúspides ni esquinas); puntos de control
+  consecutivos coincidentes pueden producir una cúspide.
+- Una revisión no válida no muestra curva y conserva exactamente un motivo, por
+  ejemplo `TOO_FEW_CONTROL_POINTS` o `KNOTS_DECREASING`; al volver a ser válidas
+  las entradas, la curva reaparece.
+- Mover un punto de control solo cambia los `p + 1` tramos que lo rodean;
+  cambiar el grado o los nudos puede cambiar toda la curva.
+- El documento guarda el comando, sus entradas y el contrato `bspline-2d/v1`.
+  Un documento cuyo registro de B-spline es desconocido, falta o está mal
+  formado no se abre, y el mensaje indica el problema; nada se carga a medias.
+  Los documentos con `BSpline` no se abren en GeoCeDG 1.2.2 ni en versiones
+  anteriores.
+- Una herramienta de usuario o una macro del documento llamada `BSpline` oculta
+  este comando, y una biblioteca de herramientas guardada que contenga una
+  herramienta así no se puede leer; cambie el nombre de la herramienta.
+
 ---
 
 <!-- geocedg-guide-section: semantic-points-intersections-materialization -->
@@ -3011,6 +3071,10 @@ SplineV2( <List of Points> )
 SplineV2( <List of Points>, <Degree> )
 SplineV2( <List of Points>, <Degree>, <Weight Function> )
 SplineV2( <Point>, <Point>, <Point>, ... )
+
+BSpline( <List of Points> )
+BSpline( <List of Points>, <Degree> )
+BSpline( <List of Points>, <Degree>, <List of Knots> )
 
 Point( <Locus V2>, <Branch Key>, <Canonical Parameter> )
 

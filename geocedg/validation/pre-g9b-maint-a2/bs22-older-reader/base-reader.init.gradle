@@ -1,0 +1,12 @@
+// PRE-G9B-MAINT-A2 BS-22: adds the base-reader probe to the shared common-jre test source
+// set. Run on a tree whose product sources are those of 228580e96, from its root:
+//   gradlew :shared:common-jre:test --init-script <this file>
+//     --tests org.geocedg.a2probe.A2BaseReaderProbeTest -Da2.probeSource=<base-reader-probe>
+def target = java.nio.file.Paths.get('source', 'shared', 'common-jre')
+allprojects { p ->
+    if (p.projectDir.toPath().endsWith(target)) {
+        p.afterEvaluate {
+            p.sourceSets.test.java.srcDir(System.getProperty('a2.probeSource'))
+        }
+    }
+}
