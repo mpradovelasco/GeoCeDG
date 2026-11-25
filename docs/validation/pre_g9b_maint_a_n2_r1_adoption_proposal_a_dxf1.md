@@ -5,10 +5,10 @@
 
 | Campo | Valor |
 |---|---|
-| Contrato | [`geocedg/specs/import/dxf-spline-approximation.md`](../../geocedg/specs/import/dxf-spline-approximation.md), `dxf-spline-approximation/v1`, revisión R3 |
-| ADR | ninguno nuevo: ADR 0043 decisión 11 ya sitúa el bloque de procedencia; ADR 0045 registra su lectura informativa por la exportación |
-| Candidato | commit de contenido R3 y su árbol: [informe R3](pre_g9b_maint_a_n2_r3_report.md) §1 (un documento no puede contener su propio SHA) |
-| `STATIC` | [informe R3](pre_g9b_maint_a_n2_r3_report.md) §8 |
+| Contrato | [`geocedg/specs/import/dxf-spline-approximation.md`](../../geocedg/specs/import/dxf-spline-approximation.md), `dxf-spline-approximation/v1`, revisión R4 |
+| ADR | ninguno nuevo: ADR 0043 decisión 11 ya sitúa el bloque de procedencia; ADR 0045 registra sus dos lecturas informativas (presentación del estado al usuario e inclusión predeterminada en la exportación DXF; R4) |
+| Candidato | commit de contenido R4 y su árbol: [informe R4](pre_g9b_maint_a_n2_r4_report.md) §1 (un documento no puede contener su propio SHA) |
+| `STATIC` | [informe R4](pre_g9b_maint_a_n2_r4_report.md) §8 |
 
 ## 1. Decisiones autorales ya fijadas que aplica
 

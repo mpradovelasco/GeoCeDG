@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | **CANDIDATE — READY FOR AUTHOR ADOPTION (revisión R3).** Planificación, no autorización. R3 (2026-11-25): C-4, el ciclo completo en el presupuesto medido, pasa a ser una puerta de cierre de `MAINT-A-DXF0-RC` sobre su implementación, igual que C-5 en el presupuesto; RC-S0 cubre C-1 a C-3 y el comportamiento actual de C-5. R2 (2026-11-25): obligaciones de conformidad externa (§9) y deudas separadas DT-1 y DT-2 (§10). R1 (2026-11-25): sin historial de derivaciones, política de recursos configurable, Classic con conservación opaca, lectores AutoCAD Core Console y ezdxf, prompts candidatos en [`pre_g9b_maint_a_n2_r1_candidate_prompts/`](pre_g9b_maint_a_n2_r1_candidate_prompts/) y [propuesta de ejecución coordinada](pre_g9b_maint_a_n2_r1_coordinated_execution_proposal.md). `implementationAuthorized=false` para todos los incrementos de este plan; `selfApproved=false` |
+| Estado | **CANDIDATE — READY FOR AUTHOR ADOPTION (revisión R4).** Planificación, no autorización. R4 (2026-11-26): RC añade la presencia por grupo de la normal al registro de importación (A-IMP-12) y el contador `values`; EXP añade la ruta del controlador para la exportación solo de referencias (§9.1 del contrato de exportación, RX-15 (e)); presupuesto inicial de 1 500 000 valores adoptado por el autor como valor provisional. R3 (2026-11-25): C-4, el ciclo completo en el presupuesto medido, pasa a ser una puerta de cierre de `MAINT-A-DXF0-RC` sobre su implementación, igual que C-5 en el presupuesto; RC-S0 cubre C-1 a C-3 y el comportamiento actual de C-5. R2 (2026-11-25): obligaciones de conformidad externa (§9) y deudas separadas DT-1 y DT-2 (§10). R1 (2026-11-25): sin historial de derivaciones, política de recursos configurable, Classic con conservación opaca, lectores AutoCAD Core Console y ezdxf, prompts candidatos en [`pre_g9b_maint_a_n2_r1_candidate_prompts/`](pre_g9b_maint_a_n2_r1_candidate_prompts/) y [propuesta de ejecución coordinada](pre_g9b_maint_a_n2_r1_coordinated_execution_proposal.md). `implementationAuthorized=false` para todos los incrementos de este plan; `selfApproved=false` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` (segunda ola publicada) |
 | Escrito por | `PRE-G9B-MAINT-A-N2` |
 | Contratos | [`cedg-reference-store/v1`](../../geocedg/specs/import/reference-store.md), [`cedg-reference-export/v1`](../../geocedg/specs/export/dxf-reference-export.md), [`dxf-spline-approximation/v1`](../../geocedg/specs/import/dxf-spline-approximation.md); [enmiendas](pre_g9b_maint_a_n2_candidate_amendments.md); ADR [0044](../adr/0044-document-store-of-imported-references.md) y [0045](../adr/0045-separate-dxf-export-of-imported-references.md) (propuestos) |
@@ -82,7 +82,9 @@ DXF1-S0 en paralelo al principio.
 ### 4.1 RC
 
 Puede tocar: `org.geocedg.common.importer.dxf` (códec y validación del almacén; constructores
-de registros), `MyXMLioJre` (rama de lectura y paso de escritura), `AppGeoCeDG`,
+de registros; presencia por grupo de 210, 220 y 230 en el lector y el registro, aditiva, sin
+cambiar admisión ni valores: A-IMP-12, R4; contador `values` de §5.2 punto 12),
+`MyXMLioJre` (rama de lectura y paso de escritura), `AppGeoCeDG`,
 `GeoCeDGDxfReferenceSession`, `GeoCeDGDxfReferenceDialogs`, `GeoCeDGDxfReferenceText`,
 `GeoCeDGDxfReferenceImport`, los escáneres de inspección y de modo angular, Classic según
 RC-D4, guías y pruebas. No toca: `MyXMLHandler`, `getFullXML`, `doParseXML`, Undo, identidad
@@ -90,7 +92,10 @@ espacial, exportadores, núcleo B-spline.
 
 ### 4.2 EXP
 
-Puede tocar: `GeoCeDGDxfExportController`, `GeometryExportService` (sobrecarga), `DxfExporter`,
+Puede tocar: `GeoCeDGDxfExportController` (incluida la ruta de exportación solo de referencias
+de `cedg-reference-export/v1` §9.1, R4, solo en el flujo extendido; flujo G5 heredado sin
+cambios; sin cambiar la guarda con la opción desactivada),
+`GeometryExportService` (sobrecarga), `DxfExporter`,
 `DxfEncodingResult`, `DxfFidelityManifestWriter`, `GeometryExportPreflight` (regla de
 escritura), un adaptador nuevo de referencias, el resolutor, guías, pruebas y un guion de
 conformidad fuera de las rutas de producto. No toca: persistencia del documento, núcleo,

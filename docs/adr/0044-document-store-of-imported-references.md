@@ -1,10 +1,13 @@
 # ADR 0044 — Document store of imported references outside `Construction`
 
-- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R3)** (written by
-  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1` and
-  `PRE-G9B-MAINT-A-N2-R3`).
+- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R4)** (written by
+  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1`,
+  `PRE-G9B-MAINT-A-N2-R3` and `PRE-G9B-MAINT-A-N2-R4`).
   `selfApproved=false`. Acceptance of this ADR would not authorize `MAINT-A-DXF0-RC-S0` or
   `MAINT-A-DXF0-RC`; each needs its own authorization on an exact base.
+- R4 changes: decision 8 counts `values` as the store contract §5.2 item 12 defines and
+  records the author's adoption of 1 500 000 values as the provisional product value; no other
+  decision changes (the `normal` grammar is a contract detail, §5.2 item 11).
 - R3 changes: decision 8 records the directly measured budget and the streaming reader with
   per-attribute bounds (pre-adoption audit M1).
 - R1 changes: decision 8 (resource policy instead of a fixed 4 MiB cap, D-R1-4); decision 3
@@ -78,7 +81,9 @@ mark the document modified.
    declared counts checked before allocation, every attribute bounded while it is read) and a
    configurable storage budget are distinct. The budget's initial values come from a direct
    measurement of the full Open → Save → Reopen cycle on a 1 GiB heap (10 000 references,
-   1 500 000 values, entry bytes `17 × maxValues + 1 KiB × maxReferences`; the R1 value of
+   1 500 000 serialized binary64 values counted as the contract §5.2 item 12 defines, adopted
+   by the author on 2026-11-26 as the provisional configurable product value, entry bytes
+   `17 × maxValues + 1 KiB × maxReferences`; the R1 value of
    3 000 000 was measured and not confirmed; the measured corpora reach 77 % and 91 % of
    `maxEntryBytes`) and are measured again by C-4, a closeout gate of `MAINT-A-DXF0-RC` that
    also covers the unmeasured case at 100 % of the string allowance; they are raised only by an

@@ -308,6 +308,11 @@ procede, un descendiente documental clasificado por el procedimiento canónico.
 
 ### 12.3 Registro del roadmap (texto preparado)
 
+> **Sustituido en R4.** El único borrador canónico es A-RM-1 de las
+> [enmiendas candidatas](../architecture/pre_g9b_maint_a_n2_candidate_amendments.md) §5,
+> revisión R4, que registra además C-4 y C-5 como puertas de cierre de RC. El texto siguiente
+> se conserva como evidencia de R3.
+
 > **2026-11-25 — `PRE-G9B-MAINT-A-N2`: adopción normativa de `R-c`, exportación DXF de
 > referencias y A-DXF1.** Contratos `cedg-reference-store/v1`, `cedg-reference-export/v1` y
 > `dxf-spline-approximation/v1` (revisión R3), ADR 0044 y 0045 aceptados, enmiendas de

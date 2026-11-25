@@ -2,7 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R3).** `selfApproved=false`. No approved text is changed by this document or by the increments that wrote it (`PRE-G9B-MAINT-A-N2`, refined by `PRE-G9B-MAINT-A-N2-R1`, `PRE-G9B-MAINT-A-N2-R2` and `PRE-G9B-MAINT-A-N2-R3`) |
+| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R4).** `selfApproved=false`. No approved text is changed by this document or by the increments that wrote it (`PRE-G9B-MAINT-A-N2`, refined by `PRE-G9B-MAINT-A-N2-R1`, `PRE-G9B-MAINT-A-N2-R2`, `PRE-G9B-MAINT-A-N2-R3` and `PRE-G9B-MAINT-A-N2-R4`) |
+| R4 changes | independent R3 audit: new A-IMP-12 (plane normal recorded per group with its presence, I-1); A-IMP-9 with the counter of the store §5.2 item 12 and the author-adopted provisional budget (I-2); A-BS-1 and A-ADR-2 with the two informative reads of provenance (m-1); A-GEF-1 with the empty-population guard of the current controller as an obligation of `MAINT-A-DXF0-EXP` (m-3); A-RM-1 as the single roadmap draft (m-4) |
 | R3 changes | pre-adoption audit: A-EXP-3, A-EXP-4 and A-EXP-6 §12.6 with the sidecar situations A, B and C (M2); A-GEF-1 with the references-only export and the area rule (M3); A-EXP-5 with the X1C scope; A-IMP-7 with the reading list; A-IMP-8 with the per-span weight bound; new A-IMP-11; A-NDI-1 with the Classic opening exception; A-IMP-9 with the measured budget (M1) |
 | R2 changes | A-EXP-6 §12.8 and the new §12.9 with the author decisions RX-D18 and RX-D19; no other amendment changes |
 | R1 changes | A-IMP-7 without store derivation entries; A-IMP-9 and A-NDI-1 with the configurable resource policy instead of a fixed 4 MiB cap; A-NDI-1 also with the atomic transition in every route and the Classic rule; A-EXP-6 with state 4 and the conformance readers; the A-N2 texts are kept in commit `874286e95` |
@@ -30,7 +31,7 @@ relative to the target file, written out so that it does not resolve from this d
 | `dxf-spline-reference.md` | §14 «It reads the immutable `data`, `nature`, `domain`, `closure` and provenance digests» and «The record is not modified and gains no link to the result.» | the operation also reads degree, knots, weights and the provenance fields the block copies; the relation is recorded outside the record | A-IMP-7 | A |
 | `dxf-spline-reference.md` | §1, table, layer 3 «a declared fit» | the relation may also be an exact conversion | A-IMP-11 | A |
 | `dxf-spline-reference.md` | §14.1 step 2 (interval arithmetic) and the last paragraph (contract of `MAINT-A-DXF1` or `MAINT-A-DXF1b`) | admit exact rational arithmetic; name the contract and the split | A-IMP-8 | A |
-| `bspline-2d.md` | §10.5 «Passive: … never read by evaluation, metrics, intersections or export» | the export resolver reads the block informatively | A-BS-1 | X |
+| `bspline-2d.md` | §10.5 «Passive: … never read by evaluation, metrics, intersections or export» | the block is read informatively to present the conversion or approximation state and by the export resolver for default inclusion (R4) | A-BS-1 | X |
 | `bspline-2d.md` | §10.5 «whose exact attribute grammar the approximation contract of `MAINT-A-DXF1` fixes before code»; «Applicability» | grammar fixed; states named; malformed `v1` block | A-BS-2 | A |
 | `dxf-curve-fidelity-and-approximation.md` | §3 fidelity axes | the reference population has its own axis | A-EXP-1 | X |
 | `dxf-curve-fidelity-and-approximation.md` | §4 last paragraph «`SPLINE` remains outside the baseline until mathematical exactness and independent reader-conformance evidence are both available.» | scope it to construction geometry | A-EXP-2 | X |
@@ -43,6 +44,7 @@ relative to the target file, written out so that it does not resolve from this d
 | ADR 0014 | decision 8 | refined for references by ADR 0045 | A-ADR-1 (status pointer) | X |
 | ADR 0043 | decision 11 «never evaluation authority»; consequences | refined by ADR 0045 decision 4 | A-ADR-2 (status pointer) | X |
 | ADR 0043 | decision 10 «session-only in the first implementation (`R-a`)» | `R-c` persists references | A-ADR-3 (status pointer) | R |
+| `dxf-spline-reference.md` | §4.3 row 210, 220, 230 «recorded» | the store must preserve the groups present and their presence; the current record fills absent components with `0.0` | A-IMP-12 (R4) | R |
 | `dxf-spline-reference.md` | §10 last bullet «Visibility of a reference is a session presentation state» | visibility becomes persistent document presentation | A-IMP-10 | R |
 | `dxf-spline-reference.md` | §4.1 `SPLINE_ENTITIES_MAX` (10 000) and §4.4 `N_MAX_IMPORT` (1 024) | admission into the document is also bounded by the configurable store budget, which bounds memory and never the number of references below the importer's | A-IMP-9 | R |
 | ADR 0016 | «new archive content needs a compatibility decision» | the decision is ADR 0044 | none (ADR 0044 is that decision) | R |
@@ -51,7 +53,7 @@ relative to the target file, written out so that it does not resolve from this d
 | A3 candidate prompt (planning) | «`SPLINE` racional … depende de `MAINT-A-R`»; manifest schema | the rational restriction concerns constructions only; schema coordination | note only (A3 is re-planned when authorized) | X |
 
 ADR 0043 needs no new ADR for A-DXF1: its decision 11 already places the provenance block;
-ADR 0045 records the one refinement (the informative read by the export resolver).
+ADR 0045 records the one refinement (the two informative reads of the block: presentation of the state and default inclusion in the export).
 
 ## 2. Group R — with `cedg-reference-store/v1`
 
@@ -90,8 +92,9 @@ The list is kept as the record of what had to be established.»
 Proposed addition (R3): «These limits govern the reading of a DXF file. Admission of the
 admitted records into the document store is additionally bounded by the configurable storage
 budget of `cedg-reference-store/v1` §5.3, which never bounds the number of references below
-`SPLINE_ENTITIES_MAX` and bounds memory (measured initial value: 1 500 000 binary64 values);
-an import that
+`SPLINE_ENTITIES_MAX` and bounds memory (initial value 1 500 000 binary64 values counted by
+`cedg-reference-store/v1` §5.2 item 12, adopted by the author as the provisional,
+configurable product value backed by the R3 measurements); an import that
 would exceed the budget is rejected as a whole, with no prefix admitted, for the same reason
 as `SPLINE_ENTITIES_MAX`.»
 
@@ -103,6 +106,20 @@ construction's layer domain and does not mean existence or geometric visibility.
 Proposed: «Visibility of a reference is a presentation state of the document, persisted by
 `cedg-reference-store/v1` (session-only under `R-a`); it is not a layer of the construction's
 layer domain and does not mean existence or geometric visibility.»
+
+### A-IMP-12 — `dxf-spline-reference.md` §4.3, row 210, 220, 230 (R4)
+
+Current: «| 210, 220, 230 | plane normal | recorded; never used to transform coordinates |»
+
+Proposed: «| 210, 220, 230 | plane normal | recorded per group with its presence: the record
+keeps which of the three groups the entity carried and the value of each present group (a
+group repeated within the entity keeps its last occurrence); an absent group is not a value
+and is never recorded as `0` or `1`; the effective normal (absent 210 or 220 = `0`, absent 230
+= `1`) is derived only for presentation; never used to transform coordinates |». The record
+gains the presence of each group additively; admission, values, transformation, digests and
+the rest of the import are unchanged. Implemented by `MAINT-A-DXF0-RC` (the current
+`DxfSplineReference.normal()` fills an absent component with `0.0`: `cedg-reference-store/v1`
+F22). **This additive importer change is pending author decision D-R4-1** (R4 report §9).
 
 ### A-ADR-3 — ADR 0043, status
 
@@ -162,12 +179,17 @@ writing references is governed only by `cedg-reference-export/v1`.»
 Current: «**Passive**: it is never a DAG input, never identity, never read by evaluation,
 metrics, intersections or export.»
 
-Proposed: «**Passive**: it is never a DAG input, never identity, never read by evaluation,
-metrics, intersections or the export of the construction's geometry. The disposition
-resolver of `cedg-reference-export/v1` reads `referenceId`, `operation`,
-`referenceDataSha256` and the applicability below, informatively, only to decide whether
-the **reference** is included in a DXF export; it never changes how the construction is
-exported and creates no dependency (ADR 0045).»
+Proposed (R4): «**Passive**: it is never a DAG input, never identity, never read by
+evaluation, metrics, intersections or the export of the construction's geometry. It may be
+read **informatively** for exactly two purposes: (1) to present to the user the state of
+conversion or approximation of a reference and of the construction (reference manager,
+construction inspector, details report of `dxf-spline-approximation/v1` §14); (2) by the
+disposition resolver of `cedg-reference-export/v1`, which reads `referenceId`, `operation`,
+`referenceDataSha256` and the applicability below to decide whether the **reference** is
+included by default in a DXF export. Neither read is a geometric dependency, changes the
+DAG, changes how the construction is evaluated or exported, or writes anything (ADR 0045). The
+codec of the block and the persistence self-check of `dxf-spline-approximation/v1` §12.3, which
+write, parse and re-read it to verify its bytes, are not reads of its meaning.»
 
 ### A-EXP-1 — `dxf-curve-fidelity-and-approximation.md` §3, after the guarantee axis
 
@@ -283,6 +305,11 @@ evidence-backed authorization; the `SPLINE` of imported references is governed b
   unchanged.»
 - Explicit export area: add «an imported reference participates unless the convex hull of its
   control polygon is proved disjoint from `R` by exact predicates; it is written whole».
+- Implementation note (R4, not text of the foundation): the current `GeoCeDGDxfExportController`
+  stops on an empty `GeoElement` population before the model and the preflight in both flows; the
+  route, in the extended paired-output flow only (the legacy G5 route is not extended), that
+  lets a references-only export reach the preflight is an obligation of `MAINT-A-DXF0-EXP`
+  (`cedg-reference-export/v1` §9.1, RX-15 case (e)); with the option off the guard is unchanged.
 
 ### A-ADR-1 — ADR 0014, status
 
@@ -291,8 +318,9 @@ ADR 0045, when accepted.»
 
 ### A-ADR-2 — ADR 0043, status
 
-Add one line: «Decision 11 is refined by ADR 0045 decision 4 (informative read of the
-provenance block by the reference export resolver), when accepted.»
+Add one line: «Decision 11 is refined by ADR 0045 decision 4 (informative reads of the
+provenance block to present the conversion or approximation state and to decide the default
+inclusion of a reference in the DXF export), when accepted.»
 
 ## 4. Group A — with `dxf-spline-approximation/v1`
 
@@ -347,17 +375,30 @@ declared exact conversion or fit (`MAINT-A-DXF1`)».
   both operations.»
 - Bullet «`MAINT-A2` obligation»: unchanged.
 
-## 5. Candidate roadmap record (A-RM-1)
+## 5. Candidate roadmap record (A-RM-1) — the single canonical draft (R4)
 
-Text proposed for an additive, dated record of the canonical roadmap, to be written only
-after the author's decision:
+This is the only roadmap draft of `PRE-G9B-MAINT-A-N2`. It replaces the earlier wording of
+this section and the draft in the R3 report §12.3. It is an additive, dated record of the canonical roadmap,
+written in the roadmap's language and recorded **only** after the author's adoption decision,
+by the closeout commit (R4 report §12). Until then the roadmap is not modified. The two
+placeholders are filled from the author's decision and the R4 report §1:
 
-> **2026-11-25 — `PRE-G9B-MAINT-A-N2`: normative design of `R-c`, reference DXF export and
-> A-DXF1.** Candidates: `cedg-reference-store/v1`, `cedg-reference-export/v1`,
-> `dxf-spline-approximation/v1`, ADR 0044 and ADR 0045 (proposed), the amendment set and the
-> validation matrix. Proposed increments, none authorized: `MAINT-A-DXF0-RC-S0`,
-> `MAINT-A-DXF0-RC`, `MAINT-A-DXF0-EXP`, `MAINT-A-DXF1-S0`, `MAINT-A-DXF1`,
-> `MAINT-A-DXF1b`. Strict dependencies: RC after RC-S0; EXP after the store model types of
-> RC (milestone RC-M); the A-DXF1 service after RC and DXF1-S0; DXF1b after DXF1; EXP and
-> `MAINT-A3` never in parallel. Integration order RC → EXP → DXF1 → DXF1b. G9B stays
-> `DESIGNED — NOT AUTHORIZED`.
+> **`<fecha de la decisión autoral>` — `PRE-G9B-MAINT-A-N2`: adopción normativa de `R-c`,
+> exportación DXF de referencias y A-DXF1.** Contratos `cedg-reference-store/v1`,
+> `cedg-reference-export/v1` y `dxf-spline-approximation/v1` (revisión R4, candidato
+> `<commit de contenido R4>`) y ADR 0044 y 0045 aceptados; enmiendas de los grupos R, X y A
+> aplicadas a `dxf-spline-reference.md`, `bspline-2d.md`,
+> `dxf-curve-fidelity-and-approximation.md`, `geometry-export-foundation.md`,
+> `native-document-identity.md` y a las líneas de estado de ADR 0014 y ADR 0043. Presupuesto
+> inicial configurable del almacén: 10 000 referencias y 1 500 000 valores binary64, valor
+> provisional de producto respaldado por las mediciones de R3. Incrementos habilitados
+> normativamente, **ninguno autorizado**: `MAINT-A-DXF0-RC-S0`, `MAINT-A-DXF0-RC`,
+> `MAINT-A-DXF0-EXP`, `MAINT-A-DXF1-S0` y `MAINT-A-DXF1`; `MAINT-A-DXF1b`, `MAINT-A3` y
+> `MAINT-A-R` siguen sin autorizar. **Puertas de cierre de `MAINT-A-DXF0-RC`:** C-4, el ciclo
+> completo Open → Save → Reopen sobre la implementación en el presupuesto, incluido el caso
+> al 100 % de `maxEntryBytes`, y C-5 en el presupuesto, con escáneres, trabajador experto e
+> instantánea de recuperación aceptando el almacén. Dependencias estrictas: RC tras RC-S0; EXP
+> tras el hito RC-M; el servicio A-DXF1 tras RC y DXF1-S0; DXF1b tras DXF1; EXP y `MAINT-A3`
+> nunca en paralelo. Orden de integración RC → EXP → DXF1 → DXF1b. Deudas separadas DT-1
+> (exponentes de la exportación ordinaria) y DT-2 (splines cerradas guardadas de nuevo por
+> AutoCAD con `70 = 15`) registradas, no autorizadas. G9B sigue `DESIGNED — NOT AUTHORIZED`.

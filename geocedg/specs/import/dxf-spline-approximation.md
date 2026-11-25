@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R3).** Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF1-S0`, `MAINT-A-DXF1` and `MAINT-A-DXF1b` are not authorized |
-| Revision | R1 (2026-11-25): no persisted record of failed attempts and no store derivation entries (D-R1-5); certified bound separated in `MAINT-A-DXF1b` (D-R1-9); mathematical justification §5.9; maturity without a novelty flag (D-R1-10). R3 (2026-11-25, pre-adoption audit): wording (reading list, stop-cause order, exact-arithmetic qualifier of conditioning, string escaping) plus two added obligations of `MAINT-A-DXF1`: fixing the constants is a closeout gate, and the persistence self-check also reads the provenance block back. The A-N2 text is commit `874286e95` |
+| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R4).** Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1` to `-R4`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF1-S0`, `MAINT-A-DXF1` and `MAINT-A-DXF1b` are not authorized |
+| Revision | R4 (2026-11-26, independent R3 audit m-1): §10.2 and §14 state the two informative reads of the passive block (presentation of the state, default inclusion in the export), distinct from the codec and the self-check of §12.3 (A-BS-1). R1 (2026-11-25): no persisted record of failed attempts and no store derivation entries (D-R1-5); certified bound separated in `MAINT-A-DXF1b` (D-R1-9); mathematical justification §5.9; maturity without a novelty flag (D-R1-10). R3 (2026-11-25, pre-adoption audit): wording (reading list, stop-cause order, exact-arithmetic qualifier of conditioning, string escaping) plus two added obligations of `MAINT-A-DXF1`: fixing the constants is a closeout gate, and the persistence self-check also reads the provenance block back. The A-N2 text is commit `874286e95` |
 | Contract identifier | `dxf-spline-approximation/v1`; methods `exact-conversion/v1` and `bspline-param-lsq/v1`; provenance block `approximationProvenance version="1"` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` (second wave published) |
 | Architectural layer | Pure mathematical library (`org.geocedg.common.math.bspline`) for the computation; a creation service outside the kernel packages; additive GeoCeDG code in `org.geocedg.common.kernel.bspline` only where `bspline-2d.md` §10.5 reserves it (AGENTS §4) |
@@ -506,11 +506,14 @@ state would become stale after Undo, redefinition or editing.
 ### 10.2 Semantics
 
 No attribute is a DAG input, an identity, an evaluation datum, or an input of metrics,
-intersections or the geometric export of the construction (`bspline-2d.md` §10.5). The only
-reader outside the family is the disposition resolver of `cedg-reference-export/v1`, which
-reads `referenceId`, `operation`, `referenceDataSha256` and the applicability of §11 (from
-`definitionDigest`) to decide whether to include the **reference**; it never changes how the
-construction itself is exported (candidate amendment A-BS-1). The same block records exact
+intersections or the geometric export of the construction (`bspline-2d.md` §10.5). Outside the
+family, the block is read informatively for exactly two purposes (candidate amendment A-BS-1,
+R4): the presentation of the conversion or approximation state to the user (§14), and the
+disposition resolver of `cedg-reference-export/v1`, which reads `referenceId`, `operation`,
+`referenceDataSha256` and the applicability of §11 (from `definitionDigest`) to decide whether
+to include the **reference**; it never changes how the construction itself is exported. The
+codec's own writing and parsing of the block and the persistence self-check of §12.3, which
+re-reads it to verify the bytes, are not reads of its meaning. The same block records exact
 conversions (`operation="EXACT_CONVERSION"`), although `bspline-2d.md` §10.5 names it
 «approximation provenance» (candidate amendment A-BS-2).
 
@@ -628,7 +631,11 @@ append-only derivation history in the store is withdrawn (author decision D-R1-5
 
 ## 14. User interface
 
-Compact by default (D-A-N2-5):
+Compact by default (D-A-N2-5). The states and texts below come from an **informative read**
+of the passive provenance block and of the store (`bspline-2d.md` §10.5 as amended by A-BS-1,
+R4): presentation only, never a geometric dependency, never a DAG input, never a write. The
+export resolver's read for default inclusion (`cedg-reference-export/v1` §6) is the only other
+read of the block.
 
 - Reference manager: the operations «Convert to B-spline» (convertible) or «Approximate…»
   (otherwise), and the short state from the resolver: «No CeDG representation»,

@@ -1,12 +1,14 @@
 # ADR 0045 — Separate DXF export of imported references as `SPLINE`
 
-- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R3)** (written by
+- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R4)** (written by
   `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1`,
-  `PRE-G9B-MAINT-A-N2-R2` and `PRE-G9B-MAINT-A-N2-R3`).
+  `PRE-G9B-MAINT-A-N2-R2`, `PRE-G9B-MAINT-A-N2-R3` and `PRE-G9B-MAINT-A-N2-R4`).
   `selfApproved=false`. Acceptance would not authorize `MAINT-A-DXF0-EXP`.
 - R1 changes: decision 4 records state 4 as alternative A (D-R1-6) and removes any failure
   state (D-R1-5); decision 6 fixes the conformance readers (D-R1-7); decision 7 records the
   availability rule (D-R1-10).
+- R4 changes: decision 4 names the two informative reads of the provenance block (presentation
+  of the state and default inclusion), amendment A-BS-1 (audit m-1).
 - R3 changes: decision 5 distinguishes situations A, B and C for the sidecar; the consequences
   name the references-only export amendment of the foundation (pre-adoption audit M2, M3).
 - R2 changes: decision 6 records the levels of evidence and the AutoCAD acceptance criteria
@@ -60,7 +62,11 @@ re-exported.
    labels, handles, proximity or order. This is an informative read of the provenance
    block that decides only whether to include the reference; it never changes how a
    construction is exported and creates no dependency (refines ADR 0043 decision 11 and
-   `bspline-2d.md` §10.5).
+   `bspline-2d.md` §10.5). The same block may also be read informatively to present to the
+   user the conversion or approximation state (`dxf-spline-approximation/v1` §14); these are
+   the only two reads of its meaning (the codec and the persistence self-check only verify its
+   bytes), and neither is a geometric dependency or changes the DAG (R4,
+   amendment A-BS-1).
    A reference is excluded by default only while a defined construction validly represents
    it (applicable provenance naming it); a modified related construction does not, so the
    reference is included by default and the modified construction is exported from

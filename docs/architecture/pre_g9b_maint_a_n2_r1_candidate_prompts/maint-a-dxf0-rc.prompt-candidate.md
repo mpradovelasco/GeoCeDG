@@ -16,7 +16,9 @@ DEPENDS_ON   = cedg-reference-store/v1 ADOPTED; ADR 0044 ACCEPTED; MAINT-A-DXF0-
 Implement `cedg-reference-store/v1`: first the shared model milestone RC-M (pure types:
 reference identifier, export preference, resource-policy values, store snapshot interface, with
 unit tests), then the
-codec and validation in `org.geocedg.common.importer.dxf`, the reader branch and writer step
+codec and validation in `org.geocedg.common.importer.dxf` (with the `values` counter of the
+contract §5.2 item 12 and, additively, the presence of each of the groups 210, 220 and 230 in
+the import record, A-IMP-12, without changing admission or values), the reader branch and writer step
 in `MyXMLioJre`, the configurable resource policy, prepare-and-commit in every document
 route, the saved-state rule, the Desktop store addressed by identifier, the scanners, the
 Classic preservation or save barrier, the guide and the cases RC-* of the matrix.
@@ -49,7 +51,7 @@ applied only by the author's adoption record); `main`; push, merge, tags, releas
 <!-- geocedg-field: required_checks -->
 ## Required tests and commands
 
-RC-1 to RC-24, SEP-5 and C-1 regression; DX-1 to DX-13 non-regression; **C-4 as a closeout
+RC-1 to RC-26, SEP-5 and C-1 regression; DX-1 to DX-13 non-regression; **C-4 as a closeout
 gate** (R3): the full Open → Save → Reopen cycle on the implementation at the budget, including
 the worst admissible case at 100 % of `maxEntryBytes`, with a minimum-heap sweep up to 1 GiB,
 compared with the R3 measurements, plus the reader-safety cases of the contract §14; **the

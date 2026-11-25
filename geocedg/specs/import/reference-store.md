@@ -2,8 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R3).** Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-RC-S0` and `MAINT-A-DXF0-RC` are not authorized |
-| Revision | R3 (2026-11-25, pre-adoption audit M1): budget measured directly; `maxValues` 1 500 000 with an aggregate string allowance instead of the R1 value 3 000 000; streaming reader with per-attribute bounds; C-4 at the budget; Classic validation scope and string limit clarified. R1 (2026-11-25): the fixed 4 MiB cap is replaced by a measured, configurable resource policy (§5.3, D-R1-4); source and transformed data stay mandatory (D-R1-3); no derivation history (D-R1-5); atomic document transition per route (§7.1); GeoCeDG Classic preserves the entry opaquely (§7.2, D-R1-8); maturity without a novelty flag (D-R1-10). The A-N2 text is commit `874286e95` |
+| Status | **CANDIDATE (revision R4) — ADOPTION PENDING AUTHOR DECISION D-R4-1** (the additive import-record change of A-IMP-12 that §5.2 item 11 needs; R4 report §9). Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1` to `-R4`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-RC-S0` and `MAINT-A-DXF0-RC` are not authorized |
+| Revision | R4 (2026-11-26, independent R3 audit I-1 and I-2): `normal` preserves the groups 210, 220 and 230 present and their presence, the effective normal is derived and never stored (§5.2 item 11, F22, A-IMP-12); the `values` counter is defined exhaustively over serialized binary64 values (§5.2 item 12); budget 1 500 000 values adopted by the author as the provisional product value. R3 (2026-11-25, pre-adoption audit M1): budget measured directly; `maxValues` 1 500 000 with an aggregate string allowance instead of the R1 value 3 000 000; streaming reader with per-attribute bounds; C-4 at the budget; Classic validation scope and string limit clarified. R1 (2026-11-25): the fixed 4 MiB cap is replaced by a measured, configurable resource policy (§5.3, D-R1-4); source and transformed data stay mandatory (D-R1-3); no derivation history (D-R1-5); atomic document transition per route (§7.1); GeoCeDG Classic preserves the entry opaquely (§7.2, D-R1-8); maturity without a novelty flag (D-R1-10). The A-N2 text is commit `874286e95` |
 | Contract identifier | `cedg-reference-store/v1` (the store); its records stay `dxf-spline-reference/v1` |
 | Container | one optional ZIP entry of the native document, fixed name `geocedg_references.xml` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` |
@@ -62,6 +62,7 @@ the mechanism; the code remains the authority on itself.
 | F19 | Neither the packaged application nor the developer launcher sets `-Xmx`: the JVM takes a quarter of the RAM (1 GiB on a 4 GiB machine); the expert worker uses `-Xmx512m` | budgets are sized for a 1 GiB heap with margin |
 | F20 | GeoCeDG Classic diagnostic (same package, separate process, `App3D` without product configuration) uses the same open and save code with `geoCeDGDocument = false`; it drops the CU4 entry and hidden layers on save | without an explicit rule it would drop the store too (§7.2) |
 | F21 | GeoCeDG 1.2.2 has a byte-identical archive reader | the older-reader behavior of F1/F3 holds for 1.2.2 |
+| F22 | (R4) `DxfSplineReader` stores groups 210, 220 and 230 into one three-element array initialized to `0.0`, the last occurrence of a repeated group winning, with one flag set when any of them appears; `DxfSplineReference.normal()` returns `null` or that array, so an absent component reads `0.0` and the presence of each group is not kept | the store records presence per group (§5.2 item 11) and `MAINT-A-DXF0-RC` adds it to the import record (A-IMP-12); the array alone is never serialized |
 
 ## 3. Scope
 
@@ -99,28 +100,34 @@ attributes and elements.
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<geocedgReferenceStore contract="cedg-reference-store/v1" count="1" values="27">
+<geocedgReferenceStore contract="cedg-reference-store/v1" count="1" values="29">
   <reference id="(32 hex)" record="dxf-spline-reference/v1" visible="true" export="AUTO">
     <name text="South profile"/>
     <file sha256="(64 hex)" baseName="plan.dxf" acadVersion="AC1027" insUnits="4" documentUnit="mm"/>
-    <entity handle="2A" layer="CURVES" ordinal="12" planeZ="(16 hex)" normal="none"/>
+    <entity handle="2A" layer="CURVES" ordinal="12" planeZ="(16 hex)" normalGroups="230" normal="(16 hex)"/>
     <representation rationalFlag="SET" weights="EXPLICIT"/>
     <transform coefficients="(6 × 16 hex: a b c d e f)"/>
     <source degree="2" controlPoints="3" knots="(16 hex …)" x="(16 hex …)" y="(16 hex …)" w="(16 hex …)"/>
     <data x="(16 hex …)" y="(16 hex …)"/>
     <digests source="(64 hex)" data="(64 hex)"/>
-    <diagnostics codes="CLOSED_FLAG_CONTRADICTED" unrecognized="62 370"/>
+    <diagnostics codes="CLOSED_FLAG_CONTRADICTED UNRECOGNIZED_GROUP_CODES NORMAL_RECORDED" unrecognized="90 280"/>
   </reference>
 </geocedgReferenceStore>
 ```
+
+In the example (R4) the source is a rational quadratic with three control points and explicit
+weights, and the DXF entity carried only group 230: `values = 6 knots + 3 x + 3 y + 3 w + 3
+data x + 3 data y + 6 coefficients + 1 planeZ + 1 normal = 29` (item 12). The same entity
+without any of the groups 210, 220 and 230 is written `normalGroups="none"` without a `normal`
+attribute and counts 28.
 
 ### 5.2 Values
 
 1. `contract` is checked **before** any other attribute or element; any value other than
    `cedg-reference-store/v1` → `UNSUPPORTED_STORE_VERSION`. `count` is the number of
-   `<reference>` elements and `values` the total number of binary64 values of the entry; both
-   are checked against the policy (§5.3) **before** any list is allocated, and against the
-   actual content.
+   `<reference>` elements and `values` the number of binary64 values serialized in the entry,
+   counted exactly as item 12 defines; both are checked against the policy (§5.3) **before**
+   any list is allocated, and against the actual content.
 2. Reals are binary64 bit patterns: 16 lowercase hexadecimal digits of
    `Double.doubleToRawLongBits`, separated by one space; every list has exactly
    `17k − 1` characters for its declared `k` values. A non-finite pattern → `MALFORMED_STORE`.
@@ -156,11 +163,71 @@ attributes and elements.
     entity as canonical decimal integers in `0..1071`, in increasing order, separated by one
     space (at most 1 072 codes, 5 360 bytes). Duplicates, unknown codes or out-of-range values are
     `MALFORMED_STORE`. Their bytes count in the aggregate allowance of §5.3.
-11. `normal` records the plane normal of groups 210, 220 and 230 (import §4.3): `none` when
-    the entity carries none of the three groups, otherwise exactly three binary64 values
-    `x y z` in the form of item 2, a missing group taking its DXF default (0, 0, 1) (50 bytes;
-    numeric-list class of §5.3 kind 3); its values count in `values`. It is never used to
-    transform coordinates.
+11. **Plane normal of the source entity (R4).** The store preserves the groups 210, 220 and
+    230 that the DXF entity actually carried, and their presence, never a filled-in triple:
+    - `normalGroups` lists the groups present, as canonical decimal integers in increasing
+      order separated by one space, taken from `210`, `220` and `230`, or is `none` when the
+      entity carries none of them. Every non-empty subset is admissible: one, two or the three
+      groups.
+    - `normal` is present **iff** `normalGroups` is not `none`, and then holds exactly one
+      binary64 value per listed group, in the order of the list, in the form of item 2
+      (`17g − 1` characters for `g` listed groups; numeric-list class of §5.3 kind 3). It holds
+      the value the reader retained for that group: the current reader keeps the last
+      occurrence of a group repeated within one entity (import A-IMP-12).
+    - The four cases stay distinct: **(a)** no group: `normalGroups="none"`, no `normal`;
+      **(b)** the three groups explicit: `normalGroups="210 220 230"` and three values, even
+      when they equal `0 0 1`; **(c)** partial presence, one or two groups: only those groups
+      and their values, so that a partial normal is never confused with a complete explicit
+      triple; **(d)** the **effective normal**, the DXF interpretation in which an absent 210
+      or 220 is `0` and an absent 230 is `1` (all absent: `(0, 0, 1)`), is **derived** on demand
+      from (a) to (c), is never stored, never attributed to the source file and never used to
+      transform coordinates (import §4.3).
+    - **Current reader (fact at the base, F22).** `DxfSplineReader` sets each component of a
+      three-element array to the value of its group when the group appears and leaves an absent
+      component at `0.0`; `DxfSplineReference.normal()` returns `null` when no group appeared
+      and otherwise that array, which records neither which groups were present nor the DXF
+      default of an absent 230. That array is therefore neither the provenance of (a) to (c)
+      nor the effective normal of (d), and a store is never written from it alone: the writer
+      needs the presence of each group, which `MAINT-A-DXF0-RC` adds to the import record
+      additively (A-IMP-12) without changing admission, values or any other behavior of the
+      importer. Absent components are never written as `0.0` or `1.0`.
+    - Validation: a group listed twice, out of order or outside `210 220 230`, a `normal`
+      attribute present with `normalGroups="none"` or absent otherwise, a number of values
+      different from the number of groups, or a non-finite value → `MALFORMED_STORE`. The
+      diagnostic `NORMAL_RECORDED` is in `<diagnostics codes>` **iff** `normalGroups` is not
+      `none` (`MALFORMED_STORE` otherwise).
+12. **The `values` counter (R4).** `values` counts every binary64 value **serialized** in the
+    entry, and nothing else. For a reference `r` with `c_r` = `controlPoints`, degree `p_r`,
+    `K_r = c_r + p_r + 1` knots, `e_r = 1` when `weights="EXPLICIT"` (the `w` list is present)
+    and `0` otherwise, and `g_r` the number of groups listed in `normalGroups` (0 to 3):
+
+    | Field | binary64 values |
+    |---|---|
+    | `<source knots>` | `K_r` |
+    | `<source x>`, `<source y>` | `c_r` each |
+    | `<source w>` (only when `weights="EXPLICIT"`) | `e_r · c_r` |
+    | `<data x>`, `<data y>` (transformed coordinates) | `c_r` each |
+    | `<transform coefficients>` | `6` |
+    | `<entity planeZ>` | `1` |
+    | `<entity normal>` (only the groups present) | `g_r` |
+
+    `v_r = K_r + (4 + e_r) · c_r + 7 + g_r` and `values = Σ_r v_r`. **Not counted**, because
+    they are not binary64 values or are not serialized: integers (`count`, `values`, `degree`,
+    `controlPoints`, `ordinal`, `insUnits`, the `unrecognized` codes), identifiers and hashes
+    (`id`, `sha256`, both digests), flags and enumerations (`contract`, `record`, `visible`,
+    `export`, `rationalFlag`, `weights`, `normalGroups`, `codes`), strings, and every implicit
+    or derived value: unit weights when `weights` is not `EXPLICIT`, the knots and weights of
+    `<data>` (those of `<source>` by item 4), absent normal groups, the effective normal,
+    effective weights, nature, domain, closure and the tessellation. The writer computes
+    `v_r` from the record by this formula only; the reader counts each decoded 16-digit token
+    in one running counter, independent of the XML order of attributes and elements, and
+    checks every list against its own declared size (`K_r`, `c_r`, `c_r` when explicit, `6`,
+    `1`, `g_r`). A running count above the declared `values` stops the reader at once; a final
+    count different from the declared `values`, or a list of another length, is
+    `MALFORMED_STORE`; a declared `values` above `maxValues` is `STORE_BUDGET_EXCEEDED` before
+    any allocation (§5.3). An absent optional field contributes nothing. The counter is
+    arithmetic over lengths that kind 1 already admits: it adds **no geometric restriction**;
+    one admissible reference counts at most `1 032 + 5 · 1 024 + 7 + 3 = 6 162` values.
 
 ### 5.3 Resource policy (R1, author decision D-R1-4; budget measured in R3)
 
@@ -201,6 +268,21 @@ a budget not confirmed there is revised on that evidence before the closeout. Th
 importer's own worst case (10 000 references of 1 024 control points, about 61 M values) does
 not fit any budget sized for a default heap: such an import is rejected explicitly with the
 values it would require, and a station with more memory can raise the budget.
+
+**Author decision and counter of R4.** The author adopted 1 500 000 values for the design as
+the provisional, configurable product value backed by the available measurements; 2 000 000
+is not chosen without further evidence. The R3 probe counted `6 + K + (4 + e) · c` per
+reference, without `planeZ` (its corpora carry no normal groups); the counter of §5.2 item 12
+adds `1 + g` per reference. The R4 count is therefore never below the R3 count of the same
+store: the measured 1.5 M-value corpora count `1 502 697` (R3-T, 2 716 references) and
+`1 510 000` (R3-NS, 10 000 references) under item 12, and a store admitted at `maxValues`
+under item 12 holds no more serialized values than they did. The memory measurements remain
+an upper bound for the same composition. `maxEntryBytes` is unchanged; the measured entries
+already serialized `planeZ`, and the attribute `normalGroups="none"` adds 6 bytes per reference
+over the probe's `normal="none"` (60 000 bytes at 10 000 references, about 0.17 % of
+`maxEntryBytes`, inside the 1 KiB aggregate allowance), so R3-T stays at 76.6 % and R3-NS
+moves from 90.6 % to 90.7 % of it. The correction of the counter introduces no geometric
+restriction.
 
 Rules:
 
@@ -435,7 +517,7 @@ references» recovery action is a separate decision, RC-D7).
 
 ## 15. Validation
 
-Cases RC-1 to RC-24 of the
+Cases RC-1 to RC-26 of the
 [validation matrix](../../../docs/validation/pre_g9b_maint_a_n2_validation_matrix.md).
 
 ## 16. Stop conditions
@@ -469,10 +551,12 @@ policy that cannot reject an over-budget store without truncation.
 | RC-D6 | Insert File | never transfer references | proposed |
 | RC-D7 | Corrupt store | reject the whole document; «Open without references» as a separate increment | proposed |
 | RC-D8 | `geocedg_*` guard, single entry | yes | proposed |
-| RC-D9 | Capacity | no fixed product cap; configurable budget derived from measured memory (§5.3): 10 000 references, 1 500 000 values, entry bytes `17 × maxValues + 1 KiB × maxReferences`; streaming reader with per-attribute bounds | fixed in principle (D-R1-4); initial values measured in R3 (the R1 value 3 M not confirmed), re-measured by C-4 |
+| RC-D9 | Capacity | no fixed product cap; configurable budget derived from measured memory (§5.3): 10 000 references, 1 500 000 values, entry bytes `17 × maxValues + 1 KiB × maxReferences`; streaming reader with per-attribute bounds | fixed in principle (D-R1-4); initial values measured in R3 (the R1 value 3 M not confirmed) and adopted by the author on 2026-11-26 as the provisional configurable product value (2 M not chosen without new evidence); re-measured by C-4 |
 | RC-D10 | Reserved elements | `export` preference only; no derivation history | fixed (D-R1-5) |
 | RC-D11 | Display name | stored only when the user renames | proposed |
 | RC-D12 | `source` and `data` | both stored, verified bit for bit, `data` never recomputed in its place | fixed (D-R1-3) |
 | RC-D13 | Normative form | this contract + amendments + ADR 0044 | proposed |
 | RC-D14 | Maturity | no novelty flag; branch-only until the author's closeout, which extends the import's `stable` bound to `R-c` (§12) | no flag fixed (D-R1-10); the reconciliation with AGENTS §5 proposed |
 | RC-D15 | Budget configuration surface | GeoCeDG preference with an administrative system-property override; finite values only | proposed |
+| RC-D16 | Plane normal of the source | groups 210, 220 and 230 present and their presence (`normalGroups`, `normal`); effective normal derived, never stored; presence added to the import record by `MAINT-A-DXF0-RC` (§5.2 item 11, F22, A-IMP-12) | requirement fixed by the author (instruction R4 of 2026-11-26); the additive change of the import record that it needs is **pending author decision D-R4-1** |
+| RC-D17 | `values` counter | every serialized binary64 and nothing else, `v_r = K_r + (4 + e_r) · c_r + 7 + g_r` (§5.2 item 12) | fixed by the author (instruction R4 of 2026-11-26) |

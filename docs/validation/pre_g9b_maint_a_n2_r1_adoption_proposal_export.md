@@ -1,14 +1,14 @@
 # Propuesta de adopción — `cedg-reference-export/v1` y ADR 0045
 
 **PROPUESTA DE APROBACIÓN — NO APROBADA.** Preparada por `PRE-G9B-MAINT-A-N2-R1`, completada
-por `PRE-G9B-MAINT-A-N2-R2` y corregida por `PRE-G9B-MAINT-A-N2-R3` (M2, M3). `selfApproved=false`. Este documento no registra `AUTHOR APPROVED`.
+por `PRE-G9B-MAINT-A-N2-R2` y corregida por `PRE-G9B-MAINT-A-N2-R3` (M2, M3) y `PRE-G9B-MAINT-A-N2-R4` (m-1 a m-3). `selfApproved=false`. Este documento no registra `AUTHOR APPROVED`.
 
 | Campo | Valor |
 |---|---|
-| Contrato | [`geocedg/specs/export/dxf-reference-export.md`](../../geocedg/specs/export/dxf-reference-export.md), `cedg-reference-export/v1`, revisión R3 |
-| ADR | [ADR 0045](../adr/0045-separate-dxf-export-of-imported-references.md), propuesto, revisión R3 |
-| Candidato | commit de contenido R3 y su árbol: [informe R3](pre_g9b_maint_a_n2_r3_report.md) §1 (un documento no puede contener su propio SHA) |
-| `STATIC` | [informe R3](pre_g9b_maint_a_n2_r3_report.md) §8 |
+| Contrato | [`geocedg/specs/export/dxf-reference-export.md`](../../geocedg/specs/export/dxf-reference-export.md), `cedg-reference-export/v1`, revisión R4 |
+| ADR | [ADR 0045](../adr/0045-separate-dxf-export-of-imported-references.md), propuesto, revisión R4 |
+| Candidato | commit de contenido R4 y su árbol: [informe R4](pre_g9b_maint_a_n2_r4_report.md) §1 (un documento no puede contener su propio SHA) |
+| `STATIC` | [informe R4](pre_g9b_maint_a_n2_r4_report.md) §8 |
 
 ## 1. Decisiones autorales ya fijadas que aplica
 
@@ -29,7 +29,8 @@ por `PRE-G9B-MAINT-A-N2-R2` y corregida por `PRE-G9B-MAINT-A-N2-R3` (M2, M3). `s
   `NOT_WRITABLE`/`EXPONENT_NOT_PORTABLE`; nunca se reescribe ni se sustituye por polilínea; el
   usuario puede excluirla y el diagnóstico se conserva; la escritura sin exponente queda como
   mejora posterior sujeta a pruebas (contrato §5.2). Es una limitación de AutoCAD, no del formato
-  ni de ezdxf.
+  ni de ezdxf. **R4:** no se amplía a referencias excluidas por otras causas (preferencia, área,
+  representada); decisión del autor de 2026-11-26.
 
 ## 2. Decisiones que se proponen con la adopción
 
@@ -49,8 +50,12 @@ por `PRE-G9B-MAINT-A-N2-R2` y corregida por `PRE-G9B-MAINT-A-N2-R3` (M2, M3). `s
 | RX-D13 | dependencia estricta del contrato y de los hitos RC-M y DXF1-M; integración tras RC |
 | RX-D15 | referencias con datos idénticos: ambas incluidas y señaladas |
 
-**Decisiones normativas pendientes:** ninguna. Las obligaciones de conformidad externa son
-verificables y se ejecutan en `MAINT-A-DXF0-EXP` (RX-16, RX-17, RX-19).
+**Decisiones normativas pendientes:** ninguna. La única cuestión que el informe R3 (§11) dejó
+registrada, ampliar el diagnóstico `EXPONENT_NOT_PORTABLE` de RX-D19 a referencias excluidas
+por otras causas, quedó **resuelta negativamente** por el autor el 2026-11-26 (instrucción R4):
+RX-D19 no se amplía ahora. Las obligaciones de conformidad externa son verificables y se
+ejecutan en `MAINT-A-DXF0-EXP` (RX-16, RX-17, RX-19), como la nueva ruta del controlador para
+la exportación solo de referencias (RX-15, R4).
 
 ## 3. Enmiendas incluidas (grupo X)
 
@@ -86,5 +91,5 @@ paralelo con `MAINT-A3`.
 
 ## 6. Recomendación
 
-Adoptar `cedg-reference-export/v1` revisión R3 y aceptar ADR 0045 revisión R3, con las enmiendas
+Adoptar `cedg-reference-export/v1` revisión R4 y aceptar ADR 0045 revisión R4, con las enmiendas
 del grupo X.

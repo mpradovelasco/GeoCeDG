@@ -16,6 +16,12 @@ DEPENDS_ON   = cedg-reference-export/v1 ADOPTED; ADR 0045 ACCEPTED; RC-M AND DXF
 Implement `cedg-reference-export/v1`: the option in the existing DXF dialog, the store
 snapshot, the resolver of §6 (computed from `Construction` and the store), the separate
 reference adapter, the `SPLINE` writer with its write round-trip check, the preflight rule,
+the controller route of §9.1 for a references-only export (R4: the current
+`GeoCeDGDxfExportController` rejects an empty `GeoElement` population before the preflight in
+both flows; the route is added to the extended paired-output flow only, the legacy G5 flow is
+not extended;
+with the option on that guard must not end the operation, with the option off it stays exactly
+as today),
 sidecar schema 4, «Review…», the `EXPONENT_NOT_PORTABLE` rule of §5.2, and the conformance
 evidence of §12.1 to §12.3 with AutoCAD Core Console and a pinned ezdxf: definition reading
 separated from evaluation, ezdxf exact, AutoCAD within the per-value, structural and geometric
@@ -52,7 +58,7 @@ adapters, the legacy G5 route; installing ezdxf into the product; approved speci
 <!-- geocedg-field: required_checks -->
 ## Required tests and commands
 
-RX-1 to RX-6, RX-8 to RX-17 and RX-19, with provenance blocks written as test fixtures and read through the DXF1-M parser; RX-7 and RX-18, which need the A-DXF1 operation, run in `MAINT-A-DXF1`; byte identity of the ordinary export (for the product's Java runtime); SEP-6 and SEP-9; `STATIC`, `PHASE`,
+RX-1 to RX-6, RX-8 to RX-17 and RX-19 (RX-15 case (e) through the real Desktop controller, extended and legacy G5 flows), with provenance blocks written as test fixtures and read through the DXF1-M parser; RX-7 and RX-18, which need the A-DXF1 operation, run in `MAINT-A-DXF1`; byte identity of the ordinary export (for the product's Java runtime); SEP-6 and SEP-9; `STATIC`, `PHASE`,
 `INTEGRATION`; `git diff --check`; bootstrap impact (ezdxf and AutoCAD are external
 validation tools, not workstation prerequisites of the product).
 
