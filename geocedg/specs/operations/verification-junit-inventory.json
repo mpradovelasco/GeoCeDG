@@ -10,16 +10,16 @@
     {
       "module": "shared",
       "gradle_task": ":shared:common-jre:test",
-      "discovery_evidence_sha256": "5f562a9d61ef7b8c8ca83a1d8f647f900bd59833864fa51a339f56298eaccd86",
+      "discovery_evidence_sha256": "f534429d78cf09bd8a26dc47f3bba19f864e321a99592e3de54346fac83485fc",
       "discovered_identity_count": 7117,
       "discovered_identities_sha256": "4216e4439072d3535916e7aa8d41c23e871dcb14426ea0807742c473861a384e"
     },
     {
       "module": "desktop",
       "gradle_task": ":desktop:desktop:test",
-      "discovery_evidence_sha256": "343f5dab52ecb79ff0cddf372c56ff84c0c15c0e9c8d304279ad45ea1a5adb63",
-      "discovered_identity_count": 2634,
-      "discovered_identities_sha256": "6bfc170f1355ba18ee5ac73324aedabeae4d1532800c58ef3c6cd14c28c2a386"
+      "discovery_evidence_sha256": "2d51a64b79618fbbee11acc22a7fac1a90bb333fab022558c04b12fc1624df6d",
+      "discovered_identity_count": 2640,
+      "discovered_identities_sha256": "c6784d5d50695e6d6d1ae9cb2ed4bdf92a9e10896a5597b27a3b6d572d92b3af"
     }
   ],
   "selections": [
@@ -206,8 +206,8 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 2634,
-      "expected_identities_sha256": "6bfc170f1355ba18ee5ac73324aedabeae4d1532800c58ef3c6cd14c28c2a386",
+      "expected_identity_count": 2640,
+      "expected_identities_sha256": "c6784d5d50695e6d6d1ae9cb2ed4bdf92a9e10896a5597b27a3b6d572d92b3af",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
@@ -5432,13 +5432,13 @@
         "--console=plain",
         "-Dorg.gradle.java.installations.auto-download=false"
       ],
-      "expected_identity_count": 274,
-      "expected_identities_sha256": "d7fee86229be69c20de849b0bc070e78e26af6275e6db86c763b60bbd4ffcf40",
+      "expected_identity_count": 313,
+      "expected_identities_sha256": "cf47d14ad46331a5a8b3f9ddb6c6104d565895bb6e092130cf1c095b13d85a0a",
       "not_applicable_allowlist": [],
       "input_identities": [
         {
-          "commit": "a29309affd0ce5a22e61c4f73c1064980e1fb023",
-          "tree": "5e4623409dc0d6f096bcccab6a0e913478575f0a"
+          "commit": "902f8d4f9d8b686aa6da09b9c73fee6b72086560",
+          "tree": "1a68b78673d423282e8be20d9a39d01bedc11687"
         }
       ]
     },

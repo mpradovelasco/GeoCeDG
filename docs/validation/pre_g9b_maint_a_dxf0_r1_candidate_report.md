@@ -79,8 +79,24 @@ pasan. Los otros dos fallos de esa ejecución son ajenos a R1: el histórico
 
 ## 4. Verificación
 
-Se completa en el commit de inventario (§6 del flujo de la fase): inventario JUnit, `STATIC`,
-`PHASE PRE-G9B-MAINT-A-DXF0` e `INTEGRATION` sobre el candidato congelado.
+**Evidencia de inventario** (productor oficial `tools/agent/checks/gradle-test-evidence-producer.ps1`
+sobre el commit técnico `902f8d4f9`, actualizador `tools/agent/update-verification-junit-inventory.ps1`;
+evidencia en `artifacts/agent/pre-g9b-maint-a-dxf0-r1-inventory-902f8d4f/` del worktree):
+
+| Selección | Resultado | Identidades |
+|---|---|---|
+| `discovery.shared` (`--test-dry-run`) | completada, salida 0 | sin cambio |
+| `discovery.desktop` (`--test-dry-run`) | completada, salida 0 | 2 634 → 2 640 |
+| `pre-g9b-maint-a-dxf0.desktop` (ejecutada, 25 clases) | completada, salida 0, 0 fallos | 274 → 313 |
+
+`final.shared` no cambia (R1 no toca pruebas compartidas). `final.desktop` conserva su huella
+anterior: la suite Desktop completa contiene el fallo histórico CU2 y el actualizador rechaza
+evidencia con fallos (situación previa a la ola, como en A-DXF0). Pin `junit_inventory` del
+registro actualizado; recuentos globales de selecciones (102) y fases (91) sin cambio.
+
+Las ejecuciones de aceptación `STATIC`, `PHASE PRE-G9B-MAINT-A-DXF0` e `INTEGRATION` sobre el
+candidato congelado se registran en el informe consolidado de la sesión (este documento queda
+congelado en el commit candidato).
 
 ## 5. Desviaciones y observaciones
 
