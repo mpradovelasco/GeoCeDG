@@ -1,9 +1,12 @@
 # ADR 0044 — Document store of imported references outside `Construction`
 
-- Status: **PROPOSED — CANDIDATE PENDING AUTHOR REVIEW** (written by `PRE-G9B-MAINT-A-N2`
-  on 2026-11-25). `selfApproved=false`. Acceptance of this ADR would not authorize
-  `MAINT-A-DXF0-RC-S0` or `MAINT-A-DXF0-RC`; each needs its own authorization on an exact
-  base.
+- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R1)** (written by
+  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1`).
+  `selfApproved=false`. Acceptance of this ADR would not authorize `MAINT-A-DXF0-RC-S0` or
+  `MAINT-A-DXF0-RC`; each needs its own authorization on an exact base.
+- R1 changes: decision 8 (resource policy instead of a fixed 4 MiB cap, D-R1-4); decision 3
+  makes source and transformed data mandatory (D-R1-3); decision 5 covers every replacement
+  route; decision 9 (Classic, D-R1-8); no derivation history (D-R1-5).
 - Date: 2026-11-25.
 - Authorization of the design work: author instruction «GeoCeDG — PRE-G9B-MAINT-A-N2.
   Diseño normativo coordinado de persistencia R-c, exportación DXF de referencias y
@@ -48,30 +51,50 @@ mark the document modified.
    rejected by the reader that introduces `R-c`.
 3. **The stored copy is the authority of a reference.** The admitted binary64 source data,
    the transformed data, the explicit transformation and the provenance are stored exactly
-   (bit patterns); nature, effective weights, domain, closure, continuity and tessellation are
-   recomputed; transformation and digests are verified bit for bit on reading.
+   (bit patterns); both source and transformed data are mandatory and the transformed data are
+   never replaced by a recomputation (D-R1-3); nature, effective weights, domain, closure,
+   continuity and tessellation are recomputed; transformation and digests are verified bit for
+   bit on reading. No history of conversions, approximations or failed attempts is stored
+   (D-R1-5).
 4. **Own document identity.** Each reference has a random 128-bit identifier minted at
    admission, unique in its store, independent of `ceID`, labels, coordinates, handles,
    digests and XML positions; it is not CeDG geometric identity.
-5. **Prepare and commit.** A store read from a file is installed only at the commit of the
-   document transition; a failed open leaves the live document and its store unchanged.
+5. **Prepare and commit in every route.** A store read from a file is validated while reading
+   and installed by a non-throwing swap at the commit of the document transition, together
+   with the construction, never in reloads that are not document changes. Routes that today
+   replace the document without capture (embedded base64, `setBase64`, archive bytes by URL,
+   API clearing `setXML`) are sent through the native transaction. A failure leaves the live
+   document and its store unchanged or fully restored.
 6. **Explicit incompatibility with older readers.** Documents with a store are declared
    unsupported by GeoCeDG ≤ 1.2.2, which ignore the store and lose it on re-save; release
    notes say so. No forced-rejection marker is added to `geogebra.xml`.
 7. **Store state is document state outside Undo.** Store operations mark the document
    modified and are covered by the save prompt; Undo/Redo never touch them.
+8. **Resource policy, not a fixed capacity.** Geometric admission, per-operation resources,
+   always-on reader safety (bounded inflation, single entry, strict parser, declared counts
+   checked before allocation) and a configurable storage budget are distinct. The budget's
+   initial values are derived from measured memory use (10 000 references, about 3 000 000 values, entry bytes derived from both; confirmed by C-4), raised only by an
+   explicit administrative setting with finite values; an over-budget document is rejected with
+   a typed cause and never truncated (D-R1-4). The passive scanners recognize the entry under the
+   same policy instead of imposing their 4 MiB constant.
+9. **GeoCeDG Classic never loses the store silently.** It preserves the entry opaquely on every
+   save route; if that cannot be guaranteed, it refuses every save route of such a document
+   with a message (D-R1-8).
 
 ## Consequences
 
-- `MyXMLioJre` (upstream, already modified by CU4) gains a reader branch and a writer step;
-  `MyXMLHandler`, `getFullXML`, `doParseXML` and Undo are unchanged.
+- `MyXMLioJre` (upstream, already modified by CU4) gains a reader branch with bounded
+  inflation, a writer step and Classic's opaque preservation; `AppD` gains one GeoCeDG-owned
+  entry for the transactional archive-bytes routes; `MyXMLHandler`, `getFullXML`,
+  `doParseXML` and Undo are unchanged.
 - `native-document-identity.md` needs an amendment of the CU4 kind (candidate A-NDI-1).
 - `dxf-spline-reference.md` §2, §4.1, §10, §11 and §12 need amendments (candidates A-IMP-1
   to A-IMP-3, A-IMP-9, A-IMP-10); ADR 0043 decision 10 gets a status pointer (A-ADR-3).
-- The store capacity (4 MiB: about 39 maximal or 1 300 typical references) is stricter than
-  the approved import limits, which keep governing the reading of a DXF file.
-- GeoCeDG Classic, which already drops the CU4 entry and hidden layers, needs decision RC-D4.
-- The expert and angle-mode scanners must register the entry; the store is capped at 4 MiB.
+- The initial budget never bounds the number of references below the importer's; it bounds
+  memory (about a quarter of a 1 GiB heap). Reading 10 000 typical references costs about 0.5 s
+  and about 50 MB of retained memory on the measured workstation; the importer's extreme case
+  (10 000 maximal references) needs an explicitly raised budget and more memory.
+- The expert-inspection and angle-mode scanners, which today refuse any store, recognize it.
 
 ## Alternatives
 
@@ -82,6 +105,9 @@ mark the document modified.
 | Versioned entry name | a newer version would be silently ignored by a `v1` reader |
 | Forced rejection marker for older readers | invades the construction XML for a compatibility the author waived |
 | Keep `R-a` only | references lost at every reopen; contrary to the approved priority target |
+| Fixed 4 MiB cap (A-N2 draft) | derived from two passive scanners, not from the product; rejected by D-R1-4 |
+| Store only `source` and recompute `data` | loses the arithmetic-drift check; rejected by D-R1-3 |
+| Base64 or a binary entry | measured gain after deflation of 7 to 17 % only; hex kept for simplicity |
 
 ## Status boundary
 

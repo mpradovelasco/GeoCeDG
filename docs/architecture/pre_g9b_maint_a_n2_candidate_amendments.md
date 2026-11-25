@@ -2,7 +2,8 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — PENDING AUTHOR REVIEW.** `selfApproved=false`. No approved text is changed by this document or by the increment that wrote it |
+| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R1).** `selfApproved=false`. No approved text is changed by this document or by the increments that wrote it (`PRE-G9B-MAINT-A-N2`, refined by `PRE-G9B-MAINT-A-N2-R1`) |
+| R1 changes | A-IMP-7 without store derivation entries; A-IMP-9 and A-NDI-1 with the configurable resource policy instead of a fixed 4 MiB cap; A-NDI-1 also with the atomic transition in every route and the Classic rule; A-EXP-6 with state 4 and the conformance readers; the A-N2 texts are kept in commit `874286e95` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` |
 | Purpose | the exact amendments that the three A-N2 candidate contracts need in texts already approved, kept apart from those texts until the author decides |
 | Application rule | each amendment is grouped under the contract that needs it, so that it can be approved together with that contract; once approved, a documentary descendant applies it to the target file as an additive, dated amendment section or a marked replacement, without rewriting the approval history of the target |
@@ -40,7 +41,7 @@ relative to the target file, written out so that it does not resolve from this d
 | ADR 0043 | decision 11 «never evaluation authority»; consequences | refined by ADR 0045 decision 4 | A-ADR-2 (status pointer) | X |
 | ADR 0043 | decision 10 «session-only in the first implementation (`R-a`)» | `R-c` persists references | A-ADR-3 (status pointer) | R |
 | `dxf-spline-reference.md` | §10 last bullet «Visibility of a reference is a session presentation state» | visibility becomes persistent document presentation | A-IMP-10 | R |
-| `dxf-spline-reference.md` | §4.1 `SPLINE_ENTITIES_MAX` (10 000) and §4.4 `N_MAX_IMPORT` (1 024) | the store admits fewer (capacity of 4 MiB) | A-IMP-9 | R |
+| `dxf-spline-reference.md` | §4.1 `SPLINE_ENTITIES_MAX` (10 000) and §4.4 `N_MAX_IMPORT` (1 024) | admission into the document is also bounded by the configurable store budget, which bounds memory and never the number of references below the importer's | A-IMP-9 | R |
 | ADR 0016 | «new archive content needs a compatibility decision» | the decision is ADR 0044 | none (ADR 0044 is that decision) | R |
 | roadmap | dependencies of `A-DXF0-RC`, `A-DXF1`, `A3` | new increments and order | A-RM-1 (additive record) | all |
 | A-N1 validation matrix (candidate, not contract) | §3 AP-1 to AP-6, in particular AP-2 «residual `≤` estimate `≤` certified bound» | ordering withdrawn by observation AP-2 | superseded by the A-N2 matrix; the A-N1 matrix is not edited | A |
@@ -83,11 +84,13 @@ The list is kept as the record of what had to be established.»
 
 ### A-IMP-9 — `dxf-spline-reference.md` §4.1, after the table
 
-Proposed addition: «These limits govern the reading of a DXF file. Admission of the admitted
-records into the document store is additionally bounded by the capacity of
-`cedg-reference-store/v1` §5.3 (an entry of at most 4 MiB, about 39 maximal or 1 300 typical
-references); an import that would exceed it is rejected as a whole, with no prefix admitted,
-for the same reason as `SPLINE_ENTITIES_MAX`.»
+Proposed addition (R1): «These limits govern the reading of a DXF file. Admission of the
+admitted records into the document store is additionally bounded by the configurable storage
+budget of `cedg-reference-store/v1` §5.3, which never bounds the number of references below
+`SPLINE_ENTITIES_MAX` and bounds memory (proposed initial value: about 3 000 000 binary64
+values); an import that
+would exceed the budget is rejected as a whole, with no prefix admitted, for the same reason
+as `SPLINE_ENTITIES_MAX`.»
 
 ### A-IMP-10 — `dxf-spline-reference.md` §10, last bullet
 
@@ -108,14 +111,17 @@ ADR 0044 (`R-c`), when accepted; references stay outside `Construction` and the 
 > **`R-c` compatibility amendment (`cedg-reference-store/v1`, ADR 0044).** GeoCeDG may write
 > one optional ZIP entry, `geocedg_references.xml`, holding the imported DXF references of the
 > document outside `Construction`. Its content carries the contract `cedg-reference-store/v1`;
-> it is bounded to 4 MiB uncompressed and validated completely, including bit-for-bit
-> transformation and digest checks, before it is installed. An absent entry is an empty store.
-> An invalid entry, an unknown version or an unknown `geocedg_*` root entry is a preflight
-> failure: the previous document is kept. The store is installed only at the commit of the
-> document transition. Existing archive entries, format version, app code and construction
-> semantics keep their format. Older readers, GeoCeDG 1.2.2 included, are not supported for
-> such documents: they ignore the entry and drop it on save, and release notes say so. The
-> GeoCeDG Classic diagnostic follows decision RC-D4 of that contract.
+> it is read with bounded inflation under a configurable storage budget, and validated
+> completely, including bit-for-bit transformation and digest checks, before it is installed.
+> An absent entry is an empty store. An invalid entry, an unknown version, an over-budget store
+> or an unknown `geocedg_*` root entry is a preflight failure: the previous document is kept and
+> nothing is truncated. The store is installed together with the construction at the commit of
+> the document transition, in every open and replacement route. Existing archive entries,
+> format version, app code and construction semantics keep their format. Older readers,
+> GeoCeDG 1.2.2 included, are not supported for such documents: they ignore the entry and drop
+> it on save, and release notes say so. The GeoCeDG Classic diagnostic preserves the entry
+> opaquely on every save route or, if it cannot, refuses to save such a document; it never
+> loses it silently.
 
 ## 3. Group X — with `cedg-reference-export/v1`
 
@@ -217,9 +223,15 @@ of every export are unchanged.»
 > the store, never by proximity, coordinates, data digests, labels or indices; a reference
 > validly represented by a current derived construction is not duplicated automatically;
 > the user's choice prevails, with a warning on duplication.
+> A reference whose related construction was modified is no longer validly represented and
+> is included by default, while the modified construction is exported by §1 to §11. A failed
+> approximation is never an export state.
 > 12.6 The sidecar is mandatory when a reference is written.
 > 12.7 Derived constructions are exported by §1 to §11 with their guarantees; this section
 > authorizes no `SPLINE` for constructions (`MAINT-A3`).
+> 12.8 External conformance is checked with AutoCAD Core Console and a pinned ezdxf, reading
+> of the definition separated from mathematical evaluation; the evidence covers its fixtures
+> and reader versions only.
 
 ### A-GEF-1 — `geometry-export-foundation.md`
 
@@ -248,10 +260,10 @@ provenance block by the reference export resolver), when accepted.»
 
 Current: «The record is not modified and gains no link to the result.»
 
-Proposed: «The record is not modified. The relation is recorded only by the result's passive
-provenance block (`referenceId`, `bspline-2d.md` §10.5) and by an informative derivation
-entry of the store (`cedg-reference-store/v1` §5.2), outside the record; neither is a
-dependency.»
+Proposed (R1): «The record is not modified. The relation is recorded only by the result's
+passive provenance block (`referenceId`, `bspline-2d.md` §10.5); it is not a dependency. The
+store keeps no history of conversions or approximations, and a failed attempt leaves nothing
+in the document.»
 
 ### A-IMP-8 — `dxf-spline-reference.md` §14.1
 
@@ -260,8 +272,8 @@ dependency.»
 - Table row «Numerical error estimate»: keep «a distinct, denser verification set» and add
   «no ordering with the sample residual is asserted».
 - Last paragraph: replace «the approximation contract of `MAINT-A-DXF1` (or `MAINT-A-DXF1b`,
-  D-A-9)» by «`dxf-spline-approximation/v1` (§7: implementation by `MAINT-A-DXF1b` unless the
-  author decides otherwise)».
+  D-A-9)» by «`dxf-spline-approximation/v1` (§7: implementation by `MAINT-A-DXF1b`, author
+  decision D-R1-9)».
 
 ### A-BS-2 — `bspline-2d.md` §10.5
 

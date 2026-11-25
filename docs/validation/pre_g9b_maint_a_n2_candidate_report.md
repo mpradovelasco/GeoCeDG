@@ -2,6 +2,10 @@
 
 **PRE-G9B-MAINT-A-N2 — NORMATIVE DESIGN CANDIDATE — PENDING AUTHOR REVIEW**
 
+> **Nota de R1 (2026-11-25).** Este informe registra el candidato A-N2 tal como se entregó y no
+> se reescribe. Su estado vigente, las decisiones D-R1-1 a D-R1-10 y el paquete de adopción
+> están en el [informe R1](pre_g9b_maint_a_n2_r1_report.md); donde ambos difieran, prevalece R1.
+
 | Campo | Valor |
 |---|---|
 | Carácter | Informe del candidato normativo. `selfApproved=false`, `authorApproved=false`, `passClaimed=false`. Evidencia, no autoridad; no registra ninguna aprobación |

@@ -1,5 +1,10 @@
 # PRE-G9B-MAINT-A-N2 — informe de caracterización y decisiones
 
+> **Nota de R1 (2026-11-25).** Caracterización de A-N2, conservada. Las caracterizaciones
+> nuevas de R1 (capacidad y escáneres, transiciones atómicas y Classic, piloto de conformidad)
+> están en el [informe R1](pre_g9b_maint_a_n2_r1_report.md) §C y §F; el tope de 4 MiB de §2.2
+> queda sustituido por la política de recursos del contrato `R-c` R1.
+
 | Campo | Valor |
 |---|---|
 | Carácter | Informe técnico de caracterización de solo lectura. `selfApproved=false`. Evidencia, no autoridad |

@@ -2,13 +2,14 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE — PENDING AUTHOR REVIEW.** Normative design written by `PRE-G9B-MAINT-A-N2`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-EXP` is not authorized. It does not change the approved export contracts until the author approves the candidate amendments that reference it |
+| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R1).** Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-EXP` is not authorized. It does not change the approved export contracts until the author approves the candidate amendments that reference it |
+| Revision | R1 (2026-11-25): state 4 fixed as alternative A (D-R1-6); no failure state and no store derivation history (D-R1-5); resolved-state model §6.4 with the eight cases mapped in §6.5; conformance with AutoCAD Core Console and ezdxf (D-R1-7, §12.1); no novelty flag (D-R1-10). The A-N2 text is commit `874286e95` |
 | Contract identifier | `cedg-reference-export/v1` (policy and population); fidelity class `REFERENCE_DEFINITION` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` |
 | Architectural layer | Export adapter outside the geometric kernel (AGENTS §4, §13); a separate read-only reference adapter beside the construction adapters |
-| Depends on | [`cedg-reference-store/v1`](../import/reference-store.md) (reference identity, store snapshot, derivation entries, export preference); [`dxf-spline-approximation/v1`](../import/dxf-spline-approximation.md) for the states that involve a derived construction; it does **not** presuppose `MAINT-A3` |
+| Depends on | [`cedg-reference-store/v1`](../import/reference-store.md) (reference identity, store snapshot, export preference); [`dxf-spline-approximation/v1`](../import/dxf-spline-approximation.md) for the states that involve a derived construction; it does **not** presuppose `MAINT-A3` |
 | Amends (candidates) | [`dxf-curve-fidelity-and-approximation.md`](dxf-curve-fidelity-and-approximation.md), [`geometry-export-foundation.md`](geometry-export-foundation.md), [`dxf-spline-reference.md`](../import/dxf-spline-reference.md) §0, §10, §14, §17, [`bspline-2d.md`](../curves/bspline-2d.md) §10.5, ADR 0014 decision 8 (by [ADR 0045](../../../docs/adr/0045-separate-dxf-export-of-imported-references.md), proposed); texts in the [candidate amendment set](../../../docs/architecture/pre_g9b_maint_a_n2_candidate_amendments.md) |
-| Author directions | D-A-N2-1, D-A-N2-3, D-A-N2-4, D-A-N2-5 (instruction of 2026-11-25) |
+| Author directions | D-A-N2-1, D-A-N2-3, D-A-N2-4, D-A-N2-5 (A-N2 instruction); D-R1-1, D-R1-5, D-R1-6, D-R1-7, D-R1-10 (R1 instruction) |
 
 ## 0. Boundary
 
@@ -113,6 +114,14 @@ makes that reference `NOT_WRITABLE` (an outcome of the reference axis, never the
 construction outcome `UNSUPPORTED`) with reason `WRITE_ROUND_TRIP_FAILED` and blocks the
 strict operation (§7.3).
 
+**Portable exponents (pending author decision RX-D19).** `Double.toString` writes values with
+`|x| < 10^-99` (non-zero) or `|x| ≥ 10^100` with a three-digit exponent, and the R1 pilot
+showed that AutoCAD 2026 silently truncates such exponents to two digits (`4.9E-324` read as
+`4.9e-32`), while a plain-decimal form of `Double.MAX_VALUE` made it hang. Proposed rule: a
+reference containing such a value is `NOT_WRITABLE` with reason `EXPONENT_NOT_PORTABLE`
+(strict, never silently rewritten). Alternative: plain decimals for the small values and
+refusal of the large ones.
+
 ### 5.3 Four roundings kept apart
 
 | Rounding | Where | Claim |
@@ -149,94 +158,95 @@ identifiers written when the relation was created establish it (D-A-N2-3). The d
 recorded in the block is used only as a consistency check on an association that a
 `referenceId` already established (§6.3); it never creates one.
 
-### 6.2 Minimal correspondence record
+### 6.2 Minimal correspondence record (R1)
 
-1. **Construction side** (written by `MAINT-A-DXF1`): the passive block
-   `approximationProvenance` of `<geocedgBSpline>`; the resolver reads exactly
+1. **Construction side** (written by `MAINT-A-DXF1` on success only): the passive block
+   `approximationProvenance` of `<geocedgBSpline>`. The resolver reads exactly
    `referenceId`, `operation`, `referenceDataSha256` and `definitionDigest` (for
-   applicability) (`dxf-spline-approximation/v1` §10); `derivationId` links the block to its
-   store entry for the report only. It travels with copy, Undo/Redo and persistence; it is
-   never a DAG input.
-2. **Reference side** (store, outside Undo): the append-only derivation entries
-   (`derivationId`, operation, outcome `CREATED`/`FAILED`, cause, best indicator) and the
-   export preference `AUTO | INCLUDE | EXCLUDE` (`cedg-reference-store/v1` §5.2, items 6
-   and 7). The default **inclusion** never depends on derivation entries; they only select
-   the state **label** among 1, 5 and 6, all of which include the reference.
+   applicability) (`dxf-spline-approximation/v1` §10). It travels with copy, Undo/Redo and
+   persistence; it is never a DAG input.
+2. **Reference side** (store, outside Undo): only the export preference
+   `AUTO | INCLUDE | EXCLUDE` (`cedg-reference-store/v1` §5.2). The store keeps **no**
+   derivation history: failed attempts leave no trace (author decision D-R1-5), and
+   successful ones are represented by their construction alone.
 
-The durable identity of a construction (`geocedgId`) is **not** part of the resolution:
-a copy pasted in the same document keeps the block and still represents the reference
-after the original is deleted, and identity survival through redefinition is decided by
-ADR 0026, not by this contract.
+The durable identity of a construction (`geocedgId`) is **not** part of the resolution: a
+copy pasted in the same document keeps the block and still represents the reference after
+the original is deleted, and identity survival through redefinition is decided by ADR 0026,
+not by this contract.
 
 ### 6.3 Resolution
 
 At each export, for reference `r`, let `L(r)` be the defined `BSpline` outputs of
 `Construction` whose block is interpretable and whose `referenceId` equals `r.referenceId`
-(exact string equality). A member of `L(r)` **validly represents** `r` when its
+(exact string equality). A block that is `NOT_INTERPRETABLE` but whose `referenceId` attribute is a
+legible 32-hex identifier still **names** that reference (§6.4, `ASSOCIATION_UNRESOLVED`); a block
+without a legible `referenceId` names no reference. A member of `L(r)` **validly represents** `r` when its
 applicability (`dxf-spline-approximation/v1` §11) is `APPLICABLE` and its
-`referenceDataSha256` equals `r`'s `dataDigest`. The reading of these attributes by the
+`referenceDataSha256` equals the `dataDigest` of `r`. The reading of these attributes by the
 resolver is informative: it decides only the inclusion of the reference, never the export
-of the construction (candidate amendment A-BS-1).
+of the construction (candidate amendment A-BS-1). Everything is computed from the current
+`Construction` and store at the moment of export; no state is stored.
 
-### 6.4 Exhaustive inclusion table (option «include references» on)
+### 6.4 Resolved states
 
-| # | State | Condition | Reference by default | Derived construction | Duplication and its avoidance | Explicit user selection | Diagnostic |
-|---|---|---|---|---|---|---|---|
-| 1 | never converted | `L(r)` empty and no derivation entry | **included** | none | none | may exclude | — |
-| 2 | converted exactly | some member validly represents `r` with `operation = EXACT_CONVERSION` | excluded | exported from `Construction` by its route and guarantees | avoided by excluding the reference | may include: both are written, with warning `DUPLICATE_REPRESENTATION` | `REPRESENTED_BY_EXACT_CONVERSION` (names the construction sources) |
-| 3 | approximated satisfactorily | some member validly represents `r` with `operation = APPROXIMATION` (and none with 2) | excluded | as in 2 | as in 2 | as in 2 | `REPRESENTED_BY_APPROXIMATION` |
-| 4 | derived construction modified | `L(r)` non-empty, no member validly represents `r`, at least one member `NOT_APPLICABLE_DEFINITION_CHANGED` | **PENDING AUTHOR DECISION RX-D2**; recommended: **included** | exported from `Construction` (it is the user's current object) | not a duplication of the same definition; notice `DERIVED_CONSTRUCTION_MODIFIED` | may exclude | `DERIVED_CONSTRUCTION_MODIFIED` |
-| 5 | derived construction deleted | `L(r)` is empty (`L(r)` holds defined outputs only), no condition of row 8 holds for `r`, and some derivation entry is `CREATED` (deleted, undone, replaced by another family, or undefined) | **included** | none written (deleted or undefined) | none | may exclude | `DERIVED_CONSTRUCTION_ABSENT` |
-| 6 | approximation failed | `L(r)` empty, derivation entries only `FAILED` | **included** | none | none | may exclude | `APPROXIMATION_FAILED` (cause and best indicator in the sidecar) |
-| 7 | reference copied or reimported | a reimport (or a future duplicate operation) creates a new record `r'` with a new `referenceId`; constructions derived from `r` name `r`, not `r'` | `r'` resolved on its own (state 1 unless it has its own derivations); `r` keeps its own state | derived constructions of `r` never represent `r'` | possible when `r` and `r'` are both included; never resolved by data; informative notice `SAME_DATA_AS_REFERENCE` when the data digests are equal, used for no decision | may exclude either | `SAME_DATA_AS_REFERENCE` (informative) |
-| 8 | provenance not current or association unresolvable | a construction names `r` but its block is `NOT_INTERPRETABLE`, or its `referenceDataSha256` differs from `r`'s `dataDigest`; or a construction names a `referenceId` absent from the store | for `r`: treated as having no valid representation → **included**; orphan constructions affect no reference | exported from `Construction` normally | not resolved automatically; notice | may exclude | `ASSOCIATION_UNRESOLVABLE` on `r`; `ORPHAN_REFERENCE_PROVENANCE` on the construction (sidecar) |
-
-Precedence when several conditions meet: user `INCLUDE`/`EXCLUDE` (operation toggle, then
-persistent preference) > 2 > 3 > 4 > 8 > 5 > 6 > 1. The underlying state is always reported,
-also when the user overrides it.
-
-**The historical existence of an approximation is not a current representation.** States
-5 and 6 depend only on the absence of a defined member that validly represents `r`;
-derivation entries only name the history in the diagnostic.
-
-### 6.5 State 4: alternatives for the author (RX-D2)
-
-| Alternative | Default for the reference | Argument | Risk |
+| State | Condition (first that holds, in this order) | Reference by default (option on) | Diagnostic |
 |---|---|---|---|
-| **A (recommended)** include | written beside the modified construction | the modified construction no longer validly represents the reference (D-A-N2-3: «construcción que la representa válidamente»); D-A-N2-4 never loses the reference | two related curves in the DXF; the notice says why |
-| B exclude with warning | not written | respects the user's edit as the drawing's intent | the external definition disappears from an export the user asked to «include references» |
-| C no default | export blocked until the user chooses per reference | strict and explicit | one more step in a common case |
+| `USER_CHOICE` | the user included or excluded `r` in the operation, else its persistent preference is `INCLUDE` or `EXCLUDE` | as chosen; the underlying state below is still reported | `DUPLICATE_REPRESENTATION` when an included `r` is validly represented |
+| `REPRESENTED_EXACT` | some member of `L(r)` validly represents `r` with `operation = EXACT_CONVERSION` | **excluded** | `REPRESENTED_BY_EXACT_CONVERSION` |
+| `REPRESENTED_APPROXIMATION` | some member validly represents `r` with `operation = APPROXIMATION` | **excluded** | `REPRESENTED_BY_APPROXIMATION` |
+| `RELATED_CONSTRUCTION_MODIFIED` | `L(r)` non-empty, no member validly represents `r`, some member is `NOT_APPLICABLE_DEFINITION_CHANGED` | **included** (author decision D-R1-6, alternative A) | `RELATED_CONSTRUCTION_MODIFIED` |
+| `ASSOCIATION_UNRESOLVED` | a construction names `r` but its block is `NOT_INTERPRETABLE`, or its `referenceDataSha256` differs from the `dataDigest` of `r` | **included** | `ASSOCIATION_UNRESOLVABLE` |
+| `NO_CEDG_REPRESENTATION` | none of the above | **included** | — |
 
-Under every alternative an undefined derived construction counts as absent (state 5): an
-undefined object writes nothing, so excluding its reference would lose both.
+Constructions are never filtered by this table: every construction is exported from
+`Construction` by its approved route, whatever the state of a reference it names.
+
+### 6.5 The eight cases of the author instruction
+
+| # | Case | Resolved state | Reference by default | Construction | Duplication and its avoidance | Explicit selection | Diagnostic |
+|---|---|---|---|---|---|---|---|
+| 1 | never converted | `NO_CEDG_REPRESENTATION` | included | none | none | may exclude | — |
+| 2 | converted exactly | `REPRESENTED_EXACT` | excluded | exported from `Construction` by its route and guarantees | avoided by excluding the reference | may include: both written, warning | `REPRESENTED_BY_EXACT_CONVERSION`, then `DUPLICATE_REPRESENTATION` if included |
+| 3 | approximated satisfactorily | `REPRESENTED_APPROXIMATION` | excluded | as in 2 | as in 2 | as in 2 | `REPRESENTED_BY_APPROXIMATION` |
+| 4 | derived construction modified | `RELATED_CONSTRUCTION_MODIFIED` | **included** (D-R1-6) | exported from `Construction` (the current object of the user) | not a duplicate of the same definition; a short notice says that a modified related construction exists | may exclude | `RELATED_CONSTRUCTION_MODIFIED` |
+| 5 | derived construction deleted (or undone, replaced by another family, or undefined) | `NO_CEDG_REPRESENTATION` | included | none written | none | may exclude | — (the history is not kept) |
+| 6 | approximation failed | `NO_CEDG_REPRESENTATION` (the failure is a transient operation result, never a document state) | included | none | none | may exclude | — |
+| 7 | reference copied or reimported | each record resolved on its own; a new record `r'` has a new `referenceId` and no construction names it | `r'` included unless represented by its own derivations; `r` keeps its state | constructions derived from `r` never represent `r'` | possible when `r` and `r'` are both included; never resolved by data | may exclude either | `SAME_DATA_AS_REFERENCE` (informative, flagged in «Review…») |
+| 8 | provenance not current or association unresolvable | `ASSOCIATION_UNRESOLVED` for `r`; orphan constructions affect no reference | included | exported normally | not resolved automatically; notice | may exclude | `ASSOCIATION_UNRESOLVABLE` on `r`; `ORPHAN_REFERENCE_PROVENANCE` on the construction (sidecar) |
+
+An undefined related construction writes nothing; it counts as absent (case 5), so that
+excluding its reference would never lose both. The historical existence of a conversion or
+approximation is never a current representation: only a defined construction whose block
+is applicable represents a reference.
 
 ### 6.6 Transitions
 
-All transitions result from recomputing §6.3; nothing is synchronized.
+All transitions result from recomputing §6.3; nothing is synchronized or stored.
 
 | Action | Effect |
 |---|---|
-| import | state 1 |
-| A-DXF1 creates a conversion or approximation | one Undo step in the construction and a `CREATED` entry → 2 or 3 |
-| A-DXF1 fails | no construction and a `FAILED` entry → 6 |
-| delete the derived construction | 5; Undo → 2 or 3 |
-| Undo the creation | 5; Redo → 2 or 3 |
-| move a control point, compatible redefinition | 4 while not applicable; Undo or an exact return → 2 or 3 |
-| redefine into another family | the block disappears with the algorithm → 5 if no other member remains |
+| import | `NO_CEDG_REPRESENTATION` |
+| A-DXF1 creates a conversion or approximation | one Undo step in the construction → `REPRESENTED_EXACT` or `REPRESENTED_APPROXIMATION`; the store does not change |
+| A-DXF1 fails | nothing changes; the cause is shown and kept in the session report only |
+| delete the derived construction; Undo of its creation; redefinition into another family | `NO_CEDG_REPRESENTATION` if no other member remains; Undo/Redo restore the previous state |
+| move a control point, compatible redefinition | `RELATED_CONSTRUCTION_MODIFIED` while not applicable; Undo or an exact return → represented again |
 | copy/paste the derived construction in the same document | the copy keeps the block and represents `r` |
-| paste the derived construction into another document | the block names an absent reference → 8 there (orphan); no reference affected |
-| remove the reference | the reference and its entries disappear; derived constructions keep their passive block and become orphans (8) |
-| reopen, Save As | both sides persist: same states |
-| reimport the same file | a new reference, state 1 (7); never linked by data |
+| paste the derived construction into another document | the block names an absent reference: orphan there; no reference affected |
+| remove the reference | the reference disappears; derived constructions keep their passive block and become orphans |
+| save and reopen, Save As | same states, recomputed from the reopened document |
+| reimport the same file | a new reference (case 7); never linked by data |
 
 ## 7. Inclusion policy
 
 ### 7.1 Defaults
 
-With the option on: states 1, 4 (subject to RX-D2), 5, 6, 7 and 8 include the reference;
-states 2 and 3 exclude it. The system never writes a reference and a construction that
-validly represents it by an automatic decision. A user selection that does so is allowed
-with the warning `DUPLICATE_REPRESENTATION`.
+With the option on: references in `NO_CEDG_REPRESENTATION`, `RELATED_CONSTRUCTION_MODIFIED`
+and `ASSOCIATION_UNRESOLVED` are included; references validly represented
+(`REPRESENTED_EXACT`, `REPRESENTED_APPROXIMATION`) are excluded. The system never writes a
+reference and a construction that validly represents it by an automatic decision. A user
+selection that does so is allowed with the warning `DUPLICATE_REPRESENTATION`. With the option
+off (the default of every export), no reference is written.
 
 ### 7.2 Hidden references, export area and selection
 
@@ -263,8 +273,8 @@ only come from §5.2 or from a conformance restriction fixed later.
 A minimal extension, without turning references into model entities:
 
 1. **Request.** The DXF dialog carries the option and the per-reference toggles in the
-   request; the controller takes an immutable snapshot of the store (records, preferences,
-   derivation entries) and of the resolver inputs, with its own staleness check, between
+   request; the controller takes an immutable snapshot of the store (records and
+   preferences) and of the resolver inputs, with its own staleness check, between
    the preflight and the encoding.
 2. **Separate read-only adapter.** A reference adapter maps store records to immutable
    reference-export items (not `GeometryExportModel.Entity`); the resolver of §6 runs on
@@ -281,9 +291,9 @@ The construction adapters (`GeoElementGeometryExportAdapter`, `G9X1GeometryExpor
 
 ## 9. Preflight
 
-Preflight counts, separately from construction outcomes: references included, excluded by
-state (2, 3, 4 under alternative B), excluded by the user, outside the export area, and not
-writable. The writability rule becomes: writable when the construction contributes at least
+Preflight counts, separately from construction outcomes: references included, excluded as
+validly represented (`REPRESENTED_EXACT`, `REPRESENTED_APPROXIMATION`), excluded by the user or
+by preference, outside the export area, and not writable. The writability rule becomes: writable when the construction contributes at least
 one entity **or** at least one reference is included. A references-only export is
 therefore possible.
 
@@ -301,13 +311,14 @@ any `MAINT-A3` amendment; version 3 keeps its meaning). New section `external_re
   `closed_flag`, `representation` (flag as read, weight provenance), `file_sha256`,
   `file_base_name`, `source_entity_handle`, `source_entity_layer`, `source_entity_ordinal`,
   `source_insunits`, `document_unit_at_import`, `source_plane_z`, `transform`,
-  `source_digest`, `data_digest`, `derivations`;
+  `source_digest`, `data_digest`, and, for `RELATED_CONSTRUCTION_MODIFIED`, the related
+  construction sources;
 - per excluded reference: `reference_id`, `state`, `reason` (`REPRESENTED_BY_EXACT_CONVERSION`,
-  `REPRESENTED_BY_APPROXIMATION`, `DERIVED_CONSTRUCTION_MODIFIED`, `USER_EXCLUDED`,
-  `PREFERENCE_EXCLUDED`, `OUTSIDE_EXPORT_AREA`) and, when represented, the construction
-  sources that represent it;
-- diagnostics `DUPLICATE_REPRESENTATION`, `ASSOCIATION_UNRESOLVABLE`,
-  `ORPHAN_REFERENCE_PROVENANCE`, `SAME_DATA_AS_REFERENCE`, `PARTICIPATION_CONSERVATIVE`.
+  `REPRESENTED_BY_APPROXIMATION`, `USER_EXCLUDED`, `PREFERENCE_EXCLUDED`,
+  `OUTSIDE_EXPORT_AREA`) and, when represented, the construction sources that represent it;
+- diagnostics `RELATED_CONSTRUCTION_MODIFIED`, `DUPLICATE_REPRESENTATION`,
+  `ASSOCIATION_UNRESOLVABLE`, `ORPHAN_REFERENCE_PROVENANCE`, `SAME_DATA_AS_REFERENCE`,
+  `PARTICIPATION_CONSERVATIVE`.
 
 The DXF SHA-256 link, paired output and rollback follow the DXF contract §8 unchanged.
 
@@ -319,18 +330,25 @@ Compact (D-A-N2-5). In the existing DXF dialog, and only when the document has r
   does not change);
 - when on, one line: «3 will be included · 2 are already represented by constructions and
   are not duplicated» and a **«Review…»** link;
-- «Review…» lists name · nature · state («No construction», «Converted», «Approximated»,
-  «Derived construction modified», «Derived construction absent», «Approximation failed»,
-  «Association unresolved») · an «Include» box with the default of §7. Toggles apply to the
-  operation (decision RX-D10); the persistent preference is set in the reference manager;
+- «Review…» lists name · nature · state («No CeDG representation», «Converted»,
+  «Approximated», «Related construction modified», «Association unresolved») · an «Include»
+  box with the default of §7. For «Related construction modified» a short notice says that a
+  modified construction derived from this reference exists and will also be exported. Toggles
+  apply to the operation (decision RX-D10); the persistent preference is set in the
+  reference manager. References with identical data are flagged (RX-D15);
 - short notices: «References are written as SPLINE with their imported definition; they
   are not CeDG geometry.» and «A sidecar file will be created.»;
 - **Details…**, the report and the sidecar: definition, transformation, provenance,
-  identifiers, digests, derivations, fidelity and what it does not claim.
+  identifiers, digests, related constructions, fidelity and what it does not claim;
+- the option is part of the existing DXF export action, with no activation flag of its own
+  (author decision D-R1-10); its visible texts never say «experimental». Reconciliation with
+  AGENTS §5 (proposed): the option inherits the formal state of that action (`export.dxf-2d`,
+  whose flag predates this contract and is not a novelty flag); while `MAINT-A-DXF0-EXP` is open
+  the option exists only on its branch, and its state is declared by the author at closeout.
 
 ## 12. Validation obligations
 
-Round trip and binary64 comparison (cases RX-1 to RX-16 of the
+Round trip and binary64 comparison (cases RX-1 to RX-18 of the
 [A-N2 validation matrix](../../../docs/validation/pre_g9b_maint_a_n2_validation_matrix.md)):
 
 - re-import with the GeoCeDG reader: the new record's `sourceData` equals the exported
@@ -338,22 +356,61 @@ Round trip and binary64 comparison (cases RX-1 to RX-16 of the
 - extreme values: subnormals, the largest finite values, `-0.0`, values needing 17
   significant digits;
 - ordinary export byte identity with the option off or without references;
-- states 1 to 8 and the transitions of §6.6 built by identifiers; a construction identical
-  to a reference but without block is state 1 for that reference.
+- the eight cases of §6.5 and the transitions of §6.6 built by identifiers; a construction
+  identical to a reference but without block is `NO_CEDG_REPRESENTATION` for that
+  reference; a failed approximation changes no state, before or after save and reopen.
 
-External conformance is a **verifiable obligation** of `MAINT-A-DXF0-EXP`:
+### 12.1 External conformance (author decision D-R1-7)
 
-- readers: AutoCAD Core Console (AUDIT, entity data through AutoLISP) and a second reader
-  designated by the author; the GeoCeDG reader does not count as independent;
-- checks per golden file: the file opens without repair; the entity is a `SPLINE` with the
-  written degree, knot and control-point counts; the reader's knots, control points and
-  weights equal the written decimals under the nearest-binary64 rule; points evaluated by
-  the reader at declared parameters agree with the library evaluation within a declared
-  reading tolerance;
-- scope and limits: evidence binds the reader name and version; it covers the golden
-  fixtures only; it says nothing about a reader's own tessellation, display or later
-  edits; a reader that reparametrizes or normalizes knots is recorded as such;
-- a non-conforming reader for rational `SPLINE` is a stop condition (§14).
+External conformance is a **verifiable obligation** of `MAINT-A-DXF0-EXP`, with two readers
+fixed by the author:
+
+1. **AutoCAD Core Console** (`accoreconsole`), version identified and recorded at run time;
+2. **ezdxf**, a Python library used only as an external validation tool, with its version
+   pinned in the evidence; it is never a geometric authority of GeoCeDG and never a product
+   dependency.
+
+The GeoCeDG reader does not count as independent (it shares the library). Each golden file
+of the procedure (fixtures and scripts kept with the evidence, SHA-256 recorded) is checked
+in two separated parts:
+
+| Part | What is compared | Rule |
+|---|---|---|
+| **Definition reading** | entity type, degree, original knots, original control points, weights, flags, counts, domain `[u_p, u_{n+1}]` as read from the entity data (AutoLISP `entget`; ezdxf entity attributes, never its derived math object) | equal to the written decimals under the nearest-binary64 rule, every value compared exactly and as an ulp distance; any difference is a failure for ezdxf; for AutoCAD the rule of RX-D18 applies |
+| **Mathematical evaluation** | points on the curve at declared parameters, behavior at a multiple knot, rational arcs on the unit circle, orientation (start `P_0`, end `P_n`), closure | the reader's evaluation (ezdxf `ezdxf.math.BSpline` built from the raw lists, never `construction_tool()`; AutoCAD `vlax-curve-getPointAtParam`) against an independent exact-rational reference within a tolerance relative to the largest control-point magnitude; subnormal-width spans excluded |
+
+A reader's math object may normalize or correct data when it builds its curve (for example
+knot rescaling, weight normalization, flag inference). Every such transformation is
+recorded and compared with the rules of §4; it never counts as a reading of the definition.
+Evidence binds the reader name, version and fixtures; it covers those fixtures only. Passing
+it is not a claim of universal interoperability. A reader that rejects or misreads a rational
+`SPLINE` definition is a stop condition (§14), subject to decision RX-D18 below.
+
+### 12.2 Pilot evidence of R1 (2026-11-25)
+
+The R1 pilot (R1 report §F; 20 hand-written fixtures, SHA-256 recorded) used AutoCAD Core
+Console 2026 (`ACADVER` 25.1) and ezdxf 1.4.2:
+
+- **ezdxf** reads every written definition exactly (degree, knots, control points, weights,
+  flags as written); its `construction_tool()` rounds knots to the decimal places implied by
+  code 42 (10 by default), so evaluation is built from the raw lists (`ezdxf.math.BSpline`),
+  never through `construction_tool()`.
+- **AutoCAD** opens every fixture with AUDIT clean and reads the golden rational fixtures
+  exactly, but its decimal parse is not correctly rounded in general: in a sweep of 2 822
+  values, 268 came back 1 ulp off and up to 3 ulp near `10^-50`; three-digit exponents are
+  truncated (§5.2). It derives closure from the data, reports `70 = 15` for coincident end
+  points without treating the curve as periodic, and ignores written 42/43.
+- Both readers' evaluations agree with an exact rational evaluation within about `1.5e-16` on
+  unit-scale fixtures, at a double knot, at the ends and on the unit circle. A span of
+  subnormal width defeats both: such spans are excluded from evaluation claims.
+
+**Pending author decision RX-D18 (AutoCAD reading rule).** Either (A, recommended) the
+definition-reading check keeps exact equality for ezdxf and, for AutoCAD, records the ulp
+distance of every value and accepts at most 4 ulp as a documented limitation of that reader's
+decimal parsing (the fourth rounding of §5.3, outside the `REFERENCE_DEFINITION` claim); or
+(B) AutoCAD's misreading is the stop condition of §14. The class `REFERENCE_DEFINITION` itself
+is unaffected: it is defined by the nearest-binary64 rule, which ezdxf and the GeoCeDG reader
+follow exactly.
 
 ## 13. Risks
 
@@ -365,6 +422,8 @@ External conformance is a **verifiable obligation** of `MAINT-A-DXF0-EXP`:
 | X-4 | `schema_version` collision with `MAINT-A3` | coordinate in the amendment; serialize EXP and A3 |
 | X-5 | an exact conversion exported as an approximate polyline until `MAINT-A3` while its reference is excluded | stated by the dialog; it is the author's rule (D-A-N2-3) |
 | X-6 | stale state after Undo | states are computed, never stored |
+| X-7 | AutoCAD misreads some decimals by 1–3 ulp and truncates three-digit exponents (R1 pilot) | RX-D18, RX-D19; recorded per reader version |
+| X-8 | a closed reference re-saved by AutoCAD carries `70 = 15` (bit 2) and the approved import rejects it as `PERIODIC_UNSUPPORTED` | outside this contract: an import-contract question for the author (R1 report §K) |
 
 ## 14. Stop conditions
 
@@ -379,17 +438,21 @@ correspondence would need a DAG dependency; the implementation would need the co
 | Id | Question | Recommendation | Consequence |
 |---|---|---|---|
 | RX-D1 | Surface | check box in the existing DXF dialog | no new menu action |
-| RX-D2 | State 4 | alternative A (include) | see §6.5 |
+| RX-D2 | State 4 | alternative A: include the reference; the modified construction is exported from `Construction`; short notice | **fixed by the author (D-R1-6)** |
 | RX-D3 | Weights | canonical: effective weights only when some differs from 1 | the source representation is reported, not reproduced |
-| RX-D4 | Position of code 41 | the form that passes conformance; candidates: one 41 after each control point, or a block after the knots | the GeoCeDG reader accepts both |
-| RX-D5 | Flag 1 | only on exact closure | subject to conformance |
-| RX-D6 | 210/220/230 and 42/43 | the minimum conformance requires | — |
+| RX-D4 | Position of code 41 | one 41 after each control point (`10/20/30/41`), the form AutoCAD's own writer emits; both readers and the GeoCeDG reader accept both forms (R1 pilot) | proposed |
+| RX-D5 | Flag 1 | only on exact closure; neither reader treats it as periodic; ezdxf exposes it as `.closed` (R1 pilot) | proposed |
+| RX-D6 | 210/220/230 and 42/43 | write `0/0/1`; omit 42/43 (both readers accept; evaluation avoids ezdxf's knot rounding by using the raw lists) | proposed |
 | RX-D7 | Layer | fixed `GEOCEDG_REF` | alternative: original layer names (not ASCII-safe; provenance turned into presentation) |
 | RX-D8 | Hidden references | included with `60 = 1` | coherent with DXF contract §7 |
 | RX-D9 | Export area | conservative control-polygon hull | alternatives: ignore the area, or exclude all references |
 | RX-D10 | Dialog toggles | per operation; persistent preference only in the manager | exporting never dirties the document |
 | RX-D11 | Coordinate system | model (`data`) | a source-system option later |
 | RX-D12 | Sidecar | mandatory with references | always paired output |
-| RX-D13 | Sequence | strict: this contract and the store model types of `R-c` (milestone RC-M); integration after `MAINT-A-DXF0-RC` in the author's order; may precede A-DXF1 (only states 1, 7 and user selection occur before it) | aligned with the implementation plan §2 |
-| RX-D15 | References with identical data (state 7) | both included by default as distinct references; the summary line and «Review…» flag them with `SAME_DATA_AS_REFERENCE`; the user may exclude either | deduplicating by data would be an association by coordinates (D-A-N2-3); the automatic-duplication rule concerns a reference and a construction that represents it |
+| RX-D13 | Sequence | strict: this contract, the store model types of `R-c` (milestone RC-M) and the read-only provenance parser with applicability (milestone DXF1-M); integration after `MAINT-A-DXF0-RC` in the author's order; may precede A-DXF1 (before it only `NO_CEDG_REPRESENTATION`, case 7 and user choices occur) | aligned with the implementation plan §2 |
+| RX-D16 | Conformance readers | AutoCAD Core Console and ezdxf (pinned), definition reading separated from evaluation (§12.1) | **fixed by the author (D-R1-7)** |
+| RX-D17 | Failed approximations | never an export state; no persisted history | **fixed by the author (D-R1-5)** |
+| RX-D18 | AutoCAD definition-reading rule | A: exact for ezdxf; AutoCAD within 4 ulp, recorded as a reader limitation; B: stop condition | **pending author decision** (§12.2) |
+| RX-D19 | Values with three-digit exponents | refuse as `NOT_WRITABLE`/`EXPONENT_NOT_PORTABLE`; alternative: plain decimals for small values | **pending author decision** (§5.2) |
+| RX-D15 | References with identical data (case 7) | both included by default as distinct references; the summary line and «Review…» flag them with `SAME_DATA_AS_REFERENCE`; the user may exclude either | deduplicating by data would be an association by coordinates (D-A-N2-3); the automatic-duplication rule concerns a reference and a construction that represents it |
 | RX-D14 | Normative form | this contract + amendments + ADR 0045 | — |

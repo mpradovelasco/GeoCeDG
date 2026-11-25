@@ -1,0 +1,68 @@
+# MAINT-A-DXF0-RC — implementation of the `R-c` document store
+
+**CANDIDATE PROMPT — NOT AUTHORIZED.** Prepared by `PRE-G9B-MAINT-A-N2-R1`; registered under
+`.github/prompts/tasks/` only after the author adopts the contract and authorizes the
+increment on an exact base.
+
+```text
+selfApproved = false; authorApproved = false; implementationAuthorized = false
+PHASE_KIND   = PRODUCT INCREMENT — DOCUMENT STORE OUTSIDE Construction
+DEPENDS_ON   = cedg-reference-store/v1 ADOPTED; ADR 0044 ACCEPTED; MAINT-A-DXF0-RC-S0 REVIEWED
+```
+
+<!-- geocedg-field: objective -->
+## Objective
+
+Implement `cedg-reference-store/v1`: first the shared model milestone RC-M (pure types:
+reference identifier, export preference, resource-policy values, store snapshot interface, with
+unit tests), then the
+codec and validation in `org.geocedg.common.importer.dxf`, the reader branch and writer step
+in `MyXMLioJre`, the configurable resource policy, prepare-and-commit in every document
+route, the saved-state rule, the Desktop store addressed by identifier, the scanners, the
+Classic preservation or save barrier, the guide and the cases RC-* of the matrix.
+
+```text
+CHANGE_ROUTE = ORDINARY; VERIFICATION_CLASS = INTEGRATED_PHASE
+PLANNED_ACCEPTANCE = STATIC + PHASE PRE-G9B-MAINT-A-DXF0-RC + INTEGRATION (CORE + FOCUSED)
+GUIDE_IMPACT = UPDATE; FINAL = NOT PROPOSED
+```
+
+<!-- geocedg-field: implementation_base -->
+## Implementation base
+
+The `main` commit named by the author's authorization; branch `phase/pre-g9b-maint-a-dxf0-rc`;
+worktree `GeoCeDG-wt-maint-a-dxf0-rc`. RC-M is the first commit of the branch.
+
+<!-- geocedg-field: allowed_scope -->
+## Allowed scope
+
+The files listed in the operational plan §4.1; tests; the `PHASE` registration and inventory
+regeneration from executed evidence; guide and localized texts; an implementation report.
+
+<!-- geocedg-field: forbidden_scope -->
+## Explicitly forbidden scope
+
+`MyXMLHandler`, `MyXMLio.getFullXML`, `doParseXML`, Undo managers, spatial identity, command
+codecs, Locus V2, exporters, the B-spline family; approved specifications (amendments are
+applied only by the author's adoption record); `main`; push, merge, tags, releases.
+
+<!-- geocedg-field: required_checks -->
+## Required tests and commands
+
+RC-1 to RC-24, SEP-5 and C-1 regression; DX-1 to DX-13 non-regression; `STATIC`, `PHASE`,
+`INTEGRATION` on the frozen candidate; `git diff --check`; bootstrap impact review.
+
+<!-- geocedg-field: authorization_boundary -->
+## Authorization boundary
+
+Implementation of the adopted contract only; any normative change stops the increment.
+
+<!-- geocedg-field: publication_boundary -->
+## Publication boundary
+
+Local branch; integration and promotion only by a later author instruction naming exact SHAs.
+
+## Stop conditions
+
+Those of `cedg-reference-store/v1` §16; a silent loss on any route; a resource policy that
+cannot reject an over-budget document without truncation.

@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | **CANDIDATE — PENDING AUTHOR REVIEW.** Planificación, no autorización. `implementationAuthorized=false` para todos los incrementos de este plan; `selfApproved=false` |
+| Estado | **CANDIDATE — READY FOR AUTHOR ADOPTION (revisión R1).** Planificación, no autorización. R1 (2026-11-25): sin historial de derivaciones, política de recursos configurable, Classic con conservación opaca, lectores AutoCAD Core Console y ezdxf, prompts candidatos en [`pre_g9b_maint_a_n2_r1_candidate_prompts/`](pre_g9b_maint_a_n2_r1_candidate_prompts/) y [propuesta de ejecución coordinada](pre_g9b_maint_a_n2_r1_coordinated_execution_proposal.md). `implementationAuthorized=false` para todos los incrementos de este plan; `selfApproved=false` |
 | Base | `main` `a9ee803bf4be92c58ab7e120111ebacc70055487` (segunda ola publicada) |
 | Escrito por | `PRE-G9B-MAINT-A-N2` |
 | Contratos | [`cedg-reference-store/v1`](../../geocedg/specs/import/reference-store.md), [`cedg-reference-export/v1`](../../geocedg/specs/export/dxf-reference-export.md), [`dxf-spline-approximation/v1`](../../geocedg/specs/import/dxf-spline-approximation.md); [enmiendas](pre_g9b_maint_a_n2_candidate_amendments.md); ADR [0044](../adr/0044-document-store-of-imported-references.md) y [0045](../adr/0045-separate-dxf-export-of-imported-references.md) (propuestos) |
@@ -25,17 +25,23 @@
 | Orden | Id | Contenido | Capa | Clase propuesta | Esfuerzo |
 |---|---|---|---|---|---|
 | 1 | `MAINT-A-DXF0-RC-S0` | caracterización C-1 a C-5 del contrato `R-c` (rutas de apertura, 1.2.2 aislada, Classic, coste en límites, escáneres) | pruebas y sondas | `BOUNDED_PHASE` (`STATIC` + `PHASE`) | XS |
-| 2 | `MAINT-A-DXF0-RC` | almacén documental: códec, identidades, preparación y confirmación, estado guardado, gestor por `id`, escáneres, Classic según RC-D4 | documento + Desktop + gancho upstream mínimo en `MyXMLioJre` | `INTEGRATED_PHASE` | M |
+| 2 | `MAINT-A-DXF0-RC` | almacén documental: códec, identidades, política de recursos configurable, preparación y confirmación en todas las rutas, estado guardado, gestor por `id`, escáneres, conservación opaca en Classic | documento + Desktop + gancho upstream mínimo en `MyXMLioJre` | `INTEGRATED_PHASE` | M |
 | 3 | `MAINT-A-DXF0-EXP` | exportación de referencias como `SPLINE`, resolutor de estados, manifiesto v4, conformidad externa | adaptador de exportación + Desktop | `INTEGRATED_PHASE` + evidencia de lectores externos | M |
 | 4 | `MAINT-A-DXF1-S0` | caracterización NUM-1 a NUM-10 con las rutas de creación elegidas; ruta de redefinición por sustitución; estabilidad de bytes | pruebas y sondas | `BOUNDED_PHASE` | XS |
-| 5 | `MAINT-A-DXF1` | conversión exacta, aproximación con estimación, procedencia y aplicabilidad (cierra BS-24), entradas de derivación, corrección de la redefinición por sustitución | biblioteca + servicio externo + núcleo GeoCeDG aditivo + Desktop | `INTEGRATED_PHASE` | M-L |
+| 5 | `MAINT-A-DXF1` | conversión exacta, aproximación con estimación, procedencia y aplicabilidad (cierra BS-24), sin historial persistente de fallos, corrección de la redefinición por sustitución | biblioteca + servicio externo + núcleo GeoCeDG aditivo + Desktop | `INTEGRATED_PHASE` | M-L |
 | 6 | `MAINT-A-DXF1b` | cota global certificada en aritmética racional exacta con presupuesto | biblioteca + servicio | `INTEGRATED_PHASE` | M |
 
 Hito interno recomendado: **`MAINT-A-DXF0-RC-M`**, primer commit de RC con los tipos puros
-compartidos (identificador de referencia, entrada de derivación, preferencia de exportación,
+compartidos (identificador de referencia, preferencia de exportación, política de recursos,
 interfaz de instantánea del almacén) y sus pruebas unitarias, sin persistencia ni interfaz.
 EXP y DXF1 lo fusionan antes de empezar, como se hizo con la biblioteca matemática
 (`d22c4cc85`). Así ningún incremento redefine el modelo.
+
+Segundo hito recomendado (R1): **`MAINT-A-DXF1-M`**, primer commit de DXF1 con el analizador de solo
+lectura de la gramática `approximationProvenance` `v1` y el cálculo de aplicabilidad
+(`dxf-spline-approximation/v1` §10 y §11), aditivo en el código de la familia y con pruebas
+unitarias. EXP lo fusiona para que su resolutor lea bloques reales sin tocar el núcleo; los casos
+de exportación que necesitan la operación A-DXF1 (RX-7, RX-18) se ejecutan en DXF1.
 
 ## 2. Dependencias
 
@@ -43,9 +49,9 @@ EXP y DXF1 lo fusionan antes de empezar, como se hizo con la biblioteca matemát
 |---|---|---|
 | RC-S0 | contrato `R-c` aprobado (o, como mínimo, autorizado para caracterización) | — |
 | RC | contrato `R-c` y ADR 0044 aprobados; RC-S0 revisada (C-1 es evidencia obligatoria del contrato §14) | — |
-| EXP | contrato de exportación y ADR 0045 aprobados; hito RC-M (identificador, preferencias, instantánea) | RC integrado antes que EXP (orden de integración); A-DXF1 no es necesario: antes de él solo existen los estados 1, 7 y la selección del usuario |
+| EXP | contrato de exportación y ADR 0045 aprobados; hitos RC-M (identificador, preferencias, instantánea) y DXF1-M (analizador del bloque y aplicabilidad) | RC integrado antes que EXP (orden de integración); la operación A-DXF1 no es necesaria: sin ella solo existen referencias sin representación, el caso 7 y las elecciones del usuario |
 | DXF1-S0 | contrato A-DXF1 aprobado o autorizado para caracterización | puede ejecutarse en cualquier momento tras la base |
-| DXF1 | contrato A-DXF1 aprobado; DXF1-S0 revisada; RC integrado (AX-D1: identificador y entradas de derivación persistentes) | EXP integrado antes, para probar el resolutor con construcciones reales; no es estricto: DXF1 prueba con el resolutor sobre registros sintéticos |
+| DXF1 | contrato A-DXF1 aprobado; DXF1-S0 revisada; RC integrado para el servicio y la interfaz (AX-D1: identificador persistente de la referencia) | EXP integrado antes, para probar el resolutor con construcciones reales; no es estricto: DXF1 prueba con el resolutor sobre registros sintéticos |
 | DXF1b | DXF1 integrado | — |
 | `MAINT-A3` (fuera de este plan) | su propia autorización | **nunca en paralelo con EXP** (mismos ficheros del exportador y del manifiesto) |
 
@@ -95,8 +101,8 @@ biblioteca matemática, lector DXF, adaptadores de construcción.
 Puede tocar: clases nuevas en `org.geocedg.common.math.bspline`; un paquete nuevo de servicio
 fuera del núcleo; `org.geocedg.common.kernel.bspline` de forma aditiva (fábrica de
 `PersistedContract`, clase de procedencia, aplicabilidad, conservación del bloque en la
-redefinición por sustitución); acción, diálogo e informe de Desktop; escritura de entradas de
-derivación por la API del almacén. No toca: exportador, `MyXMLHandler`, plantilla XML, rutas
+redefinición por sustitución); acción, diálogo, informe de Desktop e informe de sesión. Nunca escribe
+en el almacén. No toca: exportador, `MyXMLHandler`, plantilla XML, rutas
 upstream.
 
 ### 4.4 Puntos calientes compartidos
@@ -115,7 +121,7 @@ incremento toca guías o diagnósticos.
 |---|---|---|
 | RC-S0, DXF1-S0 | `STATIC` + `PHASE` registrada propia | evidencia de caracterización; sin cambio de producto |
 | RC, EXP, DXF1, DXF1b | `STATIC` + `PHASE PRE-G9B-MAINT-<id>` + `INTEGRATION` (`CORE + FOCUSED`) | el perfil `DEV` no es evidencia; `git diff --check`; `GUIDE_IMPACT`; impacto de bootstrap (sin cambio esperado; los lectores externos de EXP no son requisito de estación) |
-| EXP | además: evidencia de conformidad externa (RX-16) | AutoCAD Core Console y un segundo lector que designe el autor |
+| EXP | además: evidencia de conformidad externa (RX-16, RX-17) | AutoCAD Core Console y ezdxf con versión fijada (decisión del autor D-R1-7); lectura de la definición separada de la evaluación |
 | todos | `FINAL` no se propone | `VERIFICATION_ESCALATION_REQUEST` solo si RC necesitara tocar `MyXMLHandler` o Undo, lo que es condición de parada del contrato |
 
 ## 6. Smokes autorales
@@ -132,8 +138,8 @@ incremento toca guías o diagnósticos.
 |---|---|
 | una ruta de apertura vacía el almacén antes de la confirmación | C-1; preparación y confirmación; RC-13 |
 | pérdida declarada al guardar con 1.2.2 | notas de versión; decisión del autor D-A-N2-2 |
-| escáneres que rechazan documentos con almacén grande | registro de la entrada y tope de 4 MiB (RC-D9) |
-| lectores externos no conformes con `SPLINE` racional | RX-16 antes del cierre de EXP; condición de parada |
+| escáneres que hoy rechazan cualquier almacén | reconocen la entrada y la validan con la política de recursos (RC-D9) |
+| lectores externos no conformes con `SPLINE` racional | RX-16 y RX-17 antes del cierre de EXP; condición de parada |
 | redefinición por sustitución pierde la procedencia | corrección dentro de DXF1 (AX-D13) con NUM-6 |
 | `-0.0` cambia el resumen tras guardar | normalización previa (AX-D12), NUM-8 |
 | ruta de listas construidas en código no estable en bytes | no usarla; DXF1-S0 |
@@ -151,3 +157,4 @@ incremento toca guías o diagnósticos.
 | D-P-4 | Caracterizaciones RC-S0 y DXF1-S0 como incrementos acotados propios | sí, en paralelo al principio | decisiones basadas en evidencia antes del código |
 | D-P-5 | Orden relativo de EXP y `MAINT-A3` | EXP antes; A3 después, nunca en paralelo | A3 añadirá la `SPLINE` de construcciones que EXP no toca |
 | D-P-6 | DXF1 sobre `R-c` | estricto (AX-D1) | DXF1 no empieza su servicio antes de integrar RC |
+| D-P-7 | Hito DXF1-M (analizador del bloque y aplicabilidad) | sí, primer commit de DXF1, fusionado en EXP | EXP prueba su resolutor con bloques reales sin tocar el núcleo; RX-7 y RX-18 pasan a DXF1 |

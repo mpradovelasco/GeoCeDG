@@ -1,7 +1,11 @@
 # ADR 0045 — Separate DXF export of imported references as `SPLINE`
 
-- Status: **PROPOSED — CANDIDATE PENDING AUTHOR REVIEW** (written by `PRE-G9B-MAINT-A-N2`
-  on 2026-11-25). `selfApproved=false`. Acceptance would not authorize `MAINT-A-DXF0-EXP`.
+- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R1)** (written by
+  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1`).
+  `selfApproved=false`. Acceptance would not authorize `MAINT-A-DXF0-EXP`.
+- R1 changes: decision 4 records state 4 as alternative A (D-R1-6) and removes any failure
+  state (D-R1-5); decision 6 fixes the conformance readers (D-R1-7); decision 7 records the
+  availability rule (D-R1-10).
 - Date: 2026-11-25.
 - Authorization of the design work: author instruction «GeoCeDG — PRE-G9B-MAINT-A-N2»
   (2026-11-25); execution contract
@@ -52,7 +56,24 @@ re-exported.
    block that decides only whether to include the reference; it never changes how a
    construction is exported and creates no dependency (refines ADR 0043 decision 11 and
    `bspline-2d.md` §10.5).
+   A reference is excluded by default only while a defined construction validly represents
+   it (applicable provenance naming it); a modified related construction does not, so the
+   reference is included by default and the modified construction is exported from
+   `Construction` (author decision D-R1-6). A failed approximation is a transient operation
+   result, never an export state, and leaves nothing in the document (D-R1-5).
 5. **Mandatory sidecar** whenever a reference is written.
+6. **External conformance with two fixed readers.** AutoCAD Core Console and ezdxf (a pinned
+   external validation tool, never a product dependency or geometric authority) check each
+   golden file in two separated parts: reading of the definition as written, and
+   mathematical evaluation, recording any normalization a reader's math object applies. The
+   evidence binds reader versions and fixtures and claims no universal interoperability
+   (D-R1-7). The R1 pilot showed exact reading by ezdxf and decimal misreadings of 1–3 ulp
+   and truncated three-digit exponents by AutoCAD 2026; the reading rule for AutoCAD and the
+   treatment of such exponents are pending author decisions RX-D18 and RX-D19 of the contract.
+7. **No novelty flag.** The option belongs to the existing DXF export action; it adds no
+   activation flag and no «experimental» wording; it inherits the formal AGENTS §5 state of the
+   existing DXF export action, and the author declares its state at the closeout of the
+   implementing increment (D-R1-10).
 
 ## Consequences
 
