@@ -25,8 +25,10 @@ adopción y comunicarla»), la preparación de la adopción se detiene en D-R4-1
 
 ## 1. Candidato R4
 
-Commit de contenido y árbol: se registran en el descendiente documental de este informe (§8),
-porque un documento no puede contener su propio SHA.
+**Candidato de contenido R4:** `5a009e0e9f850d0ee92708b306d8646108148681`, árbol
+`a50477b750cba38055c955ceae489d1341762c92`, padre `7e03d0fa1` (prompt R4). Registrado en un
+descendiente documental que solo cambia este informe (un documento no puede contener su propio
+SHA); `STATIC` y clasificación en §8.
 
 ## 2. I-1 — gramática de `normal`
 
@@ -207,7 +209,34 @@ abrir otro ciclo general de rediseño». Se comprobaron con las verificaciones d
 
 ## 8. Identidad y resultado de `STATIC`
 
-Se registran en el descendiente documental del commit de contenido R4.
+Registrados en un descendiente documental del commit de contenido R4. El descendiente solo
+cambia este informe. Las tres propuestas de adopción remiten a esta sección.
+
+**Resultado técnico del commit de contenido** (es el único `STATIC` de R4):
+
+| Elemento | Valor |
+|---|---|
+| **Candidato de contenido R4** | `5a009e0e9f850d0ee92708b306d8646108148681`, árbol `a50477b750cba38055c955ceae489d1341762c92`, padre `7e03d0fa1` |
+| Orden | `tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts\agent\pre-g9b-maint-a-n2-r4-static-5a009e0e`, desde el worktree |
+| Código de salida | `0` |
+| Ejecución | `verification-6efc912d80b7425890a47cb5afd5f817`; plan `25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52` |
+| Identidad ligada | `candidate_commit = 5a009e0e9…`, `candidate_tree = a50477b75…`; resumen del resultado recalculado igual al almacenado |
+| Veredictos | aceptación `ACCEPTED` (3 satisfechas, 0 violadas); cobertura `COMPLETE` |
+| Diagnósticos | 1 hallazgo: `diagnostic.governance` `DIAGNOSTIC_FINDING`, permanente por el protocolo de recuperación; `diagnostic.historical-consistency` `DIAGNOSTIC_UNAVAILABLE`, permanente; el resto `DIAGNOSTIC_CLEAR` |
+| Informe | `artifacts/agent/pre-g9b-maint-a-n2-r4-static-5a009e0e/verification-result.json` (ignorado), SHA-256 `df3540fff06ef5503b200bfff0c14a1bd985d33ade693dd13c22a0c267adac7f` |
+| Comprobaciones previas | contrato de prompt de la tarea R4 y de los prompts candidatos RC-S0, RC y EXP (`execution_safe = true`); enlaces relativos, UTF-8, LF y columnas de tablas limpios; `git diff --check` limpio; ningún cambio en `source/`, en el roadmap, en `AGENTS.md` ni en `CLAUDE.md` |
+
+**Carácter del descendiente.** Este descendiente no tiene `STATIC` propio. Su clasificación
+canónica con `tools/agent/documentary-descendant.ps1` se ejecuta después de su commit, así que
+no puede constar en él mismo. La registran el mensaje final al autor y el registro de cierre.
+El resultado esperado, igual que en R3, es: `DOCUMENTARY_ONLY`, resultado técnico reutilizable
+el de `5a009e0e9…`, `rerun_required = false`.
+
+`STATIC` es aceptación técnica de la forma del candidato; no es adopción autoral.
+
+**Estado:** `PRE-G9B-MAINT-A-N2-R4 — NORMATIVE DESIGN CANDIDATE — ADOPTION PREPARATION STOPPED:
+ONE AUTHOR DECISION REQUIRED (D-R4-1)`. `selfApproved = false`, `authorApproved = false`. Sin
+push, merge, `main`, etiquetas, releases ni empaquetado.
 
 ## 9. Decisiones residuales
 
