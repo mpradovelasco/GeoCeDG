@@ -179,7 +179,25 @@ referencia cruzada.
 
 ## J. Resultados de `STATIC`
 
-Se registran en un descendiente documental del commit de contenido R1.
+Registrados en un descendiente documental del commit de contenido R1 (un documento no puede
+contener su propio SHA). El descendiente solo cambia este informe; las tres propuestas de
+adopción remiten a esta sección.
+
+| Elemento | Valor |
+|---|---|
+| Commit de gobernanza (prompt R1) | `51d8500b5`, padre `e7803badb` |
+| **Candidato de contenido R1** | `228d91d443f38032f1264e133cebf557038820fb`, árbol `0a677f3b21b99c1d1f992c4f216af26dce839798`, padre `51d8500b5` |
+| Orden | `tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts\agent\pre-g9b-maint-a-n2-r1-static-228d91d4`, desde el worktree (PowerShell 7; directorio de proceso fijado al worktree; consola en la carpeta temporal de la sesión) |
+| Código de salida | `0` |
+| Ejecución | `verification-34584321c5c3432e9b79ef52c6499e3b`; plan `25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52` |
+| Identidad ligada | `candidate_commit = 228d91d44…`, `candidate_tree = 0a677f3b2…` (árbol confirmado y limpio) |
+| Veredictos | aceptación `ACCEPTED`; cobertura `COMPLETE` |
+| Diagnósticos | 1 hallazgo: `diagnostic.governance` `DIAGNOSTIC_FINDING` (diagnóstico permanente, sin efecto en la aceptación); `diagnostic.historical-consistency` `DIAGNOSTIC_UNAVAILABLE`; documentación, estructura de guías, estilo y espacios `DIAGNOSTIC_CLEAR` |
+| Informe | `artifacts/agent/pre-g9b-maint-a-n2-r1-static-228d91d4/verification-result.json` (ignorado), SHA-256 `8e795e541ebe46081a00ef3a9a02d4f9a4f6bc70937da335c4dcb96d272a7a59` |
+| Comprobaciones previas | contrato del prompt R1 y de los cinco prompts candidatos (`execution_safe = true`); enlaces, UTF-8, LF, columnas de tablas, identificadores y restos de textos retirados; `git diff --check` limpio |
+
+`STATIC` es aceptación técnica de la forma del candidato; no es adopción autoral ni valida el
+contenido normativo.
 
 ## K. Decisiones todavía pendientes
 
