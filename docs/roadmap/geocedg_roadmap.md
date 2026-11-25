@@ -4769,3 +4769,34 @@ Referencias:
 [aprobación de N1](../validation/pre_g9b_maint_n1_author_approval_record.md),
 [aprobación de A-N1](../validation/pre_g9b_maint_a_n1_author_approval_record.md) y
 [aprobación de U2-R1](../validation/pre_g9b_maint_u2_r1_author_approval_record.md).
+
+## 2026-11-25 — Integración técnica de la segunda ola PRE-G9B-MAINT (B5a, A-DXF0-R1, A2)
+
+Registro aditivo por instrucción autoral de 2026-11-25 («GeoCeDG — PRE-G9B-MAINT. Cierre de
+segunda ola, consolidación Git y planificación de interoperabilidad DXF ampliada»). No altera
+fechas, aprobaciones ni resultados anteriores.
+
+- **`PRE-G9B-MAINT-B5A`** (`65ca487da35d34d500fb12e5d5c815e03eca5754`): el autor aprueba como
+  política numérica `ρ_J = 0,90`, `m = 3`, `L = 6`, factor `2^8` y `E_cap = 16 384`; la firma de
+  escalado no prueba discontinuidad ni certifica continuidad. Las lecturas L-1 a L-9 no se elevan
+  a norma; L-6 queda pendiente de decisión autoral.
+- **`PRE-G9B-MAINT-A2`** (`c63b10aade4f2792c855c1bc4ad6278f9a54fcfc`): `AUTHOR_SMOKE = PASS —
+  AUTHOR REPORTED`; CD-1 opción A adoptada; cierre `CORE + FOCUSED` sin `FINAL` aceptado;
+  `κ_max = 2^16` sigue candidato; BS-24 limitado hasta A-DXF1.
+- **`PRE-G9B-MAINT-A-DXF0`** (`177da00f6`) con su corrección focal **R1**
+  (`47c1c2e41d6d6bea6be13f3537168e59ed280d6c`): ambos smokes `PASS — AUTHOR REPORTED`; la
+  importación pasa a File → Insert, con madurez `stable` acotada a `R-a`; Q-DXF-3 resuelta.
+- **Integración:** rama `integration/pre-g9b-maint-second-wave-final`, continuada desde el
+  ensayo verificado con un merge `--no-ff` de R1. Verificación integrada `STATIC` + `PHASE`
+  (B5A, A-DXF0, A2) + `INTEGRATION` (`CORE + FOCUSED`, no exhaustiva); `FINAL = NOT AUTHORIZED`.
+  Los resultados del candidato integrado los informa el artefacto siguiente.
+- No autoriza la promoción a `main`, etiquetas, releases, paquetes ni `FINAL`. La publicación
+  exige una instrucción autoral que nombre el SHA integrado exacto. `R-c`, la exportación DXF de
+  referencias y `MAINT-A-DXF1` siguen sin autorización de implementación; G9B sigue
+  `DESIGNED — NOT AUTHORIZED`.
+
+Referencias:
+[registro de integración](../validation/pre_g9b_maint_second_wave_integration_record.md),
+[B5a](../validation/pre_g9b_maint_b5a_author_decision_record.md),
+[A-DXF0 y R1](../validation/pre_g9b_maint_a_dxf0_author_decision_record.md) y
+[A2](../validation/pre_g9b_maint_a2_author_decision_record.md).
