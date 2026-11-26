@@ -132,4 +132,55 @@ documental de este registro (§7).
 
 ## 7. Identidad del cierre y propuesta de publicación
 
-Se registran en el descendiente documental del commit de cierre.
+Registrados en un descendiente documental del commit de cierre. El descendiente solo cambia este
+registro.
+
+| Elemento | Valor |
+|---|---|
+| **Commit de cierre** | `2f913473a8ac789b85d55ca5277ac59b0ec3cc7f`, árbol `8ccbc365b804931d96b66480166f36bf42055b6c`, padre `10a94dd3c` (prompt de cierre) |
+| Orden | `tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts\agent\pre-g9b-maint-a-n2-closeout-static-2f913473`, desde el worktree |
+| Código de salida | `0` |
+| Ejecución | `verification-8cdcafb1dff84decbff78a882311e822`; plan `25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52` |
+| Identidad ligada | `candidate_commit = 2f913473a…`, `candidate_tree = 8ccbc365b…`; resumen del resultado recalculado igual al almacenado |
+| Veredictos | `ACCEPTED` (3 satisfechas, 0 violadas); `COMPLETE` |
+| Diagnósticos | los dos permanentes: `diagnostic.governance` `DIAGNOSTIC_FINDING` y `diagnostic.historical-consistency` `DIAGNOSTIC_UNAVAILABLE`; el resto `DIAGNOSTIC_CLEAR` |
+| Informe | `artifacts/agent/pre-g9b-maint-a-n2-closeout-static-2f913473/verification-result.json` (ignorado), SHA-256 `758bb60262977b729525bbc2e6f4fbb42bae2024221dbfeeb3c0b01bb244c757` |
+
+**Delta respecto de `main` `a9ee803bf`** hasta el commit de cierre: 18 commits, 38 ficheros,
+6 665 inserciones y 37 supresiones, solo en:
+
+| Ruta | Ficheros |
+|---|---|
+| `.github/prompts/tasks` | 5, los prompts de tarea de A-N2 a R4 y del cierre |
+| `docs/adr` | 4 |
+| `docs/architecture` | 8 |
+| `docs/roadmap` | 1, un registro aditivo |
+| `docs/validation` | 12 |
+| `geocedg/specs` | 8 |
+
+No hay código, recursos, pruebas, verificador ni empaquetado. `AGENTS.md` y `CLAUDE.md` no
+cambian.
+
+**Remoto.** `refs/heads/main` en `origin` = `origin/main` = `main` local =
+`a9ee803bf4be92c58ab7e120111ebacc70055487`, ancestro del cierre. La promoción es un avance
+rápido sin `--force`.
+
+**Propuesta de publicación** (no autorizada; exige una instrucción autoral que nombre el SHA):
+
+1. Tomar como candidato único de publicación el descendiente documental de este registro. Su
+   SHA y su árbol se entregan al autor con su propio `STATIC`; el descendiente solo cambia este
+   registro.
+2. Seguir AGENTS §8.1:
+   - leer y conciliar el `main` remoto;
+   - verificar el SHA y el árbol del candidato y la ascendencia;
+   - comprobar que ambos worktrees están limpios;
+   - avanzar `main` local sin `--force`;
+   - volver a confirmar el remoto y ejecutar `git push origin main`;
+   - verificar que `main` remoto, `main` local y `origin/main` resuelven al mismo commit y
+     árbol.
+3. No crear etiquetas, releases ni paquetes.
+4. Tras la publicación, añadir un registro de publicación en un descendiente documental o en el
+   siguiente encargo, según indique el autor.
+
+**Estado:** `PRE-G9B-MAINT-A-N2 — NORMATIVE CONTRACTS — AUTHOR APPROVED — CLOSEOUT VERIFIED —
+PENDING PUBLICATION`.
