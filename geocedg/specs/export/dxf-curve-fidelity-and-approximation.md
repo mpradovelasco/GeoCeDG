@@ -6,6 +6,7 @@
 | Version | `1.2` (2026-10-21: certified topology of Locus V2 components, section 10, `PRE-G9B-CU2`); `1.1` (2026-10-04: units, hidden layers, explicit export area and sidecar schema version 2; author decisions `DQ-C2`, `DQ-C3`, `DQ-C11`, `DQ-C13`) |
 | `CU2` amendment status | Section 10: **ARCHITECTURE AUTHOR APPROVED (2026-10-21); PASS — AUTHOR APPROVED WITH THE CU2 CLOSEOUT (2026-10-24)** |
 | Conditioned use amendment status | Section 11 (ADR 0042): **AUTHOR APPROVED AS CONTRACT (2026-11-22), IMPLEMENTATION AUTHORIZED IN INCREMENT I4, NOT YET APPROVED AS PRODUCT** |
+| Reference export amendment status | Section 12 and the amendments A-EXP-1 to A-EXP-5 in §3, §4, §7, §8 and §9: **AUTHOR APPROVED (2026-11-26)** with `cedg-reference-export/v1` and ADR 0045 (`PRE-G9B-MAINT-A-N2`, [approval record](../../../docs/validation/pre_g9b_maint_a_n2_author_approval_record.md); exact wordings in the [amendment set](../../../docs/architecture/pre_g9b_maint_a_n2_candidate_amendments.md)); the text before them is that of `main` `a9ee803bf`; implementation (`MAINT-A-DXF0-EXP`) not authorized |
 | Phase | G9X1 design; implementation not authorized |
 | Scope | Read-only 2D DXF fidelity, approximation, preflight, and sidecar contract |
 | Hard dependencies | [G5 geometry export foundation](geometry-export-foundation.md) and approved internal G6-G8 semantic source contracts |
@@ -90,6 +91,11 @@ Approximation evidence has a separate guarantee axis:
 - `FLOATING_POINT_UNCERTIFIED`: diagnostic only and not export-admissible by
   default.
 
+The population of imported references (§12) has its own fidelity axis,
+`REFERENCE_DEFINITION`: transfer of an external definition read back to the same binary64
+data. It is never `EXACT`, `APPROXIMATE`, `UNSUPPORTED` or `INVALID` of a construction
+source and never counts as CeDG geometry.
+
 ## 4. Capability and fidelity matrix
 
 | Source family | Initial G9X1 representation | Fidelity/domain policy |
@@ -112,8 +118,9 @@ Approximation evidence has a separate guarantee axis:
 
 Coincident constructive components remain distinct. Invalid-domain gaps are
 never connected. Endpoint proximity alone does not establish periodic closure.
-`SPLINE` remains outside the baseline until mathematical exactness and
-independent reader-conformance evidence are both available.
+For construction geometry, `SPLINE` remains outside the baseline until
+mathematical exactness and independent reader-conformance evidence are both available
+(`MAINT-A3`). Imported references are written as `SPLINE` only under §12.
 
 ## 5. Required read-only model
 
@@ -178,6 +185,12 @@ unsupported, invalid, and omitted component counts. The approved defaults are:
   persistently hidden GeoCeDG layer remain included on their layer, which is
   written OFF and reported (version 1.1, `DQ-C2`, `DQ-C3`).
 
+When the separate reference option of §12 is chosen, preflight also reports references
+included, excluded by state, excluded by the user, outside the export area and not
+writable. The operation is writable when the construction contributes at least one entity
+or at least one reference is included and writable after resolving preferences, states, user
+choices and the export area (§12).
+
 An explicit export area (`MANUAL`, `EXPORT_POINTS_EXPLICIT`,
 `EXPORT_POINTS_AUTOMATIC`) selects whole sources and certified components by
 the `B1` participation rule of the geometry export foundation (version 1.1,
@@ -214,16 +227,23 @@ export operation contains `APPROXIMATE` geometry, omitted or partial geometry,
 an unsupported requested component that was not emitted, work-limit
 termination, or any other fidelity reduction, and whenever the effective
 construction unit is `usm` (version 1.1, `DQ-C11`: the core DXF stays unitless
-and only the sidecar carries the declared physical meaning). A wholly `EXACT` export may omit
+and only the sidecar carries the declared physical meaning), and whenever the reference
+option of §12 is on and the export completes with at least one reference written or excluded
+(§12.6, situations A and B). A wholly `EXACT` export may omit
 the sidecar unless another product policy requires it, such as the `usm` rule
-above; export-area filtering alone never requires it. When present, it
+above; export-area filtering alone never requires it. The new sidecar requirement comes only
+from the reference option: the filtering of construction sources by the export area alone
+still never makes the sidecar mandatory. When present, it
 records:
 
 - schema `org.geocedg.dxf.fidelity-manifest` with `schema_version` 2 (version
   1.1; a version-1 sidecar keeps its original meaning, unitless coordinates,
   and is never reinterpreted), application/build version, embedded repository
   commit, DXF AC1015, coordinate system, source and target unit, `$INSUNITS`
-  and DXF SHA-256;
+  and DXF SHA-256. A sidecar written under §12 uses `schema_version` 4, with a
+  section `external_references`; a sidecar written without the reference option keeps the
+  current version and bytes; versions 2 and 3 keep their meaning. The encoding validator
+  counts construction entities and reference entities separately;
 - versioned unit metadata (`org.geocedg.dxf.unit-metadata` version 1): the
   unit state (`physical` or `unspecified_model_unit`), the construction-unit
   token, the canonical binary64 `meters_per_unit` (none when unspecified), and
@@ -252,13 +272,15 @@ construction object.
 
 G9X1 is experimental and separately gated. It does not change G5 exact bytes,
 legacy `GeoLocus`, `.ggb` persistence, command semantics, or the construction
-DAG. Recommended internal staging is:
+DAG. With the reference option of §12 off, or without references, the bytes of every export
+are unchanged. Recommended internal staging is:
 
 1. X1A: result taxonomy, preflight, conditional sidecar, paired writes, and executable G5
    corpus;
 2. X1B: bounded Locus V2/function/parametric adaptive polylines; and
-3. X1C: implicit contouring and/or exact rational `SPLINE`, only under a later
-   evidence-backed authorization.
+3. X1C: implicit contouring and/or exact rational `SPLINE` of construction geometry, only
+   under a later evidence-backed authorization; the `SPLINE` of imported references is
+   governed by §12.
 
 Entry requires this normative specification and Accepted ADR 0014 plus green G5 and
 G6-G8 gates. X1 may consume an internal revision-addressable Locus V2 semantic
@@ -333,3 +355,59 @@ The semantic export of conditioned regions is future work of the line on derived
 representations, DXF import and extended DXF export (contract §10, point 3). In that line a
 spline, a polyline or another derived representation never silently replaces the
 authoritative CeDG object.
+
+## 12. `cedg-reference-export/v1` amendment: export of imported references
+
+Status: **AUTHOR APPROVED (2026-11-26)** with [`cedg-reference-export/v1`](dxf-reference-export.md)
+and ADR 0045, accepted (`PRE-G9B-MAINT-A-N2`,
+[approval record](../../../docs/validation/pre_g9b_maint_a_n2_author_approval_record.md)).
+Approval is not implementation: `MAINT-A-DXF0-EXP` is not authorized.
+
+12.1 The export of imported references is a capability separate from the semantic export
+of `Construction`, run only by explicit user choice in the operation. Without it, §1 to §11
+govern unchanged and the output is byte-identical.
+
+12.2 Its population is the records of `cedg-reference-store/v1`, never `GeoElement`s.
+Exporting mutates neither the construction, its XML, its Undo history, the store nor the
+saved state.
+
+12.3 Each included reference is one planar, non-periodic `SPLINE` without fit points, with
+the degree, knots and transformed control points of its record and, when some effective
+weight differs from 1, the rational flag and the effective weights. No rational reference
+is approximated or replaced by a polyline.
+
+12.4 Fidelity `REFERENCE_DEFINITION`: the entity's data, read back to the nearest binary64,
+equal the record's data under `==`; checked before promotion. It claims nothing about the
+source file or about other readers and confers no CeDG authority.
+
+12.5 Default inclusion is decided by the explicit provenance of derived constructions and
+the store, never by proximity, coordinates, data digests, labels or indices; a reference
+validly represented by a current derived construction is not duplicated automatically;
+the user's choice prevails, with a warning on duplication.
+A reference whose related construction was modified is no longer validly represented and
+is included by default, while the modified construction is exported by §1 to §11. A failed
+approximation is never an export state.
+
+12.6 With the reference option on: (A) when at least one reference is written, DXF and
+sidecar are produced as a pair; (B) when the export completes and a reference is excluded, by
+the user, by preference or by the approved policy (including by the user after
+`EXPONENT_NOT_PORTABLE`, which never excludes a reference automatically), the
+sidecar is produced and records each exclusion and its cause, also when no reference is
+written; (C) when an included reference is `NOT_WRITABLE`, the strict rule rejects the
+operation: no DXF and no sidecar, nothing partial presented as a success, the cause given by
+the result and report of the operation.
+
+12.7 Derived constructions are exported by §1 to §11 with their guarantees; this section
+authorizes no `SPLINE` for constructions (`MAINT-A3`).
+
+12.8 External conformance is checked with AutoCAD Core Console and a pinned ezdxf, reading
+of the definition separated from mathematical evaluation; the evidence covers its fixtures
+and reader versions only. DXF format compliance, the fidelity class (exact re-reading,
+reproduced by ezdxf) and AutoCAD conformance (each value within 4 ulp as an initial test
+criterion for AutoCAD 2026, `ACADVER` 25.1, only, not a bound of the product or of the
+reader, plus preserved structure and geometry) are distinct levels of evidence; the AutoCAD
+tolerance does not change the fidelity class.
+
+12.9 A reference whose coordinates, knots or weights would be written with a three-digit
+exponent is `NOT_WRITABLE` (`EXPONENT_NOT_PORTABLE`); it is never rewritten or replaced by a
+polyline, and the user may exclude it with the diagnostic kept.

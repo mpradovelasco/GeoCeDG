@@ -4,6 +4,8 @@
 `.github/prompts/tasks/` only after the author adopts the contract and authorizes the
 increment on an exact base.
 
+**Dependency status (normative closeout of 2026-11-26):** `cedg-reference-store/v1` is AUTHOR APPROVED and ADR 0044 accepted, with author decision D-R4-1 in its scope ([approval record](../../validation/pre_g9b_maint_a_n2_author_approval_record.md)) — satisfied; `MAINT-A-DXF0-RC-S0` reviewed — pending. Closeout gates: C-4 and C-5 at the budget. The increment itself stays not authorized.
+
 ```text
 selfApproved = false; authorApproved = false; implementationAuthorized = false
 PHASE_KIND   = PRODUCT INCREMENT — DOCUMENT STORE OUTSIDE Construction

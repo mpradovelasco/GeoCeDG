@@ -10,6 +10,14 @@
   the native NURBS `MAINT-A-R` remain unauthorized. The words «proposed», «candidate» and
   «pending author review» in the sections below record the stage at which each was written
   and are superseded by this status.
+- Refinements accepted on 2026-11-26 (`PRE-G9B-MAINT-A-N2`,
+  [approval record](../validation/pre_g9b_maint_a_n2_author_approval_record.md)): decision 10
+  («session-only in the first implementation») is followed by
+  [ADR 0044](0044-document-store-of-imported-references.md) (`R-c`); references stay outside
+  `Construction` and the DAG. Decision 11 is refined by
+  [ADR 0045](0045-separate-dxf-export-of-imported-references.md) decision 4 (informative reads
+  of the provenance block to present the conversion or approximation state and to decide the
+  default inclusion of a reference in the DXF export).
 - Date: 2026-11-23.
 - Authorization of the design work: author instruction «GeoCeDG — PRE-G9B-MAINT-A-N1.
   Autorización de diseño normativo — Familia B-spline preparada para NURBS e

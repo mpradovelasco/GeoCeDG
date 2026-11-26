@@ -2,8 +2,8 @@
 
 | Campo | Valor |
 |---|---|
-| Estado | **PROPUESTA — NO AUTORIZADA.** Preparada por `PRE-G9B-MAINT-A-N2-R1`. `selfApproved=false`, `implementationAuthorized=false` |
-| Requisito | adopción autoral expresa de los tres contratos de A-N2-R1 y una instrucción de implementación con base exacta |
+| Estado | **PROPUESTA DE COORDINACIÓN ACTUALIZADA TRAS EL CIERRE NORMATIVO (2026-11-26) — EJECUCIÓN NO AUTORIZADA.** Preparada por `PRE-G9B-MAINT-A-N2-R1` y actualizada por el cierre de `PRE-G9B-MAINT-A-N2`. `selfApproved=false`, `implementationAuthorized=false` |
+| Requisito | cumplido: adopción autoral de los tres contratos (2026-11-26, [registro de aprobación](../validation/pre_g9b_maint_a_n2_author_approval_record.md)); pendiente: una instrucción de implementación con base exacta, la publicación del cierre en `main` incluida |
 | Prompts candidatos | [`pre_g9b_maint_a_n2_r1_candidate_prompts/`](pre_g9b_maint_a_n2_r1_candidate_prompts/) |
 | Plan de referencia | [plan operativo](pre_g9b_maint_interop_implementation_plan_candidate.md) |
 
@@ -12,8 +12,32 @@
 Una sola instrucción autoral podría autorizar, sobre un `main` exacto que contenga los
 contratos adoptados, los incrementos `MAINT-A-DXF0-RC-S0`, `MAINT-A-DXF0-RC`,
 `MAINT-A-DXF0-EXP`, `MAINT-A-DXF1-S0` y `MAINT-A-DXF1`, coordinados por una sesión principal
-con un informe final único (instrucción R1 §15). `MAINT-A-DXF1b` queda fuera: requiere su
-propia caracterización de coste y una autorización posterior. `MAINT-A3` también queda fuera.
+con un informe final único (instrucción R1 §15). La autorización podrá dar al coordinador
+autonomía para crear ramas y worktrees, coordinar subagentes y ejecutar las verificaciones
+previstas, dentro de las paradas de §4.
+
+Quedan expresamente fuera:
+
+- `MAINT-A-DXF1b`, que requiere su propia caracterización de coste y una autorización
+  posterior;
+- `MAINT-A3`;
+- la NURBS nativa (`MAINT-A-R`);
+- los mantenimientos independientes del importador y del exportador DXF existentes, entre
+  ellos las deudas DT-1 (exponentes de la exportación ordinaria) y DT-2 (`70 = 15`).
+
+## 1 bis. Dependencias y puertas de cada incremento (cierre normativo de 2026-11-26)
+
+| Incremento | Depende de | Puertas de cierre propias |
+|---|---|---|
+| `MAINT-A-DXF0-RC-S0` | `cedg-reference-store/v1` y ADR 0044, aprobados | C-1 a C-3 y el comportamiento actual de C-5; ningún cambio de producto |
+| `MAINT-A-DXF1-S0` | `dxf-spline-approximation/v1`, aprobado | NUM-1 a NUM-10; ningún cambio de producto |
+| `MAINT-A-DXF0-RC` | RC-S0 revisada (P1) | hito RC-M como primer commit; RC-1 a RC-26 (RC-25 (f) incluido); la presencia aditiva de 210, 220 y 230 con las seis condiciones de D-R4-1; no regresión DX-1 a DX-13; **C-4 y C-5 en el presupuesto** |
+| `MAINT-A-DXF0-EXP` | `cedg-reference-export/v1` y ADR 0045, aprobados; RC-M y DXF1-M fusionados | RX-1 a RX-6, RX-8 a RX-17 y RX-19, con RX-15 (e) por el controlador real; ruta solo de referencias únicamente en el flujo extendido y flujo G5 intacto; identidad de bytes de la exportación ordinaria; evidencia externa RX-16, RX-17 y RX-19 (AutoCAD 2026 `ACADVER` 25.1, ezdxf 1.4.2) |
+| `MAINT-A-DXF1` | DXF1-S0 revisada; RC integrado; RC-M fusionado; DXF1-M como primer commit | AP, NUM, RX-7 y RX-18; **constantes `bspline-param-lsq-constants/v1` fijadas**; autocomprobación que relee el bloque |
+
+Hitos compartidos: **RC-M**, los tipos puros del modelo del almacén, y **DXF1-M**, el
+analizador del bloque de procedencia. Ambos se fusionan y nunca se copian. La integración
+sigue el orden RC → EXP → DXF1.
 
 ## 2. Worktrees y ramas (se crean solo tras la autorización)
 

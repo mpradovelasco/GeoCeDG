@@ -4803,3 +4803,62 @@ Referencias:
 [B5a](../validation/pre_g9b_maint_b5a_author_decision_record.md),
 [A-DXF0 y R1](../validation/pre_g9b_maint_a_dxf0_author_decision_record.md) y
 [A2](../validation/pre_g9b_maint_a2_author_decision_record.md).
+
+## 2026-11-26 — Aprobación autoral de los contratos PRE-G9B-MAINT-A-N2 (R-c, exportación DXF de referencias, A-DXF1)
+
+Registro aditivo por instrucción autoral de 2026-11-26 («GeoCeDG — PRE-G9B-MAINT-A-N2.
+Aprobación autoral de los tres contratos y ejecución del cierre normativo»). No altera fechas,
+aprobaciones ni resultados anteriores.
+
+**2026-11-26 — `PRE-G9B-MAINT-A-N2`: adopción normativa de `R-c`, exportación DXF de
+referencias y A-DXF1.**
+
+- **Contratos y ADR.** Quedan aprobados `cedg-reference-store/v1`, `cedg-reference-export/v1`
+  y `dxf-spline-approximation/v1`, en revisión R4 y con el candidato
+  `9c7e612294a2a0521a2c21d8f9c4580cb3b34efb`. Las ADR 0044 y 0045 quedan aceptadas.
+- **Enmiendas.** Los grupos R, X y A se aplican a `dxf-spline-reference.md`, `bspline-2d.md`,
+  `dxf-curve-fidelity-and-approximation.md`, `geometry-export-foundation.md` y
+  `native-document-identity.md`, y a las líneas de estado de ADR 0014 y ADR 0043.
+- **Presupuesto del almacén.** El valor inicial configurable es de 10 000 referencias y
+  1 500 000 valores binary64. Es un valor provisional de producto, respaldado por las
+  mediciones de R3.
+- **Incrementos habilitados normativamente, ninguno autorizado:** `MAINT-A-DXF0-RC-S0`,
+  `MAINT-A-DXF0-RC`, `MAINT-A-DXF0-EXP`, `MAINT-A-DXF1-S0` y `MAINT-A-DXF1`.
+  `MAINT-A-DXF1b`, `MAINT-A3` y `MAINT-A-R` siguen sin autorizar.
+- **Puertas de cierre de `MAINT-A-DXF0-RC`:**
+  - C-4: el ciclo completo Open → Save → Reopen sobre la implementación en el presupuesto,
+    incluido el caso al 100 % de `maxEntryBytes`;
+  - C-5 en el presupuesto: los escáneres, el trabajador experto y la instantánea de
+    recuperación deben aceptar el almacén.
+- **Dependencias estrictas:**
+  - RC, tras RC-S0;
+  - EXP, tras el hito RC-M;
+  - el servicio A-DXF1, tras RC y DXF1-S0;
+  - DXF1b, tras DXF1;
+  - EXP y `MAINT-A3`, nunca en paralelo.
+- **Orden de integración:** RC → EXP → DXF1 → DXF1b.
+- **Deudas separadas**, registradas y no autorizadas:
+  - DT-1: exponentes de la exportación ordinaria;
+  - DT-2: splines cerradas guardadas de nuevo por AutoCAD con `70 = 15`.
+- G9B sigue `DESIGNED — NOT AUTHORIZED`.
+
+Decisiones incluidas:
+
+- **D-R4-1:** presencia individual de los grupos 210, 220 y 230, con una modificación aditiva
+  mínima del registro de importación en el alcance futuro de RC.
+- La exportación de referencias existe solo en el flujo DXF extendido. El flujo G5 heredado no
+  se modifica.
+- Las constantes de A-DXF1 y la evidencia de conformidad externa conservan su carácter
+  provisional.
+
+El cierre no autoriza:
+
+- implementación;
+- push ni promoción a `main`, que exigen una autorización autoral que nombre el candidato de
+  cierre exacto (AGENTS §8.1);
+- etiquetas, releases, paquetes ni `FINAL`.
+
+Referencias:
+[registro de aprobación](../validation/pre_g9b_maint_a_n2_author_approval_record.md),
+[registros de adopción](../validation/pre_g9b_maint_a_n2_adoption_records.md) y
+[registro de cierre](../validation/pre_g9b_maint_a_n2_closeout_record.md).

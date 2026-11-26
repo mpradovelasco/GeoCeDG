@@ -2,6 +2,9 @@
 
 - Status: **Accepted**
 - Accepted: 2026-08-16
+- Refinement: decision 8 is refined for imported references (not for constructions) by
+  [ADR 0045](0045-separate-dxf-export-of-imported-references.md), accepted on 2026-11-26
+  ([approval record](../validation/pre_g9b_maint_a_n2_author_approval_record.md)).
 - Phase: G9P design; G9X1 implementation not authorized
 
 ## Context

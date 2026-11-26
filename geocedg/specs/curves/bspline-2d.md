@@ -3,6 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | **APPROVED — NORMATIVE CONTRACT `bspline-2d/v1`, AUTHOR APPROVED (2026-11-24)** with the precisions of the [approval record](../../../docs/validation/pre_g9b_maint_a_n1_author_approval_record.md). The approved text is that of commit `8747c731eccc3644cd1da8b74eb3453a68511813`. `selfApproved=false`. Approval is not implementation: `MAINT-A2` is not authorized, and `bspline-2d/v2` (§14) stays designed and not authorized. Values the text marks as candidates or pending validation, such as `κ_max = 2^16`, remain so. Where the sections below call this document or ADR 0043 a candidate or proposed, that records the stage at which they were written |
+| Amendments | **Author-approved amendments of 2026-11-26** (`PRE-G9B-MAINT-A-N2`, [approval record](../../../docs/validation/pre_g9b_maint_a_n2_author_approval_record.md)): A-BS-1 (informative reads of the provenance block) and A-BS-2 (grammar fixed by `dxf-spline-approximation/v1`, exact conversion, applicability states) applied in §10.5. The approval above is unchanged; the text before the amendments is that of `main` `a9ee803bf`; exact wordings in the [amendment set](../../../docs/architecture/pre_g9b_maint_a_n2_candidate_amendments.md) |
 | Contract identifiers | `bspline-2d/v1` (polynomial subset, specified here for implementation); `bspline-2d/v2` (rational extension, designed in §14, not specified for implementation and not authorized) |
 | Document revision | 1, 2026-11-23 |
 | Increment that writes it | `PRE-G9B-MAINT-A-N1` (normative design only) |
@@ -393,19 +394,35 @@ approximating construction. Decision: an optional passive child of the family el
 </geocedgBSpline>
 ```
 
-whose exact attribute grammar the approximation contract of `MAINT-A-DXF1` fixes before
-code. This contract fixes its semantics:
+whose exact attribute grammar
+[`dxf-spline-approximation/v1`](../import/dxf-spline-approximation.md) §10 fixes. The same
+block records an exact conversion (`operation="EXACT_CONVERSION"`, no measures); the name
+«approximation provenance» covers both operations. This contract fixes its semantics:
 
 - **Content**: source provenance (file digest, entity handle and data digests,
   `dxf-spline-reference/v1`), the method identifier, degree, tolerance, knot strategy, each
   error measure with its own grade (sample residual, numerical estimate, certified bound
   when computed), and the **definition digest** of the approximating curve at fit time.
 - **Passive**: it is never a DAG input, never identity, never read by evaluation, metrics,
-  intersections or export.
+  intersections or the export of the construction's geometry. It may be read
+  **informatively** for exactly two purposes: (1) to present to the user the state of
+  conversion or approximation of a reference and of the construction (reference manager,
+  construction inspector, details report of `dxf-spline-approximation/v1` §14); (2) by the
+  disposition resolver of [`cedg-reference-export/v1`](../export/dxf-reference-export.md),
+  which reads `referenceId`, `operation`, `referenceDataSha256` and the applicability below to
+  decide whether the **reference** is included by default in a DXF export. Neither read is a
+  geometric dependency, changes the DAG, changes how the construction is evaluated or
+  exported, or writes anything (ADR 0045). The codec of the block and the persistence
+  self-check of `dxf-spline-approximation/v1` §12.3, which write, parse and re-read it to
+  verify its bytes, are not reads of its meaning.
 - **Applicability**: at every revision the family computes the digest of its current
   definition (§12.3). The measures are applicable only when it equals the recorded digest;
   otherwise the inspector declares them «not applicable to the current definition». The
-  object stays a valid B-spline: the guarantee is degraded, not the object.
+  object stays a valid B-spline: the guarantee is degraded, not the object. The states are
+  `APPLICABLE`, `NOT_APPLICABLE_DEFINITION_CHANGED`, `NOT_APPLICABLE_UNDEFINED` and
+  `NOT_INTERPRETABLE`; a `version="1"` block that violates the grammar is kept byte for byte
+  and is `NOT_INTERPRETABLE`, without rejecting the document; an unknown version still fails
+  closed.
 - **Copy**: the block is copied with the command; the copy has a new durable identity and
   the same provenance; applicability follows the digest.
 - **Undo/Redo and persistence**: the block is part of the command XML and round-trips with

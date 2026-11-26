@@ -1,9 +1,12 @@
 # ADR 0045 — Separate DXF export of imported references as `SPLINE`
 
-- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R4)** (written by
-  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1`,
-  `PRE-G9B-MAINT-A-N2-R2`, `PRE-G9B-MAINT-A-N2-R3` and `PRE-G9B-MAINT-A-N2-R4`).
-  `selfApproved=false`. Acceptance would not authorize `MAINT-A-DXF0-EXP`.
+- Status: **ACCEPTED — AUTHOR APPROVED (2026-11-26)** with `cedg-reference-export/v1`
+  revision R4 (written by `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by
+  `PRE-G9B-MAINT-A-N2-R1`, `PRE-G9B-MAINT-A-N2-R2`, `PRE-G9B-MAINT-A-N2-R3` and
+  `PRE-G9B-MAINT-A-N2-R4`; [approval record](../validation/pre_g9b_maint_a_n2_author_approval_record.md)).
+  The accepted text is that of commit `9c7e612294a2a0521a2c21d8f9c4580cb3b34efb`.
+  `selfApproved=false`. Acceptance does not authorize `MAINT-A-DXF0-EXP`. The words «proposed»
+  and «when accepted» below record the stage at which they were written.
 - R1 changes: decision 4 records state 4 as alternative A (D-R1-6) and removes any failure
   state (D-R1-5); decision 6 fixes the conformance readers (D-R1-7); decision 7 records the
   availability rule (D-R1-10).

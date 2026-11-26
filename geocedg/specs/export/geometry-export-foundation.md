@@ -12,6 +12,14 @@
   container paragraph below: `AUTHOR APPROVED — IMPLEMENTED AND VERIFIED`. The
   global status above stays `Experimental`; this does not promote the
   specification or dispose of the `PRE-G9B-R6-plus-C` amendment
+- Amended by `PRE-G9B-MAINT-A-N2` (A-GEF-1, `AUTHOR APPROVED` on 2026-11-26
+  with `cedg-reference-export/v1` and ADR 0045,
+  [approval record](../../../docs/validation/pre_g9b_maint_a_n2_author_approval_record.md)):
+  boundary, type policy, layers, explicit export area, diagnostics and entity
+  order admit the separate population of imported references; the reference
+  option exists only in the extended paired-output flow, the legacy G5 route is
+  not extended. The global status above stays `Experimental`; the text before
+  this amendment is that of `main` `a9ee803bf`
 
 ## Boundary
 
@@ -27,6 +35,10 @@ Only the adapter may depend on GeoGebra geometry classes. The neutral model and
 DXF writer are read-only export services; they do not add algorithms, change
 construction dependencies, solve geometry, mutate `GeoElement`, or serialize
 new `.ggb` state.
+
+A separate population of imported references may follow the construction
+entities under [`cedg-reference-export/v1`](dxf-reference-export.md); it does
+not enter the neutral model.
 
 ## Model contract
 
@@ -68,6 +80,7 @@ effective construction unit (below).
 | function/parametric/implicit curve | none | none | unsupported |
 | legacy `Locus` | none | none | unsupported |
 | text/image/widget/3D object | none | none | unsupported |
+| imported reference (store record) | none (not in the neutral model) | `SPLINE` | fidelity `REFERENCE_DEFINITION`, only under `cedg-reference-export/v1` |
 
 Polygon fill is not exported. When a polygon and its generated side segments
 are in the same input set, the polygon boundary is authoritative and those
@@ -112,7 +125,9 @@ rule `geocedg-export-area-participation-b1/v1`:
   counted in preflight and the report, recorded in the sidecar when one is
   written, stated by a DXF header comment (group `999`), and the explicit area
   enters the staleness check; area filtering alone never makes the sidecar
-  mandatory; a missing semantic domain is never replaced by the area.
+  mandatory; a missing semantic domain is never replaced by the area;
+- an imported reference participates unless the convex hull of its control
+  polygon is proved disjoint from `R` by exact predicates; it is written whole.
 
 ## Units, scale, and coordinate system
 
@@ -153,6 +168,8 @@ states are transported, never used to drop geometry (`DQ-C2`, `DQ-C3`).
 - individually hidden object -> DXF visibility group `60 = 1`; an object both
   hidden and on a hidden layer carries both mechanisms;
 - construction-revision source identifier -> DXF comment group `999`;
+- references are written on the fixed layer `GEOCEDG_REF`, added to the layer
+  table only when a reference is written;
 - line thickness, point size, fill, opacity, and dash style are not transported
   in G5.
 
@@ -165,7 +182,16 @@ Undefined, non-finite, 3D, degenerate, and unsupported objects produce a
 diagnostic tied to their source identifier. The writer rejects non-finite
 coordinates and approximate entities without a positive finite tolerance.
 The Desktop controller writes no file when the neutral model contains zero
-exportable entities.
+exportable entities and no imported reference is writable. The neutral model of
+`Construction` and the population of imported references are distinct: with
+the reference option of `cedg-reference-export/v1` explicitly chosen, an
+operation whose neutral model is empty is still exportable when at least one
+reference remains included and writable after resolving preferences, states,
+user choices and the export area; references are never added to the neutral
+model or turned into `GeoElement`s. The ordinary export keeps exactly its
+behavior; the preflight is unchanged except for the reference counts of
+`dxf-curve-fidelity-and-approximation.md` §7, and the diagnostic, paired-output
+and rollback rules are unchanged.
 
 Lists, numeric parameters, rich Locus intersection results and Text have no
 approved geometric DXF source role in the version-one complete population.
@@ -176,7 +202,8 @@ silently excluded and continue to block a strict complete request.
 ## Determinism and validation
 
 Entity order is source construction/selection order after deterministic
-polygon-side suppression. Layer declarations and handles are deterministic.
+polygon-side suppression; reference entities follow every construction entity;
+construction handles never change. Layer declarations and handles are deterministic.
 The DXF contains no timestamps. Validation compares parsed entities and their
 geometry, not only bytes.
 

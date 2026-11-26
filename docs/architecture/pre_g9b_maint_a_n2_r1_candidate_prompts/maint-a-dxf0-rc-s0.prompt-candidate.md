@@ -4,6 +4,8 @@
 execution contract only when the author adopts `cedg-reference-store/v1` and authorizes this
 increment on an exact base; it is then registered under `.github/prompts/tasks/`.
 
+**Dependency status (normative closeout of 2026-11-26):** `cedg-reference-store/v1` is AUTHOR APPROVED and ADR 0044 accepted ([approval record](../../validation/pre_g9b_maint_a_n2_author_approval_record.md)) — satisfied. The increment itself stays not authorized.
+
 ```text
 selfApproved = false; authorApproved = false; implementationAuthorized = false
 PHASE_KIND   = CHARACTERIZATION; NO PRODUCT CHANGE

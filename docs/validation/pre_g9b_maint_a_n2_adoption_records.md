@@ -1,11 +1,13 @@
 # PRE-G9B-MAINT-A-N2 — registros de adopción preparados y cierre normativo
 
-**PREPARADOS — SIN DECISIÓN AUTORAL REGISTRADA.** `selfApproved=false`, `authorApproved=false`.
+**ADOPTADOS — AUTHOR APPROVED (2026-11-26).** `selfApproved=false`, `authorApproved=true`.
 
-Este documento contiene los tres registros de adopción **completos**, a falta solo de la
-decisión, la fecha y las palabras del autor. Contiene también el cierre normativo conjunto
-preparado. No aprueba nada. Ningún contrato, ADR, enmienda ni el roadmap cambia de estado hasta
-que el autor decida sobre el candidato exacto de §1.
+El autor aprobó los tres contratos el 2026-11-26 sobre el candidato exacto de §1
+([registro de aprobación](pre_g9b_maint_a_n2_author_approval_record.md)). Los tres registros
+de §2 quedan completos con su decisión. El cierre normativo de §3 se ejecutó en
+`phase/pre-g9b-maint-a-n2-closeout`
+([registro de cierre](pre_g9b_maint_a_n2_closeout_record.md)). Preparados en `cadad2b56`, sin
+decisión autoral en ese momento.
 
 ## 1. Candidato que se adopta
 
@@ -29,7 +31,7 @@ normativo que se adopta.
 
 | Elemento | Contenido |
 |---|---|
-| Decisión del autor | `<pendiente: palabras y fecha del autor>` |
+| Decisión del autor | **APROBADO — AUTHOR APPROVED, 2026-11-26.** «APRUEBO los tres contratos normativos de PRE-G9B-MAINT-A-N2-R4, junto con sus ADR, enmiendas correspondientes y decisiones registradas», con aprobación individual de cada contrato ([registro de aprobación](pre_g9b_maint_a_n2_author_approval_record.md)) |
 | Contrato y revisión | [`cedg-reference-store/v1`](../../geocedg/specs/import/reference-store.md), revisión R4; [ADR 0044](../adr/0044-document-store-of-imported-references.md), revisión R4 |
 | Candidato | `9c7e61229`, árbol `7faccc1fc` (§1) |
 | Enmiendas | grupo R: A-IMP-1, A-IMP-2, A-IMP-3, A-IMP-9, A-IMP-10, A-IMP-12, A-NDI-1 y A-ADR-3 ([enmiendas candidatas](../architecture/pre_g9b_maint_a_n2_candidate_amendments.md)) |
@@ -43,7 +45,7 @@ normativo que se adopta.
 
 | Elemento | Contenido |
 |---|---|
-| Decisión del autor | `<pendiente: palabras y fecha del autor>` |
+| Decisión del autor | **APROBADO — AUTHOR APPROVED, 2026-11-26.** «APRUEBO los tres contratos normativos de PRE-G9B-MAINT-A-N2-R4, junto con sus ADR, enmiendas correspondientes y decisiones registradas», con aprobación individual de cada contrato ([registro de aprobación](pre_g9b_maint_a_n2_author_approval_record.md)) |
 | Contrato y revisión | [`cedg-reference-export/v1`](../../geocedg/specs/export/dxf-reference-export.md), revisión R4; [ADR 0045](../adr/0045-separate-dxf-export-of-imported-references.md), revisión R4 |
 | Candidato | `9c7e61229`, árbol `7faccc1fc` (§1) |
 | Enmiendas | grupo X: A-IMP-4, A-IMP-5, A-IMP-6, A-BS-1, A-EXP-1 a A-EXP-6, A-GEF-1, A-ADR-1 y A-ADR-2 |
@@ -57,7 +59,7 @@ normativo que se adopta.
 
 | Elemento | Contenido |
 |---|---|
-| Decisión del autor | `<pendiente: palabras y fecha del autor>` |
+| Decisión del autor | **APROBADO — AUTHOR APPROVED, 2026-11-26.** «APRUEBO los tres contratos normativos de PRE-G9B-MAINT-A-N2-R4, junto con sus ADR, enmiendas correspondientes y decisiones registradas», con aprobación individual de cada contrato ([registro de aprobación](pre_g9b_maint_a_n2_author_approval_record.md)) |
 | Contrato y revisión | [`dxf-spline-approximation/v1`](../../geocedg/specs/import/dxf-spline-approximation.md), revisión R4; sin ADR nuevo (ADR 0043 decisión 11; ADR 0045 registra las dos lecturas informativas) |
 | Candidato | `9c7e61229`, árbol `7faccc1fc` (§1) |
 | Enmiendas | grupo A: A-IMP-7, A-IMP-8, A-IMP-11 y A-BS-2 |

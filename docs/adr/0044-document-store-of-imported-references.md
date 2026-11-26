@@ -1,10 +1,13 @@
 # ADR 0044 — Document store of imported references outside `Construction`
 
-- Status: **PROPOSED — READY FOR AUTHOR ADOPTION (revision R4)** (written by
-  `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by `PRE-G9B-MAINT-A-N2-R1`,
-  `PRE-G9B-MAINT-A-N2-R3` and `PRE-G9B-MAINT-A-N2-R4`).
-  `selfApproved=false`. Acceptance of this ADR would not authorize `MAINT-A-DXF0-RC-S0` or
-  `MAINT-A-DXF0-RC`; each needs its own authorization on an exact base.
+- Status: **ACCEPTED — AUTHOR APPROVED (2026-11-26)** with `cedg-reference-store/v1`
+  revision R4 (written by `PRE-G9B-MAINT-A-N2` on 2026-11-25, refined by
+  `PRE-G9B-MAINT-A-N2-R1`, `PRE-G9B-MAINT-A-N2-R3` and `PRE-G9B-MAINT-A-N2-R4`;
+  [approval record](../validation/pre_g9b_maint_a_n2_author_approval_record.md)). The accepted
+  text is that of commit `9c7e612294a2a0521a2c21d8f9c4580cb3b34efb`. `selfApproved=false`.
+  Acceptance authorizes neither `MAINT-A-DXF0-RC-S0` nor `MAINT-A-DXF0-RC`; each needs its own
+  authorization on an exact base. The words «proposed» and «when accepted» below record the
+  stage at which they were written.
 - R4 changes: decision 8 counts `values` as the store contract §5.2 item 12 defines and
   records the author's adoption of 1 500 000 values as the provisional product value; no other
   decision changes (the `normal` grammar is a contract detail, §5.2 item 11).

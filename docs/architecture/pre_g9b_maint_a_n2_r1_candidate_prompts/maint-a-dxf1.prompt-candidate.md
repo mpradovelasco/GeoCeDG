@@ -4,6 +4,8 @@
 `.github/prompts/tasks/` only after the author adopts the contract and authorizes the
 increment on an exact base.
 
+**Dependency status (normative closeout of 2026-11-26):** `dxf-spline-approximation/v1` is AUTHOR APPROVED ([approval record](../../validation/pre_g9b_maint_a_n2_author_approval_record.md)) — satisfied; `MAINT-A-DXF1-S0` reviewed, `MAINT-A-DXF0-RC` integrated and RC-M merged — pending. Closeout gate: the constants `bspline-param-lsq-constants/v1` fixed. The increment itself stays not authorized.
+
 ```text
 selfApproved = false; authorApproved = false; implementationAuthorized = false
 PHASE_KIND   = PRODUCT INCREMENT — CONVERSION AND APPROXIMATION INTO bspline-2d/v1

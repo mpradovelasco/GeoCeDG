@@ -3,6 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | **APPROVED — NORMATIVE CONTRACT `dxf-spline-reference/v1`, DOCUMENT REVISION 2, AUTHOR APPROVED (2026-11-24)** with the precisions of the [approval record](../../../docs/validation/pre_g9b_maint_a_n1_author_approval_record.md). The approved text is that of commit `8747c731eccc3644cd1da8b74eb3453a68511813`. `selfApproved=false`. Approval is not implementation: `MAINT-A-DXF0` is not authorized. The initial import limits stay revisable after characterization. Where the sections below call this document, the family specification or ADR 0043 a candidate or proposed, that records the stage at which they were written |
+| Amendments | **Author-approved amendments of 2026-11-26** (`PRE-G9B-MAINT-A-N2`, [approval record](../../../docs/validation/pre_g9b_maint_a_n2_author_approval_record.md)): A-IMP-1 to A-IMP-12 applied in §0, §1, §2, §4.1, §4.3, §10, §11, §12, §14, §14.1 and §17 (dated section at the end). The approval of revision 2 above is unchanged; the text before the amendments is that of `main` `a9ee803bf` |
 | Contract identifier | `dxf-spline-reference/v1` (document revision 2, 2026-11-23: weight reconstruction of §4.6 per the author's corrective instruction; revision 1 is commit `307bc8fda`) |
 | Increment that writes it | `PRE-G9B-MAINT-A-N1` (normative design only) |
 | Increment that would implement it | `MAINT-A-DXF0`, **not authorized** |
@@ -18,7 +19,8 @@ reference geometry**: visible, inspectable, with provenance and without implicit
 semantics. It authorizes no code. It does not change the approved DXF export contracts
 ([geometry export foundation](../export/geometry-export-foundation.md),
 [DXF curve fidelity](../export/dxf-curve-fidelity-and-approximation.md)), ADR 0014 or any
-SplineV2 contract.
+SplineV2 contract; the separate export of references is defined by
+[`cedg-reference-export/v1`](../export/dxf-reference-export.md) and ADR 0045.
 
 An imported reference is **not** a construction object. It is not a `GeoElement`, it is
 not in `Construction`, it has no dependencies, it is not a `GeoLocusV2`, it is never an
@@ -33,7 +35,7 @@ The import keeps four layers apart (proposal §5.4, D-V4):
 |---|---|---|
 | 1. Authoritative CeDG geometry | DAG objects with definition, identity, dependencies and declared guarantees | the only geometric authority |
 | 2. Imported reference definition | immutable data read from an external file, with provenance (this contract) | none over the construction; an external datum |
-| 3. Approximating construction | a new CeDG object of the `bspline-2d` family whose relation to a reference is a declared fit (`MAINT-A-DXF1`) | that of its own definition; none over the reference |
+| 3. Approximating construction | a new CeDG object of the `bspline-2d` family whose relation to a reference is a declared exact conversion or fit (`MAINT-A-DXF1`) | that of its own definition; none over the reference |
 | 4. Render | what a view draws of any of the above | none |
 
 No layer silently replaces another. No association between layers is established by
@@ -47,8 +49,8 @@ The adapter has three parts, all outside the kernel packages:
 1. **Reader**: parses the file, selects candidate entities, validates them and produces
    one typed outcome per entity.
 2. **Reference model**: immutable records (the binary64 data as read, the transformed
-   data, provenance and diagnostics) owned by the document session (§11), never by
-   `Construction`.
+   data, provenance and diagnostics) owned by the document store
+   [`cedg-reference-store/v1`](reference-store.md) (§11), never by `Construction`.
 3. **Render**: a tessellation in model units computed once per record (§8); a view only
    transforms and draws it.
 
@@ -96,6 +98,15 @@ nature is decided by the effective weights alone, by exact binary64 comparison:
 | Size | at most `FILE_BYTES_MAX` bytes (candidate value 64 MiB) | file rejected before parsing, `FILE_LIMIT_EXCEEDED` |
 | Entity count | at most `SPLINE_ENTITIES_MAX` candidate `SPLINE` entities (candidate value 10 000) | the whole import is rejected, `FILE_LIMIT_EXCEEDED`; no prefix is imported, because a file-order prefix would be an arbitrary selection |
 
+These limits govern the reading of a DXF file. Admission of the admitted records into the
+document store is additionally bounded by the configurable storage budget of
+[`cedg-reference-store/v1`](reference-store.md) §5.3, which never bounds the number of
+references below `SPLINE_ENTITIES_MAX` and bounds memory (initial value 1 500 000 binary64
+values counted by `cedg-reference-store/v1` §5.2 item 12, adopted by the author as the
+provisional, configurable product value backed by the R3 measurements); an import that would
+exceed the budget is rejected as a whole, with no prefix admitted, for the same reason as
+`SPLINE_ENTITIES_MAX`.
+
 String values (layer name, handle) are provenance only. They are decoded as UTF-8 for
 `AC1021` and later and as ISO-8859-1 otherwise; undecodable bytes are kept as escaped
 bytes. No string value affects geometry or acceptance.
@@ -127,7 +138,7 @@ Only top-level `SPLINE` entities of the `ENTITIES` section in model space are ca
 | 42, 43, 44 | knot, control-point and fit tolerances | recorded as ignored; never used to merge knots or to decide closure |
 | 11, 21, 31 | fit points | recorded as ignored (§4.4) |
 | 12/22/32, 13/23/33 | start and end tangents (fit data) | recorded as ignored |
-| 210, 220, 230 | plane normal | recorded; never used to transform coordinates |
+| 210, 220, 230 | plane normal | recorded per group with its presence: the record keeps which of the three groups the entity carried and the value of each present group (a group repeated within the entity keeps its last occurrence); an absent group is not a value and is never recorded as `0` or `1`; the effective normal (absent 210 or 220 = `0`, absent 230 = `1`) is derived only for presentation; never used to transform coordinates |
 | 100, 330, 6, 62, 370 and other style or ownership codes | subclass marker, owner and style | ignored; the reference has its own presentation |
 | any other code | — | the entity is still decided by the codes above; the unrecognized codes are listed in the record's diagnostics as `UNRECOGNIZED_GROUP_CODES` |
 
@@ -313,15 +324,27 @@ reference's provenance identity.
   `Length`/`LocusLength`, a transformation source or a list element.
 - References are not `GeoElement`s, so they are outside the population of the approved
   semantic exports (DXF, semantic LaTeX); GeoCeDG never rewrites a foreign entity as its
-  own. Picture exports of a view: Q-DXF-3, resolved by the author on 2026-11-25
+  own. The DXF export may write them, as external definitions and never as CeDG geometry,
+  only through the explicit, separate capability
+  [`cedg-reference-export/v1`](../export/dxf-reference-export.md). Picture exports of a view: Q-DXF-3, resolved by the author on 2026-11-25
   (§17): the picture outputs of the first Graphics view present its visible references
   as presentation, with no semantic claim; the second Graphics view is deferred.
-- Visibility of a reference is a session presentation state; it is not a layer of the
+- Visibility of a reference is a presentation state of the document, persisted by
+  `cedg-reference-store/v1` (session-only under `R-a`); it is not a layer of the
   construction's layer domain and does not mean existence or geometric visibility.
 
-## 11. Persistence `R-a`: session only
+## 11. Persistence
 
-Under `v1` the records belong to the document session:
+From the version that implements [`cedg-reference-store/v1`](reference-store.md), records
+are persisted in the native document outside `Construction` and follow that contract's
+lifecycle (save, reopen, New, Close, failed open, Undo/Redo, copy/paste, Insert File). The
+`R-a` rules below describe the session-only behavior of `MAINT-A-DXF0` and remain in force
+until then. In every version, import is not a construction step, adds no Undo entry and
+leaves `Construction`, its XML and its Undo history unchanged; Undo/Redo never touch records;
+copy/paste never copies a reference into a construction; no parallel DAG exists.
+
+Under `R-a` (`v1` before `cedg-reference-store/v1`) the records belong to the document
+session:
 
 | Event | Behavior |
 |---|---|
@@ -337,9 +360,8 @@ Under `v1` the records belong to the document session:
 
 ## 12. `R-c`: later priority target
 
-`R-c` keeps a copy of the imported definitions and their provenance in the document,
-outside `Construction`, without a parallel DAG. It is not specified by `v1`. Before it is
-specified, a characterization must establish at least:
+`R-c` is specified by [`cedg-reference-store/v1`](reference-store.md), whose §17 answers
+the seven points below. The list is kept as the record of what had to be established:
 
 1. how GeoCeDG 1.2.2 and the current build treat an unknown entry of the `.cedg`
    container, and whether re-saving in an older build drops it silently;
@@ -364,11 +386,15 @@ is not specified and is not authorized. Nothing in `v1` presupposes it.
 ## 14. Interface reserved for the approximation (`MAINT-A-DXF1`)
 
 `MAINT-A-DXF1` consumes a record only through an explicit user action on that record,
-never through construction-tool selection. It reads the immutable `data`, `nature`,
-`domain`, `closure` and provenance digests. It produces a **new** construction of the
-`bspline-2d` family, frozen and independent of the reference (D-A-10), with the
-approximation provenance block defined in the family specification §10.5. The record is
-not modified and gains no link to the result.
+never through construction-tool selection. It reads the immutable `data` with its degree,
+knots and effective weights, `nature`, `domain`, `closure`, and the provenance fields that the
+approximation block copies (digests, file digest and base name, entity handle and layer,
+transformation). It produces a **new** construction of the `bspline-2d` family, frozen and
+independent of the reference (D-A-10), with the approximation provenance block defined in the
+family specification §10.5. The record is not modified. The relation is recorded only by the
+result's passive provenance block (`referenceId`, `bspline-2d.md` §10.5); it is not a
+dependency. The store keeps no history of conversions or approximations, and a failed attempt
+leaves nothing in the document.
 
 The approximation method, its limits, its typed failures and the computation of its three
 error measures are fixed by the separate approximation contract that `MAINT-A-DXF1` must
@@ -394,7 +420,7 @@ transformation roundings are outside every measure below and are declared separa
 | Exact conversion | `A` has the same `p`, `U` and control points as `C`; only possible when `C` is polynomial (or has all weights equal) and within the family limits | exact on the data; error 0 by definition, never reported as a fit |
 | Numerical fit | computation of `A` from `C`; first direction: linear least squares in the source parameter (`A(u) ≈ C(u)`), interpolated endpoints, deterministic solver (D-A-8) | a construction procedure, not a guarantee |
 | Sample residual | `max` and root mean square of `‖C(u_k) − A(u_k)‖` over the fit samples `u_k` | a fact about those samples only; nothing between them |
-| Numerical error estimate | maximum of `‖C(u) − A(u)‖` over a distinct, denser verification set refined by local maximization | `ESTIMATED`; not a bound |
+| Numerical error estimate | maximum of `‖C(u) − A(u)‖` over a distinct, denser verification set refined by local maximization; no ordering with the sample residual is asserted | `ESTIMATED`; not a bound |
 | Certified global bound | an upper bound of `sup_{u∈[a,b]} ‖C(u) − A(u)‖` established by the procedure below | rigorous with respect to `data`, under its preconditions |
 
 Because the correspondence is parametric, a bound on `sup_u ‖C(u) − A(u)‖` also bounds the
@@ -413,7 +439,8 @@ C(u) - A(u) = \frac{D(u)}{W(u)}, \qquad D(u) = \mathcal{A}(u) - W(u)\,A(u).
 2. Refine both curves to a common knot vector containing every distinct knot of each, by
    knot insertion carried out in **interval arithmetic with outward (directed) rounding**,
    so that each refined coefficient is an interval containing the exact coefficient of the
-   exact curve defined by `data`.
+   exact curve defined by `data`. Exact rational arithmetic on the binary64 data is
+   admissible as the degenerate case of zero-width intervals.
 3. On each common span, form the Bernstein coefficients of the vector polynomial `D`
    (degree `≤ p + q`) by interval products and sums with outward rounding.
 4. By the convex-hull property, `‖D(u)‖ ≤ max_k ‖d_k‖` on the span; bound each `‖d_k‖`
@@ -424,10 +451,14 @@ C(u) - A(u) = \frac{D(u)}{W(u)}, \qquad D(u) = \mathcal{A}(u) - W(u)\,A(u).
 6. The bound is `max_spans max_k ‖d_k‖ / min_i w_i`, the division rounded upward. It may be
    tightened by subdividing spans (de Casteljau in interval arithmetic) under a declared
    work limit; exhausting the limit publishes the last valid bound or, if none, no bound.
+   For steps 5 and 6, the per-span lower bound `min_k ω_k` of the Bernstein coefficients of
+   `W` on a span is also valid and never smaller than `min_i w_i`, because those coefficients
+   are convex combinations of the weights; either may be used.
 
 The bound is a theorem about the curve defined by `data`; it says nothing about the decimal
 text of the file. Its exact arithmetic model, its interval library and its tests belong to
-the approximation contract of `MAINT-A-DXF1` (or `MAINT-A-DXF1b`, D-A-9).
+[`dxf-spline-approximation/v1`](dxf-spline-approximation.md) (§7: implementation by
+`MAINT-A-DXF1b`, author decision D-R1-9).
 
 ## 15. Import report
 
@@ -453,7 +484,8 @@ Stop conditions for any implementation of this contract:
 - the import would mutate `Construction`, its XML or its Undo history;
 - a scale, unit conversion, closure or orientation would be applied without an explicit
   rule of this contract;
-- the reader would need a DXF writer change or an approved export-contract change.
+- the reader would need a DXF writer change or an approved export-contract change;
+  writing references is governed only by `cedg-reference-export/v1`.
 
 Open decisions for the author:
 
@@ -463,3 +495,30 @@ Open decisions for the author:
 | Q-DXF-2 | Rational flag and code-41 weights | revision 2: policy of §4.6, fixed by the author's corrective instruction of 2026-11-23 after contrast with the DXF reference; only incoherences that are real (non-unit weights without the flag, partial lists) are rejected, consistent with D-A-6. The contract as a whole remains a candidate |
 | Q-DXF-3 | Picture exports (PNG, PDF, SVG of a view) when references are visible | **resolved by the author on 2026-11-25 (`MAINT-A-DXF0-R1`):** the picture outputs of the first Graphics view (screen, PNG, SVG, PDF, EMF, print, clipboard) reproduce its visible references as presentation, with no semantic claim, vector where the format allows; the second Graphics view is deferred; semantic exports exclude references |
 | Q-DXF-4 | Location of this contract | new directory `geocedg/specs/import/`, parallel to `export/` |
+
+## Author-approved amendments of 2026-11-26 — `PRE-G9B-MAINT-A-N2`
+
+The author approved `cedg-reference-store/v1`, `cedg-reference-export/v1` and
+`dxf-spline-approximation/v1` on 2026-11-26, on the normative candidate `9c7e61229`
+([approval record](../../../docs/validation/pre_g9b_maint_a_n2_author_approval_record.md)),
+with the amendments of this contract that each needs. The exact current and proposed wordings
+are those of the
+[amendment set](../../../docs/architecture/pre_g9b_maint_a_n2_candidate_amendments.md).
+
+| Amendment | With | Section | Change |
+|---|---|---|---|
+| A-IMP-1 | `R-c` | §2 item 2 | records owned by the document store, not by the session |
+| A-IMP-2 | `R-c` | §11 | persistence under `cedg-reference-store/v1`; the `R-a` table kept as the rule of the session-only versions |
+| A-IMP-3 | `R-c` | §12 | `R-c` specified by `cedg-reference-store/v1`; the list kept as history |
+| A-IMP-9 | `R-c` | §4.1 | admission into the store also bounded by the configurable storage budget |
+| A-IMP-10 | `R-c` | §10 | visibility persisted as document presentation |
+| A-IMP-12 | `R-c` | §4.3 | plane normal recorded per group with its presence (author decision D-R4-1; implemented by `MAINT-A-DXF0-RC`) |
+| A-IMP-4 | export | §0 | the separate export of references named |
+| A-IMP-5 | export | §10 | references written only through `cedg-reference-export/v1` |
+| A-IMP-6 | export | §17 | stop condition scoped to the reader |
+| A-IMP-7 | A-DXF1 | §14 | fields read by the approximation; the relation recorded only by the passive block |
+| A-IMP-8 | A-DXF1 | §14.1 | exact rational arithmetic admitted; no ordering of the measures; `min_k ω_k`; contract named |
+| A-IMP-11 | A-DXF1 | §1 | «declared exact conversion or fit» |
+
+Where §11, §12 and §14 speak of the session store or of a future contract, they describe the
+behavior of the versions that do not yet implement `cedg-reference-store/v1`.

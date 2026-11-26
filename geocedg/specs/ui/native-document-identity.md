@@ -101,6 +101,26 @@ resolves it to Name + Value. The historical writer rule still applies to
 legacy files that contain only the ordinary value 1 or omit the field.
 [CU4 authorization](../../../docs/validation/pre_g9b_cu4_author_design_approval_record.md)
 
+**`R-c` compatibility amendment (`cedg-reference-store/v1`, ADR 0044).** GeoCeDG may write
+one optional ZIP entry, `geocedg_references.xml`, holding the imported DXF references of the
+document outside `Construction`. Its content carries the contract `cedg-reference-store/v1`;
+it is read with bounded inflation under a configurable storage budget, and validated
+completely, including bit-for-bit transformation and digest checks, before it is installed.
+An absent entry is an empty store. An invalid entry, an unknown version, an over-budget store
+or an unknown `geocedg_*` root entry is a preflight failure: the previous document is kept and
+nothing is truncated. The store is installed together with the construction at the commit of
+the document transition, in every open and replacement route. Existing archive entries,
+format version, app code and construction semantics keep their format. Older readers,
+GeoCeDG 1.2.2 included, are not supported for such documents: they ignore the entry and drop
+it on save, and release notes say so. The GeoCeDG Classic diagnostic preserves the entry
+opaquely on every save route or, if it cannot, refuses to save such a document; it never
+loses it silently. As an exception to the Classic rule «directly open `.cedg`», Classic
+refuses, with a message, to open a document whose store entry exceeds its budget or a reader
+safety limit, so that it cannot lose it afterwards.
+[`R-c` approval of 2026-11-26](../../../docs/validation/pre_g9b_maint_a_n2_author_approval_record.md)
+([`cedg-reference-store/v1`](../import/reference-store.md); implementation by
+`MAINT-A-DXF0-RC`, not authorized)
+
 ## Save and Save As state machine
 
 This state machine governs the normal GeoCeDG product route. The separate
