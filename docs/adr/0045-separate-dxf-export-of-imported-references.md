@@ -95,7 +95,9 @@ re-exported.
    declared. The fidelity class is unaffected by that tolerance: it keeps referring to the binary64
    data represented in the DXF and their correctly rounded re-reading. Reader, version, fixtures,
    observed maxima and test limits are recorded (RX-D18).
-7. **No novelty flag.** The option belongs to the existing DXF export action; it adds no
+7. **No novelty flag.** The option belongs to the existing DXF export action, in its extended
+   paired-output flow (`cedg.export.dxf.extended`; the legacy G5 route is not extended, so with
+   that flag off no reference can be exported); it adds no
    activation flag and no «experimental» wording; it inherits the formal AGENTS §5 state of the
    existing DXF export action, and the author declares its state at the closeout of the
    implementing increment (D-R1-10).

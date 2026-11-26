@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | **CANDIDATE (revision R4) — ADOPTION PENDING AUTHOR DECISION D-R4-1** (the additive import-record change of A-IMP-12 that §5.2 item 11 needs; R4 report §9). Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1` to `-R4`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-RC-S0` and `MAINT-A-DXF0-RC` are not authorized |
+| Status | **CANDIDATE — READY FOR AUTHOR ADOPTION (revision R4).** Author decision D-R4-1 of 2026-11-26 authorizes, for the future scope of `MAINT-A-DXF0-RC`, the additive import-record change of A-IMP-12 that §5.2 item 11 needs (R4 report §13). Normative design written by `PRE-G9B-MAINT-A-N2` and refined by `PRE-G9B-MAINT-A-N2-R1` to `-R4`. `selfApproved=false`. It authorizes no code: `MAINT-A-DXF0-RC-S0` and `MAINT-A-DXF0-RC` are not authorized |
 | Revision | R4 (2026-11-26, independent R3 audit I-1 and I-2): `normal` preserves the groups 210, 220 and 230 present and their presence, the effective normal is derived and never stored (§5.2 item 11, F22, A-IMP-12); the `values` counter is defined exhaustively over serialized binary64 values (§5.2 item 12); budget 1 500 000 values adopted by the author as the provisional product value. R3 (2026-11-25, pre-adoption audit M1): budget measured directly; `maxValues` 1 500 000 with an aggregate string allowance instead of the R1 value 3 000 000; streaming reader with per-attribute bounds; C-4 at the budget; Classic validation scope and string limit clarified. R1 (2026-11-25): the fixed 4 MiB cap is replaced by a measured, configurable resource policy (§5.3, D-R1-4); source and transformed data stay mandatory (D-R1-3); no derivation history (D-R1-5); atomic document transition per route (§7.1); GeoCeDG Classic preserves the entry opaquely (§7.2, D-R1-8); maturity without a novelty flag (D-R1-10). The A-N2 text is commit `874286e95` |
 | Contract identifier | `cedg-reference-store/v1` (the store); its records stay `dxf-spline-reference/v1` |
 | Container | one optional ZIP entry of the native document, fixed name `geocedg_references.xml` |
@@ -191,6 +191,22 @@ attribute and counts 28.
       needs the presence of each group, which `MAINT-A-DXF0-RC` adds to the import record
       additively (A-IMP-12) without changing admission, values or any other behavior of the
       importer. Absent components are never written as `0.0` or `1.0`.
+    - **Author decision D-R4-1 (2026-11-26).** The minimal additive change is in the scope of
+      `MAINT-A-DXF0-RC`, under six conditions:
+      1. for each of the three components the record keeps whether its group was present and,
+         when it was, its original binary64 value;
+      2. the geometric behavior, the admission rules, the diagnostics (`NORMAL_RECORDED`
+         included) and the current interpretation of the importer are unchanged;
+      3. presence is never inferred from a numeric value: a present `0.0` or `-0.0` is
+         present, with its bit pattern kept (item 2);
+      4. the recorded normal is never confused with the effective normal, and no provenance
+         is invented;
+      5. references stay outside `Construction` and the DAG;
+      6. tests cover total absence, partial presence and complete presence, including
+         explicit zeros and `-0.0`, together with persistence and reopening (RC-25).
+
+      The decision authorizes the normative design and the future scope of RC, not the code
+      change yet.
     - Validation: a group listed twice, out of order or outside `210 220 230`, a `normal`
       attribute present with `normalGroups="none"` or absent otherwise, a number of values
       different from the number of groups, or a non-finite value → `MALFORMED_STORE`. The
@@ -558,5 +574,5 @@ policy that cannot reject an over-budget store without truncation.
 | RC-D13 | Normative form | this contract + amendments + ADR 0044 | proposed |
 | RC-D14 | Maturity | no novelty flag; branch-only until the author's closeout, which extends the import's `stable` bound to `R-c` (§12) | no flag fixed (D-R1-10); the reconciliation with AGENTS §5 proposed |
 | RC-D15 | Budget configuration surface | GeoCeDG preference with an administrative system-property override; finite values only | proposed |
-| RC-D16 | Plane normal of the source | groups 210, 220 and 230 present and their presence (`normalGroups`, `normal`); effective normal derived, never stored; presence added to the import record by `MAINT-A-DXF0-RC` (§5.2 item 11, F22, A-IMP-12) | requirement fixed by the author (instruction R4 of 2026-11-26); the additive change of the import record that it needs is **pending author decision D-R4-1** |
+| RC-D16 | Plane normal of the source | groups 210, 220 and 230 present and their presence (`normalGroups`, `normal`); effective normal derived, never stored; presence added to the import record by `MAINT-A-DXF0-RC` (§5.2 item 11, F22, A-IMP-12) | requirement fixed by the author (instruction R4 of 2026-11-26); the additive change of the import record that it needs is authorized by the author decision D-R4-1 of 2026-11-26, with six conditions (§5.2 item 11), for the scope of `MAINT-A-DXF0-RC` |
 | RC-D17 | `values` counter | every serialized binary64 and nothing else, `v_r = K_r + (4 + e_r) · c_r + 7 + g_r` (§5.2 item 12) | fixed by the author (instruction R4 of 2026-11-26) |

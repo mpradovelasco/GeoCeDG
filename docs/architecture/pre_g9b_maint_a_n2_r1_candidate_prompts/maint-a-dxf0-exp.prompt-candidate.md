@@ -13,7 +13,7 @@ DEPENDS_ON   = cedg-reference-export/v1 ADOPTED; ADR 0045 ACCEPTED; RC-M AND DXF
 <!-- geocedg-field: objective -->
 ## Objective
 
-Implement `cedg-reference-export/v1`: the option in the existing DXF dialog, the store
+Implement `cedg-reference-export/v1`: the option in the existing DXF dialog of the extended paired-output flow, the store
 snapshot, the resolver of §6 (computed from `Construction` and the store), the separate
 reference adapter, the `SPLINE` writer with its write round-trip check, the preflight rule,
 the controller route of §9.1 for a references-only export (R4: the current

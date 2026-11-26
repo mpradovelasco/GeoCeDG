@@ -43,7 +43,7 @@ Verified on `a9ee803bf` (characterization report §3):
 | The population comes only from `Construction` or the selection; references are absent from semantic exports because they are not `GeoElement`s | the new population is added explicitly, never by turning references into model entities |
 | Fidelity enums: entity `Exactness {EXACT, APPROXIMATE}`, outcome `Fidelity {EXACT, APPROXIMATE, UNSUPPORTED, INVALID, DECLARED}`, guarantee `{CERTIFIED_ERROR_BOUND, ESTIMATED_ERROR, FLOATING_POINT_UNCERTIFIED}` | `REFERENCE_DEFINITION` is a separate axis, never one of these values |
 | Preflight is writable only when the construction contributes at least one entity | a references-only export needs an amended writability rule (§9) |
-| (R4) `GeoCeDGDxfExportController.showExportDialog` runs the legacy G5 flow (`showLegacyExportDialog`, no preflight or sidecar) unless the extended flag is on, and then the extended paired-output flow (`showExtendedExportDialog`, request dialog `chooseRequest`). Both stop when the chosen `GeoElement` population is empty, with «The selected export population is empty.», before any model or preflight | a references-only export never reaches the preflight of §9 through the current controller; the legacy G5 route is not extended (§8), so the reference option and the route of §9.1 belong to the extended flow only, which `MAINT-A-DXF0-EXP` must add |
+| (R4) `GeoCeDGDxfExportController.showExportDialog` runs the legacy G5 flow (`showLegacyExportDialog`, no preflight or sidecar) unless the extended flag is on, and then the extended paired-output flow (`showExtendedExportDialog`, request dialog `chooseRequest`). On an empty chosen `GeoElement` population both show «The selected export population is empty.» before any model or preflight: the legacy flow ends, the extended flow reopens its request dialog | a references-only export never reaches the preflight of §9 through the current controller; the legacy G5 route is not extended (§8), so the reference option and the route of §9.1 belong to the extended flow only, which `MAINT-A-DXF0-EXP` must add |
 | The DXF must be pure ASCII; handles and layers of `AC1021+` source files may be non-ASCII | original strings go only to the UTF-8 sidecar (§4) |
 | Sidecar `org.geocedg.dxf.fidelity-manifest`, `schema_version` 3; the validator requires the encoded entity count to equal the model's | a new schema version and a separate count for references (§10) |
 | Paired DXF + sidecar: same-directory temporaries, no-replace promotion, rollback; «two-file atomicity is not claimed» | unchanged; this contract claims no more |
@@ -380,7 +380,9 @@ The DXF SHA-256 link, paired output and rollback follow the DXF contract §8 unc
 ## 11. User interface
 
 Compact (D-A-N2-5). In the existing DXF dialog of the extended paired-output flow (the legacy
-G5 route is not extended, §8 and §9.1), and only when the document has references:
+G5 route is not extended, §8 and §9.1), and only when the document has references (with
+`cedg.export.dxf.extended` off, which is on by default and turned off by `--enableExtendedDxf=false`,
+only the legacy G5 flow runs, and no reference can be exported):
 
 - a check box **«Include imported DXF references»**, off by default (the ordinary export
   does not change);
@@ -531,7 +533,7 @@ correspondence would need a DAG dependency; the implementation would need the co
 
 | Id | Question | Recommendation | Consequence |
 |---|---|---|---|
-| RX-D1 | Surface | check box in the existing DXF dialog | no new menu action |
+| RX-D1 | Surface | check box in the existing DXF dialog of the extended paired-output flow (`chooseRequest`; the legacy G5 route is not extended) | no new menu action |
 | RX-D2 | State 4 | alternative A: include the reference; the modified construction is exported from `Construction`; short notice | **fixed by the author (D-R1-6)** |
 | RX-D3 | Weights | canonical: effective weights only when some differs from 1 | the source representation is reported, not reproduced |
 | RX-D4 | Position of code 41 | one 41 after each control point (`10/20/30/41`), the form AutoCAD's own writer emits; both readers and the GeoCeDG reader accept both forms (R1 pilot) | proposed |

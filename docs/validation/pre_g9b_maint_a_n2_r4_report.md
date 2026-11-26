@@ -1,8 +1,15 @@
 # PRE-G9B-MAINT-A-N2-R4 — informe único de la corrección final de gramática y del paquete de adopción
 
-**PRE-G9B-MAINT-A-N2-R4 — NORMATIVE DESIGN CANDIDATE — ADOPTION PREPARATION STOPPED: ONE AUTHOR DECISION REQUIRED (D-R4-1)**
+**PRE-G9B-MAINT-A-N2-R4 — NORMATIVE DESIGN CANDIDATE — READY FOR AUTHOR ADOPTION**
 
-La revisión independiente final encontró dos contradicciones materiales (§7):
+**Estado vigente (2026-11-26, §13).** El autor autorizó D-R4-1 y dio por resuelto el bloqueo M2.
+El candidato final incorpora esa decisión. Los registros de adopción están completos (§13.4) y
+el cierre normativo está preparado, sin aprobación registrada. Lo que sigue en este
+encabezado, y en §1 y §8, documenta el estado intermedio del commit `5a009e0e9`, que se conserva
+como evidencia.
+
+**Estado intermedio de `5a009e0e9`: ADOPTION PREPARATION STOPPED: ONE AUTHOR DECISION REQUIRED
+(D-R4-1).** La revisión independiente final encontró dos contradicciones materiales (§7):
 
 - **M1:** la ruta de exportación solo de referencias se había descrito también para el flujo G5
   heredado. Está **corregida** en el candidato.
@@ -63,7 +70,7 @@ A-IMP-12):
   serializa por sí solo.
 - El importador **no** se modifica en R4. Se propone que `MAINT-A-DXF0-RC` añada al registro la
   presencia por grupo de forma aditiva, sin cambiar admisión ni valores (A-IMP-12, plan §4.1,
-  prompt candidato de RC). Ese cambio queda **pendiente de la decisión del autor D-R4-1** (§9).
+  prompt candidato de RC). Ese cambio quedó **autorizado por la decisión del autor D-R4-1** (§13).
 - **Exportación:** se conserva la normal de salida `0/0/1` de la curva 2D (RX-D6). El contrato
   dice ahora que nunca son los grupos de origen y que estos no se escriben ni se atribuyen al
   DXF.
@@ -180,7 +187,7 @@ y del controlador, la sonda de R3 y `char-budget3m.md`, no solo el diff.
 - **M1, corregida.** RX-15 (e), el hecho §2 y §9.1 pedían la ruta también en el flujo
   «ordinario», que es el G5 heredado: sin preflight ni manifiesto. Eso contradice «The legacy
   G5 route is not extended» (§8) y el alcance prohibido del prompt de EXP. Además, el hecho §2
-  nombraba un método inexistente (`exportDxf`).
+  nombraba un método inexistente del controlador (`exportDxf`; existe `GeometryExportService.exportDxf`, al que llama el flujo heredado).
   - Corrección: la ruta queda solo en el flujo extendido; el G5 heredado queda idéntico y sin
     opción; métodos reales nombrados.
   - Ajustados: contrato §2, §9.1 y §11; RX-15 (e); prompt de EXP; nota de A-GEF-1; plan §4.2.
@@ -240,7 +247,7 @@ push, merge, `main`, etiquetas, releases ni empaquetado.
 
 ## 9. Decisiones residuales
 
-**Una decisión bloqueante del autor: D-R4-1.**
+**Una decisión bloqueante del autor: D-R4-1. Resuelta: autorizada el 2026-11-26 (§13).**
 
 - **D-R4-1 — cambio aditivo del registro de importación en `MAINT-A-DXF0-RC`.** Conservar sin
   pérdida los grupos 210, 220 y 230 y su presencia (política del autor para I-1) exige que el
@@ -266,7 +273,8 @@ push, merge, `main`, etiquetas, releases ni empaquetado.
 
 ## 10. Registros de aprobación preparados
 
-Borradores, **sin aprobación registrada**, preparados antes de la revisión final. Su uso queda
+Borradores, **sin aprobación registrada**, preparados antes de la revisión final y completados
+en §13.4 tras D-R4-1, que sustituye esta sección. Su uso quedaba
 **detenido hasta la decisión D-R4-1** (§9). Si el autor la toma a favor, cada registro se
 escribirá como registro autoral solo tras su decisión expresa sobre el candidato R4 exacto
 (§1, §8), con D-R4-1 citada en 10.1. Ninguno requiere otra fase de diseño.
@@ -359,6 +367,97 @@ quedan listos para una instrucción autoral de ejecución sin otra fase de dise�
 - Puntos de sincronización P1 a P6 de la propuesta de ejecución.
 - `MAINT-A-DXF1b`, `MAINT-A3` y `MAINT-A-R` quedan fuera.
 - Ningún incremento se ejecuta ni se crea su worktree en R4.
+
+## 13. Decisión D-R4-1 y preparación final de la adopción
+
+### 13.1 Decisión del autor
+
+«GeoCeDG — Decisión autoral D-R4-1», 2026-11-26. El autor **autoriza D-R4-1**: incorpora en
+el alcance de `MAINT-A-DXF0-RC` la modificación aditiva mínima necesaria para preservar la
+presencia individual de los grupos DXF 210, 220 y 230, con seis condiciones:
+
+1. registrar, para cada componente, si el grupo estaba presente y, si lo estaba, su valor
+   binary64 original;
+2. conservar la conducta geométrica, las reglas de admisión, los diagnósticos y la
+   interpretación actual del importador;
+3. no inferir la presencia de un grupo a partir de su valor numérico;
+4. no confundir la normal registrada con la efectiva ni inventar datos de procedencia;
+5. mantener las referencias fuera de `Construction` y del DAG;
+6. incorporar pruebas de ausencia total, presencia parcial y presencia completa, con ceros
+   explícitos y `-0.0`, persistencia y reapertura.
+
+La autorización afecta al diseño normativo y al alcance futuro de RC, no al código todavía. El
+autor da por resuelto el bloqueo M2 y pide:
+
+- completar los registros de adopción de los tres contratos;
+- preparar el cierre normativo, tras verificar que la corrección M1 del flujo G5 no introduce
+  contradicciones;
+- no hacer push ni implementar RC, EXP o DXF1;
+- entregar el candidato final con SHA, árbol y verificaciones.
+
+### 13.2 Aplicación en el candidato
+
+- **`reference-store.md`:**
+  - el estado pasa a `READY FOR AUTHOR ADOPTION` y cita D-R4-1;
+  - §5.2 punto 11 recoge D-R4-1 con sus seis condiciones; un `0.0` o `-0.0` presente es
+    presente y conserva su patrón de bits;
+  - RC-D16 pasa a «requisito fijado por el autor; cambio del registro autorizado por D-R4-1».
+- **A-IMP-12:** autorizada por D-R4-1, con las condiciones.
+- **RC-25:** nuevo caso (f), el propio registro de importación para (a) a (c) con `0.0` y
+  `-0.0` presentes, frente al importador de la base. La presencia y el patrón de bits se
+  comprueban por componente, y la admisión, las causas, los diagnósticos, los datos, los
+  resúmenes y la teselación deben quedar idénticos (DX-1 a DX-13).
+- **Propuesta de `R-c`:** D-R4-1 figura en §1 y no quedan decisiones pendientes.
+- **Prompt candidato de RC:** el objetivo incluye las seis condiciones, y se añade una
+  condición de parada ante cualquier cambio del importador que vaya más allá de esa presencia
+  aditiva.
+- **Plan §4.1:** cita D-R4-1.
+- **Este informe:** §2, §9 y §10 marcan D-R4-1 como resuelta.
+
+### 13.3 Verificación de la corrección M1 (flujo G5)
+
+Revisión independiente, solo de lectura, centrada en M1. Cubrió:
+
+- el código del controlador;
+- el contrato de exportación §2, §3, §8, §9, §9.1, §10, §11, §12 y §15;
+- los textos aprobados `geometry-export-foundation.md` y
+  `dxf-curve-fidelity-and-approximation.md`;
+- A-GEF-1 y A-EXP-3 a A-EXP-6;
+- ADR 0045 y ADR 0014;
+- la matriz, el prompt de EXP, el plan, la propuesta de exportación y este informe.
+
+**Veredicto: sin contradicción.**
+
+- Los hechos de §2 son exactos.
+  - `showExportDialog` ejecuta `showLegacyExportDialog` salvo con `isExtendedDxfEnabled()`.
+  - El flujo heredado no tiene preflight ni manifiesto, y rechaza `usm` precisamente por eso.
+  - El mensaje de población vacía salta en los dos flujos antes del modelo.
+- La fundación aprobada ya dice que el flujo G5 «writes no sidecar». La ADR 0014 exige
+  preflight. Las referencias necesitan ambos, así que limitarlas al flujo extendido se sigue
+  de textos aprobados.
+- D-R1-10 no entra en conflicto: la opción hereda el estado de la acción `export.dxf-2d`, ya
+  gobernada por `cedg.export.dxf.extended`, y no añade bandera propia.
+
+**Menores aplicados:**
+
+- RX-D1, la propuesta de exportación y el prompt de EXP nombran el flujo extendido.
+- ADR 0045 decisión 7 nombra el flujo y la bandera.
+- §2 del contrato y la nota de A-GEF-1 precisan que el flujo heredado termina y el extendido
+  reabre su diálogo de petición, el «mismo punto» de RX-15 (e).
+- Este informe precisa que `exportDxf` no es un método del controlador
+  (`GeometryExportService.exportDxf` sí existe).
+- El punto de A-GEF-1 sobre diagnósticos ya acota las referencias a la opción de
+  `cedg-reference-export/v1`; no requiere cambio.
+
+**Consecuencia que el autor debe conocer:** la opción de referencias, y con ella cualquier
+exportación de referencias, exige `cedg.export.dxf.extended`. Está activada por defecto
+(`AppConfigGeoCeDG.DEFAULT_EXTENDED_DXF_ENABLED`). Con `--enableExtendedDxf=false` solo corre el
+flujo G5 heredado y no puede exportarse ninguna referencia. Queda dicho en el contrato §11, en
+ADR 0045 decisión 7 y en la propuesta de exportación §4.
+
+**Observación fuera de alcance:** el Javadoc del controlador dice «Run G5 by default», en
+contra del valor por defecto de la bandera. Es un comentario de código que R4 no modifica; se
+registra para una corrección de mantenimiento.
 
 ## Evidencia
 

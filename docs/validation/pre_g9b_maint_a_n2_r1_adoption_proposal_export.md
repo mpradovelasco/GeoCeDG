@@ -36,7 +36,7 @@ por `PRE-G9B-MAINT-A-N2-R2` y corregida por `PRE-G9B-MAINT-A-N2-R3` (M2, M3) y `
 
 | Id | Propuesta |
 |---|---|
-| RX-D1 | casilla en el diálogo DXF existente, desmarcada por defecto |
+| RX-D1 | casilla en el diálogo DXF existente del flujo extendido emparejado (`chooseRequest`), desmarcada por defecto; el flujo G5 heredado no se amplía |
 | RX-D3 | pesos en forma canónica: solo si algún peso efectivo ≠ 1 |
 | RX-D4 | un código 41 tras cada punto de control (forma del escritor de AutoCAD; ambos lectores aceptan las dos) |
 | RX-D5 | bandera 1 solo con cierre exacto |
@@ -74,6 +74,9 @@ y A-ADR-2 del [conjunto de enmiendas](../architecture/pre_g9b_maint_a_n2_candida
 - ezdxf: lectura exacta exigida. AutoCAD: conformidad por criterios de ensayo (4 ulp para AutoCAD 2026, `ACADVER` 25.1; estructura,
   geometría) para las versiones y fixtures registrados; no es una garantía universal.
 - Límite: una referencia con exponentes no portables no se exporta mientras no se excluya.
+- Límite (R4): la opción existe solo en el flujo extendido emparejado; con
+  `cedg.export.dxf.extended` desactivada (activada por defecto) solo corre el flujo G5 heredado
+  y no puede exportarse ninguna referencia.
 - Manifiesto (R3, M2): con la opción activada, una exportación completada produce DXF y
   manifiesto emparejados si alguna referencia se escribe (A) o se excluye, por el usuario, por
   preferencia o por la política aprobada (B); una operación rechazada por una referencia

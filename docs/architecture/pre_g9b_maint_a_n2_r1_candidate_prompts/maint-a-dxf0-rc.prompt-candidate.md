@@ -18,7 +18,10 @@ reference identifier, export preference, resource-policy values, store snapshot 
 unit tests), then the
 codec and validation in `org.geocedg.common.importer.dxf` (with the `values` counter of the
 contract §5.2 item 12 and, additively, the presence of each of the groups 210, 220 and 230 in
-the import record, A-IMP-12, without changing admission or values), the reader branch and writer step
+the import record, A-IMP-12, authorized by the author decision D-R4-1 with its six conditions:
+presence and original binary64 per component, importer geometry, admission, diagnostics and
+interpretation unchanged, presence never inferred from a value, recorded and effective normal
+never confused, references outside `Construction` and the DAG, RC-25 tests), the reader branch and writer step
 in `MyXMLioJre`, the configurable resource policy, prepare-and-commit in every document
 route, the saved-state rule, the Desktop store addressed by identifier, the scanners, the
 Classic preservation or save barrier, the guide and the cases RC-* of the matrix.
@@ -72,7 +75,9 @@ Local branch; integration and promotion only by a later author instruction namin
 
 ## Stop conditions
 
-Those of `cedg-reference-store/v1` §16; a silent loss on any route; a resource policy that
+Those of `cedg-reference-store/v1` §16; a silent loss on any route; a change of the importer's
+geometric behavior, admission, diagnostics or interpretation beyond the additive presence of
+D-R4-1; a resource policy that
 cannot reject an over-budget document without truncation; a C-5 route that still refuses a store at the budget; a C-4 result that does not confirm
 the budget (the increment does not close; the budget is revised on that evidence by the
 author).

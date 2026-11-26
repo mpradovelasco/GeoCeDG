@@ -119,7 +119,14 @@ and is never recorded as `0` or `1`; the effective normal (absent 210 or 220 = `
 gains the presence of each group additively; admission, values, transformation, digests and
 the rest of the import are unchanged. Implemented by `MAINT-A-DXF0-RC` (the current
 `DxfSplineReference.normal()` fills an absent component with `0.0`: `cedg-reference-store/v1`
-F22). **This additive importer change is pending author decision D-R4-1** (R4 report §9).
+F22). **Authorized by the author decision D-R4-1 of 2026-11-26** for the scope of
+`MAINT-A-DXF0-RC` (not yet as code), with six conditions: per component, presence and, when
+present, the original binary64 value; geometric behavior, admission, diagnostics and
+interpretation unchanged; presence never inferred from a value (a present `0.0` or `-0.0` is
+present); the recorded normal never confused with the effective normal and no provenance
+invented; references outside `Construction` and the DAG; tests of total absence, partial and
+complete presence with explicit zeros and `-0.0`, persistence and reopening
+(`cedg-reference-store/v1` §5.2 item 11, RC-25).
 
 ### A-ADR-3 — ADR 0043, status
 
@@ -306,7 +313,8 @@ evidence-backed authorization; the `SPLINE` of imported references is governed b
 - Explicit export area: add «an imported reference participates unless the convex hull of its
   control polygon is proved disjoint from `R` by exact predicates; it is written whole».
 - Implementation note (R4, not text of the foundation): the current `GeoCeDGDxfExportController`
-  stops on an empty `GeoElement` population before the model and the preflight in both flows; the
+  shows its empty-population message before the model and the preflight in both flows (the
+  legacy flow ends, the extended flow reopens its request dialog); the
   route, in the extended paired-output flow only (the legacy G5 route is not extended), that
   lets a references-only export reach the preflight is an obligation of `MAINT-A-DXF0-EXP`
   (`cedg-reference-export/v1` §9.1, RX-15 case (e)); with the option off the guard is unchanged.

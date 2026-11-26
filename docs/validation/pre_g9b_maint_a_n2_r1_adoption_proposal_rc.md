@@ -18,7 +18,9 @@ D-R1-1 (nada en `Construction`, el DAG ni la identidad CeDG), D-R1-2 (sin compat
 lectores antiguos; integridad, fallo seguro, sin pérdida silenciosa), D-R1-3 (`source` y `data`
 obligatorios), D-R1-4 (sin límite fijo arbitrario; política configurable y medida), D-R1-5 (sin
 historial de derivaciones ni de fallos), D-R1-8 (Classic: conservación opaca o barrera de
-guardado; nunca pérdida silenciosa), D-R1-10 (sin bandera por novedad).
+guardado; nunca pérdida silenciosa), D-R1-10 (sin bandera por novedad); D-R4-1 (2026-11-26:
+modificación aditiva mínima del registro de importación para la presencia de 210, 220 y 230,
+con seis condiciones, en el alcance futuro de `MAINT-A-DXF0-RC`).
 
 ## 2. Decisiones que se proponen con la adopción
 
@@ -37,13 +39,17 @@ guardado; nunca pérdida silenciosa), D-R1-10 (sin bandera por novedad).
 | RC-D13 | forma normativa: contrato + enmiendas + ADR 0044 |
 | RC-D15 | configuración por preferencia GeoCeDG con anulación administrativa por propiedad del sistema; solo valores finitos |
 
-**Decisiones pendientes:** una, **D-R4-1**: autorizar que `MAINT-A-DXF0-RC` añada de forma
-aditiva al registro de importación la presencia de cada grupo 210, 220 y 230 (enmienda
-A-IMP-12), sin cambiar admisión ni valores. Sin ese cambio RC-D16 no puede cumplirse, porque el
-lector actual rellena los ausentes con `0.0` (contrato F22); la revisión final R4 lo clasificó
-como decisión del autor, no del agente. RC-D9, RC-D16 y RC-D17 figuran en esta tabla porque su
-gramática es propuesta de R4; el requisito y el valor del presupuesto son decisiones del autor
-de la instrucción R4. El presupuesto de 1 500 000 valores quedó adoptado por el
+**Decisiones pendientes:** ninguna. **D-R4-1** quedó autorizada por el autor el 2026-11-26:
+`MAINT-A-DXF0-RC` incorpora en su alcance la modificación aditiva mínima del registro de
+importación que conserva, por componente, la presencia de los grupos 210, 220 y 230 y, si
+estaba presente, su valor binary64 original (enmienda A-IMP-12). Se mantienen la conducta
+geométrica, la admisión, los diagnósticos y la interpretación del importador. La presencia
+nunca se infiere del valor. La normal registrada no se confunde con la efectiva. Las referencias
+quedan fuera de `Construction` y del DAG. Las pruebas cubren ausencia total, presencia parcial y
+completa, ceros explícitos, `-0.0`, persistencia y reapertura (RC-25). La decisión autoriza el
+diseño y el alcance futuro de RC, no el código todavía. RC-D9, RC-D16 y RC-D17 figuran en esta
+tabla porque su gramática es propuesta de R4; el requisito, el valor del presupuesto y D-R4-1
+son decisiones del autor. El presupuesto de 1 500 000 valores quedó adoptado por el
 autor en la instrucción R4 (RC-D9); C-4 vuelve a medir el presupuesto sobre la
 implementación, incluido el caso al 100 % de `maxEntryBytes` no medido en R3, como puerta de
 cierre de `MAINT-A-DXF0-RC`. El lector incremental con límites por atributo (§5.3, clase 3)

@@ -83,7 +83,8 @@ DXF1-S0 en paralelo al principio.
 
 Puede tocar: `org.geocedg.common.importer.dxf` (códec y validación del almacén; constructores
 de registros; presencia por grupo de 210, 220 y 230 en el lector y el registro, aditiva, sin
-cambiar admisión ni valores: A-IMP-12, R4; contador `values` de §5.2 punto 12),
+cambiar admisión, valores, diagnósticos ni interpretación: A-IMP-12, autorizada por la decisión
+autoral D-R4-1; contador `values` de §5.2 punto 12),
 `MyXMLioJre` (rama de lectura y paso de escritura), `AppGeoCeDG`,
 `GeoCeDGDxfReferenceSession`, `GeoCeDGDxfReferenceDialogs`, `GeoCeDGDxfReferenceText`,
 `GeoCeDGDxfReferenceImport`, los escáneres de inspección y de modo angular, Classic según
