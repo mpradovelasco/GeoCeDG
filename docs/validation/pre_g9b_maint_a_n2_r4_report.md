@@ -459,6 +459,36 @@ ADR 0045 decisión 7 y en la propuesta de exportación §4.
 contra del valor por defecto de la bandera. Es un comentario de código que R4 no modifica; se
 registra para una corrección de mantenimiento.
 
+### 13.4 Candidato final, `STATIC` y registros de adopción
+
+Se registran en un descendiente documental del commit de contenido D-R4-1. El descendiente solo
+añade los registros de adopción y esta sección.
+
+| Elemento | Valor |
+|---|---|
+| **Commit de contenido normativo final** | `9c7e612294a2a0521a2c21d8f9c4580cb3b34efb`, árbol `7faccc1fc5d41f5d55d9fbb1ca5fd3473aa3e4fe`, padre `3caa26edf` |
+| Orden | `tools/agent/verify.ps1 -Profile STATIC -LogDirectory artifacts\agent\pre-g9b-maint-a-n2-r4-static-9c7e6122`, desde el worktree |
+| Código de salida | `0` |
+| Ejecución | `verification-24030c218682494f8d989f6424062e5d`; plan `25dfacc8b0c53df285a3ac19bbc438c5868d0c94dad7d1021727287ee892cc52` |
+| Identidad ligada | `candidate_commit = 9c7e61229…`, `candidate_tree = 7faccc1fc…`; resumen del resultado recalculado igual al almacenado |
+| Veredictos | `ACCEPTED` (3 satisfechas, 0 violadas); `COMPLETE` |
+| Diagnósticos | los dos permanentes: `diagnostic.governance` `DIAGNOSTIC_FINDING` y `diagnostic.historical-consistency` `DIAGNOSTIC_UNAVAILABLE`; el resto `DIAGNOSTIC_CLEAR` |
+| Informe | `artifacts/agent/pre-g9b-maint-a-n2-r4-static-9c7e6122/verification-result.json` (ignorado), SHA-256 `d7fd496cf7b07f5fb76b86b97ecf30b4a57b1f99edd776c7f220e4376e5beb52` |
+| Comprobaciones previas | prompts candidatos de RC y EXP (`execution_safe = true`); enlaces relativos, UTF-8, LF, columnas de tablas y `git diff --check` limpios; ningún cambio en `source/`, en el roadmap, en `AGENTS.md` ni en `CLAUDE.md` |
+
+**Registros de adopción.** Los tres registros completos (contrato y revisión, commit y árbol,
+enmiendas, decisiones, limitaciones, dependencias, verificación y obligaciones de
+implementación) y el cierre normativo conjunto están en
+[`pre_g9b_maint_a_n2_adoption_records.md`](pre_g9b_maint_a_n2_adoption_records.md). Sustituyen
+a §10 y §11. Solo les faltan la decisión, la fecha y las palabras del autor.
+
+**Carácter del descendiente.** No tiene `STATIC` propio. El resultado técnico es el de
+`9c7e61229`, y su clasificación canónica se registra fuera de él.
+
+**Estado:** `PRE-G9B-MAINT-A-N2-R4 — NORMATIVE DESIGN CANDIDATE — READY FOR AUTHOR ADOPTION`.
+`selfApproved = false`, `authorApproved = false`. Sin push, merge, `main`, etiquetas, releases ni
+empaquetado; RC, EXP y DXF1 sin implementar.
+
 ## Evidencia
 
 - Inspección de solo lectura de `DxfSplineReader`, `DxfSplineReference` y
